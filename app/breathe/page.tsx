@@ -26,6 +26,13 @@ type AmbientType = "silence" | "rain" | "bowls" | "nature";
 
 const SESSION_LENGTHS = [5, 10, 15, 20, 30];
 
+// ── NATALIE'S VOICE FILES ──────────────────────────────────────────────────────
+// Upload Natalie's recordings to Supabase Storage → audio-files bucket.
+// Then paste the public URLs here.
+// Intro plays before the timer starts. Outro plays after the session ends.
+const VOICE_INTRO_URL = ""; // e.g. "https://xxx.supabase.co/storage/v1/object/public/audio-files/breathe-intro.mp3"
+const VOICE_OUTRO_URL = ""; // e.g. "https://xxx.supabase.co/storage/v1/object/public/audio-files/breathe-outro.mp3"
+
 const PHASE_LABEL: Record<Phase, string> = {
   inhale:  "Breathe in",
   holdIn:  "Hold",
@@ -150,9 +157,13 @@ export default function BreathePage() {
   const secondsLeftRef = useRef(sessionMinutes * 60);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  // Intro voice state — true while Natalie's intro is playing before the timer starts
+  const [introPlaying, setIntroPlaying] = useState(false);
+
   // Audio refs
   const audioCtxRef = useRef<AudioContext | null>(null);
   const ambientNodeRef = useRef<AudioNode | OscillatorNode[] | null>(null);
+  const voiceRef = useRef<HTMLAudioElement | null>(null);
 
   // Get the active pattern object (merging custom counts when custom is selected)
   const pattern = patternKey === "custom"
@@ -189,6 +200,18 @@ export default function BreathePage() {
     }
   }
 
+  // Play a voice recording — resolves when it finishes (or immediately if URL is empty)
+  function playVoice(url: string): Promise<void> {
+    return new Promise((resolve) => {
+      if (!url) { resolve(); return; }
+      const audio = new Audio(url);
+      voiceRef.current = audio;
+      audio.addEventListener("ended", () => resolve());
+      audio.addEventListener("error", () => resolve()); // skip gracefully on error
+      audio.play().catch(() => resolve()); // skip if browser blocks autoplay
+    });
+  }
+
   // Stop ambient sound
   const stopAmbient = useCallback(() => {
     if (!ambientNodeRef.current) return;
@@ -211,9 +234,16 @@ export default function BreathePage() {
     if (type === "nature")  ambientNodeRef.current = startNature(ctx);
   }, [stopAmbient]);
 
-  // Start the timer
-  function handleStart() {
+  // Start the timer — plays Natalie's intro voice first, then begins the countdown
+  async function handleStart() {
     if (!audioCtxRef.current) audioCtxRef.current = new AudioContext();
+
+    // Show the intro state on the circle while her voice plays
+    setIntroPlaying(true);
+    await playVoice(VOICE_INTRO_URL);
+    setIntroPlaying(false);
+
+    // Now start the actual breathing timer
     phaseRef.current = "inhale";
     phaseElapsedRef.current = 0;
     secondsLeftRef.current = sessionMinutes * 60;
@@ -241,6 +271,9 @@ export default function BreathePage() {
   function handleReset() {
     if (intervalRef.current) clearInterval(intervalRef.current);
     stopAmbient();
+    // Stop any playing voice audio
+    if (voiceRef.current) { voiceRef.current.pause(); voiceRef.current = null; }
+    setIntroPlaying(false);
     setRunning(false);
     setDone(false);
     setPhase("inhale");
@@ -273,6 +306,8 @@ export default function BreathePage() {
         setDone(true);
         stopAmbient();
         if (audioCtxRef.current) playBell(audioCtxRef.current);
+        // Play Natalie's outro after a short pause so the bell is heard first
+        setTimeout(() => { playVoice(VOICE_OUTRO_URL); }, 2000);
         return;
       }
 
@@ -311,6 +346,7 @@ export default function BreathePage() {
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
       stopAmbient();
+      if (voiceRef.current) { voiceRef.current.pause(); voiceRef.current = null; }
     };
   }, [stopAmbient]);
 
@@ -324,7 +360,7 @@ export default function BreathePage() {
     return `${m}:${sec.toString().padStart(2, "0")}`;
   }
 
-  const started = running || done || secondsLeft < sessionMinutes * 60;
+  const started = running || done || introPlaying || secondsLeft < sessionMinutes * 60;
 
   return (
     <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#0D0D1A" }}>
@@ -440,6 +476,10 @@ export default function BreathePage() {
                     <p className="text-2xl">🙏</p>
                     <p className="text-white text-sm mt-1" style={{ fontWeight: 500 }}>Done</p>
                   </>
+                ) : introPlaying ? (
+                  <p className="text-white/70 text-sm leading-snug text-center" style={{ fontWeight: 500 }}>
+                    Get comfortable…
+                  </p>
                 ) : running ? (
                   <>
                     <p className="text-white text-sm" style={{ fontWeight: 500 }}>{PHASE_LABEL[phase]}</p>
