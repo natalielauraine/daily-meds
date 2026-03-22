@@ -3,8 +3,10 @@
 // Global audio player state — lives in the app layout so it survives page navigation.
 // Any component can read or control the player using the usePlayer() hook.
 // The actual <audio> element is created here and never destroyed while the app is open.
+// Saves playback position to Supabase every 10 seconds for the Continue Watching feature.
 
 import { createContext, useContext, useRef, useState, useEffect, ReactNode } from "react";
+import { createClient } from "./supabase-browser";
 
 // The shape of a session loaded into the player
 export type PlayerSession = {
@@ -26,7 +28,7 @@ type PlayerContextType = {
   isMuted: boolean;
   speed: number;
   // Actions
-  playSession: (session: PlayerSession) => void;
+  playSession: (session: PlayerSession, startAt?: number) => void;
   togglePlay: () => void;
   seek: (time: number) => void;
   skipBack: () => void;
@@ -51,6 +53,13 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   // The real audio element — created once on the client, never destroyed
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
+  // Refs to avoid stale closures in event handlers and intervals
+  const currentSessionRef = useRef<PlayerSession | null>(null);
+  const userIdRef = useRef<string | null>(null);
+
+  // When the audio loads, seek to this position (used for resume from Continue Watching)
+  const pendingSeekRef = useRef<number>(0);
+
   const [currentSession, setCurrentSession] = useState<PlayerSession | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -59,15 +68,85 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const [isMuted, setIsMutedState] = useState(false);
   const [speed, setSpeedState] = useState(1);
 
+  // Keep the ref in sync with state so event handlers always have the latest session
+  useEffect(() => {
+    currentSessionRef.current = currentSession;
+  }, [currentSession]);
+
+  // Fetch the logged-in user's ID once on mount so we can save progress to Supabase
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data }) => {
+      userIdRef.current = data.user?.id ?? null;
+    });
+  }, []);
+
+  // Save progress to Supabase every 10 seconds while audio is playing
+  useEffect(() => {
+    if (!isPlaying) return;
+
+    const interval = setInterval(async () => {
+      const audio = audioRef.current;
+      const session = currentSessionRef.current;
+      const userId = userIdRef.current;
+      if (!audio || !session || !userId || !audio.duration) return;
+
+      const supabase = createClient();
+      await supabase.from("user_progress").upsert(
+        {
+          user_id: userId,
+          session_id: session.id,
+          position_seconds: Math.floor(audio.currentTime),
+          duration_seconds: Math.floor(audio.duration),
+          completed: false,
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: "user_id,session_id" }
+      );
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, [isPlaying]);
+
   // Create the audio element client-side (can't do this on the server)
   useEffect(() => {
     const audio = new Audio();
     audioRef.current = audio;
 
-    // Sync state whenever audio updates
+    // Sync current time to state on every tick
     const onTime = () => setCurrentTime(audio.currentTime);
-    const onMeta = () => setDuration(audio.duration);
-    const onEnd = () => { setIsPlaying(false); setCurrentTime(0); };
+
+    // When metadata loads (duration is known), seek to any pending resume position
+    const onMeta = () => {
+      setDuration(audio.duration);
+      if (pendingSeekRef.current > 0) {
+        audio.currentTime = pendingSeekRef.current;
+        setCurrentTime(pendingSeekRef.current);
+        pendingSeekRef.current = 0;
+      }
+    };
+
+    // When audio finishes, mark the session as completed in Supabase
+    const onEnd = () => {
+      setIsPlaying(false);
+      setCurrentTime(0);
+      const session = currentSessionRef.current;
+      const userId = userIdRef.current;
+      if (userId && session) {
+        const supabase = createClient();
+        supabase.from("user_progress").upsert(
+          {
+            user_id: userId,
+            session_id: session.id,
+            position_seconds: 0,
+            duration_seconds: Math.floor(audio.duration) || 0,
+            completed: true,
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: "user_id,session_id" }
+        );
+      }
+    };
 
     audio.addEventListener("timeupdate", onTime);
     audio.addEventListener("loadedmetadata", onMeta);
@@ -81,8 +160,9 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  // Load and play a session — if same session clicked again, just toggle play/pause
-  function playSession(session: PlayerSession) {
+  // Load and play a session.
+  // startAt: optional position in seconds to resume from (used by Continue Watching)
+  function playSession(session: PlayerSession, startAt?: number) {
     const audio = audioRef.current;
     if (!audio) return;
 
@@ -90,6 +170,9 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       togglePlay();
       return;
     }
+
+    // Store the resume position — we seek to it once loadedmetadata fires
+    pendingSeekRef.current = startAt || 0;
 
     // New session — load and play
     audio.src = session.audioUrl || "";

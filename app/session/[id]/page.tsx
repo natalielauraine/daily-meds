@@ -5,8 +5,8 @@
 // The heart icon saves the session to the watchlist in localStorage.
 
 import Link from "next/link";
-import { useParams } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useParams, useSearchParams } from "next/navigation";
+import { useState, useEffect, useRef } from "react";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import AudioPlayer from "../../components/AudioPlayer";
@@ -16,6 +16,7 @@ import ShareButton from "../../components/ShareButton";
 import { toggleWatchlist, isInWatchlist } from "../../../lib/watchlist";
 import { toggleSaved, isSaved } from "../../../lib/downloads";
 import { createClient } from "../../../lib/supabase-browser";
+import { usePlayer } from "../../../lib/player-context";
 import { MOCK_SESSIONS } from "../../../lib/sessions-data";
 
 // Maps mood category to its gradient for the badge
@@ -35,7 +36,14 @@ const MOOD_GRADIENTS: Record<string, string> = {
 
 export default function SessionPage() {
   const params = useParams();
+  const searchParams = useSearchParams();
   const id = params?.id as string;
+
+  // ?t= param from Continue Watching — position in seconds to resume from
+  const resumeAt = Number(searchParams.get("t") || 0);
+
+  const { playSession } = usePlayer();
+  const hasAutoPlayed = useRef(false);
 
   const session = MOCK_SESSIONS.find((s) => s.id === id);
 
@@ -69,6 +77,28 @@ export default function SessionPage() {
       if (data?.subscription_status) setSubscriptionStatus(data.subscription_status);
     });
   }, []);
+
+  // Auto-resume from the position in the URL (?t=123) when coming from Continue Watching.
+  // Waits for subscriptionStatus to load before checking if the user can play the session.
+  useEffect(() => {
+    if (!resumeAt || !session || hasAutoPlayed.current) return;
+    const isPaid = subscriptionStatus !== "free";
+    const userCanPlay = session.isFree || isPaid;
+    if (!userCanPlay) return;
+    hasAutoPlayed.current = true;
+    playSession(
+      {
+        id: session.id,
+        title: session.title,
+        moodCategory: session.moodCategory,
+        gradient: session.gradient,
+        audioUrl: session.audioUrl,
+        duration: session.duration,
+      },
+      resumeAt
+    );
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [subscriptionStatus]);
 
   function handleHeart() {
     if (!session) return;

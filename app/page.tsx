@@ -11,6 +11,9 @@ import { type Session } from "./components/SessionCard";
 // cannot run on the server, and causes hydration errors if server-rendered
 const ReferralTracker = dynamic(() => import("./components/ReferralTracker"), { ssr: false });
 
+// Load ContinueWatchingRow client-only — it fetches from Supabase and is only shown to logged-in users
+const ContinueWatchingRow = dynamic(() => import("./components/ContinueWatchingRow"), { ssr: false });
+
 // ── PLACEHOLDER SESSIONS ──────────────────────────────────────────────────────
 // These are mock sessions until real content is added in the admin panel.
 // Each has a gradient thumbnail using the mood's brand colours from CLAUDE.md.
@@ -190,6 +193,9 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div style={{ height: "0.5px", background: "rgba(255,255,255,0.06)" }} />
         </div>
+
+        {/* Continue Watching — only visible to logged-in users with in-progress sessions */}
+        <ContinueWatchingRow />
 
         <ContentRow
           title="Featured Sessions"
