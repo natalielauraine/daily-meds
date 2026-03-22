@@ -11,7 +11,9 @@ import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import AudioPlayer from "../../components/AudioPlayer";
 import VideoPlayer from "../../components/VideoPlayer";
+import AddToPlaylistModal from "../../components/AddToPlaylistModal";
 import { toggleWatchlist, isInWatchlist } from "../../../lib/watchlist";
+import { toggleSaved, isSaved } from "../../../lib/downloads";
 
 // ── MOCK SESSIONS ─────────────────────────────────────────────────────────────
 // Placeholder data — replace with real Supabase queries once content is uploaded.
@@ -112,16 +114,29 @@ export default function SessionPage() {
 
   // Watchlist state — heart is filled when session is saved
   const [hearted, setHearted] = useState(false);
+  // Saved-in-app state — bookmark icon filled when saved within the app
+  const [savedInApp, setSavedInApp] = useState(false);
+  // Playlist modal open/closed
+  const [showPlaylistModal, setShowPlaylistModal] = useState(false);
 
-  // Check watchlist state on mount (localStorage is client-only)
+  // Check watchlist + saved state on mount (localStorage is client-only)
   useEffect(() => {
-    if (session) setHearted(isInWatchlist(session.id));
+    if (session) {
+      setHearted(isInWatchlist(session.id));
+      setSavedInApp(isSaved(session.id));
+    }
   }, [session?.id]);
 
   function handleHeart() {
     if (!session) return;
     const nowSaved = toggleWatchlist(session.id);
     setHearted(nowSaved);
+  }
+
+  function handleSave() {
+    if (!session) return;
+    const nowSaved = toggleSaved(session.id);
+    setSavedInApp(nowSaved);
   }
 
   if (!session) {
@@ -224,7 +239,60 @@ export default function SessionPage() {
 
           {/* Description */}
           <p className="text-sm text-white/50 leading-relaxed max-w-md">{session.description}</p>
+
+          {/* Save + Playlist action buttons */}
+          <div className="flex items-center gap-3 mt-5">
+            {/* Save to app button */}
+            <button
+              onClick={handleSave}
+              className="flex items-center gap-2 px-4 py-2 rounded-full text-xs transition-colors"
+              style={{
+                backgroundColor: savedInApp ? "rgba(139,92,246,0.2)" : "rgba(255,255,255,0.06)",
+                border: savedInApp ? "0.5px solid rgba(139,92,246,0.5)" : "0.5px solid rgba(255,255,255,0.12)",
+                color: savedInApp ? "#8B5CF6" : "rgba(255,255,255,0.5)",
+                fontWeight: 500,
+              }}
+              aria-label={savedInApp ? "Remove from saved" : "Save session"}
+            >
+              {savedInApp ? (
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"/>
+                </svg>
+              ) : (
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                  <path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"/>
+                </svg>
+              )}
+              {savedInApp ? "Saved" : "Save"}
+            </button>
+
+            {/* Add to playlist button */}
+            <button
+              onClick={() => setShowPlaylistModal(true)}
+              className="flex items-center gap-2 px-4 py-2 rounded-full text-xs transition-colors hover:bg-white/[0.08]"
+              style={{
+                backgroundColor: "rgba(255,255,255,0.06)",
+                border: "0.5px solid rgba(255,255,255,0.12)",
+                color: "rgba(255,255,255,0.5)",
+                fontWeight: 500,
+              }}
+              aria-label="Add to playlist"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M3 6h18v2H3zm0 5h12v2H3zm0 5h18v2H3zm16-3v-3h-2v3h-3v2h3v3h2v-3h3v-2z"/>
+              </svg>
+              Add to playlist
+            </button>
+          </div>
         </div>
+
+        {/* Playlist modal */}
+        {showPlaylistModal && session && (
+          <AddToPlaylistModal
+            sessionId={session.id}
+            onClose={() => setShowPlaylistModal(false)}
+          />
+        )}
 
         {/* ── PLAYER CARD ── */}
         <div
