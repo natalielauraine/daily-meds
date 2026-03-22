@@ -3,13 +3,15 @@
 // Audio player UI — the full-size player shown on the session page.
 // All actual audio playback is handled by the global PlayerContext (lib/player-context.tsx).
 // This component is purely the controls UI — it reads state from the context and calls actions on it.
+// Also handles Picture-in-Picture for audio sessions using a hidden canvas + video element.
 
+import { useRef, useState, useEffect } from "react";
 import { usePlayer } from "../../lib/player-context";
 import type { PlayerSession } from "../../lib/player-context";
 
 type AudioPlayerProps = {
   session: PlayerSession;   // The session to play — passed from the session page
-  gradient: string;         // Mood gradient — used on the seek bar and play button
+  gradient: string;         // Mood gradient — used on the seek bar, play button, and PiP artwork
 };
 
 // Turns seconds into "m:ss" format — e.g. 342 → "5:42"
@@ -50,6 +52,132 @@ export default function AudioPlayer({ session, gradient }: AudioPlayerProps) {
   const displayPlaying = isThisSession && isPlaying;
   const progressPercent = displayDuration > 0 ? (displayTime / displayDuration) * 100 : 0;
 
+  // ── PICTURE IN PICTURE ────────────────────────────────────────────────────
+  // The browser PiP API requires a <video> element. For audio-only sessions we
+  // draw the session artwork onto a hidden <canvas>, stream it into a hidden
+  // <video>, then call requestPictureInPicture() on that video element.
+
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const pipVideoRef = useRef<HTMLVideoElement>(null);
+  const [isPiP, setIsPiP] = useState(false);
+
+  // Check once if the browser supports PiP (not supported in Firefox / older Safari)
+  const [pipSupported, setPipSupported] = useState(false);
+  useEffect(() => {
+    setPipSupported(typeof document !== "undefined" && !!document.pictureInPictureEnabled);
+  }, []);
+
+  // Draw the session artwork onto the canvas whenever the session changes.
+  // The canvas is streamed into the hidden video — this is what appears in the PiP window.
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const video = pipVideoRef.current;
+    if (!canvas || !video) return;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    // Extract the first and last hex colours from the gradient string to build a canvas gradient
+    const colors = gradient.match(/#[0-9A-Fa-f]{6}/g) ?? ["#1A1A2E", "#1A1A2E"];
+    const first = colors[0];
+    const last = colors[colors.length - 1];
+
+    // Gradient background (top-left → bottom-right to match the brand style)
+    const bg = ctx.createLinearGradient(0, 0, 320, 180);
+    bg.addColorStop(0, first);
+    bg.addColorStop(1, last);
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, 320, 180);
+
+    // Dark overlay so white text is readable over any gradient
+    ctx.fillStyle = "rgba(0,0,0,0.38)";
+    ctx.fillRect(0, 0, 320, 180);
+
+    // "Daily Meds" label — top left
+    ctx.fillStyle = "rgba(255,255,255,0.35)";
+    ctx.font = "500 11px -apple-system, system-ui, sans-serif";
+    ctx.textAlign = "left";
+    ctx.textBaseline = "top";
+    ctx.fillText("Daily Meds", 12, 12);
+
+    // Session title — centred, wraps onto a second line if too long
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.font = "500 16px -apple-system, system-ui, sans-serif";
+    ctx.fillStyle = "rgba(255,255,255,0.95)";
+
+    const maxWidth = 272;
+    const words = session.title.split(" ");
+    let line1 = "";
+    let line2 = "";
+    let splitDone = false;
+
+    for (const word of words) {
+      if (!splitDone) {
+        const test = line1 + (line1 ? " " : "") + word;
+        if (ctx.measureText(test).width > maxWidth && line1) {
+          splitDone = true;
+          line2 = word;
+        } else {
+          line1 = test;
+        }
+      } else {
+        line2 += " " + word;
+      }
+    }
+
+    // Truncate second line if it's still too long
+    if (line2 && ctx.measureText(line2).width > maxWidth) {
+      while (ctx.measureText(line2 + "…").width > maxWidth) {
+        line2 = line2.slice(0, -1);
+      }
+      line2 += "…";
+    }
+
+    const titleY = line2 ? 82 : 90;
+    ctx.fillText(line1, 160, titleY);
+    if (line2) ctx.fillText(line2, 160, titleY + 22);
+
+    // Mood category — below the title
+    ctx.font = "13px -apple-system, system-ui, sans-serif";
+    ctx.fillStyle = "rgba(255,255,255,0.45)";
+    ctx.fillText(session.moodCategory, 160, line2 ? 122 : 112);
+
+    // Attach the canvas stream to the hidden video (only needed once)
+    if (!video.srcObject) {
+      video.srcObject = canvas.captureStream(0); // 0 fps = static image, saves battery
+    }
+  }, [session.id, session.title, session.moodCategory, gradient]);
+
+  // Listen for the user closing the PiP window via the browser's own controls
+  useEffect(() => {
+    function onPiPLeave() { setIsPiP(false); }
+    document.addEventListener("leavepictureinpicture", onPiPLeave);
+    return () => document.removeEventListener("leavepictureinpicture", onPiPLeave);
+  }, []);
+
+  // Toggle PiP on/off
+  async function togglePiP() {
+    const video = pipVideoRef.current;
+    if (!video) return;
+
+    if (document.pictureInPictureElement) {
+      // PiP is already open — close it
+      await document.exitPictureInPicture();
+      setIsPiP(false);
+    } else {
+      try {
+        // The hidden video must be playing before PiP can be requested
+        await video.play();
+        await video.requestPictureInPicture();
+        setIsPiP(true);
+      } catch {
+        // PiP was blocked or isn't available — silently ignore
+      }
+    }
+  }
+  // ─────────────────────────────────────────────────────────────────────────
+
   // Handle seek — only works if this is the active session
   function handleSeek(e: React.ChangeEvent<HTMLInputElement>) {
     if (!isThisSession) return;
@@ -66,6 +194,11 @@ export default function AudioPlayer({ session, gradient }: AudioPlayerProps) {
 
   return (
     <div className="w-full">
+
+      {/* Hidden elements required for the PiP API */}
+      <canvas ref={canvasRef} width={320} height={180} style={{ display: "none" }} />
+      {/* muted because audio comes from the separate <audio> element in PlayerContext */}
+      <video ref={pipVideoRef} muted playsInline style={{ display: "none" }} />
 
       {/* ── SEEK BAR ─────────────────────────────────────────── */}
       <div className="mb-3">
@@ -146,7 +279,7 @@ export default function AudioPlayer({ session, gradient }: AudioPlayerProps) {
         </button>
       </div>
 
-      {/* ── VOLUME + SPEED ────────────────────────────────────── */}
+      {/* ── VOLUME + SPEED + PIP ──────────────────────────────── */}
       <div className="flex items-center justify-between gap-4">
 
         {/* Volume */}
@@ -207,6 +340,30 @@ export default function AudioPlayer({ session, gradient }: AudioPlayerProps) {
             </button>
           ))}
         </div>
+
+        {/* Picture in Picture button — only shown if the browser supports it */}
+        {pipSupported && (
+          <button
+            onClick={togglePiP}
+            className="shrink-0 transition-colors"
+            style={{ color: isPiP ? "rgba(139,92,246,0.9)" : "rgba(255,255,255,0.4)" }}
+            aria-label={isPiP ? "Exit picture in picture" : "Picture in picture"}
+            title={isPiP ? "Exit picture in picture" : "Picture in picture"}
+          >
+            {isPiP ? (
+              // Active PiP — filled icon
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19 7h-8v6h8V7zm2-4H3c-1.1 0-2 .9-2 2v14c0 1.1.9 1.99 2 1.99h18c1.1 0 2-.89 2-1.99V5c0-1.1-.9-2-2-2zm0 16.01H3V4.99h18v14.02z"/>
+              </svg>
+            ) : (
+              // Inactive PiP — outline icon
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                <rect x="2" y="4" width="20" height="16" rx="1"/>
+                <rect x="11" y="10" width="9" height="6" rx="0.5" fill="currentColor" stroke="none" opacity="0.7"/>
+              </svg>
+            )}
+          </button>
+        )}
       </div>
     </div>
   );
