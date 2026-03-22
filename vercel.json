@@ -1,0 +1,16 @@
+{
+  "crons": [
+    {
+      "path": "/api/email/streak-reminder",
+      "schedule": "0 9 * * *"
+    },
+    {
+      "path": "/api/email/live-reminder",
+      "schedule": "0 * * * *"
+    },
+    {
+      "path": "/api/email/affiliate-earnings",
+      "schedule": "0 9 1 * *"
+    }
+  ]
+}

@@ -108,7 +108,7 @@ export default function MiniPlayer() {
         {/* Play / Pause — main button */}
         <button
           onClick={togglePlay}
-          className="w-9 h-9 rounded-full flex items-center justify-center transition-opacity hover:opacity-80"
+          className="w-11 h-11 rounded-full flex items-center justify-center transition-opacity hover:opacity-80"
           style={{ background: currentSession.gradient }}
           aria-label={isPlaying ? "Pause" : "Play"}
         >
@@ -137,7 +137,7 @@ export default function MiniPlayer() {
         {/* Close button */}
         <button
           onClick={closePlayer}
-          className="text-white/30 hover:text-white/70 transition-colors p-1 ml-1"
+          className="text-white/30 hover:text-white/70 transition-colors p-2.5 ml-1"
           aria-label="Close player"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">

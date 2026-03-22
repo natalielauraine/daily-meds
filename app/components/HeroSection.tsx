@@ -126,7 +126,7 @@ export default function HeroSection() {
                 }}
               >
                 <div
-                  className="rounded-2xl p-7 flex flex-col items-center gap-6 w-full"
+                  className="rounded-2xl p-5 sm:p-7 flex flex-col items-center gap-6 w-full"
                   style={{
                     backgroundColor: "rgba(13,13,26,0.92)",
                     backdropFilter: "blur(24px)",
@@ -193,7 +193,7 @@ export default function HeroSection() {
                   <div className="flex items-center gap-8">
                     {/* Skip back 15s */}
                     <button
-                      className="flex flex-col items-center gap-1 text-white/40 hover:text-white/70 transition-colors"
+                      className="flex flex-col items-center gap-1 text-white/40 hover:text-white/70 transition-colors p-3"
                       aria-label="Skip back 15 seconds"
                     >
                       {/* Back arrow: two triangles pointing left */}
@@ -223,7 +223,7 @@ export default function HeroSection() {
 
                     {/* Skip forward 15s */}
                     <button
-                      className="flex flex-col items-center gap-1 text-white/40 hover:text-white/70 transition-colors"
+                      className="flex flex-col items-center gap-1 text-white/40 hover:text-white/70 transition-colors p-3"
                       aria-label="Skip forward 15 seconds"
                     >
                       {/* Forward arrow: two triangles pointing right */}

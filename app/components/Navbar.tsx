@@ -106,6 +106,9 @@ export default function Navbar() {
             <Link href="/pricing" className="text-sm text-white/70 hover:text-white transition-colors">
               {t("nav", "pricing")}
             </Link>
+            <Link href="/shop" className="text-sm text-white/70 hover:text-white transition-colors">
+              Shop
+            </Link>
           </div>
 
           {/* Desktop auth area — changes based on login state */}
@@ -217,7 +220,7 @@ export default function Navbar() {
 
           {/* Mobile hamburger button */}
           <button
-            className="md:hidden text-white/70 hover:text-white p-2"
+            className="md:hidden text-white/70 hover:text-white p-3"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle menu"
           >
@@ -242,6 +245,7 @@ export default function Navbar() {
           <Link href="/live" className="text-sm text-white/70 hover:text-white transition-colors" onClick={() => setMobileMenuOpen(false)}>Live</Link>
           <Link href="/free" className="text-sm text-white/70 hover:text-white transition-colors" onClick={() => setMobileMenuOpen(false)}>Free Sessions</Link>
           <Link href="/pricing" className="text-sm text-white/70 hover:text-white transition-colors" onClick={() => setMobileMenuOpen(false)}>Pricing</Link>
+          <Link href="/shop" className="text-sm text-white/70 hover:text-white transition-colors" onClick={() => setMobileMenuOpen(false)}>Shop</Link>
 
           <div className="flex flex-col gap-2 pt-2 border-t border-white/[0.08]">
             {user ? (

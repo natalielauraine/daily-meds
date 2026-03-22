@@ -10,6 +10,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
+import { render } from "@react-email/components";
+import { resend, FROM_EMAIL, FROM_NAME } from "../../../../lib/resend";
+import PaymentConfirmationEmail from "../../../../emails/PaymentConfirmationEmail";
+import SubscriptionCancelledEmail from "../../../../emails/SubscriptionCancelledEmail";
 
 // Tell Next.js not to parse the body — Stripe needs the raw bytes to verify the signature
 export const config = { api: { bodyParser: false } };
@@ -83,6 +87,41 @@ export async function POST(req: NextRequest) {
           })
           .eq("id", userId);
 
+        // Send payment confirmation email
+        try {
+          const { data: userData } = await supabase
+            .from("users")
+            .select("email, name")
+            .eq("id", userId)
+            .single();
+
+          if (userData?.email) {
+            const planName = tier.charAt(0).toUpperCase() + tier.slice(1); // "monthly" → "Monthly"
+            const amountPaid = session.amount_total ? `£${(session.amount_total / 100).toFixed(2)}` : "";
+            const period = tier === "lifetime" ? " one-time" : tier === "annual" ? "/year" : "/month";
+
+            const html = await render(
+              PaymentConfirmationEmail({
+                name: userData.name || userData.email.split("@")[0],
+                planName,
+                amount: amountPaid,
+                period,
+                nextBillingDate: undefined,
+              })
+            );
+
+            await resend.emails.send({
+              from: `${FROM_NAME} <${FROM_EMAIL}>`,
+              to: userData.email,
+              subject: `You're in. Daily Meds ${planName} confirmed.`,
+              html,
+            });
+          }
+        } catch (emailErr) {
+          // Log but don't fail the webhook — payment already processed
+          console.error("Payment confirmation email failed:", emailErr);
+        }
+
         // ── AFFILIATE EARNINGS ─────────────────────────────────────────────────
         // Check if this user was referred by an affiliate.
         // The referral_code is stored in the users table when they signed up via ?ref=.
@@ -128,6 +167,40 @@ export async function POST(req: NextRequest) {
           .from("users")
           .update({ subscription_status: "free" })
           .eq("stripe_customer_id", customerId);
+
+        // Send cancellation email
+        try {
+          const { data: userData } = await supabase
+            .from("users")
+            .select("email, name")
+            .eq("stripe_customer_id", customerId)
+            .single();
+
+          if (userData?.email) {
+            // Access ends at the subscription's current period end
+            const accessUntil = sub.current_period_end
+              ? new Date(sub.current_period_end * 1000).toLocaleDateString("en-GB", {
+                  day: "numeric", month: "long", year: "numeric",
+                })
+              : "the end of your billing period";
+
+            const html = await render(
+              SubscriptionCancelledEmail({
+                name: userData.name || userData.email.split("@")[0],
+                accessUntil,
+              })
+            );
+
+            await resend.emails.send({
+              from: `${FROM_NAME} <${FROM_EMAIL}>`,
+              to: userData.email,
+              subject: "Your Daily Meds subscription has ended.",
+              html,
+            });
+          }
+        } catch (emailErr) {
+          console.error("Cancellation email failed:", emailErr);
+        }
 
         break;
       }

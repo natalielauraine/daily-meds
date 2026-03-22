@@ -233,7 +233,7 @@ export default function AudioPlayer({ session, gradient }: AudioPlayerProps) {
         {/* Skip back 15s */}
         <button
           onClick={skipBack}
-          className="flex flex-col items-center gap-1 text-white/50 hover:text-white transition-colors"
+          className="flex flex-col items-center gap-1 text-white/50 hover:text-white transition-colors p-2"
           aria-label="Skip back 15 seconds"
         >
           <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor">
@@ -269,7 +269,7 @@ export default function AudioPlayer({ session, gradient }: AudioPlayerProps) {
         {/* Skip forward 15s */}
         <button
           onClick={skipForward}
-          className="flex flex-col items-center gap-1 text-white/50 hover:text-white transition-colors"
+          className="flex flex-col items-center gap-1 text-white/50 hover:text-white transition-colors p-2"
           aria-label="Skip forward 15 seconds"
         >
           <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor">
@@ -345,7 +345,7 @@ export default function AudioPlayer({ session, gradient }: AudioPlayerProps) {
         {pipSupported && (
           <button
             onClick={togglePiP}
-            className="shrink-0 transition-colors"
+            className="shrink-0 transition-colors p-2"
             style={{ color: isPiP ? "rgba(139,92,246,0.9)" : "rgba(255,255,255,0.4)" }}
             aria-label={isPiP ? "Exit picture in picture" : "Picture in picture"}
             title={isPiP ? "Exit picture in picture" : "Picture in picture"}

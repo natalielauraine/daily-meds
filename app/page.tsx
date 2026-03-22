@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -177,6 +178,23 @@ const FREE_SESSIONS: Session[] = [
     isFree: true,
   },
 ];
+
+// Per-page metadata — overrides the global defaults in app/layout.tsx
+export const metadata: Metadata = {
+  title: "Daily Meds — Audio for Emotional Emergencies",
+  description:
+    "Guided meditation and breathwork for life's most awkward moments. Hangover? Comedown? Anxiety? Can't sleep? We've got a session for that.",
+  openGraph: {
+    title: "Daily Meds — Audio for Emotional Emergencies",
+    description:
+      "Meditation for life's most awkward moments. Not your average wellness app.",
+    url: "https://thedailymeds.com",
+  },
+  twitter: {
+    title: "Daily Meds — Audio for Emotional Emergencies",
+    description: "Meditation for life's most awkward moments.",
+  },
+};
 
 // Phase 2 homepage — cinematic hero + mood categories + content rows
 export default function Home() {

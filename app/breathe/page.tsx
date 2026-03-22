@@ -419,12 +419,12 @@ export default function BreathePage() {
                     <div className="flex flex-col items-center gap-1">
                       <button
                         onClick={() => setCustom((c) => ({ ...c, [field]: Math.min(20, c[field] + 1) }))}
-                        className="text-white/40 hover:text-white transition-colors text-lg leading-none"
+                        className="text-white/40 hover:text-white transition-colors text-lg leading-none p-2"
                       >+</button>
                       <span className="text-white text-lg tabular-nums" style={{ fontWeight: 500 }}>{custom[field]}</span>
                       <button
                         onClick={() => setCustom((c) => ({ ...c, [field]: Math.max(0, c[field] - 1) }))}
-                        className="text-white/40 hover:text-white transition-colors text-lg leading-none"
+                        className="text-white/40 hover:text-white transition-colors text-lg leading-none p-2"
                       >−</button>
                     </div>
                     <span className="text-[10px] text-white/20">sec</span>

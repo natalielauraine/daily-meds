@@ -135,7 +135,7 @@ export default function SessionCard({ session }: { session: Session }) {
           <div ref={menuRef} className="absolute top-2 right-2">
             <button
               onClick={(e) => { e.preventDefault(); e.stopPropagation(); setMenuOpen((o) => !o); }}
-              className="w-7 h-7 rounded-full flex items-center justify-center transition-opacity"
+              className="w-9 h-9 rounded-full flex items-center justify-center transition-opacity"
               style={{
                 background: "rgba(0,0,0,0.55)",
                 opacity: hovered || menuOpen ? 1 : 0,
