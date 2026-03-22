@@ -1,9 +1,11 @@
+import { Suspense } from "react";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import HeroSection from "./components/HeroSection";
 import MoodCategorySection from "./components/MoodCategorySection";
 import ContentRow from "./components/ContentRow";
 import FriendsActivityFeed from "./components/FriendsActivityFeed";
+import ReferralTracker from "./components/ReferralTracker";
 import { type Session } from "./components/SessionCard";
 
 // ── PLACEHOLDER SESSIONS ──────────────────────────────────────────────────────
@@ -174,6 +176,10 @@ const FREE_SESSIONS: Session[] = [
 export default function Home() {
   return (
     <div className="flex flex-col min-h-screen bg-[#0D0D1A]">
+      {/* Tracks ?ref= in the URL and fires affiliate click tracking — renders nothing visible */}
+      <Suspense fallback={null}>
+        <ReferralTracker />
+      </Suspense>
       <Navbar />
       <main className="flex-1">
         <HeroSection />

@@ -27,12 +27,15 @@ export default function SignupPage() {
     setError("");
     setLoading(true);
 
-    const { error } = await supabase.auth.signUp({
+    // Check if this user arrived via an affiliate referral link
+    const referralCode = localStorage.getItem("referral_code") ?? "";
+
+    const { data: signUpData, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        // Store the user's display name in their profile metadata
-        data: { full_name: name },
+        // Store the user's display name and referral code in their profile metadata
+        data: { full_name: name, referred_by: referralCode || null },
         // Where Supabase sends the user after they click the confirmation email
         emailRedirectTo: `${window.location.origin}/auth/callback`,
       },
@@ -42,6 +45,15 @@ export default function SignupPage() {
       setError(error.message);
       setLoading(false);
       return;
+    }
+
+    // If a referral code was used, save it to the users table and clear localStorage
+    if (signUpData.user && referralCode) {
+      await supabase
+        .from("users")
+        .update({ referred_by: referralCode })
+        .eq("id", signUpData.user.id);
+      localStorage.removeItem("referral_code");
     }
 
     // Show the "check your email" confirmation screen

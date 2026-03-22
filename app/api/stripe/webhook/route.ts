@@ -83,6 +83,38 @@ export async function POST(req: NextRequest) {
           })
           .eq("id", userId);
 
+        // ── AFFILIATE EARNINGS ─────────────────────────────────────────────────
+        // Check if this user was referred by an affiliate.
+        // The referral_code is stored in the users table when they signed up via ?ref=.
+        // If they were referred, credit the affiliate 20% of the payment amount.
+        const { data: referredUser } = await supabase
+          .from("users")
+          .select("referred_by")
+          .eq("id", userId)
+          .single();
+
+        if (referredUser?.referred_by) {
+          const { data: affiliate } = await supabase
+            .from("affiliates")
+            .select("id, signups, earnings")
+            .eq("referral_code", referredUser.referred_by)
+            .single();
+
+          if (affiliate) {
+            // Work out 20% of the payment amount (Stripe amount is in pence)
+            const amountPaid = (session.amount_total ?? 0) / 100;
+            const commission = parseFloat((amountPaid * 0.2).toFixed(2));
+
+            await supabase
+              .from("affiliates")
+              .update({
+                signups: affiliate.signups + 1,
+                earnings: parseFloat((affiliate.earnings + commission).toFixed(2)),
+              })
+              .eq("id", affiliate.id);
+          }
+        }
+
         break;
       }
 
