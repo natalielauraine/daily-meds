@@ -17,7 +17,7 @@ const PLANS = [
     name: "Free",
     price: "£0",
     period: "",
-    description: "Get started with a taste of Daily Meds.",
+    description: "Create a free account and start straight away.",
     gradient: "linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04))",
     glowColor: "transparent",
     featured: false,
@@ -47,6 +47,7 @@ const PLANS = [
       "Live sessions with Natalie",
       "Group meditation rooms",
       "Playlists and watchlist",
+      "Offline downloads",
     ],
     cta: "Get Monthly",
     ctaHref: null,
@@ -64,10 +65,9 @@ const PLANS = [
     priceId: process.env.NEXT_PUBLIC_STRIPE_ANNUAL_PRICE_ID,
     features: [
       "Everything in Monthly",
-      "Offline downloads",
-      "Group meditation rooms",
       "Priority support",
       "Early access to new content",
+      "Founding member status",
     ],
     cta: "Get Annual",
     ctaHref: null,
@@ -309,7 +309,7 @@ export default function PricingPage() {
               },
               {
                 q: "What's included in the free plan?",
-                a: "Free sessions, the breathing timer, and a taste of three mood categories. No credit card needed.",
+                a: "Free sessions and the breathing timer. You just need a free account — no credit card required.",
               },
               {
                 q: "What does Lifetime actually mean?",

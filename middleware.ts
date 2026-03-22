@@ -43,6 +43,7 @@ export async function middleware(request: NextRequest) {
   // Note: /session is intentionally NOT here — free sessions are public.
   // Premium session gating is handled inside the session page itself.
   const protectedPaths = [
+    "/session",   // all sessions require a free account — sign up to access
     "/library",
     "/profile",
     "/stats",
