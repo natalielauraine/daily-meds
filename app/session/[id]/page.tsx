@@ -1,19 +1,20 @@
 "use client";
 
-// Session player page — shown when a user clicks on a session card.
-// Displays session info (artwork, title, mood, description) and the audio player.
-// Video sessions use a Vimeo embed instead of the audio player.
-// Mock data is used here until Supabase sessions are added in a later step.
+// Session player page — shown when a user clicks a session card.
+// Handles both audio sessions (custom player) and video sessions (Vimeo embed).
+// The heart icon saves the session to the watchlist in localStorage.
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { useState, useEffect } from "react";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import AudioPlayer from "../../components/AudioPlayer";
+import VideoPlayer from "../../components/VideoPlayer";
+import { toggleWatchlist, isInWatchlist } from "../../../lib/watchlist";
 
 // ── MOCK SESSIONS ─────────────────────────────────────────────────────────────
 // Placeholder data — replace with real Supabase queries once content is uploaded.
-// audioUrl is left empty for now; add real Supabase Storage URLs when ready.
 
 const MOCK_SESSIONS = [
   {
@@ -21,7 +22,6 @@ const MOCK_SESSIONS = [
     title: "Hungover & Overwhelmed",
     description: "A gentle reset for when your body and mind are paying the price. No spiritual waffle — just calm. This session guides you through slow breathing and a body scan to ease that tight, anxious morning-after feeling.",
     duration: "18 min",
-    durationSeconds: 1080,
     type: "Guided Meditation",
     moodCategory: "Hungover",
     gradient: "linear-gradient(135deg, #6B21E8 0%, #8B3CF7 25%, #6366F1 60%, #3B82F6 80%, #22D3EE 100%)",
@@ -29,13 +29,13 @@ const MOCK_SESSIONS = [
     isFree: true,
     mediaType: "audio" as const,
     audioUrl: "",
+    vimeoId: "",
   },
   {
     id: "2",
     title: "Come Down Slowly",
     description: "When the night is over but your nervous system hasn't got the memo. This session uses grounding techniques to bring you back to earth gently — no rush, no pressure.",
     duration: "22 min",
-    durationSeconds: 1320,
     type: "Breathwork",
     moodCategory: "On A Comedown",
     gradient: "linear-gradient(135deg, #10B981 0%, #22C55E 35%, #84CC16 70%, #D9F100 100%)",
@@ -43,13 +43,13 @@ const MOCK_SESSIONS = [
     isFree: false,
     mediaType: "audio" as const,
     audioUrl: "",
+    vimeoId: "",
   },
   {
     id: "3",
     title: "3am Brain",
     description: "Your mind is racing and sleep feels impossible. This session quiets the mental noise with slow breathing and a progressive body relaxation that actually works.",
     duration: "14 min",
-    durationSeconds: 840,
     type: "Sleep Audio",
     moodCategory: "Can't Sleep",
     gradient: "linear-gradient(135deg, #8B3CF7 0%, #6366F1 100%)",
@@ -57,13 +57,13 @@ const MOCK_SESSIONS = [
     isFree: true,
     mediaType: "audio" as const,
     audioUrl: "",
+    vimeoId: "",
   },
   {
     id: "4",
     title: "Anxiety First Aid",
     description: "For when anxiety hits out of nowhere and you need something that actually helps right now. Box breathing plus a quick grounding exercise to bring you back into your body.",
     duration: "8 min",
-    durationSeconds: 480,
     type: "Breathwork",
     moodCategory: "Anxious",
     gradient: "linear-gradient(135deg, #F43F5E 0%, #F97316 100%)",
@@ -71,13 +71,13 @@ const MOCK_SESSIONS = [
     isFree: true,
     mediaType: "audio" as const,
     audioUrl: "",
+    vimeoId: "",
   },
   {
     id: "5",
     title: "The Morning After",
     description: "You went hard last night. That's fine. This is your gentle re-entry into the world. Start slow, breathe through it, feel human again.",
     duration: "12 min",
-    durationSeconds: 720,
     type: "Guided Meditation",
     moodCategory: "After The Sesh",
     gradient: "linear-gradient(135deg, #F43F5E 0%, #EC4899 20%, #D946EF 35%, #F97316 65%, #EAB308 85%, #FACC15 100%)",
@@ -85,6 +85,7 @@ const MOCK_SESSIONS = [
     isFree: false,
     mediaType: "audio" as const,
     audioUrl: "",
+    vimeoId: "",
   },
 ];
 
@@ -107,10 +108,22 @@ export default function SessionPage() {
   const params = useParams();
   const id = params?.id as string;
 
-  // Find the session from mock data — will be a Supabase query later
   const session = MOCK_SESSIONS.find((s) => s.id === id);
 
-  // Show a friendly message if the session doesn't exist
+  // Watchlist state — heart is filled when session is saved
+  const [hearted, setHearted] = useState(false);
+
+  // Check watchlist state on mount (localStorage is client-only)
+  useEffect(() => {
+    if (session) setHearted(isInWatchlist(session.id));
+  }, [session?.id]);
+
+  function handleHeart() {
+    if (!session) return;
+    const nowSaved = toggleWatchlist(session.id);
+    setHearted(nowSaved);
+  }
+
   if (!session) {
     return (
       <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#0D0D1A" }}>
@@ -118,9 +131,7 @@ export default function SessionPage() {
         <main className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <p className="text-white/40 text-sm mb-4">Session not found.</p>
-            <Link href="/" className="text-white/60 hover:text-white text-sm transition-colors">
-              ← Back to home
-            </Link>
+            <Link href="/" className="text-white/60 hover:text-white text-sm transition-colors">← Back to home</Link>
           </div>
         </main>
         <Footer />
@@ -130,17 +141,24 @@ export default function SessionPage() {
 
   const moodGradient = MOOD_GRADIENTS[session.moodCategory] ?? session.gradient;
 
+  // Shape the session data into the format PlayerContext expects
+  const playerSession = {
+    id: session.id,
+    title: session.title,
+    moodCategory: session.moodCategory,
+    gradient: session.gradient,
+    audioUrl: session.audioUrl,
+    duration: session.duration,
+  };
+
   return (
     <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#0D0D1A" }}>
       <Navbar />
 
-      <main className="flex-1 w-full max-w-2xl mx-auto px-4 sm:px-6 py-10">
+      <main className="flex-1 w-full max-w-2xl mx-auto px-4 sm:px-6 py-10 pb-24">
 
         {/* Back button */}
-        <Link
-          href="/"
-          className="inline-flex items-center gap-1.5 text-sm text-white/40 hover:text-white/70 transition-colors mb-8"
-        >
+        <Link href="/" className="inline-flex items-center gap-1.5 text-sm text-white/40 hover:text-white/70 transition-colors mb-8">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
             <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
           </svg>
@@ -150,13 +168,10 @@ export default function SessionPage() {
         {/* ── SESSION ARTWORK + INFO ── */}
         <div className="flex flex-col items-center text-center mb-10">
 
-          {/* Large gradient circle with lotus icon */}
+          {/* Large gradient circle */}
           <div
             className="relative w-36 h-36 rounded-full flex items-center justify-center mb-6"
-            style={{
-              background: session.gradient,
-              boxShadow: `0 0 60px 20px ${session.glowColor}40`,
-            }}
+            style={{ background: session.gradient, boxShadow: `0 0 60px 20px ${session.glowColor}40` }}
           >
             <svg width="64" height="64" viewBox="0 0 48 48" fill="none">
               <path d="M24 4C24 4 16 12 16 20C16 24.4 19.6 28 24 28C28.4 28 32 24.4 32 20C32 12 24 4 24 4Z" fill="white" opacity="0.95"/>
@@ -166,105 +181,95 @@ export default function SessionPage() {
               <path d="M24 28L28 35" stroke="white" strokeWidth="2.5" strokeLinecap="round" fill="none" opacity="0.75"/>
               <circle cx="24" cy="28" r="2" fill="white" opacity="0.9"/>
             </svg>
-
-            {/* Free badge */}
             {session.isFree && (
-              <div
-                className="absolute top-2 right-2 text-white text-[10px] px-1.5 py-0.5 rounded"
-                style={{ background: "rgba(16,185,129,0.9)", fontWeight: 500 }}
-              >
+              <div className="absolute top-2 right-2 text-white text-[10px] px-1.5 py-0.5 rounded" style={{ background: "rgba(16,185,129,0.9)", fontWeight: 500 }}>
                 FREE
               </div>
             )}
           </div>
 
-          {/* Type + duration row */}
+          {/* Type + duration */}
           <div className="flex items-center gap-2 mb-3">
             <span className="text-xs text-white/40">{session.type}</span>
             <span className="text-white/20">·</span>
             <span className="text-xs text-white/40">{session.duration}</span>
           </div>
 
-          {/* Title */}
-          <h1 className="text-2xl text-white mb-3" style={{ fontWeight: 500 }}>
-            {session.title}
-          </h1>
+          {/* Title + heart button */}
+          <div className="flex items-center gap-3 mb-3">
+            <h1 className="text-2xl text-white" style={{ fontWeight: 500 }}>{session.title}</h1>
+            <button
+              onClick={handleHeart}
+              className="transition-transform hover:scale-110 active:scale-95"
+              aria-label={hearted ? "Remove from watchlist" : "Save to watchlist"}
+            >
+              {hearted ? (
+                // Filled heart — saved
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="#F43F5E">
+                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+              ) : (
+                // Outline heart — not saved
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.65)" strokeWidth="1.8">
+                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+              )}
+            </button>
+          </div>
 
           {/* Mood badge */}
-          <span
-            className="text-xs px-3 py-1 rounded-full text-white mb-4"
-            style={{ background: moodGradient, fontWeight: 500 }}
-          >
+          <span className="text-xs px-3 py-1 rounded-full text-white mb-4" style={{ background: moodGradient, fontWeight: 500 }}>
             {session.moodCategory}
           </span>
 
           {/* Description */}
-          <p className="text-sm text-white/50 leading-relaxed max-w-md">
-            {session.description}
-          </p>
+          <p className="text-sm text-white/50 leading-relaxed max-w-md">{session.description}</p>
         </div>
 
         {/* ── PLAYER CARD ── */}
         <div
-          className="rounded-[10px] p-6 sm:p-8"
-          style={{
-            backgroundColor: "#1A1A2E",
-            border: "0.5px solid rgba(255,255,255,0.08)",
-          }}
+          className="rounded-[10px] p-6 sm:p-8 mb-10"
+          style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.08)" }}
         >
           {session.mediaType === "audio" ? (
-            <AudioPlayer audioUrl={session.audioUrl} gradient={session.gradient} />
+            <>
+              <AudioPlayer session={playerSession} gradient={session.gradient} />
+              {!session.audioUrl && (
+                <p className="text-center text-xs text-white/20 mt-5">
+                  Audio file not yet uploaded — add the URL to Supabase Storage to enable playback.
+                </p>
+              )}
+            </>
           ) : (
-            // Video session — Vimeo embed (for pre-recorded video meditations)
-            <div className="aspect-video w-full rounded-lg overflow-hidden">
-              <p className="text-white/40 text-sm text-center pt-20">
-                Video player coming soon
-              </p>
-            </div>
-          )}
-
-          {/* No audio file notice — shown during development when audioUrl is empty */}
-          {session.mediaType === "audio" && !session.audioUrl && (
-            <p className="text-center text-xs text-white/20 mt-5">
-              Audio file not yet uploaded — add the URL to Supabase Storage to enable playback.
-            </p>
+            <VideoPlayer vimeoId={session.vimeoId} title={session.title} />
           )}
         </div>
 
         {/* ── RELATED SESSIONS ── */}
-        <div className="mt-10">
-          <h2 className="text-sm text-white/50 mb-4" style={{ fontWeight: 500 }}>
-            More like this
-          </h2>
+        <div>
+          <h2 className="text-sm text-white/50 mb-4" style={{ fontWeight: 500 }}>More like this</h2>
           <div className="flex flex-col gap-3">
-            {MOCK_SESSIONS
-              .filter((s) => s.id !== session.id)
-              .slice(0, 3)
-              .map((related) => (
-                <Link
-                  key={related.id}
-                  href={`/session/${related.id}`}
-                  className="flex items-center gap-4 p-3 rounded-[10px] hover:bg-white/[0.04] transition-colors"
-                  style={{ border: "0.5px solid rgba(255,255,255,0.06)" }}
-                >
-                  {/* Small gradient circle */}
-                  <div
-                    className="w-10 h-10 rounded-full shrink-0 flex items-center justify-center"
-                    style={{ background: related.gradient }}
-                  >
-                    <svg width="18" height="18" viewBox="0 0 48 48" fill="none">
-                      <path d="M24 4C24 4 16 12 16 20C16 24.4 19.6 28 24 28C28.4 28 32 24.4 32 20C32 12 24 4 24 4Z" fill="white" opacity="0.9"/>
-                    </svg>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm text-white/80 truncate" style={{ fontWeight: 500 }}>{related.title}</p>
-                    <p className="text-xs text-white/35">{related.type} · {related.duration}</p>
-                  </div>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="rgba(255,255,255,0.2)">
-                    <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/>
+            {MOCK_SESSIONS.filter((s) => s.id !== session.id).slice(0, 3).map((related) => (
+              <Link
+                key={related.id}
+                href={`/session/${related.id}`}
+                className="flex items-center gap-4 p-3 rounded-[10px] hover:bg-white/[0.04] transition-colors"
+                style={{ border: "0.5px solid rgba(255,255,255,0.06)" }}
+              >
+                <div className="w-10 h-10 rounded-full shrink-0 flex items-center justify-center" style={{ background: related.gradient }}>
+                  <svg width="18" height="18" viewBox="0 0 48 48" fill="none">
+                    <path d="M24 4C24 4 16 12 16 20C16 24.4 19.6 28 24 28C28.4 28 32 24.4 32 20C32 12 24 4 24 4Z" fill="white" opacity="0.9"/>
                   </svg>
-                </Link>
-              ))}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm text-white/80 truncate" style={{ fontWeight: 500 }}>{related.title}</p>
+                  <p className="text-xs text-white/35">{related.type} · {related.duration}</p>
+                </div>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="rgba(255,255,255,0.2)">
+                  <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/>
+                </svg>
+              </Link>
+            ))}
           </div>
         </div>
 
