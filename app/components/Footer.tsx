@@ -51,6 +51,7 @@ export default function Footer() {
             <h4 className="text-xs text-white/50 uppercase tracking-widest mb-1">About</h4>
             <Link href="/about" className="text-sm text-white/60 hover:text-white transition-colors">About Natalie</Link>
             <Link href="/testimonials" className="text-sm text-white/60 hover:text-white transition-colors">Testimonials</Link>
+            <Link href="/review" className="text-sm text-white/60 hover:text-white transition-colors">Leave a review</Link>
             <Link href="/shop" className="text-sm text-white/60 hover:text-white transition-colors">Shop</Link>
           </div>
         </div>

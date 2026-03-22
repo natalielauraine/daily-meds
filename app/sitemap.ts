@@ -17,7 +17,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/about`,             lastModified: now, changeFrequency: "monthly", priority: 0.6 },
     { url: `${baseUrl}/signup`,            lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${baseUrl}/login`,             lastModified: now, changeFrequency: "monthly", priority: 0.5 },
-    { url: `${baseUrl}/testimonials`,      lastModified: now, changeFrequency: "monthly", priority: 0.5 },
+    { url: `${baseUrl}/testimonials`,      lastModified: now, changeFrequency: "weekly",  priority: 0.7 },
   ];
 
   // Session pages — one URL per session
