@@ -40,9 +40,10 @@ export async function middleware(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
 
   // Pages that require login — redirect to /login if user is not logged in
+  // Note: /session is intentionally NOT here — free sessions are public.
+  // Premium session gating is handled inside the session page itself.
   const protectedPaths = [
     "/library",
-    "/session",
     "/profile",
     "/stats",
     "/watchlist",

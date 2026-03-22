@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 
 // The shape of a single session — used across all content rows
@@ -37,8 +38,9 @@ export default function SessionCard({ session }: { session: Session }) {
   const [hovered, setHovered] = useState(false);
 
   return (
-    <div
-      className="shrink-0 cursor-pointer group"
+    <Link
+      href={`/session/${session.id}`}
+      className="shrink-0 cursor-pointer group block"
       style={{ width: "240px" }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
@@ -150,6 +152,6 @@ export default function SessionCard({ session }: { session: Session }) {
         {/* Session type */}
         <p className="text-[11px] text-white/35">{session.type}</p>
       </div>
-    </div>
+    </Link>
   );
 }
