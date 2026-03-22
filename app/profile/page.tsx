@@ -311,6 +311,18 @@ export default function ProfilePage() {
             </button>
           )}
 
+          {/* Row — playlists */}
+          <Link
+            href="/playlists"
+            className="flex items-center justify-between px-5 py-4 hover:bg-white/[0.03] transition-colors"
+            style={{ backgroundColor: "#1A1A2E", borderBottom: "0.5px solid rgba(255,255,255,0.06)" }}
+          >
+            <span className="text-sm text-white/70">My playlists</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="rgba(255,255,255,0.25)">
+              <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/>
+            </svg>
+          </Link>
+
           {/* Row — stats */}
           <Link
             href="/stats"

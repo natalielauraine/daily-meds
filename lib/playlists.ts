@@ -1,7 +1,7 @@
-// Playlist helpers — create, read, update and delete playlists in localStorage.
-// Will be replaced with Supabase playlists table when real content is uploaded.
+// Playlist helpers — create, read, update and delete playlists in Supabase.
+// All functions are async. Session order is stored as a text[] array in Supabase.
 
-const STORAGE_KEY = "dailymeds_playlists";
+import { createClient } from "./supabase-browser";
 
 export type Playlist = {
   id: string;
@@ -10,70 +10,102 @@ export type Playlist = {
   createdAt: string;
 };
 
-// Get all playlists
-export function getPlaylists(): Playlist[] {
-  if (typeof window === "undefined") return [];
-  try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "[]");
-  } catch {
-    return [];
-  }
+// Get all playlists for the currently logged-in user
+export async function getPlaylists(): Promise<Playlist[]> {
+  const supabase = createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return [];
+
+  const { data } = await supabase
+    .from("playlists")
+    .select("id, name, session_ids, created_at")
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: true });
+
+  return (data ?? []).map((row) => ({
+    id: row.id,
+    name: row.name,
+    sessionIds: row.session_ids ?? [],
+    createdAt: row.created_at,
+  }));
 }
 
-// Save all playlists back to localStorage
-function savePlaylists(playlists: Playlist[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(playlists));
+// Create a new empty playlist with the given name
+export async function createPlaylist(name: string): Promise<Playlist | null> {
+  const supabase = createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return null;
+
+  const { data } = await supabase
+    .from("playlists")
+    .insert({ user_id: user.id, name: name.trim(), session_ids: [] })
+    .select("id, name, session_ids, created_at")
+    .single();
+
+  if (!data) return null;
+  return { id: data.id, name: data.name, sessionIds: data.session_ids ?? [], createdAt: data.created_at };
 }
 
-// Create a new playlist with a given name
-export function createPlaylist(name: string): Playlist {
-  const playlist: Playlist = {
-    id: Date.now().toString(),
-    name: name.trim(),
-    sessionIds: [],
-    createdAt: new Date().toISOString(),
-  };
-  const all = getPlaylists();
-  all.push(playlist);
-  savePlaylists(all);
-  return playlist;
-}
+// Add a session to a playlist — does nothing if it's already there
+export async function addToPlaylist(playlistId: string, sessionId: string): Promise<void> {
+  const supabase = createClient();
 
-// Add a session to a playlist — does nothing if already in it
-export function addToPlaylist(playlistId: string, sessionId: string) {
-  const all = getPlaylists();
-  const playlist = all.find((p) => p.id === playlistId);
-  if (!playlist) return;
-  if (!playlist.sessionIds.includes(sessionId)) {
-    playlist.sessionIds.push(sessionId);
-    savePlaylists(all);
-  }
+  // Fetch the current session_ids first so we can append
+  const { data } = await supabase
+    .from("playlists")
+    .select("session_ids")
+    .eq("id", playlistId)
+    .single();
+
+  if (!data) return;
+  const ids: string[] = data.session_ids ?? [];
+  if (ids.includes(sessionId)) return;
+
+  await supabase
+    .from("playlists")
+    .update({ session_ids: [...ids, sessionId], updated_at: new Date().toISOString() })
+    .eq("id", playlistId);
 }
 
 // Remove a session from a playlist
-export function removeFromPlaylist(playlistId: string, sessionId: string) {
-  const all = getPlaylists();
-  const playlist = all.find((p) => p.id === playlistId);
-  if (!playlist) return;
-  playlist.sessionIds = playlist.sessionIds.filter((id) => id !== sessionId);
-  savePlaylists(all);
+export async function removeFromPlaylist(playlistId: string, sessionId: string): Promise<void> {
+  const supabase = createClient();
+
+  const { data } = await supabase
+    .from("playlists")
+    .select("session_ids")
+    .eq("id", playlistId)
+    .single();
+
+  if (!data) return;
+  const ids: string[] = (data.session_ids ?? []).filter((id: string) => id !== sessionId);
+
+  await supabase
+    .from("playlists")
+    .update({ session_ids: ids, updated_at: new Date().toISOString() })
+    .eq("id", playlistId);
+}
+
+// Save a new session order after the user has reordered via drag and drop
+export async function updatePlaylistOrder(playlistId: string, sessionIds: string[]): Promise<void> {
+  const supabase = createClient();
+  await supabase
+    .from("playlists")
+    .update({ session_ids: sessionIds, updated_at: new Date().toISOString() })
+    .eq("id", playlistId);
 }
 
 // Delete an entire playlist
-export function deletePlaylist(playlistId: string) {
-  const all = getPlaylists().filter((p) => p.id !== playlistId);
-  savePlaylists(all);
+export async function deletePlaylist(playlistId: string): Promise<void> {
+  const supabase = createClient();
+  await supabase.from("playlists").delete().eq("id", playlistId);
 }
 
-// Check if a session is in a specific playlist
-export function isInPlaylist(playlistId: string, sessionId: string): boolean {
-  const playlist = getPlaylists().find((p) => p.id === playlistId);
-  return playlist?.sessionIds.includes(sessionId) ?? false;
-}
-
-// Get all playlist IDs that contain a given session
-export function getPlaylistsForSession(sessionId: string): string[] {
-  return getPlaylists()
-    .filter((p) => p.sessionIds.includes(sessionId))
-    .map((p) => p.id);
+// Rename a playlist
+export async function renamePlaylist(playlistId: string, name: string): Promise<void> {
+  const supabase = createClient();
+  await supabase
+    .from("playlists")
+    .update({ name: name.trim(), updated_at: new Date().toISOString() })
+    .eq("id", playlistId);
 }
