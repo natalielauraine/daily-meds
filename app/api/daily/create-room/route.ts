@@ -28,17 +28,9 @@ export async function POST(req: NextRequest) {
       body: JSON.stringify({
         // Use the provided name or let Daily.co generate one
         ...(name ? { name } : {}),
-        privacy: "public", // Public so users can join without a token
+        privacy: "public",
         properties: {
-          // Room expires after 4 hours automatically
           exp: Math.floor(Date.now() / 1000) + 60 * 60 * 4,
-          // Room description stored as metadata
-          meta: { title: title ?? "Live Session" },
-          // Allow up to 200 participants
-          max_participants: 200,
-          // Allow the host to mute/remove participants
-          enable_people_ui: true,
-          enable_prejoin_ui: true,
         },
       }),
     });

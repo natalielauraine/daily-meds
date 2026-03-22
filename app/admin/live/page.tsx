@@ -82,7 +82,11 @@ export default function AdminLivePage() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error ?? "Failed to create Daily.co room.");
+        // data.error may be an object from the Daily.co API — convert to string
+        const msg = typeof data.error === "string"
+          ? data.error
+          : JSON.stringify(data.error) ?? "Failed to create Daily.co room.";
+        setError(msg);
         setGoingLiveId(null);
         return;
       }
