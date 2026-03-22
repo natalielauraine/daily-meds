@@ -68,19 +68,49 @@ export default function ProfilePage() {
 
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [subscriptionStatus, setSubscriptionStatus] = useState("free");
+  const [portalLoading, setPortalLoading] = useState(false);
+  const [portalError, setPortalError] = useState("");
 
-  // Fetch the current user on mount
+  // Fetch the current user and their subscription status on mount
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
+    supabase.auth.getUser().then(async ({ data }) => {
       if (!data.user) {
-        // Not logged in — send to login page
         router.push("/login");
         return;
       }
       setUser(data.user);
+
+      // Fetch subscription_status from our users table
+      const { data: profile } = await supabase
+        .from("users")
+        .select("subscription_status")
+        .eq("id", data.user.id)
+        .single();
+      if (profile?.subscription_status) setSubscriptionStatus(profile.subscription_status);
+
       setLoading(false);
     });
   }, []);
+
+  // Open the Stripe Customer Portal so users can manage or cancel their subscription
+  async function handleManageSubscription() {
+    setPortalLoading(true);
+    setPortalError("");
+    try {
+      const res = await fetch("/api/stripe/customer-portal", { method: "POST" });
+      const data = await res.json();
+      if (!res.ok || !data.url) {
+        setPortalError(data.error ?? "Could not open billing portal. Please try again.");
+        return;
+      }
+      window.location.href = data.url;
+    } catch {
+      setPortalError("Network error — please try again.");
+    } finally {
+      setPortalLoading(false);
+    }
+  }
 
   // Sign out and redirect home
   async function handleSignOut() {
@@ -101,8 +131,7 @@ export default function ProfilePage() {
   // Google avatar photo (if user signed in with Google)
   const avatarPhoto = user?.user_metadata?.avatar_url || null;
 
-  // Membership status — will come from Supabase users table later, defaulting to free
-  const membershipKey = "free"; // Replace with: user?.user_metadata?.subscription_status ?? "free"
+  const membershipKey = MEMBERSHIP_CONFIG[subscriptionStatus] ? subscriptionStatus : "free";
   const membership = MEMBERSHIP_CONFIG[membershipKey];
 
   if (loading) {
@@ -183,6 +212,21 @@ export default function ProfilePage() {
               Upgrade to Premium
             </Link>
           )}
+
+          {/* Manage subscription button — only shown to paid members */}
+          {membershipKey !== "free" && (
+            <div className="flex flex-col items-center gap-2">
+              <button
+                onClick={handleManageSubscription}
+                disabled={portalLoading}
+                className="px-5 py-2 rounded-md text-sm text-white/70 transition-opacity hover:opacity-80 disabled:opacity-50"
+                style={{ border: "0.5px solid rgba(255,255,255,0.15)", fontWeight: 500 }}
+              >
+                {portalLoading ? "Loading…" : "Manage subscription"}
+              </button>
+              {portalError && <p className="text-xs text-red-400">{portalError}</p>}
+            </div>
+          )}
         </div>
 
         {/* ── QUICK STATS ROW ── */}
@@ -241,17 +285,31 @@ export default function ProfilePage() {
           className="rounded-[10px] overflow-hidden"
           style={{ border: "0.5px solid rgba(255,255,255,0.08)" }}
         >
-          {/* Row — membership */}
-          <Link
-            href="/pricing"
-            className="flex items-center justify-between px-5 py-4 hover:bg-white/[0.03] transition-colors"
-            style={{ backgroundColor: "#1A1A2E", borderBottom: "0.5px solid rgba(255,255,255,0.06)" }}
-          >
-            <span className="text-sm text-white/70">Membership &amp; billing</span>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="rgba(255,255,255,0.25)">
-              <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/>
-            </svg>
-          </Link>
+          {/* Row — membership (links to pricing for free users, opens portal for paid) */}
+          {membershipKey === "free" ? (
+            <Link
+              href="/pricing"
+              className="flex items-center justify-between px-5 py-4 hover:bg-white/[0.03] transition-colors"
+              style={{ backgroundColor: "#1A1A2E", borderBottom: "0.5px solid rgba(255,255,255,0.06)" }}
+            >
+              <span className="text-sm text-white/70">Membership &amp; billing</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="rgba(255,255,255,0.25)">
+                <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/>
+              </svg>
+            </Link>
+          ) : (
+            <button
+              onClick={handleManageSubscription}
+              disabled={portalLoading}
+              className="w-full flex items-center justify-between px-5 py-4 hover:bg-white/[0.03] transition-colors text-left disabled:opacity-50"
+              style={{ backgroundColor: "#1A1A2E", borderBottom: "0.5px solid rgba(255,255,255,0.06)" }}
+            >
+              <span className="text-sm text-white/70">Membership &amp; billing</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="rgba(255,255,255,0.25)">
+                <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/>
+              </svg>
+            </button>
+          )}
 
           {/* Row — stats */}
           <Link

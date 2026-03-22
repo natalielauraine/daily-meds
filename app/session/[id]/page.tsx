@@ -14,6 +14,7 @@ import VideoPlayer from "../../components/VideoPlayer";
 import AddToPlaylistModal from "../../components/AddToPlaylistModal";
 import { toggleWatchlist, isInWatchlist } from "../../../lib/watchlist";
 import { toggleSaved, isSaved } from "../../../lib/downloads";
+import { createClient } from "../../../lib/supabase-browser";
 
 // ── MOCK SESSIONS ─────────────────────────────────────────────────────────────
 // Placeholder data — replace with real Supabase queries once content is uploaded.
@@ -118,6 +119,8 @@ export default function SessionPage() {
   const [savedInApp, setSavedInApp] = useState(false);
   // Playlist modal open/closed
   const [showPlaylistModal, setShowPlaylistModal] = useState(false);
+  // User's subscription tier — fetched from Supabase to gate premium content
+  const [subscriptionStatus, setSubscriptionStatus] = useState("free");
 
   // Check watchlist + saved state on mount (localStorage is client-only)
   useEffect(() => {
@@ -126,6 +129,20 @@ export default function SessionPage() {
       setSavedInApp(isSaved(session.id));
     }
   }, [session?.id]);
+
+  // Fetch subscription status from Supabase so we know if user can play premium content
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
+      if (!user) return;
+      const { data } = await supabase
+        .from("users")
+        .select("subscription_status")
+        .eq("id", user.id)
+        .single();
+      if (data?.subscription_status) setSubscriptionStatus(data.subscription_status);
+    });
+  }, []);
 
   function handleHeart() {
     if (!session) return;
@@ -155,6 +172,10 @@ export default function SessionPage() {
   }
 
   const moodGradient = MOOD_GRADIENTS[session.moodCategory] ?? session.gradient;
+
+  // Free users can only play free sessions — paid members can play everything
+  const isPaidMember = subscriptionStatus !== "free";
+  const canPlay = session.isFree || isPaidMember;
 
   // Shape the session data into the format PlayerContext expects
   const playerSession = {
@@ -299,17 +320,44 @@ export default function SessionPage() {
           className="rounded-[10px] p-6 sm:p-8 mb-10"
           style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.08)" }}
         >
-          {session.mediaType === "audio" ? (
-            <>
-              <AudioPlayer session={playerSession} gradient={session.gradient} />
-              {!session.audioUrl && (
-                <p className="text-center text-xs text-white/20 mt-5">
-                  Audio file not yet uploaded — add the URL to Supabase Storage to enable playback.
-                </p>
-              )}
-            </>
+          {canPlay ? (
+            session.mediaType === "audio" ? (
+              <>
+                <AudioPlayer session={playerSession} gradient={session.gradient} />
+                {!session.audioUrl && (
+                  <p className="text-center text-xs text-white/20 mt-5">
+                    Audio file not yet uploaded — add the URL to Supabase Storage to enable playback.
+                  </p>
+                )}
+              </>
+            ) : (
+              <VideoPlayer vimeoId={session.vimeoId} title={session.title} />
+            )
           ) : (
-            <VideoPlayer vimeoId={session.vimeoId} title={session.title} />
+            /* Upgrade prompt — shown to free users on premium sessions */
+            <div className="flex flex-col items-center text-center py-6">
+              <div
+                className="w-14 h-14 rounded-full flex items-center justify-center mb-5"
+                style={{ background: "rgba(139,92,246,0.12)", border: "0.5px solid rgba(139,92,246,0.3)" }}
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="rgba(139,92,246,0.8)">
+                  <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+                </svg>
+              </div>
+              <h3 className="text-base text-white mb-2" style={{ fontWeight: 500 }}>
+                This is a premium session
+              </h3>
+              <p className="text-sm text-white/40 mb-6 max-w-xs leading-relaxed">
+                Upgrade to get full access to every session in the library — starting from £19.99/month.
+              </p>
+              <Link
+                href="/pricing"
+                className="px-6 py-3 rounded-[10px] text-sm text-white transition-opacity hover:opacity-80"
+                style={{ background: session.gradient, fontWeight: 500 }}
+              >
+                See plans
+              </Link>
+            </div>
           )}
         </div>
 
