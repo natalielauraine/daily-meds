@@ -1,12 +1,15 @@
-import { Suspense } from "react";
+import dynamic from "next/dynamic";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import HeroSection from "./components/HeroSection";
 import MoodCategorySection from "./components/MoodCategorySection";
 import ContentRow from "./components/ContentRow";
 import FriendsActivityFeed from "./components/FriendsActivityFeed";
-import ReferralTracker from "./components/ReferralTracker";
 import { type Session } from "./components/SessionCard";
+
+// Load ReferralTracker only on the client — it uses useSearchParams which
+// cannot run on the server, and causes hydration errors if server-rendered
+const ReferralTracker = dynamic(() => import("./components/ReferralTracker"), { ssr: false });
 
 // ── PLACEHOLDER SESSIONS ──────────────────────────────────────────────────────
 // These are mock sessions until real content is added in the admin panel.
@@ -177,9 +180,7 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen bg-[#0D0D1A]">
       {/* Tracks ?ref= in the URL and fires affiliate click tracking — renders nothing visible */}
-      <Suspense fallback={null}>
-        <ReferralTracker />
-      </Suspense>
+      <ReferralTracker />
       <Navbar />
       <main className="flex-1">
         <HeroSection />
