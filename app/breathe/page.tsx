@@ -400,7 +400,7 @@ export default function BreathePage() {
         )}
 
         {/* ── ANIMATED CIRCLE ──────────────────────────────────── */}
-        <div className="flex flex-col items-center justify-center flex-1 py-6">
+        <div className="flex flex-col items-center justify-center flex-1 py-2">
 
           {/* Outer glow ring */}
           <div className="relative flex items-center justify-center" style={{ width: MAX_SIZE + 80, height: MAX_SIZE + 80 }}>
@@ -551,7 +551,30 @@ export default function BreathePage() {
                       {mins}m
                     </button>
                   ))}
+                  {/* Custom minutes input */}
+                  <div className="relative flex items-center">
+                    <input
+                      type="number"
+                      min={1}
+                      max={120}
+                      placeholder="?"
+                      value={SESSION_LENGTHS.includes(sessionMinutes) ? "" : sessionMinutes}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value, 10);
+                        if (!isNaN(val) && val >= 1 && val <= 120) setSessionMinutes(val);
+                      }}
+                      className="w-14 py-2.5 rounded-full text-sm text-center outline-none tabular-nums"
+                      style={{
+                        backgroundColor: !SESSION_LENGTHS.includes(sessionMinutes) ? "#8B5CF6" : "rgba(255,255,255,0.05)",
+                        color: !SESSION_LENGTHS.includes(sessionMinutes) ? "white" : "rgba(255,255,255,0.4)",
+                        border: !SESSION_LENGTHS.includes(sessionMinutes) ? "none" : "0.5px solid rgba(255,255,255,0.08)",
+                        fontWeight: 500,
+                        MozAppearance: "textfield",
+                      } as React.CSSProperties}
+                    />
+                  </div>
                 </div>
+                <p className="text-[11px] text-white/20 mt-1.5">Or type any number (1–120 mins)</p>
               </div>
 
               {/* Ambient sound */}
