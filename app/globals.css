@@ -1,0 +1,60 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base styles — whole site is dark themed */
+@layer base {
+  html {
+    background-color: #0D0D1A;
+    color: #F0F0F0;
+  }
+
+  body {
+    background-color: #0D0D1A;
+    color: #F0F0F0;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* Default heading weight — never 700, always 500 */
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 500;
+    color: #F0F0F0;
+  }
+}
+
+@layer utilities {
+  /* Purple gradient — Calm, Sleep, Focus */
+  .gradient-purple {
+    background: linear-gradient(135deg, #6B21E8 0%, #8B3CF7 25%, #6366F1 60%, #3B82F6 80%, #22D3EE 100%);
+  }
+
+  /* Pink/Yellow gradient — Energy, Morning, After The Sesh */
+  .gradient-warm {
+    background: linear-gradient(135deg, #F43F5E 0%, #EC4899 20%, #D946EF 35%, #F97316 65%, #EAB308 85%, #FACC15 100%);
+  }
+
+  /* Green gradient — Nature, Grounding, Comedown */
+  .gradient-green {
+    background: linear-gradient(135deg, #10B981 0%, #22C55E 35%, #84CC16 70%, #D9F100 100%);
+  }
+
+  /* Card style — reuse across the site */
+  .card {
+    background-color: #1A1A2E;
+    border: 0.5px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+  }
+
+  /* Subtle hover scale for cards */
+  .card-hover {
+    transition: transform 0.2s ease;
+  }
+  .card-hover:hover {
+    transform: scale(1.02);
+  }
+}
