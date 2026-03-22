@@ -9,10 +9,13 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "../../lib/supabase-browser";
 import type { User } from "@supabase/supabase-js";
+import LanguageSelector from "./LanguageSelector";
+import { useLanguage } from "../../lib/language-context";
 
 export default function Navbar() {
   const router = useRouter();
   const supabase = createClient();
+  const { t } = useLanguage();
 
   // Controls whether the mobile menu is open or closed
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -92,21 +95,22 @@ export default function Navbar() {
               Home
             </Link>
             <Link href="/library" className="text-sm text-white/70 hover:text-white transition-colors">
-              Library
+              {t("nav", "library")}
             </Link>
             <Link href="/live" className="text-sm text-white/70 hover:text-white transition-colors">
-              Live
+              {t("nav", "live")}
             </Link>
-            <Link href="/free" className="text-sm text-white/70 hover:text-white transition-colors">
-              Free Sessions
+            <Link href="/breathe" className="text-sm text-white/70 hover:text-white transition-colors">
+              {t("nav", "breathe")}
             </Link>
             <Link href="/pricing" className="text-sm text-white/70 hover:text-white transition-colors">
-              Pricing
+              {t("nav", "pricing")}
             </Link>
           </div>
 
           {/* Desktop auth area — changes based on login state */}
           <div className="hidden md:flex items-center gap-3">
+            <LanguageSelector />
             {user ? (
               // LOGGED IN — show avatar with dropdown menu
               <div className="relative">
