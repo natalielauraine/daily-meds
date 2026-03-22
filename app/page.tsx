@@ -3,6 +3,7 @@ import Footer from "./components/Footer";
 import HeroSection from "./components/HeroSection";
 import MoodCategorySection from "./components/MoodCategorySection";
 import ContentRow from "./components/ContentRow";
+import FriendsActivityFeed from "./components/FriendsActivityFeed";
 import { type Session } from "./components/SessionCard";
 
 // ── PLACEHOLDER SESSIONS ──────────────────────────────────────────────────────
@@ -194,6 +195,11 @@ export default function Home() {
           seeAllHref="/free"
           sessions={FREE_SESSIONS}
         />
+
+        {/* Friends activity feed */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <FriendsActivityFeed limit={4} />
+        </div>
       </main>
       <Footer />
     </div>
