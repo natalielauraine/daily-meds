@@ -31,15 +31,26 @@ const HOW_IT_WORKS = [
   },
 ];
 
-const PLATFORMS = ["Instagram", "TikTok", "YouTube", "Podcast", "Newsletter / Blog", "Twitter / X", "Other"];
+// All the platforms we ask follower counts for
+const AUDIENCE_PLATFORMS = [
+  { key: "instagram",  label: "Instagram followers",        placeholder: "e.g. 12,000" },
+  { key: "tiktok",     label: "TikTok followers",           placeholder: "e.g. 45,000" },
+  { key: "youtube",    label: "YouTube subscribers",        placeholder: "e.g. 8,000"  },
+  { key: "podcast",    label: "Podcast listeners/month",    placeholder: "e.g. 2,000"  },
+  { key: "email",      label: "Email / mailing list",       placeholder: "e.g. 3,500"  },
+  { key: "twitter",    label: "Twitter / X followers",      placeholder: "e.g. 6,000"  },
+  { key: "other",      label: "Other (blog, forum, etc.)",  placeholder: "e.g. 10,000" },
+];
 
 export default function AffiliatePage() {
   const [form, setForm] = useState({
     name: "",
     email: "",
-    platform: "",
-    audienceSize: "",
     whyJoin: "",
+  });
+  // Follower counts per platform — stored separately so they're easy to read
+  const [audience, setAudience] = useState<Record<string, string>>({
+    instagram: "", tiktok: "", youtube: "", podcast: "", email: "", twitter: "", other: "",
   });
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -49,20 +60,30 @@ export default function AffiliatePage() {
     setForm((prev) => ({ ...prev, [field]: value }));
   }
 
+  function updateAudience(key: string, value: string) {
+    setAudience((prev) => ({ ...prev, [key]: value }));
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!form.name || !form.email || !form.platform || !form.whyJoin) {
-      setError("Please fill in all required fields.");
+    if (!form.name || !form.email || !form.whyJoin) {
+      setError("Please fill in your name, email and the why field.");
       return;
     }
     setError("");
     setLoading(true);
 
+    // Serialise the audience numbers into a single string so we can store in one column
+    const audienceSummary = AUDIENCE_PLATFORMS
+      .filter((p) => audience[p.key])
+      .map((p) => `${p.label}: ${audience[p.key]}`)
+      .join(" | ");
+
     try {
       const res = await fetch("/api/affiliate/apply", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, platform: "multiple", audienceSize: audienceSummary }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -234,39 +255,28 @@ export default function AffiliatePage() {
                   </div>
                 </div>
 
-                {/* Platform + Audience size */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs text-white/40 mb-2">Main platform *</label>
-                    <select
-                      value={form.platform}
-                      onChange={(e) => updateField("platform", e.target.value)}
-                      className="w-full px-4 py-3 rounded-[8px] text-sm text-white outline-none appearance-none"
-                      style={{
-                        backgroundColor: "rgba(255,255,255,0.05)",
-                        border: "0.5px solid rgba(255,255,255,0.1)",
-                        color: form.platform ? "white" : "rgba(255,255,255,0.3)",
-                      }}
-                    >
-                      <option value="" disabled style={{ backgroundColor: "#1A1A2E" }}>Select platform</option>
-                      {PLATFORMS.map((p) => (
-                        <option key={p} value={p} style={{ backgroundColor: "#1A1A2E" }}>{p}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-xs text-white/40 mb-2">Audience size (approx)</label>
-                    <input
-                      type="text"
-                      value={form.audienceSize}
-                      onChange={(e) => updateField("audienceSize", e.target.value)}
-                      placeholder="e.g. 5,000 followers"
-                      className="w-full px-4 py-3 rounded-[8px] text-sm text-white outline-none"
-                      style={{
-                        backgroundColor: "rgba(255,255,255,0.05)",
-                        border: "0.5px solid rgba(255,255,255,0.1)",
-                      }}
-                    />
+                {/* Audience numbers per platform */}
+                <div>
+                  <label className="block text-xs text-white/40 mb-3">
+                    Your audience — fill in any that apply
+                  </label>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {AUDIENCE_PLATFORMS.map((p) => (
+                      <div key={p.key}>
+                        <label className="block text-[11px] text-white/30 mb-1.5">{p.label}</label>
+                        <input
+                          type="text"
+                          value={audience[p.key]}
+                          onChange={(e) => updateAudience(p.key, e.target.value)}
+                          placeholder={p.placeholder}
+                          className="w-full px-3 py-2.5 rounded-[8px] text-sm text-white outline-none"
+                          style={{
+                            backgroundColor: "rgba(255,255,255,0.05)",
+                            border: "0.5px solid rgba(255,255,255,0.1)",
+                          }}
+                        />
+                      </div>
+                    ))}
                   </div>
                 </div>
 
