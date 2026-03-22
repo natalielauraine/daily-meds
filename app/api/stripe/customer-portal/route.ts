@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const stripe = new Stripe(secretKey, { apiVersion: "2025-02-24.acacia" });
+  const stripe = new Stripe(secretKey, { apiVersion: "2026-02-25.clover" });
 
   // Get the logged-in user and their Stripe customer ID from Supabase
   const cookieStore = cookies();

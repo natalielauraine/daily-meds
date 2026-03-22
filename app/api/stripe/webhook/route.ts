@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Webhook not configured" }, { status: 500 });
   }
 
-  const stripe = new Stripe(stripeSecret, { apiVersion: "2025-02-24.acacia" });
+  const stripe = new Stripe(stripeSecret, { apiVersion: "2026-02-25.clover" });
 
   // Read the raw body for signature verification
   const rawBody = await req.text();
@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
 
       // ── PAYMENT SUCCEEDED ────────────────────────────────────────────────────
       case "checkout.session.completed": {
-        const session = event.data.object as Stripe.CheckoutSession;
+        const session = event.data.object as Stripe.Checkout.Session;
         const userId  = session.client_reference_id;
         if (!userId) break;
 
