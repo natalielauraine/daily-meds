@@ -15,8 +15,8 @@ import { resend, FROM_EMAIL, FROM_NAME } from "../../../../lib/resend";
 import PaymentConfirmationEmail from "../../../../emails/PaymentConfirmationEmail";
 import SubscriptionCancelledEmail from "../../../../emails/SubscriptionCancelledEmail";
 
-// Tell Next.js not to parse the body — Stripe needs the raw bytes to verify the signature
-export const config = { api: { bodyParser: false } };
+// Tell Next.js not to cache this route — it must run fresh on every request
+export const dynamic = "force-dynamic";
 
 // Map Stripe price IDs to subscription tier names
 function getTierFromPriceId(priceId: string): string {
