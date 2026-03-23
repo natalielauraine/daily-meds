@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getPageSettings, PAGE_DEFAULTS } from "../lib/site-settings";
 import dynamic from "next/dynamic";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -179,22 +180,23 @@ const FREE_SESSIONS: Session[] = [
   },
 ];
 
-// Per-page metadata — overrides the global defaults in app/layout.tsx
-export const metadata: Metadata = {
-  title: "Daily Meds — Audio for Emotional Emergencies",
-  description:
-    "Guided meditation and breathwork for life's most awkward moments. Hangover? Comedown? Anxiety? Can't sleep? We've got a session for that.",
-  openGraph: {
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://thedailymeds.com";
+
+// Per-page metadata — pulls from Supabase site_settings so Natalie can edit
+// the social sharing preview from the admin > Social Sharing page.
+export async function generateMetadata(): Promise<Metadata> {
+  const setting = await getPageSettings("home");
+  const title       = setting?.og_title       || PAGE_DEFAULTS.home.title;
+  const description = setting?.og_description || PAGE_DEFAULTS.home.description;
+  const imageUrl    = setting?.og_image_url   || `${APP_URL}/api/og?title=Daily+Meds&mood=Anxious`;
+
+  return {
     title: "Daily Meds — Audio for Emotional Emergencies",
-    description:
-      "Meditation for life's most awkward moments. Not your average wellness app.",
-    url: "https://thedailymeds.com",
-  },
-  twitter: {
-    title: "Daily Meds — Audio for Emotional Emergencies",
-    description: "Meditation for life's most awkward moments.",
-  },
-};
+    description,
+    openGraph: { title, description, url: APP_URL, images: [{ url: imageUrl, width: 1200, height: 630 }] },
+    twitter:   { card: "summary_large_image", title, description, images: [imageUrl] },
+  };
+}
 
 // Phase 2 homepage — cinematic hero + mood categories + content rows
 export default function Home() {

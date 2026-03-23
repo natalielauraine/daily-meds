@@ -65,6 +65,14 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
+  // Extra check for /admin routes — only Natalie can access these.
+  // ADMIN_EMAIL is set in .env.local and never exposed to the browser.
+  const adminEmail = process.env.ADMIN_EMAIL;
+  const isAdminPath = request.nextUrl.pathname.startsWith("/admin");
+  if (isAdminPath && user && adminEmail && user.email !== adminEmail) {
+    return NextResponse.redirect(new URL("/", request.url));
+  }
+
   return supabaseResponse;
 }
 

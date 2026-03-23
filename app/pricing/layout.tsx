@@ -1,18 +1,23 @@
-// Pricing page layout — sets metadata so search engines and social shares
-// show the right title, description and preview image for the pricing page.
+// Pricing page layout — fetches OG settings from Supabase so Natalie can
+// edit the social sharing preview from the admin > Social Sharing page.
+import type { Metadata } from "next";
+import { getPageSettings, PAGE_DEFAULTS } from "../../lib/site-settings";
 
-import { Metadata } from "next";
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://thedailymeds.com";
 
-export const metadata: Metadata = {
-  title: "Pricing",
-  description:
-    "Start free. Upgrade when you're ready. Monthly from £19.99, Annual £199.99, or a one-time Lifetime plan for £299.99.",
-  openGraph: {
-    title: "Daily Meds Pricing — Start Free, Upgrade Any Time",
-    description:
-      "Monthly, Annual and Lifetime plans. Full library access, live sessions, group rooms and offline downloads.",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const setting = await getPageSettings("pricing");
+  const title       = setting?.og_title       || PAGE_DEFAULTS.pricing.title;
+  const description = setting?.og_description || PAGE_DEFAULTS.pricing.description;
+  const imageUrl    = setting?.og_image_url   || `${APP_URL}/api/og?title=${encodeURIComponent("Pricing")}&mood=Anxious`;
+
+  return {
+    title: "Pricing",
+    description,
+    openGraph: { title, description, url: `${APP_URL}/pricing`, images: [{ url: imageUrl, width: 1200, height: 630 }] },
+    twitter:   { card: "summary_large_image", title, description, images: [imageUrl] },
+  };
+}
 
 export default function PricingLayout({ children }: { children: React.ReactNode }) {
   return <>{children}</>;

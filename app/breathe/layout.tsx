@@ -1,23 +1,24 @@
-// Server component — exports metadata for the breathing timer page.
-// The breathe page itself is "use client", so metadata must live here instead.
+// Breathe page layout — fetches OG settings from Supabase so Natalie can
+// edit the social sharing preview from the admin > Social Sharing page.
 import type { Metadata } from "next";
+import { getPageSettings, PAGE_DEFAULTS } from "../../lib/site-settings";
 
-export const metadata: Metadata = {
-  title: "Breathing Timer",
-  description:
-    "Guided breathing exercises — box breathing, 4-7-8 and more. Set your duration, pick an ambient sound, and breathe.",
-  openGraph: {
-    title: "Breathing Timer — Daily Meds",
-    description:
-      "Box breathing, 4-7-8 and custom patterns. A simple tool for anxiety and calm.",
-    url: "https://thedailymeds.com/breathe",
-  },
-  twitter: {
-    title: "Breathing Timer — Daily Meds",
-    description: "Box breathing, 4-7-8 and custom patterns. A simple tool for anxiety and calm.",
-  },
-};
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://thedailymeds.com";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const setting = await getPageSettings("breathe");
+  const title       = setting?.og_title       || PAGE_DEFAULTS.breathe.title;
+  const description = setting?.og_description || PAGE_DEFAULTS.breathe.description;
+  const imageUrl    = setting?.og_image_url   || `${APP_URL}/api/og?title=${encodeURIComponent("Breathing Timer")}&mood=Overwhelmed`;
+
+  return {
+    title: "Breathing Timer",
+    description,
+    openGraph: { title, description, url: `${APP_URL}/breathe`, images: [{ url: imageUrl, width: 1200, height: 630 }] },
+    twitter:   { card: "summary_large_image", title, description, images: [imageUrl] },
+  };
+}
 
 export default function BreatheLayout({ children }: { children: React.ReactNode }) {
-  return children;
+  return <>{children}</>;
 }

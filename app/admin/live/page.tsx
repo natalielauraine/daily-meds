@@ -7,6 +7,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import AdminShell from "../AdminShell";
 import {
   getLiveSessions,
   createLiveSession,
@@ -116,34 +117,8 @@ export default function AdminLivePage() {
   const upcomingSessions = sessions.filter((s) => !s.isLive);
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#0D0D1A" }}>
-
-      {/* Simple admin header */}
-      <header
-        className="px-4 sm:px-6 py-4 flex items-center justify-between"
-        style={{ backgroundColor: "#1A1A2E", borderBottom: "0.5px solid rgba(255,255,255,0.08)" }}
-      >
-        <div className="flex items-center gap-3">
-          <Link href="/" className="flex items-center gap-2">
-            <div
-              className="w-7 h-7 rounded-full flex items-center justify-center"
-              style={{ background: "linear-gradient(135deg, #6B21E8, #22D3EE)" }}
-            >
-              <svg width="14" height="14" viewBox="0 0 48 48" fill="none">
-                <path d="M24 4C24 4 16 12 16 20C16 24.4 19.6 28 24 28C28.4 28 32 24.4 32 20C32 12 24 4 24 4Z" fill="white" opacity="0.95"/>
-              </svg>
-            </div>
-            <span className="text-white text-sm" style={{ fontWeight: 500 }}>Daily Meds</span>
-          </Link>
-          <span className="text-white/20 text-sm">/</span>
-          <span className="text-white/50 text-sm">Admin — Live</span>
-        </div>
-        <Link href="/live" className="text-xs text-white/40 hover:text-white/70 transition-colors">
-          View live page →
-        </Link>
-      </header>
-
-      <main className="flex-1 w-full max-w-2xl mx-auto px-4 sm:px-6 py-8 pb-16">
+    <AdminShell>
+      <div className="px-6 py-8 max-w-2xl mx-auto">
 
         {/* Page title */}
         <div className="flex items-center justify-between mb-6">
@@ -371,8 +346,8 @@ export default function AdminLivePage() {
           )}
         </div>
 
-      </main>
-    </div>
+      </div>
+    </AdminShell>
   );
 }
 
