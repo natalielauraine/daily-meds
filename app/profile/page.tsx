@@ -12,6 +12,7 @@ import { createClient } from "../../lib/supabase-browser";
 import type { User } from "@supabase/supabase-js";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import StatusBadge from "../components/ui/StatusBadge";
 
 // ── MOCK SESSION HISTORY ───────────────────────────────────────────────────────
 // Replace with a real Supabase query to user_progress once content is uploaded.
@@ -199,15 +200,8 @@ export default function ProfilePage() {
           <p className="text-sm text-white/40 mb-4">{user?.email}</p>
 
           {/* Membership badge */}
-          <div
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs text-white mb-5"
-            style={{ background: membership.gradient, fontWeight: 500 }}
-          >
-            {/* Crown icon */}
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="white">
-              <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1z"/>
-            </svg>
-            {membership.label}
+          <div className="mb-5">
+            <StatusBadge tier={subscriptionStatus} />
           </div>
 
           <p className="text-xs text-white/30 mb-1">{membership.description}</p>

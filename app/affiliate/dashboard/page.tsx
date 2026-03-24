@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "../../../lib/supabase-browser";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
+import CopyButton from "../../components/ui/CopyButton";
 
 interface AffiliateRecord {
   id: string;
@@ -54,7 +55,6 @@ export default function AffiliateDashboardPage() {
   const [loading, setLoading] = useState(true);
   const [affiliate, setAffiliate] = useState<AffiliateRecord | null>(null);
   const [userId, setUserId] = useState("");
-  const [copied, setCopied] = useState(false);
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
@@ -82,13 +82,6 @@ export default function AffiliateDashboardPage() {
       setLoading(false);
     });
   }, []);
-
-  async function copyLink() {
-    if (!referralLink) return;
-    await navigator.clipboard.writeText(referralLink);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  }
 
   // Format a number as £ currency
   function gbp(amount: number) {
@@ -206,20 +199,7 @@ export default function AffiliateDashboardPage() {
             >
               <p className="text-sm text-white/60 truncate">{referralLink}</p>
             </div>
-            <button
-              onClick={copyLink}
-              className="shrink-0 px-4 py-3 rounded-[8px] text-sm text-white transition-all"
-              style={{
-                background: copied
-                  ? "rgba(16,185,129,0.15)"
-                  : "linear-gradient(135deg, #6B21E8, #22D3EE)",
-                border: copied ? "0.5px solid rgba(16,185,129,0.4)" : "none",
-                color: copied ? "#10B981" : "white",
-                fontWeight: 500,
-              }}
-            >
-              {copied ? "Copied!" : "Copy"}
-            </button>
+            <CopyButton value={referralLink} label="Copy link" />
           </div>
           <p className="text-xs text-white/20 mt-3">
             Share this link anywhere — everyone who signs up via it is tracked to you.

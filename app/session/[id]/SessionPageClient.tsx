@@ -18,21 +18,7 @@ import { toggleSaved, isSaved } from "../../../lib/downloads";
 import { createClient } from "../../../lib/supabase-browser";
 import { usePlayer } from "../../../lib/player-context";
 import { MOCK_SESSIONS, SessionData } from "../../../lib/sessions-data";
-
-// Maps mood category to its gradient for the badge
-const MOOD_GRADIENTS: Record<string, string> = {
-  Hungover: "linear-gradient(135deg, #6B21E8, #22D3EE)",
-  "After The Sesh": "linear-gradient(135deg, #F43F5E, #FACC15)",
-  "On A Comedown": "linear-gradient(135deg, #10B981, #D9F100)",
-  "Feeling Empty": "linear-gradient(135deg, #6B21E8, #22D3EE)",
-  "Can't Sleep": "linear-gradient(135deg, #8B3CF7, #6366F1)",
-  Anxious: "linear-gradient(135deg, #F43F5E, #F97316)",
-  Heartbroken: "linear-gradient(135deg, #EC4899, #D946EF)",
-  Overwhelmed: "linear-gradient(135deg, #F97316, #FACC15)",
-  "Low Energy": "linear-gradient(135deg, #10B981, #22C55E)",
-  "Morning Reset": "linear-gradient(135deg, #F43F5E, #FACC15)",
-  "Focus Mode": "linear-gradient(135deg, #6B21E8, #6366F1)",
-};
+import MoodBadge from "../../components/ui/MoodBadge";
 
 // Session is fetched server-side in page.tsx and passed in as a prop.
 // Falls back to null if not found in Supabase or mock data.
@@ -137,8 +123,6 @@ export default function SessionPageClient({ session }: { session: SessionData | 
     );
   }
 
-  const moodGradient = MOOD_GRADIENTS[session.moodCategory] ?? session.gradient;
-
   // Free users can only play free sessions — paid members can play everything
   const isPaidMember = subscriptionStatus !== "free";
   const canPlay = session.isFree || isPaidMember;
@@ -220,9 +204,7 @@ export default function SessionPageClient({ session }: { session: SessionData | 
           </div>
 
           {/* Mood badge */}
-          <span className="text-xs px-3 py-1 rounded-full text-white mb-4" style={{ background: moodGradient, fontWeight: 500 }}>
-            {session.moodCategory}
-          </span>
+          <MoodBadge mood={session.moodCategory} className="mb-4" />
 
           {/* Description */}
           <p className="text-sm text-white/50 leading-relaxed max-w-md">{session.description}</p>

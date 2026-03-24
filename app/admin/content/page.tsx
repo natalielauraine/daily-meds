@@ -7,6 +7,12 @@
 import { useState, useEffect } from "react";
 import AdminShell from "../AdminShell";
 import { createClient } from "../../../lib/supabase-browser";
+import Banner from "../../components/ui/Banner";
+import EmptyState from "../../components/ui/EmptyState";
+import LoadingSkeleton from "../../components/ui/LoadingSkeleton";
+import ConfirmModal from "../../components/ui/ConfirmModal";
+import GradientPicker, { GRADIENTS } from "../components/GradientPicker";
+import FormField, { fieldStyle, fieldClass } from "../components/FormField";
 
 const MOOD_CATEGORIES = [
   "Hungover", "After The Sesh", "On A Comedown", "Feeling Empty",
@@ -15,15 +21,6 @@ const MOOD_CATEGORIES = [
 ];
 
 const SESSION_TYPES = ["Guided Meditation", "Breathwork", "Sleep Audio", "Focus Session", "Movement"];
-
-const GRADIENTS = [
-  { label: "Purple / Blue",  value: "linear-gradient(135deg, #6B21E8 0%, #8B3CF7 25%, #6366F1 60%, #3B82F6 80%, #22D3EE 100%)" },
-  { label: "Pink / Yellow",  value: "linear-gradient(135deg, #F43F5E 0%, #EC4899 20%, #D946EF 35%, #F97316 65%, #FACC15 100%)" },
-  { label: "Green / Lime",   value: "linear-gradient(135deg, #10B981 0%, #22C55E 35%, #84CC16 70%, #D9F100 100%)" },
-  { label: "Pink / Orange",  value: "linear-gradient(135deg, #F43F5E 0%, #F97316 100%)" },
-  { label: "Purple / Indigo",value: "linear-gradient(135deg, #6B21E8 0%, #6366F1 100%)" },
-  { label: "Teal / Green",   value: "linear-gradient(135deg, #10B981 0%, #22C55E 100%)" },
-];
 
 type Session = {
   id: string;
@@ -64,6 +61,7 @@ export default function AdminContentPage() {
   const [success, setSuccess] = useState("");
   const [notifyingId, setNotifyingId] = useState<string | null>(null);
   const [notifySuccess, setNotifySuccess] = useState("");
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   const supabase = createClient();
 
@@ -175,14 +173,14 @@ export default function AdminContentPage() {
     const data = await res.json();
     setNotifyingId(null);
     if (res.ok) {
-      setNotifySuccess(`Sent to ${data.sent} users.`);
+      setNotifySuccess(`Email sent — sent to ${data.sent} users.`);
       setTimeout(() => setNotifySuccess(""), 4000);
     }
   }
 
   async function handleDelete(id: string) {
-    if (!confirm("Delete this session? This cannot be undone.")) return;
     await supabase.from("sessions").delete().eq("id", id);
+    setConfirmDeleteId(null);
     loadSessions();
   }
 
@@ -209,22 +207,10 @@ export default function AdminContentPage() {
         </div>
 
         {/* Notify success banner */}
-        {notifySuccess && (
-          <div className="flex items-center gap-2 px-4 py-3 rounded-[10px] mb-5 text-sm text-blue-300"
-            style={{ backgroundColor: "rgba(99,102,241,0.1)", border: "0.5px solid rgba(99,102,241,0.3)" }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
-            Email sent — {notifySuccess}
-          </div>
-        )}
+        {notifySuccess && <Banner type="success" message={notifySuccess} />}
 
         {/* Success banner */}
-        {success && (
-          <div className="flex items-center gap-2 px-4 py-3 rounded-[10px] mb-5 text-sm text-green-300"
-            style={{ backgroundColor: "rgba(16,185,129,0.1)", border: "0.5px solid rgba(16,185,129,0.3)" }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
-            {success}
-          </div>
-        )}
+        {success && <Banner type="success" message={success} />}
 
         {/* ── ADD / EDIT FORM ──────────────────────────────────── */}
         {showForm && (
@@ -233,143 +219,111 @@ export default function AdminContentPage() {
               {editingId ? "Edit session" : "Add new session"}
             </h2>
 
-            {error && (
-              <p className="text-sm text-red-300 mb-4 px-3 py-2 rounded-lg" style={{ backgroundColor: "rgba(244,63,94,0.1)" }}>
-                {error}
-              </p>
-            )}
+            {error && <Banner type="error" message={error} />}
 
             <div className="grid sm:grid-cols-2 gap-4">
 
-              {/* Title */}
-              <div className="sm:col-span-2">
-                <label className="block text-xs text-white/40 mb-1.5">Title *</label>
+              <FormField label="Title *" className="sm:col-span-2">
                 <input
                   type="text"
                   value={form.title}
                   onChange={(e) => setForm({ ...form, title: e.target.value })}
                   placeholder="e.g. Hungover & Overwhelmed"
-                  className="w-full px-3 py-2.5 rounded-lg text-sm text-white outline-none placeholder:text-white/20"
-                  style={{ backgroundColor: "rgba(255,255,255,0.06)", border: "0.5px solid rgba(255,255,255,0.12)" }}
+                  className={fieldClass}
+                  style={fieldStyle}
                 />
-              </div>
+              </FormField>
 
-              {/* Description */}
-              <div className="sm:col-span-2">
-                <label className="block text-xs text-white/40 mb-1.5">Description</label>
+              <FormField label="Description" className="sm:col-span-2">
                 <textarea
                   value={form.description}
                   onChange={(e) => setForm({ ...form, description: e.target.value })}
                   placeholder="A short description shown under the title..."
                   rows={3}
-                  className="w-full px-3 py-2.5 rounded-lg text-sm text-white outline-none placeholder:text-white/20 resize-none"
-                  style={{ backgroundColor: "rgba(255,255,255,0.06)", border: "0.5px solid rgba(255,255,255,0.12)" }}
+                  className={`${fieldClass} resize-none`}
+                  style={fieldStyle}
                 />
-              </div>
+              </FormField>
 
-              {/* Mood category */}
-              <div>
-                <label className="block text-xs text-white/40 mb-1.5">Mood category</label>
+              <FormField label="Mood category">
                 <select
                   value={form.mood_category}
                   onChange={(e) => setForm({ ...form, mood_category: e.target.value })}
-                  className="w-full px-3 py-2.5 rounded-lg text-sm text-white outline-none"
-                  style={{ backgroundColor: "rgba(255,255,255,0.06)", border: "0.5px solid rgba(255,255,255,0.12)" }}
+                  className={fieldClass}
+                  style={fieldStyle}
                 >
                   {MOOD_CATEGORIES.map((m) => <option key={m} value={m}>{m}</option>)}
                 </select>
-              </div>
+              </FormField>
 
-              {/* Session type */}
-              <div>
-                <label className="block text-xs text-white/40 mb-1.5">Session type</label>
+              <FormField label="Session type">
                 <select
                   value={form.type}
                   onChange={(e) => setForm({ ...form, type: e.target.value })}
-                  className="w-full px-3 py-2.5 rounded-lg text-sm text-white outline-none"
-                  style={{ backgroundColor: "rgba(255,255,255,0.06)", border: "0.5px solid rgba(255,255,255,0.12)" }}
+                  className={fieldClass}
+                  style={fieldStyle}
                 >
                   {SESSION_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
                 </select>
-              </div>
+              </FormField>
 
-              {/* Duration */}
-              <div>
-                <label className="block text-xs text-white/40 mb-1.5">Duration</label>
+              <FormField label="Duration">
                 <select
                   value={form.duration}
                   onChange={(e) => setForm({ ...form, duration: e.target.value })}
-                  className="w-full px-3 py-2.5 rounded-lg text-sm text-white outline-none"
-                  style={{ backgroundColor: "rgba(255,255,255,0.06)", border: "0.5px solid rgba(255,255,255,0.12)" }}
+                  className={fieldClass}
+                  style={fieldStyle}
                 >
                   {["5 min","8 min","10 min","12 min","15 min","18 min","20 min","22 min","25 min","30 min","45 min"].map((d) => (
                     <option key={d} value={d}>{d}</option>
                   ))}
                 </select>
-              </div>
+              </FormField>
 
-              {/* Media type */}
-              <div>
-                <label className="block text-xs text-white/40 mb-1.5">Media type</label>
+              <FormField label="Media type">
                 <select
                   value={form.media_type}
                   onChange={(e) => setForm({ ...form, media_type: e.target.value as "audio" | "video" })}
-                  className="w-full px-3 py-2.5 rounded-lg text-sm text-white outline-none"
-                  style={{ backgroundColor: "rgba(255,255,255,0.06)", border: "0.5px solid rgba(255,255,255,0.12)" }}
+                  className={fieldClass}
+                  style={fieldStyle}
                 >
                   <option value="audio">Audio (Supabase Storage)</option>
                   <option value="video">Video (Vimeo)</option>
                 </select>
-              </div>
+              </FormField>
 
-              {/* Audio URL (shown when media_type = audio) */}
               {form.media_type === "audio" && (
-                <div className="sm:col-span-2">
-                  <label className="block text-xs text-white/40 mb-1.5">Audio URL</label>
+                <FormField label="Audio URL" className="sm:col-span-2">
                   <input
                     type="text"
                     value={form.audio_url}
                     onChange={(e) => setForm({ ...form, audio_url: e.target.value })}
                     placeholder="https://... (from Supabase Storage)"
-                    className="w-full px-3 py-2.5 rounded-lg text-sm text-white outline-none placeholder:text-white/20"
-                    style={{ backgroundColor: "rgba(255,255,255,0.06)", border: "0.5px solid rgba(255,255,255,0.12)" }}
+                    className={fieldClass}
+                    style={fieldStyle}
                   />
-                </div>
+                </FormField>
               )}
 
-              {/* Vimeo ID (shown when media_type = video) */}
               {form.media_type === "video" && (
-                <div className="sm:col-span-2">
-                  <label className="block text-xs text-white/40 mb-1.5">Vimeo Video ID</label>
+                <FormField label="Vimeo Video ID" className="sm:col-span-2">
                   <input
                     type="text"
                     value={form.vimeo_id}
                     onChange={(e) => setForm({ ...form, vimeo_id: e.target.value })}
                     placeholder="e.g. 123456789 (from Vimeo video URL)"
-                    className="w-full px-3 py-2.5 rounded-lg text-sm text-white outline-none placeholder:text-white/20"
-                    style={{ backgroundColor: "rgba(255,255,255,0.06)", border: "0.5px solid rgba(255,255,255,0.12)" }}
+                    className={fieldClass}
+                    style={fieldStyle}
                   />
-                </div>
+                </FormField>
               )}
 
               {/* Gradient colour */}
               <div className="sm:col-span-2">
-                <label className="block text-xs text-white/40 mb-2">Colour</label>
-                <div className="flex flex-wrap gap-2">
-                  {GRADIENTS.map((g) => (
-                    <button
-                      key={g.value}
-                      onClick={() => setForm({ ...form, gradient: g.value })}
-                      title={g.label}
-                      className="w-10 h-10 rounded-full transition-transform hover:scale-110"
-                      style={{
-                        background: g.value,
-                        outline: form.gradient === g.value ? "2.5px solid white" : "none",
-                        outlineOffset: "2px",
-                      }}
-                    />
-                  ))}
-                </div>
+                <GradientPicker
+                  value={form.gradient}
+                  onChange={(g) => setForm({ ...form, gradient: g })}
+                />
               </div>
 
               {/* Free toggle */}
@@ -413,19 +367,13 @@ export default function AdminContentPage() {
 
         {/* ── SESSION LIST ─────────────────────────────────────── */}
         {loading ? (
-          <div className="flex flex-col gap-3">
-            {[0,1,2,3].map((i) => (
-              <div key={i} className="h-16 rounded-[10px] animate-pulse" style={{ backgroundColor: "#1A1A2E" }} />
-            ))}
-          </div>
+          <LoadingSkeleton height={64} count={4} className="mb-2" />
         ) : sessions.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 rounded-[10px] text-center"
-            style={{ border: "0.5px dashed rgba(255,255,255,0.08)" }}>
-            <p className="text-sm text-white/25 mb-2">No sessions yet</p>
-            <button onClick={openNew} className="text-xs text-purple-400 hover:text-purple-300 transition-colors">
-              + Add your first session
-            </button>
-          </div>
+          <EmptyState
+            message="No sessions yet"
+            action="+ Add your first session"
+            onClick={openNew}
+          />
         ) : (
           <div className="flex flex-col gap-2">
             {sessions.map((session) => (
@@ -479,7 +427,7 @@ export default function AdminContentPage() {
                     </svg>
                   </button>
                   <button
-                    onClick={() => handleDelete(session.id)}
+                    onClick={() => setConfirmDeleteId(session.id)}
                     className="p-2 text-white/30 hover:text-red-400 transition-colors"
                     aria-label="Delete"
                   >
@@ -492,6 +440,17 @@ export default function AdminContentPage() {
             ))}
           </div>
         )}
+
+        {/* Delete confirmation modal */}
+        {confirmDeleteId && (
+          <ConfirmModal
+            message="Delete this session? This cannot be undone."
+            confirmLabel="Delete"
+            onConfirm={() => handleDelete(confirmDeleteId)}
+            onCancel={() => setConfirmDeleteId(null)}
+          />
+        )}
+
       </div>
     </AdminShell>
   );

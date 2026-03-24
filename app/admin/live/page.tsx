@@ -17,13 +17,10 @@ import {
   formatSessionDate,
   type LiveSession,
 } from "../../../lib/live-sessions";
-
-const GRADIENTS = [
-  { label: "Purple / Blue", value: "linear-gradient(135deg, #6B21E8 0%, #8B3CF7 25%, #6366F1 60%, #3B82F6 80%, #22D3EE 100%)" },
-  { label: "Pink / Yellow", value: "linear-gradient(135deg, #F43F5E 0%, #EC4899 20%, #D946EF 35%, #F97316 65%, #EAB308 85%, #FACC15 100%)" },
-  { label: "Green / Lime", value: "linear-gradient(135deg, #10B981 0%, #22C55E 35%, #84CC16 70%, #D9F100 100%)" },
-  { label: "Pink / Orange", value: "linear-gradient(135deg, #F43F5E 0%, #F97316 100%)" },
-];
+import Banner from "../../components/ui/Banner";
+import EmptyState from "../../components/ui/EmptyState";
+import GradientPicker, { GRADIENTS } from "../components/GradientPicker";
+import FormField, { fieldStyle, fieldClass } from "../components/FormField";
 
 export default function AdminLivePage() {
   const [sessions, setSessions] = useState<LiveSession[]>([]);
@@ -140,17 +137,7 @@ export default function AdminLivePage() {
         </div>
 
         {/* Error message */}
-        {error && (
-          <div
-            className="flex items-start gap-3 px-4 py-3 rounded-[10px] mb-5"
-            style={{ backgroundColor: "rgba(244,63,94,0.1)", border: "0.5px solid rgba(244,63,94,0.3)" }}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="#F43F5E" className="shrink-0 mt-0.5">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
-            </svg>
-            <p className="text-sm text-red-300">{error}</p>
-          </div>
-        )}
+        {error && <Banner type="error" message={error} />}
 
         {/* Daily.co config warning if keys not set */}
         {!process.env.NEXT_PUBLIC_DAILY_DOMAIN && (
@@ -182,92 +169,69 @@ export default function AdminLivePage() {
             <h2 className="text-white text-base mb-5" style={{ fontWeight: 500 }}>Schedule a new session</h2>
 
             <div className="flex flex-col gap-4">
-              {/* Title */}
-              <div>
-                <label className="block text-xs text-white/40 mb-1.5">Title</label>
+              <FormField label="Title">
                 <input
                   type="text"
                   value={form.title}
                   onChange={(e) => setForm({ ...form, title: e.target.value })}
                   placeholder="e.g. Sunday Morning Reset"
-                  className="w-full px-3 py-2.5 rounded-lg text-sm text-white outline-none placeholder:text-white/20"
-                  style={{ backgroundColor: "rgba(255,255,255,0.06)", border: "0.5px solid rgba(255,255,255,0.12)" }}
+                  className={fieldClass}
+                  style={fieldStyle}
                 />
-              </div>
+              </FormField>
 
-              {/* Description */}
-              <div>
-                <label className="block text-xs text-white/40 mb-1.5">Description</label>
+              <FormField label="Description">
                 <textarea
                   value={form.description}
                   onChange={(e) => setForm({ ...form, description: e.target.value })}
                   placeholder="What is this session about?"
                   rows={3}
-                  className="w-full px-3 py-2.5 rounded-lg text-sm text-white outline-none placeholder:text-white/20 resize-none"
-                  style={{ backgroundColor: "rgba(255,255,255,0.06)", border: "0.5px solid rgba(255,255,255,0.12)" }}
+                  className={`${fieldClass} resize-none`}
+                  style={fieldStyle}
                 />
-              </div>
+              </FormField>
 
-              {/* Date + Time */}
-              <div>
-                <label className="block text-xs text-white/40 mb-1.5">Date & Time</label>
+              <FormField label="Date & Time">
                 <input
                   type="datetime-local"
                   value={form.scheduledAt}
                   onChange={(e) => setForm({ ...form, scheduledAt: e.target.value })}
-                  className="w-full px-3 py-2.5 rounded-lg text-sm text-white outline-none"
-                  style={{ backgroundColor: "rgba(255,255,255,0.06)", border: "0.5px solid rgba(255,255,255,0.12)", colorScheme: "dark" }}
+                  className={fieldClass}
+                  style={{ ...fieldStyle, colorScheme: "dark" } as React.CSSProperties}
                 />
-              </div>
+              </FormField>
 
               {/* Type + Duration row */}
               <div className="flex gap-3">
-                <div className="flex-1">
-                  <label className="block text-xs text-white/40 mb-1.5">Format</label>
+                <FormField label="Format" className="flex-1">
                   <select
                     value={form.type}
                     onChange={(e) => setForm({ ...form, type: e.target.value as "audio" | "video" })}
-                    className="w-full px-3 py-2.5 rounded-lg text-sm text-white outline-none"
-                    style={{ backgroundColor: "rgba(255,255,255,0.06)", border: "0.5px solid rgba(255,255,255,0.12)" }}
+                    className={fieldClass}
+                    style={fieldStyle}
                   >
                     <option value="audio">Audio only</option>
                     <option value="video">Audio + Video</option>
                   </select>
-                </div>
-                <div className="flex-1">
-                  <label className="block text-xs text-white/40 mb-1.5">Duration</label>
+                </FormField>
+                <FormField label="Duration" className="flex-1">
                   <select
                     value={form.duration}
                     onChange={(e) => setForm({ ...form, duration: e.target.value })}
-                    className="w-full px-3 py-2.5 rounded-lg text-sm text-white outline-none"
-                    style={{ backgroundColor: "rgba(255,255,255,0.06)", border: "0.5px solid rgba(255,255,255,0.12)" }}
+                    className={fieldClass}
+                    style={fieldStyle}
                   >
                     {["15 min", "20 min", "30 min", "45 min", "60 min"].map((d) => (
                       <option key={d} value={d}>{d}</option>
                     ))}
                   </select>
-                </div>
+                </FormField>
               </div>
 
-              {/* Gradient picker */}
-              <div>
-                <label className="block text-xs text-white/40 mb-2">Colour</label>
-                <div className="flex gap-2">
-                  {GRADIENTS.map((g) => (
-                    <button
-                      key={g.value}
-                      onClick={() => setForm({ ...form, gradient: g.value })}
-                      className="w-10 h-10 rounded-full transition-transform hover:scale-110"
-                      style={{
-                        background: g.value,
-                        outline: form.gradient === g.value ? "2.5px solid white" : "none",
-                        outlineOffset: "2px",
-                      }}
-                      aria-label={g.label}
-                    />
-                  ))}
-                </div>
-              </div>
+              <GradientPicker
+                value={form.gradient}
+                onChange={(g) => setForm({ ...form, gradient: g })}
+              />
             </div>
 
             {/* Form actions */}
@@ -318,18 +282,11 @@ export default function AdminLivePage() {
           </h2>
 
           {upcomingSessions.length === 0 && !showForm ? (
-            <div
-              className="flex flex-col items-center justify-center py-12 rounded-[10px] text-center"
-              style={{ border: "0.5px dashed rgba(255,255,255,0.08)" }}
-            >
-              <p className="text-sm text-white/25 mb-1">No sessions scheduled</p>
-              <button
-                onClick={() => setShowForm(true)}
-                className="text-xs text-white/40 hover:text-white/70 transition-colors mt-2"
-              >
-                + Schedule one
-              </button>
-            </div>
+            <EmptyState
+              message="No sessions scheduled"
+              action="+ Schedule one"
+              onClick={() => setShowForm(true)}
+            />
           ) : (
             <div className="flex flex-col gap-3">
               {upcomingSessions.map((session) => (
@@ -353,6 +310,8 @@ export default function AdminLivePage() {
 }
 
 // ── ADMIN SESSION CARD ────────────────────────────────────────────────────────
+
+import React from "react";
 
 type AdminCardProps = {
   session: LiveSession;
