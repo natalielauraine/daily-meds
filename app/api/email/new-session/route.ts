@@ -22,16 +22,27 @@ import { resend, FROM_EMAIL, FROM_NAME } from "../../../../lib/resend";
 import NewSessionEmail from "../../../../emails/NewSessionEmail";
 
 export async function POST(req: NextRequest) {
-  // Only Natalie (admin) can trigger this — verify via CRON_SECRET header
-  const secret = req.headers.get("x-cron-secret");
-  if (secret !== process.env.CRON_SECRET) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  // Allow either x-cron-secret (cron/manual) or a valid Supabase admin Bearer token (admin UI)
+  const cronSecret = req.headers.get("x-cron-secret");
+  const authHeader = req.headers.get("authorization");
+  const bearerToken = authHeader?.replace("Bearer ", "");
 
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
+
+  if (cronSecret && cronSecret === process.env.CRON_SECRET) {
+    // Authorized via cron secret — allow through
+  } else if (bearerToken) {
+    // Check the Bearer token is a valid Supabase session from the admin
+    const { data: { user } } = await supabase.auth.getUser(bearerToken);
+    if (!user || user.email !== process.env.ADMIN_EMAIL) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+  } else {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
   let body: {
     sessionId: string;

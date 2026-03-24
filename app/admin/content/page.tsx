@@ -62,6 +62,8 @@ export default function AdminContentPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [notifyingId, setNotifyingId] = useState<string | null>(null);
+  const [notifySuccess, setNotifySuccess] = useState("");
 
   const supabase = createClient();
 
@@ -139,6 +141,45 @@ export default function AdminContentPage() {
     loadSessions();
   }
 
+  // Send a new-session notification email to all users for this session
+  async function handleNotify(session: Session) {
+    setNotifyingId(session.id);
+    setNotifySuccess("");
+
+    // Get the current user's Supabase access token to authorize the API call
+    const { data: { session: authSession } } = await supabase.auth.getSession();
+    const token = authSession?.access_token;
+    if (!token) {
+      setNotifyingId(null);
+      return;
+    }
+
+    const res = await fetch("/api/email/new-session", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        sessionId:    session.id,
+        sessionTitle: session.title,
+        moodCategory: session.mood_category,
+        sessionType:  session.type,
+        duration:     session.duration,
+        description:  session.description,
+        isFree:       session.is_free,
+        sendTo:       "all",
+      }),
+    });
+
+    const data = await res.json();
+    setNotifyingId(null);
+    if (res.ok) {
+      setNotifySuccess(`Sent to ${data.sent} users.`);
+      setTimeout(() => setNotifySuccess(""), 4000);
+    }
+  }
+
   async function handleDelete(id: string) {
     if (!confirm("Delete this session? This cannot be undone.")) return;
     await supabase.from("sessions").delete().eq("id", id);
@@ -166,6 +207,15 @@ export default function AdminContentPage() {
             Add session
           </button>
         </div>
+
+        {/* Notify success banner */}
+        {notifySuccess && (
+          <div className="flex items-center gap-2 px-4 py-3 rounded-[10px] mb-5 text-sm text-blue-300"
+            style={{ backgroundColor: "rgba(99,102,241,0.1)", border: "0.5px solid rgba(99,102,241,0.3)" }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+            Email sent — {notifySuccess}
+          </div>
+        )}
 
         {/* Success banner */}
         {success && (
@@ -401,6 +451,24 @@ export default function AdminContentPage() {
 
                 {/* Actions */}
                 <div className="flex items-center gap-1 shrink-0">
+                  {/* Notify members about this session */}
+                  <button
+                    onClick={() => handleNotify(session)}
+                    disabled={notifyingId === session.id}
+                    className="p-2 text-white/30 hover:text-indigo-400 transition-colors disabled:opacity-40"
+                    aria-label="Notify members"
+                    title="Send new session email to all users"
+                  >
+                    {notifyingId === session.id ? (
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" className="animate-spin opacity-60">
+                        <path d="M12 4V2A10 10 0 0 0 2 12h2a8 8 0 0 1 8-8z"/>
+                      </svg>
+                    ) : (
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
+                      </svg>
+                    )}
+                  </button>
                   <button
                     onClick={() => openEdit(session)}
                     className="p-2 text-white/30 hover:text-white/70 transition-colors"

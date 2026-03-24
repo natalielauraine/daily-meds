@@ -24,8 +24,9 @@ const DEFAULT_SESSION = {
 };
 
 export async function POST(req: NextRequest) {
-  // Verify this is being called by Vercel cron (or our own test call)
-  const secret = req.headers.get("x-cron-secret");
+  // Accept secret from x-cron-secret (manual calls) or Authorization: Bearer (Vercel cron)
+  const authHeader = req.headers.get("authorization");
+  const secret = req.headers.get("x-cron-secret") || authHeader?.replace("Bearer ", "");
   if (secret !== process.env.CRON_SECRET) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -107,3 +108,6 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json({ sent, found: uniqueUsers.size });
 }
+
+// Vercel cron sends GET requests — reuse the same handler
+export const GET = POST;
