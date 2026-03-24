@@ -5,7 +5,7 @@
 // The heart icon saves the session to the watchlist in localStorage.
 
 import Link from "next/link";
-import { useParams, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
@@ -17,7 +17,7 @@ import { toggleWatchlist, isInWatchlist } from "../../../lib/watchlist";
 import { toggleSaved, isSaved } from "../../../lib/downloads";
 import { createClient } from "../../../lib/supabase-browser";
 import { usePlayer } from "../../../lib/player-context";
-import { MOCK_SESSIONS } from "../../../lib/sessions-data";
+import { MOCK_SESSIONS, SessionData } from "../../../lib/sessions-data";
 
 // Maps mood category to its gradient for the badge
 const MOOD_GRADIENTS: Record<string, string> = {
@@ -34,18 +34,16 @@ const MOOD_GRADIENTS: Record<string, string> = {
   "Focus Mode": "linear-gradient(135deg, #6B21E8, #6366F1)",
 };
 
-export default function SessionPageClient() {
-  const params = useParams();
+// Session is fetched server-side in page.tsx and passed in as a prop.
+// Falls back to null if not found in Supabase or mock data.
+export default function SessionPageClient({ session }: { session: SessionData | null }) {
   const searchParams = useSearchParams();
-  const id = params?.id as string;
 
   // ?t= param from Continue Watching — position in seconds to resume from
   const resumeAt = Number(searchParams.get("t") || 0);
 
   const { playSession } = usePlayer();
   const hasAutoPlayed = useRef(false);
-
-  const session = MOCK_SESSIONS.find((s) => s.id === id);
 
   // Watchlist state — heart is filled when session is saved
   const [hearted, setHearted] = useState(false);

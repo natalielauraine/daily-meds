@@ -178,8 +178,10 @@ export async function POST(req: NextRequest) {
 
           if (userData?.email) {
             // Access ends at the subscription's current period end
-            const accessUntil = sub.current_period_end
-              ? new Date(sub.current_period_end * 1000).toLocaleDateString("en-GB", {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const periodEnd = (sub as any).current_period_end as number | undefined;
+            const accessUntil = periodEnd
+              ? new Date(periodEnd * 1000).toLocaleDateString("en-GB", {
                   day: "numeric", month: "long", year: "numeric",
                 })
               : "the end of your billing period";

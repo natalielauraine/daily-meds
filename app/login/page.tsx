@@ -35,8 +35,10 @@ export default function LoginPage() {
       return;
     }
 
-    // Login successful — send to homepage (will change to /library in Phase 4)
-    router.push("/");
+    // Login successful — send to the ?next= redirect path, or homepage if none
+    const params = new URLSearchParams(window.location.search);
+    const next = params.get("next") || "/";
+    router.push(next);
     router.refresh();
   }
 

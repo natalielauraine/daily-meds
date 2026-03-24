@@ -43,21 +43,22 @@ export default function AdminLivePage() {
 
   // Load sessions on mount
   useEffect(() => {
-    setSessions(getLiveSessions());
+    getLiveSessions().then(setSessions);
   }, []);
 
-  function refresh() {
-    setSessions(getLiveSessions());
+  async function refresh() {
+    const updated = await getLiveSessions();
+    setSessions(updated);
   }
 
   // Create a new scheduled session (no Daily room yet — that happens when going live)
-  function handleCreate() {
+  async function handleCreate() {
     if (!form.title || !form.scheduledAt) {
       setError("Title and date are required.");
       return;
     }
     setError("");
-    createLiveSession(
+    await createLiveSession(
       form.title,
       form.description,
       form.scheduledAt,
@@ -67,7 +68,7 @@ export default function AdminLivePage() {
     );
     setForm({ title: "", description: "", scheduledAt: "", type: "audio", duration: "30 min", gradient: GRADIENTS[0].value });
     setShowForm(false);
-    refresh();
+    await refresh();
   }
 
   // Go live — creates a Daily.co room via the API then marks the session as live
@@ -92,9 +93,9 @@ export default function AdminLivePage() {
         return;
       }
 
-      // Mark the session as live in localStorage
-      setSessionLive(sessionId, data.name, data.url);
-      refresh();
+      // Mark the session as live in Supabase
+      await setSessionLive(sessionId, data.name, data.url);
+      await refresh();
     } catch {
       setError("Network error — could not reach the Daily.co API.");
     } finally {
@@ -103,14 +104,14 @@ export default function AdminLivePage() {
   }
 
   // End live — marks session as no longer live
-  function handleEnd(sessionId: string) {
-    endLiveSession(sessionId);
-    refresh();
+  async function handleEnd(sessionId: string) {
+    await endLiveSession(sessionId);
+    await refresh();
   }
 
-  function handleDelete(sessionId: string) {
-    deleteLiveSession(sessionId);
-    refresh();
+  async function handleDelete(sessionId: string) {
+    await deleteLiveSession(sessionId);
+    await refresh();
   }
 
   const liveSessions = sessions.filter((s) => s.isLive);

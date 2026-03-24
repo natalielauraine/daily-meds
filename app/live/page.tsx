@@ -13,9 +13,9 @@ import { getLiveSessions, formatSessionDate, type LiveSession } from "../../lib/
 export default function LivePage() {
   const [sessions, setSessions] = useState<LiveSession[]>([]);
 
-  // Load sessions on mount (localStorage is client-only)
+  // Load sessions on mount
   useEffect(() => {
-    setSessions(getLiveSessions());
+    getLiveSessions().then(setSessions);
   }, []);
 
   const liveSessions = sessions.filter((s) => s.isLive);

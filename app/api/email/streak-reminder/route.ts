@@ -64,7 +64,7 @@ export async function POST(req: NextRequest) {
 
   let sent = 0;
 
-  for (const [userId, progress] of uniqueUsers) {
+  for (const [userId, progress] of Array.from(uniqueUsers)) {
     // Fetch user's email and name
     const { data: user } = await supabase
       .from("users")
