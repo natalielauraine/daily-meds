@@ -13,6 +13,9 @@ import { createClient } from "@supabase/supabase-js";
 import { resend, FROM_EMAIL, FROM_NAME } from "../../../../lib/resend";
 import StreakReminderEmail from "../../../../emails/StreakReminderEmail";
 
+// Tell Vercel this route must run at request time, never at build time
+export const dynamic = "force-dynamic";
+
 // Fallback suggested session — used when we can't find a personalised suggestion
 const DEFAULT_SESSION = {
   title: "Anxiety First Aid",

@@ -13,6 +13,9 @@ import { createClient } from "@supabase/supabase-js";
 import { resend, FROM_EMAIL, FROM_NAME } from "../../../../lib/resend";
 import AffiliateEarningsEmail from "../../../../emails/AffiliateEarningsEmail";
 
+// Tell Vercel this route must run at request time, never at build time
+export const dynamic = "force-dynamic";
+
 export async function POST(req: NextRequest) {
   const secret = req.headers.get("x-cron-secret");
   if (secret !== process.env.CRON_SECRET) {
