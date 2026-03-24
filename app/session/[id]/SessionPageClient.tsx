@@ -42,7 +42,7 @@ export default function SessionPageClient({ session }: { session: SessionData | 
   // ?t= param from Continue Watching — position in seconds to resume from
   const resumeAt = Number(searchParams.get("t") || 0);
 
-  const { playSession } = usePlayer();
+  const { playSession, currentSession, isPlaying, currentTime, duration } = usePlayer();
   const hasAutoPlayed = useRef(false);
 
   // Watchlist state — heart is filled when session is saved
@@ -53,6 +53,10 @@ export default function SessionPageClient({ session }: { session: SessionData | 
   const [showPlaylistModal, setShowPlaylistModal] = useState(false);
   // User's subscription tier — fetched from Supabase to gate premium content
   const [subscriptionStatus, setSubscriptionStatus] = useState("free");
+  // Whether the user is logged in — used to show the signup prompt for free sessions
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  // Whether the signup prompt has been dismissed
+  const [signupPromptDismissed, setSignupPromptDismissed] = useState(false);
 
   // Check watchlist + saved state on mount (localStorage is client-only)
   useEffect(() => {
@@ -66,6 +70,7 @@ export default function SessionPageClient({ session }: { session: SessionData | 
   useEffect(() => {
     const supabase = createClient();
     supabase.auth.getUser().then(async ({ data: { user } }) => {
+      setIsLoggedIn(!!user);
       if (!user) return;
       const { data } = await supabase
         .from("users")
@@ -75,6 +80,13 @@ export default function SessionPageClient({ session }: { session: SessionData | 
       if (data?.subscription_status) setSubscriptionStatus(data.subscription_status);
     });
   }, []);
+
+  // Detect when this session has finished playing
+  const isThisSession = currentSession?.id === session?.id;
+  const sessionEnded = isThisSession && !isPlaying && currentTime > 0 && duration > 0 && currentTime >= duration - 1;
+
+  // Show signup prompt when a free session ends and the user is not logged in
+  const showSignupPrompt = sessionEnded && !isLoggedIn && session?.isFree === true && !signupPromptDismissed;
 
   // Auto-resume from the position in the URL (?t=123) when coming from Continue Watching.
   // Waits for subscriptionStatus to load before checking if the user can play the session.
@@ -353,6 +365,67 @@ export default function SessionPageClient({ session }: { session: SessionData | 
         </div>
 
       </main>
+
+      {/* ── SIGNUP PROMPT — shown to logged-out users after a free session ends ── */}
+      {showSignupPrompt && (
+        <div
+          className="fixed bottom-0 left-0 right-0 z-50 p-4 animate-in slide-in-from-bottom duration-300"
+          style={{ background: "linear-gradient(to top, #0D0D1A 60%, transparent)" }}
+        >
+          <div
+            className="max-w-lg mx-auto rounded-[10px] p-5 relative"
+            style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.12)" }}
+          >
+            {/* Dismiss button */}
+            <button
+              onClick={() => setSignupPromptDismissed(true)}
+              className="absolute top-3 right-3 text-white/30 hover:text-white/60 transition-colors"
+              aria-label="Dismiss"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+              </svg>
+            </button>
+
+            <div className="flex items-start gap-4 pr-6">
+              {/* Gradient icon */}
+              <div
+                className="w-10 h-10 rounded-full shrink-0 flex items-center justify-center"
+                style={{ background: session?.gradient }}
+              >
+                <svg width="18" height="18" viewBox="0 0 48 48" fill="none">
+                  <path d="M24 4C24 4 16 12 16 20C16 24.4 19.6 28 24 28C28.4 28 32 24.4 32 20C32 12 24 4 24 4Z" fill="white" opacity="0.9"/>
+                </svg>
+              </div>
+
+              <div className="flex-1">
+                <p className="text-sm text-white mb-0.5" style={{ fontWeight: 500 }}>
+                  Liked that session?
+                </p>
+                <p className="text-xs text-white/50 mb-4 leading-relaxed">
+                  Create a free account to save your progress, build playlists, and access more sessions.
+                </p>
+                <div className="flex gap-2">
+                  <Link
+                    href={`/signup?next=/session/${session?.id}`}
+                    className="px-4 py-2 rounded-md text-xs text-white transition-opacity hover:opacity-80"
+                    style={{ backgroundColor: "#8B5CF6", fontWeight: 500 }}
+                  >
+                    Create free account
+                  </Link>
+                  <Link
+                    href="/pricing"
+                    className="px-4 py-2 rounded-md text-xs transition-colors hover:bg-white/[0.06]"
+                    style={{ color: "rgba(255,255,255,0.5)", border: "0.5px solid rgba(255,255,255,0.15)" }}
+                  >
+                    See all plans
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <Footer />
     </div>
