@@ -13,6 +13,7 @@ import AudioPlayer from "../../components/AudioPlayer";
 import VideoPlayer from "../../components/VideoPlayer";
 import AddToPlaylistModal from "../../components/AddToPlaylistModal";
 import ShareButton from "../../components/ShareButton";
+import ShareSessionModal from "../../components/ShareSessionModal";
 import { toggleWatchlist, isInWatchlist } from "../../../lib/watchlist";
 import { toggleSaved, isSaved } from "../../../lib/downloads";
 import { createClient } from "../../../lib/supabase-browser";
@@ -43,6 +44,9 @@ export default function SessionPageClient({ session }: { session: SessionData | 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   // Whether the signup prompt has been dismissed
   const [signupPromptDismissed, setSignupPromptDismissed] = useState(false);
+  // Share modal state — shown when a logged-in user finishes a session
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [shareModalShown, setShareModalShown] = useState(false);
 
   // Check watchlist + saved state on mount (localStorage is client-only)
   useEffect(() => {
@@ -73,6 +77,15 @@ export default function SessionPageClient({ session }: { session: SessionData | 
 
   // Show signup prompt when a free session ends and the user is not logged in
   const showSignupPrompt = sessionEnded && !isLoggedIn && session?.isFree === true && !signupPromptDismissed;
+
+  // Auto-show the share modal once when a logged-in user's session finishes
+  useEffect(() => {
+    if (sessionEnded && isLoggedIn && !shareModalShown) {
+      setShareModalShown(true);
+      // Small delay so the player has time to settle before the modal appears
+      setTimeout(() => setShowShareModal(true), 800);
+    }
+  }, [sessionEnded, isLoggedIn]);
 
   // Auto-resume from the position in the URL (?t=123) when coming from Continue Watching.
   // Waits for subscriptionStatus to load before checking if the user can play the session.
@@ -261,6 +274,25 @@ export default function SessionPageClient({ session }: { session: SessionData | 
               duration={session.duration}
               gradient={session.gradient}
             />
+
+            {/* Share your session card — only shown to logged-in users */}
+            {isLoggedIn && (
+              <button
+                onClick={() => setShowShareModal(true)}
+                className="flex items-center gap-2 px-4 py-2 rounded-full text-xs transition-colors hover:bg-white/[0.08]"
+                style={{
+                  backgroundColor: "rgba(255,255,255,0.06)",
+                  border: "0.5px solid rgba(255,255,255,0.12)",
+                  color: "rgba(255,255,255,0.5)",
+                  fontWeight: 500,
+                }}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+                </svg>
+                Share card
+              </button>
+            )}
           </div>
         </div>
 
@@ -347,6 +379,20 @@ export default function SessionPageClient({ session }: { session: SessionData | 
         </div>
 
       </main>
+
+      {/* ── SHARE SESSION MODAL — shown to logged-in users when session ends ── */}
+      {showShareModal && session && (
+        <ShareSessionModal
+          session={{
+            id: session.id,
+            title: session.title,
+            moodCategory: session.moodCategory,
+            duration: session.duration,
+            gradient: session.gradient,
+          }}
+          onClose={() => setShowShareModal(false)}
+        />
+      )}
 
       {/* ── SIGNUP PROMPT — shown to logged-out users after a free session ends ── */}
       {showSignupPrompt && (
