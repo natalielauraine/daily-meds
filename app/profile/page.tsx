@@ -69,6 +69,7 @@ export default function ProfilePage() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [subscriptionStatus, setSubscriptionStatus] = useState("free");
+  const [renewalDate, setRenewalDate] = useState<string | null>(null);
   const [portalLoading, setPortalLoading] = useState(false);
   const [portalError, setPortalError] = useState("");
 
@@ -88,6 +89,15 @@ export default function ProfilePage() {
         .eq("id", data.user.id)
         .single();
       if (profile?.subscription_status) setSubscriptionStatus(profile.subscription_status);
+
+      // Fetch renewal date from Stripe (only matters for paid subscribers)
+      if (profile?.subscription_status && profile.subscription_status !== "free") {
+        const portalRes = await fetch("/api/stripe/customer-portal");
+        if (portalRes.ok) {
+          const portalData = await portalRes.json();
+          if (portalData.renewalDate) setRenewalDate(portalData.renewalDate);
+        }
+      }
 
       setLoading(false);
     });
@@ -200,7 +210,20 @@ export default function ProfilePage() {
             {membership.label}
           </div>
 
-          <p className="text-xs text-white/30 mb-5">{membership.description}</p>
+          <p className="text-xs text-white/30 mb-1">{membership.description}</p>
+
+          {/* Renewal date — shown for monthly/annual subscribers */}
+          {renewalDate && (
+            <p className="text-xs text-white/25 mb-5">Renews {renewalDate}</p>
+          )}
+          {/* Lifetime — never renews */}
+          {membershipKey === "lifetime" && (
+            <p className="text-xs text-white/25 mb-5">Never expires</p>
+          )}
+          {/* Free or no renewal info — just add spacing */}
+          {!renewalDate && membershipKey !== "lifetime" && (
+            <div className="mb-5" />
+          )}
 
           {/* Upgrade button — only shown to free users */}
           {membershipKey === "free" && (
