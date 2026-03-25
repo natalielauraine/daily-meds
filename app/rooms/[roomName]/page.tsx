@@ -1,46 +1,65 @@
 "use client";
 
-// Group meditation room page.
-// Shows a shared countdown timer at the top, the Daily.co room embed in the middle,
-// and emoji reaction buttons at the bottom.
-// Timer starts when the user clicks "Start" and counts down to zero, playing a bell.
+// Group session detail page — /rooms/[id]
+// The [roomName] folder name is kept for routing compatibility; the parameter
+// is now a UUID (the group_session id from Supabase).
+//
+// Flow:
+//  1. Countdown to scheduled_at — shows participant list, join/leave buttons
+//  2. When countdown hits 0 — first connected client updates status to "active";
+//     all clients receive the change via Supabase realtime and start together
+//  3. Active — shows session timer, plays audio if a track was selected
+//  4. Completed — shows shared stats (how many finished, total minutes as a group)
 
-import { useParams, useSearchParams } from "next/navigation";
 import { useState, useEffect, useRef, useCallback } from "react";
+import { useParams, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { createClient } from "../../../lib/supabase-browser";
+import type { User } from "@supabase/supabase-js";
+import {
+  formatSessionTime,
+  formatCountdown,
+  secondsUntil,
+  type GroupSession,
+  type GroupParticipant,
+} from "../../../lib/group-sessions";
 
 const EMOJIS = ["🙏", "✨", "💜", "🌿", "🌊", "🔥", "😌", "💫"];
+const FALLBACK_GRADIENT = "linear-gradient(135deg, #6B21E8 0%, #8B3CF7 25%, #6366F1 60%, #3B82F6 80%, #22D3EE 100%)";
 
-type FloatingEmoji = {
-  id: number;
-  emoji: string;
-  x: number; // percent from left
-};
+type FloatingEmoji = { id: number; emoji: string; x: number };
 
-export default function RoomPage() {
+export default function GroupSessionPage() {
   const params = useParams();
   const searchParams = useSearchParams();
+  const sessionId = params?.roomName as string; // UUID — folder named roomName for compat
+  const inviteCode = searchParams?.get("invite");
 
-  const roomName = params?.roomName as string;
-  const duration = parseInt(searchParams?.get("duration") ?? "10", 10);
-  const sessionName = searchParams?.get("name") ?? "Meditation Room";
-  const gradient = searchParams?.get("gradient") ?? "linear-gradient(135deg, #6B21E8, #22D3EE)";
+  const supabase = createClient();
 
-  const dailyDomain = process.env.NEXT_PUBLIC_DAILY_DOMAIN;
-  const roomUrl = dailyDomain ? `https://${dailyDomain}/${roomName}` : null;
+  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<GroupSession | null>(null);
+  const [participants, setParticipants] = useState<GroupParticipant[]>([]);
+  const [isParticipant, setIsParticipant] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [joining, setJoining] = useState(false);
+  const [inviteCopied, setInviteCopied] = useState(false);
 
-  // Timer state
-  const [secondsLeft, setSecondsLeft] = useState(duration * 60);
-  const [timerRunning, setTimerRunning] = useState(false);
-  const [timerDone, setTimerDone] = useState(false);
-  const [joined, setJoined] = useState(false);
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  // Countdown before session starts (seconds)
+  const [secondsToStart, setSecondsToStart] = useState(0);
+  // Countdown during the active session (seconds remaining)
+  const [secondsRemaining, setSecondsRemaining] = useState(0);
 
-  // Emoji reaction state
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [audioUrl, setAudioUrl] = useState<string | null>(null);
+  const [audioReady, setAudioReady] = useState(false); // user tapped play after autoplay blocked
+
+  // Floating emojis state
   const [floatingEmojis, setFloatingEmojis] = useState<FloatingEmoji[]>([]);
   const emojiIdRef = useRef(0);
 
-  // Bell sound — a simple oscillator played via Web Audio API when the timer ends
+  // Bell sound played via Web Audio when the session ends
   const playBell = useCallback(() => {
     try {
       const ctx = new AudioContext();
@@ -48,256 +67,670 @@ export default function RoomPage() {
       const gain = ctx.createGain();
       osc.connect(gain);
       gain.connect(ctx.destination);
-      osc.frequency.setValueAtTime(528, ctx.currentTime); // 528 Hz — calming tone
+      osc.frequency.setValueAtTime(528, ctx.currentTime);
       gain.gain.setValueAtTime(0.4, ctx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 3);
       osc.start(ctx.currentTime);
       osc.stop(ctx.currentTime + 3);
-    } catch {
-      // Web Audio not available — skip bell
-    }
+    } catch { /* Web Audio not available — skip */ }
   }, []);
 
-  // Start / stop the countdown timer
-  function startTimer() {
-    if (timerRunning) return;
-    setTimerRunning(true);
-    timerRef.current = setInterval(() => {
-      setSecondsLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(timerRef.current!);
-          setTimerRunning(false);
-          setTimerDone(true);
-          playBell();
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-  }
+  // ── INITIAL LOAD ────────────────────────────────────────────────────────────
 
-  function resetTimer() {
-    if (timerRef.current) clearInterval(timerRef.current);
-    setTimerRunning(false);
-    setTimerDone(false);
-    setSecondsLeft(duration * 60);
-  }
-
-  // Clean up timer on unmount
   useEffect(() => {
-    return () => { if (timerRef.current) clearInterval(timerRef.current); };
-  }, []);
+    async function load() {
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+      setUser(currentUser);
 
-  // Fire an emoji that floats upward from a random x position
+      // Fetch the group session
+      const { data: sess, error: sessErr } = await supabase
+        .from("group_sessions")
+        .select("*")
+        .eq("id", sessionId)
+        .single();
+
+      if (sessErr || !sess) {
+        setError("Session not found.");
+        setLoading(false);
+        return;
+      }
+
+      // Private session — verify invite code or existing participation
+      if (!sess.is_public && currentUser?.id !== sess.host_id) {
+        const { data: existing } = await supabase
+          .from("group_session_participants")
+          .select("id")
+          .eq("group_session_id", sessionId)
+          .eq("user_id", currentUser?.id ?? "")
+          .single();
+
+        if (!existing && inviteCode !== sess.invite_code) {
+          setError("This is a private session. You need an invite link to join.");
+          setLoading(false);
+          return;
+        }
+      }
+
+      setSession(sess);
+
+      // Fetch participants
+      const { data: parts } = await supabase
+        .from("group_session_participants")
+        .select("*")
+        .eq("group_session_id", sessionId)
+        .order("joined_at");
+      setParticipants(parts ?? []);
+
+      if (currentUser) {
+        setIsParticipant((parts ?? []).some((p) => p.user_id === currentUser.id));
+      }
+
+      // If session is already active and has an audio track, fetch the URL
+      if (sess.status === "active" && sess.session_id) {
+        fetchAudioUrl(sess.session_id);
+      }
+
+      // Initialise timer state from current server time
+      if (sess.status === "scheduled") {
+        setSecondsToStart(Math.max(0, secondsUntil(sess.scheduled_at)));
+      } else if (sess.status === "active") {
+        const elapsed = Math.floor((Date.now() - new Date(sess.scheduled_at).getTime()) / 1000);
+        setSecondsRemaining(Math.max(0, sess.duration_minutes * 60 - elapsed));
+      }
+
+      setLoading(false);
+    }
+    load();
+  }, [sessionId]);
+
+  // Fetch the audio URL for the session's track
+  async function fetchAudioUrl(libSessionId: string) {
+    const { data } = await supabase
+      .from("sessions")
+      .select("audio_url")
+      .eq("id", libSessionId)
+      .single();
+    if (data?.audio_url) setAudioUrl(data.audio_url);
+  }
+
+  // ── REALTIME SUBSCRIPTIONS ──────────────────────────────────────────────────
+
+  useEffect(() => {
+    if (!sessionId) return;
+
+    // Watch for session status changes (scheduled → active → completed)
+    const sessionChannel = supabase
+      .channel(`group_session:${sessionId}`)
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "group_sessions", filter: `id=eq.${sessionId}` },
+        async (payload) => {
+          const updated = payload.new as GroupSession;
+          setSession((prev) => (prev ? { ...prev, ...updated } : prev));
+
+          if (updated.status === "active") {
+            // Calculate how far into the session we already are (handles late joiners)
+            const elapsed = Math.floor((Date.now() - new Date(updated.scheduled_at).getTime()) / 1000);
+            setSecondsRemaining(Math.max(0, updated.duration_minutes * 60 - elapsed));
+
+            // Fetch audio if there's a track
+            if (updated.session_id) fetchAudioUrl(updated.session_id);
+          }
+
+          if (updated.status === "completed") {
+            playBell();
+          }
+        }
+      )
+      .subscribe();
+
+    // Watch for participants joining or leaving — refresh the list on any change
+    const participantsChannel = supabase
+      .channel(`participants:${sessionId}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "group_session_participants", filter: `group_session_id=eq.${sessionId}` },
+        () => {
+          supabase
+            .from("group_session_participants")
+            .select("*")
+            .eq("group_session_id", sessionId)
+            .order("joined_at")
+            .then(({ data }) => setParticipants(data ?? []));
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(sessionChannel);
+      supabase.removeChannel(participantsChannel);
+    };
+  }, [sessionId]);
+
+  // ── COUNTDOWN + AUTO-START ──────────────────────────────────────────────────
+
+  useEffect(() => {
+    if (!session) return;
+
+    const tick = setInterval(async () => {
+      if (session.status === "scheduled") {
+        const secs = secondsUntil(session.scheduled_at);
+        setSecondsToStart(Math.max(0, secs));
+
+        // When countdown reaches 0, attempt to flip status to "active".
+        // The .eq("status","scheduled") guard means only the first client wins;
+        // the others pick up the change via the realtime subscription.
+        if (secs <= 0) {
+          await supabase
+            .from("group_sessions")
+            .update({ status: "active" })
+            .eq("id", sessionId)
+            .eq("status", "scheduled");
+        }
+      } else if (session.status === "active") {
+        const elapsed = Math.floor((Date.now() - new Date(session.scheduled_at).getTime()) / 1000);
+        const remaining = session.duration_minutes * 60 - elapsed;
+        setSecondsRemaining(Math.max(0, remaining));
+
+        // When the session timer runs out, mark complete
+        if (remaining <= 0) {
+          clearInterval(tick);
+
+          // Mark this user as having completed the session
+          if (user) {
+            await supabase
+              .from("group_session_participants")
+              .update({ completed: true })
+              .eq("group_session_id", sessionId)
+              .eq("user_id", user.id);
+          }
+
+          // Flip session to completed — same first-writer-wins pattern
+          await supabase
+            .from("group_sessions")
+            .update({ status: "completed" })
+            .eq("id", sessionId)
+            .eq("status", "active");
+
+          playBell();
+        }
+      }
+    }, 1000);
+
+    return () => clearInterval(tick);
+  }, [session?.status, session?.scheduled_at, session?.duration_minutes, sessionId, user]);
+
+  // Auto-play audio when URL is ready and session is active
+  useEffect(() => {
+    if (audioUrl && session?.status === "active" && audioRef.current) {
+      audioRef.current.play().catch(() => {
+        // Browser blocked autoplay — show a manual play button instead
+        setAudioReady(true);
+      });
+    }
+  }, [audioUrl, session?.status]);
+
+  // ── ACTIONS ─────────────────────────────────────────────────────────────────
+
+  async function handleJoin() {
+    if (!user || !session) return;
+    setJoining(true);
+    const displayName =
+      user.user_metadata?.full_name ||
+      user.user_metadata?.name ||
+      user.email?.split("@")[0] ||
+      "Anonymous";
+
+    const { error: joinErr } = await supabase
+      .from("group_session_participants")
+      .upsert(
+        {
+          group_session_id: sessionId,
+          user_id: user.id,
+          display_name: displayName,
+          avatar_url: user.user_metadata?.avatar_url ?? null,
+        },
+        { onConflict: "group_session_id,user_id" }
+      );
+
+    if (!joinErr) setIsParticipant(true);
+    setJoining(false);
+  }
+
+  async function handleLeave() {
+    if (!user) return;
+    await supabase
+      .from("group_session_participants")
+      .delete()
+      .eq("group_session_id", sessionId)
+      .eq("user_id", user.id);
+    setIsParticipant(false);
+  }
+
+  function copyInviteLink() {
+    const base = process.env.NEXT_PUBLIC_APP_URL || window.location.origin;
+    const url = `${base}/rooms/${sessionId}?invite=${session?.invite_code}`;
+    navigator.clipboard.writeText(url).then(() => {
+      setInviteCopied(true);
+      setTimeout(() => setInviteCopied(false), 2000);
+    });
+  }
+
   function fireEmoji(emoji: string) {
     const id = ++emojiIdRef.current;
-    const x = 10 + Math.random() * 80; // 10–90% from left
+    const x = 10 + Math.random() * 80;
     setFloatingEmojis((prev) => [...prev, { id, emoji, x }]);
-    // Remove after animation completes (2.5s)
-    setTimeout(() => {
-      setFloatingEmojis((prev) => prev.filter((e) => e.id !== id));
-    }, 2500);
+    setTimeout(() => setFloatingEmojis((prev) => prev.filter((e) => e.id !== id)), 2500);
   }
 
-  // Format seconds as m:ss
-  function fmt(s: number) {
-    const m = Math.floor(s / 60);
-    const sec = s % 60;
-    return `${m}:${sec.toString().padStart(2, "0")}`;
-  }
+  // ── DERIVED VALUES ───────────────────────────────────────────────────────────
 
-  const progressPercent = ((duration * 60 - secondsLeft) / (duration * 60)) * 100;
+  const gradient = session?.gradient ?? FALLBACK_GRADIENT;
+  const completedCount = participants.filter((p) => p.completed).length;
+  const totalGroupMinutes = completedCount * (session?.duration_minutes ?? 0);
+  const progressPercent = session
+    ? Math.min(100, Math.max(0, 100 - (secondsRemaining / (session.duration_minutes * 60)) * 100))
+    : 0;
 
-  // No Daily domain configured
-  if (!dailyDomain) {
+  // ── LOADING ──────────────────────────────────────────────────────────────────
+
+  if (loading) {
     return (
       <div className="flex flex-col min-h-screen items-center justify-center" style={{ backgroundColor: "#0D0D1A" }}>
-        <p className="text-white/40 text-sm mb-4">Daily.co not configured.</p>
-        <Link href="/rooms" className="text-white/50 hover:text-white text-sm transition-colors">← Back to rooms</Link>
+        <div className="w-6 h-6 rounded-full border-2 border-white/20 border-t-purple-400 animate-spin" />
       </div>
     );
   }
 
-  return (
-    <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#0D0D1A" }}>
-
-      {/* ── TOP BAR ────────────────────────────────────────────── */}
-      <div
-        className="shrink-0 px-4 sm:px-6 py-3 flex items-center justify-between"
-        style={{ backgroundColor: "#1A1A2E", borderBottom: "0.5px solid rgba(255,255,255,0.08)" }}
-      >
-        <Link
-          href="/rooms"
-          className="inline-flex items-center gap-1.5 text-sm text-white/40 hover:text-white/70 transition-colors"
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
-          </svg>
-          Leave
+  if (error || !session) {
+    return (
+      <div className="flex flex-col min-h-screen items-center justify-center px-4" style={{ backgroundColor: "#0D0D1A" }}>
+        <p className="text-white/40 text-sm mb-4 text-center">{error || "Session not found."}</p>
+        <Link href="/rooms" className="text-sm text-[#8B5CF6] hover:opacity-80 transition-opacity">
+          ← Back to rooms
         </Link>
-        <p className="text-sm text-white/60 truncate mx-4" style={{ fontWeight: 500 }}>{sessionName}</p>
-        <div className="w-12" /> {/* spacer */}
       </div>
+    );
+  }
 
-      {/* ── TIMER PANEL ────────────────────────────────────────── */}
-      <div
-        className="shrink-0 px-4 sm:px-6 py-5"
-        style={{ backgroundColor: "#0D0D1A", borderBottom: "0.5px solid rgba(255,255,255,0.06)" }}
+  // ── TOP BAR (shared across all phases) ──────────────────────────────────────
+
+  const TopBar = () => (
+    <div
+      className="shrink-0 px-4 sm:px-6 py-3 flex items-center justify-between"
+      style={{ backgroundColor: "#1A1A2E", borderBottom: "0.5px solid rgba(255,255,255,0.08)" }}
+    >
+      <Link
+        href="/rooms"
+        className="inline-flex items-center gap-1.5 text-sm text-white/40 hover:text-white/70 transition-colors"
       >
-        {/* Progress bar */}
-        <div className="w-full h-0.5 rounded-full mb-4" style={{ backgroundColor: "rgba(255,255,255,0.07)" }}>
-          <div
-            className="h-full rounded-full transition-all duration-1000"
-            style={{ width: `${progressPercent}%`, background: gradient }}
-          />
-        </div>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+        </svg>
+        Leave
+      </Link>
+      <p className="text-sm text-white/60 truncate mx-4" style={{ fontWeight: 500 }}>{session.title}</p>
+      <div className="w-12" />
+    </div>
+  );
 
-        <div className="flex items-center justify-between">
-          {/* Time display */}
-          <div>
-            {timerDone ? (
-              <p className="text-2xl text-white" style={{ fontWeight: 500 }}>Session complete 🙏</p>
-            ) : (
+  // ── COMPLETED SCREEN ─────────────────────────────────────────────────────────
+
+  if (session.status === "completed") {
+    return (
+      <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#0D0D1A" }}>
+        <TopBar />
+        <div className="flex-1 flex items-center justify-center px-4 py-10">
+          <div className="w-full max-w-sm text-center">
+            {/* Lotus icon */}
+            <div
+              className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6"
+              style={{ background: gradient }}
+            >
+              <span className="text-3xl">🙏</span>
+            </div>
+
+            <h2 className="text-2xl text-white mb-2" style={{ fontWeight: 500 }}>Session complete</h2>
+            <p className="text-sm text-white/40 mb-8">
+              {session.session_title ?? `${session.duration_minutes} min timer`}
+            </p>
+
+            {/* Shared stats */}
+            <div className="flex gap-4 justify-center mb-8">
+              <div
+                className="flex flex-col items-center px-6 py-4 rounded-[10px]"
+                style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.08)" }}
+              >
+                <span className="text-3xl text-white mb-1" style={{ fontWeight: 500 }}>{completedCount}</span>
+                <span className="text-xs text-white/35">people completed</span>
+              </div>
+              <div
+                className="flex flex-col items-center px-6 py-4 rounded-[10px]"
+                style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.08)" }}
+              >
+                <span className="text-3xl text-white mb-1" style={{ fontWeight: 500 }}>{totalGroupMinutes}</span>
+                <span className="text-xs text-white/35">group minutes</span>
+              </div>
+            </div>
+
+            <ParticipantAvatars participants={participants} gradient={gradient} />
+
+            <Link
+              href="/rooms"
+              className="mt-8 inline-block px-6 py-3 rounded-[10px] text-sm text-white transition-opacity hover:opacity-80"
+              style={{ background: gradient, fontWeight: 500 }}
+            >
+              Back to rooms
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ── ACTIVE SESSION SCREEN ────────────────────────────────────────────────────
+
+  if (session.status === "active") {
+    return (
+      <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#0D0D1A" }}>
+        <TopBar />
+
+        <div className="flex-1 overflow-y-auto">
+          <div className="px-4 sm:px-6 py-8 max-w-xl mx-auto w-full">
+
+            {/* Progress bar */}
+            <div className="w-full h-0.5 rounded-full mb-8" style={{ backgroundColor: "rgba(255,255,255,0.07)" }}>
+              <div
+                className="h-full rounded-full transition-all duration-1000"
+                style={{ width: `${progressPercent}%`, background: gradient }}
+              />
+            </div>
+
+            {/* Timer */}
+            <div className="text-center mb-8">
+              <p className="text-xs text-white/30 mb-3">Meditating together</p>
               <p
-                className="text-4xl tabular-nums"
+                className="text-6xl tabular-nums"
                 style={{
                   fontWeight: 300,
-                  background: timerRunning ? gradient : "rgba(255,255,255,0.5)",
+                  background: gradient,
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
                   backgroundClip: "text",
                   letterSpacing: "-0.02em",
                 }}
               >
-                {fmt(secondsLeft)}
+                {formatCountdown(secondsRemaining)}
               </p>
-            )}
-            <p className="text-xs text-white/25 mt-1">{duration} min session</p>
-          </div>
+              <p className="text-xs text-white/25 mt-2">
+                {session.session_title ?? `${session.duration_minutes} min session`}
+              </p>
+            </div>
 
-          {/* Timer controls */}
-          <div className="flex items-center gap-2">
-            {!timerDone && (
-              <button
-                onClick={timerRunning ? () => { clearInterval(timerRef.current!); setTimerRunning(false); } : startTimer}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm text-white transition-opacity hover:opacity-80"
-                style={{ background: gradient, fontWeight: 500 }}
+            {/* Audio player — only shown when the session has a track */}
+            {audioUrl && (
+              <div
+                className="rounded-[10px] p-4 mb-6 flex items-center gap-3"
+                style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.08)" }}
               >
-                {timerRunning ? (
-                  <>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="white">
-                      <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
-                    </svg>
-                    Pause
-                  </>
-                ) : (
-                  <>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="white" style={{ marginLeft: "1px" }}>
-                      <path d="M8 5v14l11-7z"/>
-                    </svg>
-                    {secondsLeft === duration * 60 ? "Start" : "Resume"}
-                  </>
+                <div
+                  className="w-10 h-10 rounded-full shrink-0 flex items-center justify-center"
+                  style={{ background: gradient }}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
+                    <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm text-white/70" style={{ fontWeight: 500 }}>{session.session_title}</p>
+                  <p className="text-xs text-white/30">Playing for all participants</p>
+                </div>
+                {/* Shown when browser blocks autoplay — user taps to start */}
+                {audioReady && (
+                  <button
+                    onClick={() => { audioRef.current?.play(); setAudioReady(false); }}
+                    className="px-3 py-1.5 rounded-lg text-xs text-white transition-opacity hover:opacity-80"
+                    style={{ background: gradient, fontWeight: 500 }}
+                  >
+                    Tap to play
+                  </button>
                 )}
-              </button>
+                <audio ref={audioRef} src={audioUrl} autoPlay />
+              </div>
             )}
-            <button
-              onClick={resetTimer}
-              className="p-2.5 rounded-full text-white/30 hover:text-white/60 transition-colors"
-              style={{ border: "0.5px solid rgba(255,255,255,0.1)" }}
-              aria-label="Reset timer"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
-              </svg>
-            </button>
+
+            {/* Participants */}
+            <div className="mb-8">
+              <p className="text-xs text-white/40 mb-3">
+                {participants.length} meditating now
+              </p>
+              <ParticipantAvatars participants={participants} gradient={gradient} />
+            </div>
+
+            {/* Emoji reactions */}
+            <div className="relative">
+              {/* Floating emojis layer */}
+              <div className="absolute bottom-full left-0 right-0 h-32 pointer-events-none overflow-hidden">
+                {floatingEmojis.map((e) => (
+                  <span
+                    key={e.id}
+                    className="absolute text-2xl"
+                    style={{ left: `${e.x}%`, bottom: 0, animation: "floatUp 2.5s ease-out forwards" }}
+                  >
+                    {e.emoji}
+                  </span>
+                ))}
+              </div>
+              <div className="flex items-center justify-center gap-2 flex-wrap py-2">
+                {EMOJIS.map((emoji) => (
+                  <button
+                    key={emoji}
+                    onClick={() => fireEmoji(emoji)}
+                    className="w-10 h-10 rounded-full flex items-center justify-center text-xl transition-transform hover:scale-125 active:scale-95"
+                    style={{ backgroundColor: "rgba(255,255,255,0.05)" }}
+                  >
+                    {emoji}
+                  </button>
+                ))}
+              </div>
+            </div>
+
           </div>
         </div>
-      </div>
 
-      {/* ── PRE-JOIN SCREEN ─────────────────────────────────────── */}
-      {!joined ? (
-        <div className="flex-1 flex items-center justify-center px-4 py-10">
+        <style>{`
+          @keyframes floatUp {
+            0%   { transform: translateY(0) scale(1); opacity: 1; }
+            80%  { opacity: 1; }
+            100% { transform: translateY(-120px) scale(1.3); opacity: 0; }
+          }
+        `}</style>
+      </div>
+    );
+  }
+
+  // ── SCHEDULED: WAITING ROOM ──────────────────────────────────────────────────
+
+  return (
+    <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#0D0D1A" }}>
+      <TopBar />
+
+      <div className="flex-1 overflow-y-auto">
+        <div className="px-4 sm:px-6 py-8 max-w-xl mx-auto w-full">
+
+          {/* Session info + countdown card */}
           <div
-            className="w-full max-w-sm p-8 rounded-[10px] text-center"
+            className="rounded-[10px] p-6 mb-6 text-center"
             style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.08)" }}
           >
             <div
-              className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-5"
+              className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
               style={{ background: gradient }}
             >
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="white" opacity={0.9}>
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="white" opacity={0.9}>
                 <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
               </svg>
             </div>
-            <h2 className="text-white text-xl mb-2" style={{ fontWeight: 500 }}>Join the room</h2>
-            <p className="text-sm text-white/40 mb-1">{sessionName}</p>
-            <p className="text-xs text-white/25 mb-8">{duration} min · Start the timer when everyone is ready</p>
-            <button
-              onClick={() => setJoined(true)}
-              className="w-full py-3.5 rounded-[10px] text-sm text-white transition-opacity hover:opacity-80"
-              style={{ background: gradient, fontWeight: 500 }}
-            >
-              Enter Room
-            </button>
-          </div>
-        </div>
-      ) : (
-        <>
-          {/* ── DAILY.CO IFRAME ──────────────────────────────────── */}
-          <div className="flex-1 relative" style={{ minHeight: "300px" }}>
-            <iframe
-              src={`${roomUrl}?theme=dark`}
-              allow="camera; microphone; fullscreen; speaker; display-capture; autoplay"
-              className="absolute inset-0 w-full h-full"
-              style={{ border: "none" }}
-              title="Group Meditation Room"
-            />
 
-            {/* Floating emoji layer — sits above the iframe pointer-events-none */}
-            <div className="absolute inset-0 pointer-events-none overflow-hidden">
-              {floatingEmojis.map((e) => (
-                <span
-                  key={e.id}
-                  className="absolute text-2xl animate-float-up"
-                  style={{ left: `${e.x}%`, bottom: "0", animationDuration: "2.5s" }}
-                >
-                  {e.emoji}
-                </span>
-              ))}
-            </div>
-          </div>
+            <h2 className="text-white text-xl mb-1" style={{ fontWeight: 500 }}>{session.title}</h2>
+            <p className="text-sm text-white/40 mb-1">Hosted by {session.host_name}</p>
+            <p className="text-xs text-white/30 mb-6">
+              {session.session_title ?? `${session.duration_minutes} min timer`}
+              {" · "}
+              {formatSessionTime(session.scheduled_at)}
+            </p>
 
-          {/* ── EMOJI REACTIONS BAR ──────────────────────────────── */}
-          <div
-            className="shrink-0 px-4 py-3 flex items-center justify-center gap-2 flex-wrap"
-            style={{ backgroundColor: "#1A1A2E", borderTop: "0.5px solid rgba(255,255,255,0.08)" }}
-          >
-            {EMOJIS.map((emoji) => (
-              <button
-                key={emoji}
-                onClick={() => fireEmoji(emoji)}
-                className="w-10 h-10 rounded-full flex items-center justify-center text-xl transition-transform hover:scale-125 active:scale-95"
-                style={{ backgroundColor: "rgba(255,255,255,0.05)" }}
-                aria-label={`React with ${emoji}`}
+            {/* Countdown to start */}
+            <div className="mb-6">
+              <p className="text-xs text-white/30 mb-2">Starting in</p>
+              <p
+                className="text-5xl tabular-nums"
+                style={{
+                  fontWeight: 300,
+                  background: gradient,
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  backgroundClip: "text",
+                  letterSpacing: "-0.02em",
+                }}
               >
-                {emoji}
-              </button>
-            ))}
-          </div>
-        </>
-      )}
+                {secondsToStart <= 0 ? "Starting…" : formatCountdown(secondsToStart)}
+              </p>
+            </div>
 
-      {/* Float-up animation — injected as a style tag */}
-      <style>{`
-        @keyframes floatUp {
-          0%   { transform: translateY(0) scale(1); opacity: 1; }
-          80%  { opacity: 1; }
-          100% { transform: translateY(-300px) scale(1.3); opacity: 0; }
-        }
-        .animate-float-up {
-          animation: floatUp 2.5s ease-out forwards;
-        }
-      `}</style>
+            {/* Join / Leave / Sign in */}
+            {!isParticipant ? (
+              user ? (
+                <button
+                  onClick={handleJoin}
+                  disabled={joining}
+                  className="w-full py-3 rounded-[10px] text-sm text-white transition-opacity hover:opacity-80 disabled:opacity-50"
+                  style={{ background: gradient, fontWeight: 500 }}
+                >
+                  {joining ? "Joining…" : "Join Session"}
+                </button>
+              ) : (
+                <Link
+                  href="/login"
+                  className="block w-full py-3 rounded-[10px] text-sm text-white text-center transition-opacity hover:opacity-80"
+                  style={{ background: gradient, fontWeight: 500 }}
+                >
+                  Sign in to join
+                </Link>
+              )
+            ) : (
+              <div className="flex flex-col gap-2">
+                <p className="text-sm text-[#22C55E] mb-1">You&apos;re in ✓</p>
+                <button
+                  onClick={handleLeave}
+                  className="w-full py-2 rounded-[10px] text-sm text-white/40 transition-colors hover:text-white/70"
+                  style={{ border: "0.5px solid rgba(255,255,255,0.12)" }}
+                >
+                  Leave session
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Share invite link — only shown for private sessions to participants */}
+          {!session.is_public && isParticipant && (
+            <div
+              className="rounded-[10px] p-4 mb-6 flex items-center justify-between"
+              style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.08)" }}
+            >
+              <div>
+                <p className="text-xs text-white/40 mb-0.5">Invite code</p>
+                <p className="text-white tracking-[0.2em] text-base" style={{ fontWeight: 500 }}>
+                  {session.invite_code}
+                </p>
+              </div>
+              <button
+                onClick={copyInviteLink}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-colors"
+                style={{
+                  border: "0.5px solid rgba(255,255,255,0.15)",
+                  color: inviteCopied ? "#22C55E" : "rgba(255,255,255,0.6)",
+                }}
+              >
+                {inviteCopied ? (
+                  <>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                    </svg>
+                    Copied!
+                  </>
+                ) : (
+                  <>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                    </svg>
+                    Share link
+                  </>
+                )}
+              </button>
+            </div>
+          )}
+
+          {/* Participant list */}
+          {participants.length > 0 && (
+            <div>
+              <p className="text-xs text-white/40 mb-3">
+                {participants.length} participant{participants.length !== 1 ? "s" : ""}
+                {session.max_participants < 999 && ` · ${session.max_participants} max`}
+              </p>
+              <div
+                className="rounded-[10px] p-4"
+                style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.08)" }}
+              >
+                <ParticipantAvatars participants={participants} gradient={gradient} showNames />
+              </div>
+            </div>
+          )}
+
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── PARTICIPANT AVATARS ───────────────────────────────────────────────────────
+// Shows a grid of avatar circles with initials (or photo if available)
+
+function ParticipantAvatars({
+  participants,
+  gradient,
+  showNames = false,
+}: {
+  participants: GroupParticipant[];
+  gradient: string;
+  showNames?: boolean;
+}) {
+  if (participants.length === 0) return null;
+
+  return (
+    <div className={`flex flex-wrap gap-3 ${showNames ? "" : "justify-center"}`}>
+      {participants.map((p) => (
+        <div key={p.id} className="flex flex-col items-center gap-1">
+          <div
+            className="w-10 h-10 rounded-full flex items-center justify-center text-sm text-white overflow-hidden"
+            style={{ background: p.avatar_url ? "transparent" : gradient, fontWeight: 500 }}
+          >
+            {p.avatar_url ? (
+              <img src={p.avatar_url} alt={p.display_name} className="w-full h-full object-cover" />
+            ) : (
+              p.display_name[0]?.toUpperCase() ?? "?"
+            )}
+          </div>
+          {showNames && (
+            <span className="text-[10px] text-white/35 max-w-[48px] truncate text-center">
+              {p.display_name}
+            </span>
+          )}
+          {p.completed && (
+            <span className="text-[10px]">🙏</span>
+          )}
+        </div>
+      ))}
     </div>
   );
 }
