@@ -24,10 +24,19 @@ import {
   type GroupParticipant,
 } from "../../../lib/group-sessions";
 
-const EMOJIS = ["🙏", "✨", "💜", "🌿", "🌊", "🔥", "😌", "💫"];
+const EMOJIS = ["❤️", "🧡", "💛", "💚", "💙", "💜", "🤍", "🤎", "🔥", "⭐", "🌟", "💫", "✨", "🏁", "🚩"];
 const FALLBACK_GRADIENT = "linear-gradient(135deg, #6B21E8 0%, #8B3CF7 25%, #6366F1 60%, #3B82F6 80%, #22D3EE 100%)";
 
 type FloatingEmoji = { id: number; emoji: string; x: number };
+
+type ChatMessage = {
+  id: string;
+  user_id: string;
+  display_name: string;
+  content: string;
+  created_at: string;
+  likes: number;
+};
 
 export default function GroupSessionPage() {
   const params = useParams();
@@ -58,6 +67,18 @@ export default function GroupSessionPage() {
   // Floating emojis state
   const [floatingEmojis, setFloatingEmojis] = useState<FloatingEmoji[]>([]);
   const emojiIdRef = useRef(0);
+
+  // Waiting room chat
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [messageInput, setMessageInput] = useState("");
+  const [sendingMessage, setSendingMessage] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+
+  // Flag emoji picker (active session reactions)
+  const [flagPickerOpen, setFlagPickerOpen] = useState(false);
+
+  // Emoji picker inside the chat input
+  const [chatEmojiOpen, setChatEmojiOpen] = useState(false);
 
   // Bell sound played via Web Audio when the session ends
   const playBell = useCallback(() => {
@@ -207,6 +228,43 @@ export default function GroupSessionPage() {
     };
   }, [sessionId]);
 
+  // ── CHAT MESSAGES ────────────────────────────────────────────────────────────
+
+  useEffect(() => {
+    if (!sessionId) return;
+
+    // Load existing messages
+    supabase
+      .from("group_session_messages")
+      .select("*")
+      .eq("group_session_id", sessionId)
+      .order("created_at")
+      .then(({ data }) => setMessages(data ?? []));
+
+    // Subscribe to new messages and like updates in real time
+    const msgChannel = supabase
+      .channel(`messages:${sessionId}`)
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "group_session_messages", filter: `group_session_id=eq.${sessionId}` },
+        (payload) => {
+          setMessages((prev) => [...prev, payload.new as ChatMessage]);
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "group_session_messages", filter: `group_session_id=eq.${sessionId}` },
+        (payload) => {
+          setMessages((prev) =>
+            prev.map((m) => (m.id === (payload.new as ChatMessage).id ? { ...m, ...(payload.new as ChatMessage) } : m))
+          );
+        }
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(msgChannel); };
+  }, [sessionId]);
+
   // ── COUNTDOWN + AUTO-START ──────────────────────────────────────────────────
 
   useEffect(() => {
@@ -226,6 +284,15 @@ export default function GroupSessionPage() {
             .update({ status: "active" })
             .eq("id", sessionId)
             .eq("status", "scheduled");
+
+          // Also update local state immediately so the UI doesn't wait for
+          // realtime to bounce back (realtime can be slow or miss the event).
+          setSession((prev) => {
+            if (!prev || prev.status !== "scheduled") return prev;
+            return { ...prev, status: "active" };
+          });
+          const elapsed = Math.floor((Date.now() - new Date(session.scheduled_at).getTime()) / 1000);
+          setSecondsRemaining(Math.max(0, session.duration_minutes * 60 - elapsed));
         }
       } else if (session.status === "active") {
         const elapsed = Math.floor((Date.now() - new Date(session.scheduled_at).getTime()) / 1000);
@@ -243,6 +310,10 @@ export default function GroupSessionPage() {
               .update({ completed: true })
               .eq("group_session_id", sessionId)
               .eq("user_id", user.id);
+            // Update local state immediately so the completed count is correct
+            setParticipants((prev) =>
+              prev.map((p) => (p.user_id === user.id ? { ...p, completed: true } : p))
+            );
           }
 
           // Flip session to completed — same first-writer-wins pattern
@@ -252,6 +323,11 @@ export default function GroupSessionPage() {
             .eq("id", sessionId)
             .eq("status", "active");
 
+          // Update local state immediately
+          setSession((prev) => {
+            if (!prev || prev.status !== "active") return prev;
+            return { ...prev, status: "completed" };
+          });
           playBell();
         }
       }
@@ -259,6 +335,56 @@ export default function GroupSessionPage() {
 
     return () => clearInterval(tick);
   }, [session?.status, session?.scheduled_at, session?.duration_minutes, sessionId, user]);
+
+  // Like a chat message — increments the like count by 1
+  async function handleLike(messageId: string, currentLikes: number) {
+    await supabase
+      .from("group_session_messages")
+      .update({ likes: currentLikes + 1 })
+      .eq("id", messageId);
+    // Update local state immediately
+    setMessages((prev) =>
+      prev.map((m) => (m.id === messageId ? { ...m, likes: currentLikes + 1 } : m))
+    );
+  }
+
+  // Scroll chat to bottom whenever a new message arrives
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  // Send a chat message
+  async function handleSendMessage(e: React.FormEvent) {
+    e.preventDefault();
+    const content = messageInput.trim();
+    if (!content || !user) return;
+    setSendingMessage(true);
+    const displayName =
+      user.user_metadata?.full_name ||
+      user.user_metadata?.name ||
+      user.email?.split("@")[0] ||
+      "Anonymous";
+    const { error: msgErr } = await supabase.from("group_session_messages").insert({
+      group_session_id: sessionId,
+      user_id: user.id,
+      display_name: displayName,
+      content,
+    });
+    if (msgErr) {
+      alert("Could not send message: " + msgErr.message);
+      setSendingMessage(false);
+      return;
+    }
+    setMessageInput("");
+    setSendingMessage(false);
+    // Fallback: re-fetch all messages in case realtime didn't fire
+    const { data } = await supabase
+      .from("group_session_messages")
+      .select("*")
+      .eq("group_session_id", sessionId)
+      .order("created_at");
+    if (data) setMessages(data);
+  }
 
   // Auto-play audio when URL is ready and session is active
   useEffect(() => {
@@ -521,6 +647,8 @@ export default function GroupSessionPage() {
                   </span>
                 ))}
               </div>
+
+              {/* Main emoji bar */}
               <div className="flex items-center justify-center gap-2 flex-wrap py-2">
                 {EMOJIS.map((emoji) => (
                   <button
@@ -532,6 +660,102 @@ export default function GroupSessionPage() {
                     {emoji}
                   </button>
                 ))}
+                {/* Flag picker toggle */}
+                <button
+                  onClick={() => setFlagPickerOpen((o) => !o)}
+                  className="w-10 h-10 rounded-full flex items-center justify-center text-xl transition-transform hover:scale-125 active:scale-95"
+                  style={{ backgroundColor: flagPickerOpen ? "rgba(139,92,246,0.25)" : "rgba(255,255,255,0.05)" }}
+                  title="Country flags"
+                >
+                  🌍
+                </button>
+              </div>
+
+              {/* Country flag picker dropdown */}
+              {flagPickerOpen && (
+                <div
+                  className="rounded-[10px] p-3 mt-1 flex flex-wrap gap-1 justify-center"
+                  style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.1)" }}
+                >
+                  {[
+                    "🇬🇧","🇺🇸","🇦🇺","🇨🇦","🇮🇪","🇳🇿","🇿🇦",
+                    "🇪🇸","🇲🇽","🇦🇷","🇧🇷","🇨🇴","🇵🇪","🇵🇹",
+                    "🇫🇷","🇧🇪","🇨🇭","🇩🇪","🇦🇹","🇮🇹","🇳🇱",
+                    "🇸🇪","🇳🇴","🇩🇰","🇫🇮","🇵🇱","🇺🇦","🇷🇺",
+                    "🇯🇵","🇰🇷","🇨🇳","🇮🇳","🇹🇭","🇻🇳","🇵🇭",
+                    "🇸🇬","🇲🇾","🇮🇩","🇹🇷","🇸🇦","🇦🇪","🇪🇬",
+                    "🇳🇬","🇬🇭","🇰🇪","🇪🇹","🇯🇲","🇧🇧","🇹🇹",
+                    "🇮🇱","🇬🇷","🇨🇿","🇭🇺","🇷🇴","🇸🇰","🇭🇷",
+                  ].map((flag) => (
+                    <button
+                      key={flag}
+                      onClick={() => { fireEmoji(flag); setFlagPickerOpen(false); }}
+                      className="w-9 h-9 rounded-lg flex items-center justify-center text-lg transition-transform hover:scale-125 active:scale-95"
+                      style={{ backgroundColor: "rgba(255,255,255,0.04)" }}
+                    >
+                      {flag}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Chat during the session */}
+            <div className="mt-6">
+              <p className="text-xs text-white/40 mb-3">Group chat</p>
+              <div
+                className="rounded-[10px] overflow-hidden"
+                style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.08)" }}
+              >
+                <div className="h-44 overflow-y-auto px-4 py-3 flex flex-col gap-2">
+                  {messages.length === 0 ? (
+                    <p className="text-xs text-white/20 text-center mt-6">No messages yet</p>
+                  ) : (
+                    messages.map((msg) => (
+                      <div key={msg.id} className="flex gap-2 items-start">
+                        <div
+                          className="w-6 h-6 rounded-full shrink-0 flex items-center justify-center text-[10px] text-white mt-0.5"
+                          style={{ background: gradient, fontWeight: 500 }}
+                        >
+                          {msg.display_name[0]?.toUpperCase() ?? "?"}
+                        </div>
+                        <div>
+                          <span className="text-[11px] text-white/40 mr-1.5">{msg.display_name}</span>
+                          <span className="text-xs text-white/80">{msg.content}</span>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                  <div ref={messagesEndRef} />
+                </div>
+                {user ? (
+                  <form
+                    onSubmit={handleSendMessage}
+                    className="flex items-center gap-2 px-3 py-2"
+                    style={{ borderTop: "0.5px solid rgba(255,255,255,0.07)" }}
+                  >
+                    <input
+                      type="text"
+                      value={messageInput}
+                      onChange={(e) => setMessageInput(e.target.value)}
+                      placeholder="Say something..."
+                      maxLength={200}
+                      className="flex-1 bg-transparent text-sm text-white placeholder-white/20 outline-none"
+                    />
+                    <button
+                      type="submit"
+                      disabled={sendingMessage || !messageInput.trim()}
+                      className="text-xs px-3 py-1.5 rounded-lg text-white transition-opacity hover:opacity-80 disabled:opacity-30"
+                      style={{ background: gradient, fontWeight: 500 }}
+                    >
+                      Send
+                    </button>
+                  </form>
+                ) : (
+                  <p className="text-xs text-white/25 text-center py-3">
+                    <Link href="/login" className="underline">Sign in</Link> to chat
+                  </p>
+                )}
               </div>
             </div>
 
@@ -673,7 +897,7 @@ export default function GroupSessionPage() {
 
           {/* Participant list */}
           {participants.length > 0 && (
-            <div>
+            <div className="mb-6">
               <p className="text-xs text-white/40 mb-3">
                 {participants.length} participant{participants.length !== 1 ? "s" : ""}
                 {session.max_participants < 999 && ` · ${session.max_participants} max`}
@@ -683,6 +907,103 @@ export default function GroupSessionPage() {
                 style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.08)" }}
               >
                 <ParticipantAvatars participants={participants} gradient={gradient} showNames />
+              </div>
+            </div>
+          )}
+
+          {/* Waiting room chat — opens 5 minutes before the session starts */}
+          {secondsToStart <= 300 && (
+            <div>
+              <p className="text-xs text-white/40 mb-3">Waiting room chat</p>
+              <div
+                className="rounded-[10px] overflow-hidden"
+                style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.08)" }}
+              >
+                {/* Message list */}
+                <div className="h-52 overflow-y-auto px-4 py-3 flex flex-col gap-2">
+                  {messages.length === 0 ? (
+                    <p className="text-xs text-white/20 text-center mt-8">
+                      No messages yet — say hello!
+                    </p>
+                  ) : (
+                    messages.map((msg) => (
+                      <div key={msg.id} className="flex gap-2 items-start group">
+                        <div
+                          className="w-6 h-6 rounded-full shrink-0 flex items-center justify-center text-[10px] text-white mt-0.5"
+                          style={{ background: gradient, fontWeight: 500 }}
+                        >
+                          {msg.display_name[0]?.toUpperCase() ?? "?"}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <span className="text-[11px] text-white/40 mr-1.5">{msg.display_name}</span>
+                          <span className="text-xs text-white/80">{msg.content}</span>
+                        </div>
+                        {/* Like button */}
+                        <button
+                          onClick={() => handleLike(msg.id, msg.likes ?? 0)}
+                          className="shrink-0 flex items-center gap-1 text-[11px] text-white/30 hover:text-pink-400 transition-colors"
+                        >
+                          <span>❤️</span>
+                          {(msg.likes ?? 0) > 0 && <span>{msg.likes}</span>}
+                        </button>
+                      </div>
+                    ))
+                  )}
+                  <div ref={messagesEndRef} />
+                </div>
+
+                {/* Input */}
+                {user ? (
+                  <div style={{ borderTop: "0.5px solid rgba(255,255,255,0.07)" }}>
+                    {/* Emoji picker for chat */}
+                    {chatEmojiOpen && (
+                      <div className="px-3 pt-2 pb-1 flex flex-wrap gap-1">
+                        {["❤️","🧡","💛","💚","💙","💜","🤍","🔥","⭐","🌟","✨","💫","😊","😂","🥺","😍","🙏","👍","💪","😌","🫶","🥰","😭","🤩"].map((em) => (
+                          <button
+                            key={em}
+                            type="button"
+                            onClick={() => { setMessageInput((v) => v + em); setChatEmojiOpen(false); }}
+                            className="text-lg hover:scale-125 transition-transform"
+                          >
+                            {em}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                    <form
+                      onSubmit={handleSendMessage}
+                      className="flex items-center gap-2 px-3 py-2"
+                    >
+                      <button
+                        type="button"
+                        onClick={() => setChatEmojiOpen((o) => !o)}
+                        className="text-lg text-white/30 hover:text-white/60 transition-colors"
+                      >
+                        🙂
+                      </button>
+                      <input
+                        type="text"
+                        value={messageInput}
+                        onChange={(e) => setMessageInput(e.target.value)}
+                        placeholder="Say hello..."
+                        maxLength={200}
+                        className="flex-1 bg-transparent text-sm text-white placeholder-white/20 outline-none"
+                      />
+                      <button
+                        type="submit"
+                        disabled={sendingMessage || !messageInput.trim()}
+                        className="text-xs px-3 py-1.5 rounded-lg text-white transition-opacity hover:opacity-80 disabled:opacity-30"
+                        style={{ background: gradient, fontWeight: 500 }}
+                      >
+                        Send
+                      </button>
+                    </form>
+                  </div>
+                ) : (
+                  <p className="text-xs text-white/25 text-center py-3">
+                    <Link href="/login" className="underline">Sign in</Link> to chat
+                  </p>
+                )}
               </div>
             </div>
           )}

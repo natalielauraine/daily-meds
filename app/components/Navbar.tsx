@@ -109,6 +109,12 @@ export default function Navbar() {
             <Link href="/rooms" className="text-sm text-white/70 hover:text-white transition-colors">
               Group Meds
             </Link>
+            <Link href="/crew" className="text-sm text-white/70 hover:text-white transition-colors">
+              Crew
+            </Link>
+            <Link href="/brand-crews" className="text-sm text-white/70 hover:text-white transition-colors">
+              Brand Crews
+            </Link>
             <Link href="/shop" className="text-sm text-white/70 hover:text-white transition-colors">
               Shop
             </Link>
@@ -195,6 +201,13 @@ export default function Navbar() {
                     >
                       Group Meds
                     </Link>
+                    <Link
+                      href="/crew"
+                      className="flex items-center gap-2 px-4 py-2 text-sm text-white/70 hover:text-white hover:bg-white/[0.04] transition-colors"
+                      onClick={() => setUserMenuOpen(false)}
+                    >
+                      Crew
+                    </Link>
 
                     {/* Logout */}
                     <div className="border-t border-white/[0.06] mt-1 pt-1">
@@ -256,6 +269,8 @@ export default function Navbar() {
           <Link href="/free" className="text-sm text-white/70 hover:text-white transition-colors" onClick={() => setMobileMenuOpen(false)}>Free Sessions</Link>
           <Link href="/pricing" className="text-sm text-white/70 hover:text-white transition-colors" onClick={() => setMobileMenuOpen(false)}>Pricing</Link>
           <Link href="/rooms" className="text-sm text-white/70 hover:text-white transition-colors" onClick={() => setMobileMenuOpen(false)}>Group Meds</Link>
+          <Link href="/crew" className="text-sm text-white/70 hover:text-white transition-colors" onClick={() => setMobileMenuOpen(false)}>Crew</Link>
+          <Link href="/brand-crews" className="text-sm text-white/70 hover:text-white transition-colors" onClick={() => setMobileMenuOpen(false)}>Brand Crews</Link>
           <Link href="/shop" className="text-sm text-white/70 hover:text-white transition-colors" onClick={() => setMobileMenuOpen(false)}>Shop</Link>
 
           <div className="flex flex-col gap-2 pt-2 border-t border-white/[0.08]">
