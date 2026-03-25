@@ -14,7 +14,10 @@
       "Bash(find '/Users/natalielauraine/Desktop/ç Daily Meds' -name supabase.ts -not -path */node_modules/*)",
       "Bash(npm run:*)",
       "Bash(ls \"/Users/natalielauraine/Desktop/ç Daily Meds/next.config\"*)",
-      "Bash(ls \"/Users/natalielauraine/Desktop/ç Daily Meds/postcss.config\"*)"
+      "Bash(ls \"/Users/natalielauraine/Desktop/ç Daily Meds/postcss.config\"*)",
+      "Bash(pkill -f \"next dev\")",
+      "Bash(pkill -f \"next-server\")",
+      "Bash(grep -E '\"\"framer-motion|canvas-confetti|number-flow|radix-ui|class-variance|lucide|clsx|tailwind-merge\"\"' package.json)"
     ]
   }
 }
