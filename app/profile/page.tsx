@@ -74,6 +74,10 @@ export default function ProfilePage() {
   const [portalLoading, setPortalLoading] = useState(false);
   const [portalError, setPortalError] = useState("");
 
+  // Community visibility settings
+  const [communitySettings, setCommunitySettings] = useState({ show_in_feed: false, show_in_leaderboard: false });
+  const [savingCommunity, setSavingCommunity] = useState(false);
+
   // Fetch the current user and their subscription status on mount
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data }) => {
@@ -90,6 +94,14 @@ export default function ProfilePage() {
         .eq("id", data.user.id)
         .single();
       if (profile?.subscription_status) setSubscriptionStatus(profile.subscription_status);
+
+      // Fetch community settings
+      const { data: cs } = await supabase
+        .from("community_settings")
+        .select("*")
+        .eq("user_id", data.user.id)
+        .maybeSingle();
+      if (cs) setCommunitySettings({ show_in_feed: cs.show_in_feed, show_in_leaderboard: cs.show_in_leaderboard });
 
       // Fetch renewal date from Stripe (only matters for paid subscribers)
       if (profile?.subscription_status && profile.subscription_status !== "free") {
@@ -121,6 +133,19 @@ export default function ProfilePage() {
     } finally {
       setPortalLoading(false);
     }
+  }
+
+  // Save community visibility settings
+  async function handleCommunityToggle(field: "show_in_feed" | "show_in_leaderboard") {
+    if (!user) return;
+    setSavingCommunity(true);
+    const updated = { ...communitySettings, [field]: !communitySettings[field] };
+    setCommunitySettings(updated);
+    await supabase.from("community_settings").upsert(
+      { user_id: user.id, ...updated, updated_at: new Date().toISOString() },
+      { onConflict: "user_id" }
+    );
+    setSavingCommunity(false);
   }
 
   // Sign out and redirect home
@@ -363,6 +388,60 @@ export default function ProfilePage() {
               <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/>
             </svg>
           </Link>
+
+          {/* Section header — community */}
+          <div
+            className="px-5 py-3"
+            style={{ backgroundColor: "#1A1A2E", borderTop: "0.5px solid rgba(255,255,255,0.06)", borderBottom: "0.5px solid rgba(255,255,255,0.06)" }}
+          >
+            <p className="text-xs text-white/30 uppercase tracking-wide">Community visibility</p>
+          </div>
+
+          {/* Toggle — show in community feed */}
+          <div
+            className="flex items-center justify-between px-5 py-4"
+            style={{ backgroundColor: "#1A1A2E", borderBottom: "0.5px solid rgba(255,255,255,0.06)" }}
+          >
+            <div>
+              <p className="text-sm text-white/70">Show my activity in the feed</p>
+              <p className="text-xs text-white/30 mt-0.5">Share completed sessions anonymously in the community</p>
+            </div>
+            <button
+              onClick={() => handleCommunityToggle("show_in_feed")}
+              disabled={savingCommunity}
+              className="relative shrink-0 ml-4 w-10 h-6 rounded-full transition-colors duration-200 disabled:opacity-50"
+              style={{ backgroundColor: communitySettings.show_in_feed ? "#8B5CF6" : "rgba(255,255,255,0.12)" }}
+              aria-label="Toggle community feed visibility"
+            >
+              <span
+                className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform duration-200"
+                style={{ transform: communitySettings.show_in_feed ? "translateX(16px)" : "translateX(0)" }}
+              />
+            </button>
+          </div>
+
+          {/* Toggle — show in leaderboard */}
+          <div
+            className="flex items-center justify-between px-5 py-4"
+            style={{ backgroundColor: "#1A1A2E", borderBottom: "0.5px solid rgba(255,255,255,0.06)" }}
+          >
+            <div>
+              <p className="text-sm text-white/70">Show me in the leaderboard</p>
+              <p className="text-xs text-white/30 mt-0.5">Appear in the most active this week rankings</p>
+            </div>
+            <button
+              onClick={() => handleCommunityToggle("show_in_leaderboard")}
+              disabled={savingCommunity}
+              className="relative shrink-0 ml-4 w-10 h-6 rounded-full transition-colors duration-200 disabled:opacity-50"
+              style={{ backgroundColor: communitySettings.show_in_leaderboard ? "#8B5CF6" : "rgba(255,255,255,0.12)" }}
+              aria-label="Toggle leaderboard visibility"
+            >
+              <span
+                className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform duration-200"
+                style={{ transform: communitySettings.show_in_leaderboard ? "translateX(16px)" : "translateX(0)" }}
+              />
+            </button>
+          </div>
 
           {/* Row — sign out */}
           <button

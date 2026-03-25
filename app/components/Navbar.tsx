@@ -109,6 +109,9 @@ export default function Navbar() {
             <Link href="/rooms" className="text-sm text-white/70 hover:text-white transition-colors">
               Group Meds
             </Link>
+            <Link href="/challenges" className="text-sm text-white/70 hover:text-white transition-colors">
+              Challenges
+            </Link>
             <Link href="/crew" className="text-sm text-white/70 hover:text-white transition-colors">
               Crew
             </Link>
@@ -269,6 +272,7 @@ export default function Navbar() {
           <Link href="/free" className="text-sm text-white/70 hover:text-white transition-colors" onClick={() => setMobileMenuOpen(false)}>Free Sessions</Link>
           <Link href="/pricing" className="text-sm text-white/70 hover:text-white transition-colors" onClick={() => setMobileMenuOpen(false)}>Pricing</Link>
           <Link href="/rooms" className="text-sm text-white/70 hover:text-white transition-colors" onClick={() => setMobileMenuOpen(false)}>Group Meds</Link>
+          <Link href="/challenges" className="text-sm text-white/70 hover:text-white transition-colors" onClick={() => setMobileMenuOpen(false)}>Challenges</Link>
           <Link href="/crew" className="text-sm text-white/70 hover:text-white transition-colors" onClick={() => setMobileMenuOpen(false)}>Crew</Link>
           <Link href="/brand-crews" className="text-sm text-white/70 hover:text-white transition-colors" onClick={() => setMobileMenuOpen(false)}>Brand Crews</Link>
           <Link href="/shop" className="text-sm text-white/70 hover:text-white transition-colors" onClick={() => setMobileMenuOpen(false)}>Shop</Link>
