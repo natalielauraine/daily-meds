@@ -193,7 +193,7 @@ export default function RoomsPage() {
       .single();
 
     if (insertError || !newSession) {
-      setCreateError("Could not create session — please try again.");
+      setCreateError(insertError?.message ?? "Could not create session — please try again.");
       setCreating(false);
       return;
     }
@@ -556,8 +556,8 @@ function CreateModal({
                 type="date"
                 value={form.date}
                 onChange={(e) => setForm({ ...form, date: e.target.value })}
-                className="w-full px-3 py-2.5 rounded-lg text-sm outline-none"
-                style={{ ...inputStyle, colorScheme: "dark" }}
+                className="dm-datetime-input w-full px-3 py-2.5 rounded-lg text-sm outline-none text-white"
+                style={inputStyle}
               />
             </div>
             <div>
@@ -566,11 +566,15 @@ function CreateModal({
                 type="time"
                 value={form.time}
                 onChange={(e) => setForm({ ...form, time: e.target.value })}
-                className="w-full px-3 py-2.5 rounded-lg text-sm outline-none"
-                style={{ ...inputStyle, colorScheme: "dark" }}
+                className="dm-datetime-input w-full px-3 py-2.5 rounded-lg text-sm outline-none text-white"
+                style={inputStyle}
               />
             </div>
           </div>
+          <style>{`
+            .dm-datetime-input { color-scheme: dark; }
+            .dm-datetime-input::-webkit-calendar-picker-indicator { filter: invert(1); opacity: 0.5; cursor: pointer; }
+          `}</style>
 
           {/* Max participants */}
           <div>
