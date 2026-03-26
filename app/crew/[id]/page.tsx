@@ -1,8 +1,22 @@
 "use client";
 
 // /crew/[id] — individual crew page.
-// Shows members, activity feed, invite code and a link to schedule a Group Med.
+// Shows members, activity feed with emoji reactions, invite code and a link to schedule a Group Med.
 // Privacy rule: never shows what session a member listened to — only activity type.
+//
+// ── SUPABASE TABLE NEEDED ────────────────────────────────────────────────────
+// Run this SQL in Supabase → SQL editor before using emoji reactions on activity:
+//
+// CREATE TABLE IF NOT EXISTS public.crew_activity_reactions (
+//   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+//   crew_activity_id UUID NOT NULL,
+//   from_user_id UUID NOT NULL,
+//   from_display_name TEXT,
+//   emoji TEXT NOT NULL,
+//   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+//   UNIQUE(crew_activity_id, from_user_id, emoji)
+// );
+// ─────────────────────────────────────────────────────────────────────────────
 
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
@@ -12,6 +26,12 @@ import type { User } from "@supabase/supabase-js";
 import { formatActivity, timeAgo, type Crew, type CrewMember, type CrewActivity } from "../../../lib/crews";
 
 const GRADIENT = "linear-gradient(135deg, #6B21E8 0%, #8B3CF7 25%, #6366F1 60%, #3B82F6 80%, #22D3EE 100%)";
+
+// The six reaction emojis — same set as community feed
+const ACTIVITY_EMOJIS = ["🔥", "💜", "🙏", "⭐", "💪", "🧘"];
+
+// Shape of a reaction entry per activity item
+type ActivityReaction = { emoji: string; count: number; userReacted: boolean };
 
 export default function CrewDetailPage() {
   const params = useParams();
@@ -29,6 +49,14 @@ export default function CrewDetailPage() {
   const [inviteCopied, setInviteCopied] = useState(false);
   const [showInvite, setShowInvite] = useState(false);
   const [leaving, setLeaving] = useState(false);
+
+  // Reactions: maps activityId → array of { emoji, count, userReacted }
+  const [activityReactions, setActivityReactions] = useState<Record<string, ActivityReaction[]>>({});
+
+  // Who-reacted popover
+  const [reactorPopover, setReactorPopover] = useState<{ activityId: string; emoji: string } | null>(null);
+  const [reactorNames, setReactorNames] = useState<string[]>([]);
+  const [reactorLoading, setReactorLoading] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -75,9 +103,15 @@ export default function CrewDetailPage() {
         .eq("crew_id", crewId)
         .order("created_at", { ascending: false })
         .limit(30);
-      setActivity(activityData ?? []);
+      const activities = activityData ?? [];
+      setActivity(activities);
 
-      // Count "completed" events per member this week (used as sessions this week)
+      // Fetch reactions for all visible activity items
+      if (activities.length > 0) {
+        await loadReactions(activities.map((a) => a.id), u.id);
+      }
+
+      // Count "completed" events per member this week
       const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
       const { data: weekData } = await supabase
         .from("crew_activity")
@@ -97,7 +131,34 @@ export default function CrewDetailPage() {
     load();
   }, [crewId]);
 
-  // Realtime: new activity events
+  // Load all reactions for a list of activity IDs and build the reaction map
+  async function loadReactions(activityIds: string[], currentUserId: string) {
+    const { data: allReactions } = await supabase
+      .from("crew_activity_reactions")
+      .select("crew_activity_id, emoji, from_user_id")
+      .in("crew_activity_id", activityIds);
+
+    const map: Record<string, ActivityReaction[]> = {};
+
+    (allReactions ?? []).forEach((r) => {
+      if (!map[r.crew_activity_id]) map[r.crew_activity_id] = [];
+      const existing = map[r.crew_activity_id].find((x) => x.emoji === r.emoji);
+      if (existing) {
+        existing.count++;
+        if (r.from_user_id === currentUserId) existing.userReacted = true;
+      } else {
+        map[r.crew_activity_id].push({
+          emoji: r.emoji,
+          count: 1,
+          userReacted: r.from_user_id === currentUserId,
+        });
+      }
+    });
+
+    setActivityReactions(map);
+  }
+
+  // Realtime: new activity events + reaction changes
   useEffect(() => {
     if (!crewId) return;
 
@@ -112,7 +173,6 @@ export default function CrewDetailPage() {
       )
       .subscribe();
 
-    // Realtime: member list changes
     const membersChannel = supabase
       .channel(`crew_members_detail:${crewId}`)
       .on(
@@ -129,13 +189,97 @@ export default function CrewDetailPage() {
       )
       .subscribe();
 
+    // Realtime: reload reactions when any crew_activity_reaction changes
+    const reactionsChannel = supabase
+      .channel(`crew_reactions:${crewId}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "crew_activity_reactions" },
+        async () => {
+          // Re-fetch activity ids and reload reactions
+          const { data: acts } = await supabase
+            .from("crew_activity")
+            .select("id")
+            .eq("crew_id", crewId)
+            .limit(30);
+          const { data: { user: u } } = await supabase.auth.getUser();
+          if (acts && u) {
+            await loadReactions(acts.map((a) => a.id), u.id);
+          }
+        }
+      )
+      .subscribe();
+
     return () => {
       supabase.removeChannel(activityChannel);
       supabase.removeChannel(membersChannel);
+      supabase.removeChannel(reactionsChannel);
     };
   }, [crewId]);
 
-  // Copy the invite link to clipboard
+  // React or unreact to a crew activity item
+  async function handleCrewReact(activityId: string, emoji: string, isReacted: boolean) {
+    if (!user) return;
+
+    const displayName = user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split("@")[0] || "Someone";
+
+    // Optimistic update
+    setActivityReactions((prev) => {
+      const current = prev[activityId] ? [...prev[activityId]] : [];
+      const existing = current.find((r) => r.emoji === emoji);
+      if (isReacted) {
+        // Remove reaction
+        return {
+          ...prev,
+          [activityId]: current
+            .map((r) => r.emoji === emoji ? { ...r, count: r.count - 1, userReacted: false } : r)
+            .filter((r) => r.count > 0),
+        };
+      } else {
+        // Add reaction
+        if (existing) {
+          return { ...prev, [activityId]: current.map((r) => r.emoji === emoji ? { ...r, count: r.count + 1, userReacted: true } : r) };
+        }
+        return { ...prev, [activityId]: [...current, { emoji, count: 1, userReacted: true }] };
+      }
+    });
+
+    if (isReacted) {
+      await supabase
+        .from("crew_activity_reactions")
+        .delete()
+        .eq("crew_activity_id", activityId)
+        .eq("from_user_id", user.id)
+        .eq("emoji", emoji);
+    } else {
+      await supabase
+        .from("crew_activity_reactions")
+        .upsert(
+          { crew_activity_id: activityId, from_user_id: user.id, from_display_name: displayName, emoji },
+          { onConflict: "crew_activity_id,from_user_id,emoji" }
+        );
+    }
+  }
+
+  // Fetch names of everyone who reacted with a given emoji to an activity
+  async function fetchReactors(activityId: string, emoji: string) {
+    setReactorLoading(true);
+    setReactorNames([]);
+
+    const { data: reactions } = await supabase
+      .from("crew_activity_reactions")
+      .select("from_display_name")
+      .eq("crew_activity_id", activityId)
+      .eq("emoji", emoji)
+      .limit(20);
+
+    const names = (reactions ?? [])
+      .map((r) => r.from_display_name || "Someone")
+      .filter(Boolean);
+    setReactorNames(names);
+    setReactorLoading(false);
+  }
+
   function copyInviteLink() {
     const base = process.env.NEXT_PUBLIC_APP_URL || window.location.origin;
     const url = `${base}/crew?invite=${crew?.invite_code}`;
@@ -144,7 +288,6 @@ export default function CrewDetailPage() {
     setTimeout(() => setInviteCopied(false), 2000);
   }
 
-  // Leave the crew
   async function handleLeave() {
     if (!user) return;
     if (!confirm("Are you sure you want to leave this crew?")) return;
@@ -224,7 +367,7 @@ export default function CrewDetailPage() {
           </button>
         </div>
 
-        {/* Invite section — shown when Invite is clicked */}
+        {/* Invite section */}
         {showInvite && (
           <div
             className="rounded-[10px] p-5 mb-6"
@@ -287,7 +430,6 @@ export default function CrewDetailPage() {
                 className="flex items-center gap-3 px-4 py-3"
                 style={{ borderTop: i > 0 ? "0.5px solid rgba(255,255,255,0.05)" : "none" }}
               >
-                {/* Avatar */}
                 <div
                   className="w-9 h-9 rounded-full shrink-0 flex items-center justify-center text-sm text-white overflow-hidden"
                   style={{ background: member.avatar_url ? "transparent" : GRADIENT, fontWeight: 500 }}
@@ -298,8 +440,6 @@ export default function CrewDetailPage() {
                     member.display_name[0]?.toUpperCase() ?? "?"
                   )}
                 </div>
-
-                {/* Name + role */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <p className="text-sm text-white truncate" style={{ fontWeight: member.user_id === user?.id ? 500 : 400 }}>
@@ -318,8 +458,6 @@ export default function CrewDetailPage() {
                     )}
                   </div>
                 </div>
-
-                {/* Sessions this week */}
                 <div className="text-right shrink-0">
                   <p className="text-sm text-white" style={{ fontWeight: 500 }}>
                     {weeklyStats[member.user_id] ?? 0}
@@ -338,25 +476,125 @@ export default function CrewDetailPage() {
             <p className="text-xs text-white/20 text-center py-8">No activity yet — complete a meditation to see it here</p>
           ) : (
             <div className="flex flex-col gap-2">
-              {activity.map((event) => (
-                <div
-                  key={event.id}
-                  className="flex items-start gap-3 rounded-[10px] px-4 py-3"
-                  style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.06)" }}
-                >
-                  {/* Activity dot */}
-                  <div className="w-2 h-2 rounded-full mt-1.5 shrink-0" style={{ background: GRADIENT }} />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm text-white/70">{formatActivity(event)}</p>
+              {activity.map((event) => {
+                const reactions = activityReactions[event.id] ?? [];
+                return (
+                  <div
+                    key={event.id}
+                    className="rounded-[10px] px-4 py-3"
+                    style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.06)" }}
+                  >
+                    {/* Activity text row */}
+                    <div className="flex items-start gap-3">
+                      <div className="w-2 h-2 rounded-full mt-1.5 shrink-0" style={{ background: GRADIENT }} />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm text-white/70">{formatActivity(event)}</p>
+                      </div>
+                      <p className="text-[11px] text-white/25 shrink-0 mt-0.5">{timeAgo(event.created_at)}</p>
+                    </div>
+
+                    {/* Emoji reaction pills */}
+                    <div className="flex items-center gap-1.5 mt-2.5 flex-wrap pl-5">
+                      {ACTIVITY_EMOJIS.map((emoji) => {
+                        const r = reactions.find((x) => x.emoji === emoji);
+                        const isReacted = r?.userReacted ?? false;
+                        return (
+                          <div
+                            key={emoji}
+                            className="flex items-center rounded-lg text-xs overflow-hidden"
+                            style={{
+                              backgroundColor: isReacted ? "rgba(139,92,246,0.2)" : "rgba(255,255,255,0.03)",
+                              border: `0.5px solid ${isReacted ? "rgba(139,92,246,0.4)" : "rgba(255,255,255,0.06)"}`,
+                            }}
+                          >
+                            {/* Emoji — tap to react or unreact */}
+                            <button
+                              onClick={() => handleCrewReact(event.id, emoji, isReacted)}
+                              className="px-1.5 py-0.5 transition-opacity hover:opacity-70"
+                              style={{ color: isReacted ? "#C4B5FD" : "rgba(255,255,255,0.3)" }}
+                            >
+                              {emoji}
+                            </button>
+                            {/* Count — tap to see who reacted */}
+                            {r && r.count > 0 && (
+                              <button
+                                onClick={() => {
+                                  setReactorPopover({ activityId: event.id, emoji });
+                                  fetchReactors(event.id, emoji);
+                                }}
+                                className="pr-1.5 py-0.5 transition-opacity hover:opacity-70"
+                                style={{ color: isReacted ? "#C4B5FD" : "rgba(255,255,255,0.4)" }}
+                              >
+                                {r.count}
+                              </button>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
-                  <p className="text-[11px] text-white/25 shrink-0 mt-0.5">{timeAgo(event.created_at)}</p>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
 
       </div>
+
+      {/* Who reacted popover */}
+      {reactorPopover && (
+        <div
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center px-4 pb-6 sm:pb-0"
+          style={{ backgroundColor: "rgba(0,0,0,0.65)" }}
+          onClick={() => setReactorPopover(null)}
+        >
+          <div
+            className="w-full max-w-xs rounded-[14px] p-5"
+            style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.12)" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <span className="text-xl">{reactorPopover.emoji}</span>
+                <span className="text-sm text-white/60">
+                  {reactorLoading ? "Loading…" : `${reactorNames.length} reaction${reactorNames.length !== 1 ? "s" : ""}`}
+                </span>
+              </div>
+              <button onClick={() => setReactorPopover(null)} className="text-white/30 hover:text-white/60 transition-colors">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                </svg>
+              </button>
+            </div>
+
+            {reactorLoading && (
+              <div className="flex justify-center py-4">
+                <div className="w-5 h-5 rounded-full border-2 border-white/10 border-t-purple-400 animate-spin" />
+              </div>
+            )}
+
+            {!reactorLoading && reactorNames.length > 0 && (
+              <div className="flex flex-col gap-2 max-h-48 overflow-y-auto">
+                {reactorNames.map((name, i) => (
+                  <div key={i} className="flex items-center gap-2.5">
+                    <div
+                      className="w-7 h-7 rounded-full shrink-0 flex items-center justify-center text-xs text-white"
+                      style={{ background: GRADIENT, fontWeight: 500 }}
+                    >
+                      {name[0]?.toUpperCase()}
+                    </div>
+                    <span className="text-sm text-white/70">{name}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {!reactorLoading && reactorNames.length === 0 && (
+              <p className="text-xs text-white/30 text-center py-3">No reactions yet</p>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

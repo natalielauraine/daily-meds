@@ -30,7 +30,8 @@ const MOOD_GRADIENTS: Record<string, string> = {
 
 const PURPLE = "linear-gradient(135deg, #8B5CF6 0%, #6366F1 50%, #3B82F6 100%)";
 
-const POST_EMOJIS = ["❤️", "🙌", "✨", "🔥", "💜", "🌟"];
+// The six reaction emojis — matches the design spec
+const POST_EMOJIS = ["🔥", "💜", "🙏", "⭐", "💪", "🧘"];
 
 type CommunityPost = {
   id: string;
@@ -62,6 +63,11 @@ export default function CommunityPage() {
   const [settings, setSettings] = useState({ show_in_feed: false, show_in_leaderboard: false });
   const [todayStats, setTodayStats] = useState({ posts: 0, uniqueUsers: 0 });
   const [loading, setLoading] = useState(true);
+
+  // Who-reacted popover — which post+emoji pill was tapped
+  const [reactorPopover, setReactorPopover] = useState<{ postId: string; emoji: string } | null>(null);
+  const [reactorNames, setReactorNames] = useState<string[]>([]);
+  const [reactorLoading, setReactorLoading] = useState(false);
 
   // Share a win modal
   const [showShare, setShowShare] = useState(false);
@@ -204,6 +210,35 @@ export default function CommunityPage() {
         }
       }
     }));
+  }
+
+  // Fetch the display names of everyone who reacted with a given emoji on a post
+  async function fetchReactors(postId: string, emoji: string) {
+    setReactorLoading(true);
+    setReactorNames([]);
+
+    // Get all user_ids who reacted with this emoji
+    const { data: reactions } = await supabase
+      .from("community_post_reactions")
+      .select("user_id")
+      .eq("post_id", postId)
+      .eq("emoji", emoji)
+      .limit(20);
+
+    if (!reactions || reactions.length === 0) {
+      setReactorLoading(false);
+      return;
+    }
+
+    // Look up their names from the users table
+    const { data: users } = await supabase
+      .from("users")
+      .select("id, name")
+      .in("id", reactions.map((r) => r.user_id));
+
+    const names = (users ?? []).map((u) => u.name || "Someone");
+    setReactorNames(names);
+    setReactorLoading(false);
   }
 
   async function handleShare() {
@@ -355,23 +390,42 @@ export default function CommunityPage() {
                           )}
 
                           {/* Reactions row */}
-                          <div className="flex items-center gap-2 mt-3 flex-wrap">
+                          <div className="flex items-center gap-1.5 mt-3 flex-wrap">
                             {POST_EMOJIS.map((emoji) => {
                               const r = post.reactions.find(x => x.emoji === emoji);
+                              const isReacted = r?.userReacted ?? false;
                               return (
-                                <button
+                                // Pill wrapper — split into two tappable zones
+                                <div
                                   key={emoji}
-                                  onClick={() => handleReact(post.id, emoji, r?.userReacted ?? false)}
-                                  className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs transition-all"
+                                  className="flex items-center rounded-lg text-xs overflow-hidden"
                                   style={{
-                                    backgroundColor: r?.userReacted ? "rgba(139,92,246,0.2)" : "rgba(255,255,255,0.04)",
-                                    border: `0.5px solid ${r?.userReacted ? "rgba(139,92,246,0.4)" : "rgba(255,255,255,0.07)"}`,
-                                    color: r?.userReacted ? "#C4B5FD" : "rgba(255,255,255,0.35)",
+                                    backgroundColor: isReacted ? "rgba(139,92,246,0.2)" : "rgba(255,255,255,0.04)",
+                                    border: `0.5px solid ${isReacted ? "rgba(139,92,246,0.4)" : "rgba(255,255,255,0.07)"}`,
                                   }}
                                 >
-                                  <span>{emoji}</span>
-                                  {r && r.count > 0 && <span>{r.count}</span>}
-                                </button>
+                                  {/* Left side: emoji — tap to react or unreact */}
+                                  <button
+                                    onClick={() => handleReact(post.id, emoji, isReacted)}
+                                    className="px-2 py-1 transition-opacity hover:opacity-70"
+                                    style={{ color: isReacted ? "#C4B5FD" : "rgba(255,255,255,0.35)" }}
+                                  >
+                                    {emoji}
+                                  </button>
+                                  {/* Right side: count — tap to see who reacted */}
+                                  {r && r.count > 0 && (
+                                    <button
+                                      onClick={() => {
+                                        setReactorPopover({ postId: post.id, emoji });
+                                        fetchReactors(post.id, emoji);
+                                      }}
+                                      className="pr-2 py-1 transition-opacity hover:opacity-70"
+                                      style={{ color: isReacted ? "#C4B5FD" : "rgba(255,255,255,0.4)" }}
+                                    >
+                                      {r.count}
+                                    </button>
+                                  )}
+                                </div>
                               );
                             })}
                           </div>
@@ -603,6 +657,64 @@ export default function CommunityPage() {
                 {sharing ? "Sharing…" : "Share"}
               </button>
             </div>
+          </div>
+        </div>
+      )}
+      {/* Who reacted popover */}
+      {reactorPopover && (
+        <div
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center px-4 pb-6 sm:pb-0"
+          style={{ backgroundColor: "rgba(0,0,0,0.65)" }}
+          onClick={() => setReactorPopover(null)}
+        >
+          <div
+            className="w-full max-w-xs rounded-[14px] p-5"
+            style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.12)" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <span className="text-xl">{reactorPopover.emoji}</span>
+                <span className="text-sm text-white/60">
+                  {reactorLoading ? "Loading…" : `${reactorNames.length} reaction${reactorNames.length !== 1 ? "s" : ""}`}
+                </span>
+              </div>
+              <button onClick={() => setReactorPopover(null)} className="text-white/30 hover:text-white/60 transition-colors">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                </svg>
+              </button>
+            </div>
+
+            {/* Loading spinner */}
+            {reactorLoading && (
+              <div className="flex justify-center py-4">
+                <div className="w-5 h-5 rounded-full border-2 border-white/10 border-t-purple-400 animate-spin" />
+              </div>
+            )}
+
+            {/* Names list */}
+            {!reactorLoading && reactorNames.length > 0 && (
+              <div className="flex flex-col gap-2 max-h-48 overflow-y-auto">
+                {reactorNames.map((name, i) => (
+                  <div key={i} className="flex items-center gap-2.5">
+                    <div
+                      className="w-7 h-7 rounded-full shrink-0 flex items-center justify-center text-xs text-white"
+                      style={{ background: "linear-gradient(135deg, #8B5CF6, #6366F1)", fontWeight: 500 }}
+                    >
+                      {name[0]?.toUpperCase()}
+                    </div>
+                    <span className="text-sm text-white/70">{name}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Empty state */}
+            {!reactorLoading && reactorNames.length === 0 && (
+              <p className="text-xs text-white/30 text-center py-3">No reactions yet</p>
+            )}
           </div>
         </div>
       )}
