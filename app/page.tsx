@@ -16,6 +16,9 @@ const ReferralTracker = dynamic(() => import("./components/ReferralTracker"), { 
 // Load ContinueWatchingRow client-only — it fetches from Supabase and is only shown to logged-in users
 const ContinueWatchingRow = dynamic(() => import("./components/ContinueWatchingRow"), { ssr: false });
 
+// Load WhoIsOnline client-only — uses Supabase realtime presence (cannot run on server)
+const WhoIsOnline = dynamic(() => import("./components/WhoIsOnline"), { ssr: false });
+
 // ── PLACEHOLDER SESSIONS ──────────────────────────────────────────────────────
 // These are mock sessions until real content is added in the admin panel.
 // Each has a gradient thumbnail using the mood's brand colours from CLAUDE.md.
@@ -228,6 +231,12 @@ export default function Home() {
           seeAllHref="/free"
           sessions={FREE_SESSIONS}
         />
+
+        {/* Who's Online Now — shows users currently meditating with emoji reactions */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-2">
+          <p className="text-xs text-white/30 uppercase tracking-wide mb-3">Live Now</p>
+          <WhoIsOnline />
+        </div>
 
         {/* Friends activity feed */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

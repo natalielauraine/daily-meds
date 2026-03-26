@@ -3,7 +3,9 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { PlayerProvider } from "../lib/player-context";
 import { LanguageProvider } from "../lib/language-context";
+import { PresenceProvider } from "../lib/presence-context";
 import MiniPlayer from "./components/MiniPlayer";
+import EmojiReactionToast from "./components/EmojiReactionToast";
 
 // Load Inter font from Google Fonts — latin + arabic subsets for multilingual support
 const inter = Inter({
@@ -69,12 +71,17 @@ export default function RootLayout({
       <body className="bg-site-bg text-text-primary antialiased font-sans">
         {/* LanguageProvider manages the active language and RTL direction */}
         <LanguageProvider>
-          {/* PlayerProvider wraps everything so audio persists across page navigation */}
-          <PlayerProvider>
-            {children}
-            {/* MiniPlayer sits outside page content so it stays pinned to the bottom */}
-            <MiniPlayer />
-          </PlayerProvider>
+          {/* PresenceProvider tracks who is meditating and handles emoji reactions */}
+          <PresenceProvider>
+            {/* PlayerProvider wraps everything so audio persists across page navigation */}
+            <PlayerProvider>
+              {children}
+              {/* MiniPlayer sits outside page content so it stays pinned to the bottom */}
+              <MiniPlayer />
+              {/* EmojiReactionToast shows floating emojis sent by other users */}
+              <EmojiReactionToast />
+            </PlayerProvider>
+          </PresenceProvider>
         </LanguageProvider>
       </body>
     </html>

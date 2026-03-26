@@ -46,6 +46,17 @@ const config: Config = {
       borderRadius: {
         card: "10px",
       },
+      keyframes: {
+        // Used by EmojiReactionToast — emoji floats upward and fades out
+        floatUp: {
+          "0%":   { opacity: "1", transform: "translateY(0) scale(1)" },
+          "60%":  { opacity: "1", transform: "translateY(-80px) scale(1.2)" },
+          "100%": { opacity: "0", transform: "translateY(-160px) scale(0.8)" },
+        },
+      },
+      animation: {
+        "float-up": "floatUp 2.5s ease-out forwards",
+      },
     },
   },
   plugins: [],

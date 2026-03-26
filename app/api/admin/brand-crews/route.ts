@@ -14,7 +14,7 @@ const supabaseAdmin = createClient(
 
 export async function POST(req: NextRequest) {
   // Verify the caller is the admin
-  const adminError = await requireAdmin(req);
+  const adminError = await requireAdmin();
   if (adminError) return adminError;
 
   const { crewId, action } = await req.json(); // action: "approve" | "reject"
