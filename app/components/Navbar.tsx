@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "../../lib/supabase-browser";
 import type { User } from "@supabase/supabase-js";
 import LanguageSelector from "./LanguageSelector";
+import NotificationBell from "./NotificationBell";
 import { useLanguage } from "../../lib/language-context";
 
 export default function Navbar() {
@@ -126,6 +127,8 @@ export default function Navbar() {
           {/* Desktop auth area — changes based on login state */}
           <div className="hidden md:flex items-center gap-3">
             <LanguageSelector />
+            {/* Notification bell — only shown when logged in */}
+            {user && <NotificationBell user={user} />}
             {user ? (
               // LOGGED IN — show avatar with dropdown menu
               <div className="relative">

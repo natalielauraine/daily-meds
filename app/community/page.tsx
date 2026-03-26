@@ -194,6 +194,22 @@ export default function CommunityPage() {
     } else {
       await supabase.from("community_post_reactions")
         .upsert({ post_id: postId, user_id: user.id, emoji }, { onConflict: "post_id,user_id" });
+
+      // Send a notification to the post author (but not to yourself)
+      const post = posts.find(p => p.id === postId);
+      if (post && post.user_id !== user.id) {
+        const reactorName = user.user_metadata?.full_name || user.email?.split("@")[0] || "Someone";
+        const subject = post.post_type === "streak" ? "your streak" : post.post_type === "milestone" ? "your milestone" : "your post";
+        const message = `${reactorName} reacted ${emoji} to ${subject}`;
+        await supabase.from("notifications").insert({
+          user_id: post.user_id,
+          from_user_id: user.id,
+          from_display_name: reactorName,
+          type: "reaction",
+          message,
+          post_id: postId,
+        });
+      }
     }
     // Optimistic update
     setPosts(prev => prev.map(p => {
