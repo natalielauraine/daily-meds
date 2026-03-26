@@ -151,7 +151,7 @@ export default function DownloadsPage() {
             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
           </svg>
           <p className="text-xs text-white/40 leading-relaxed">
-            Downloads are available on Annual and Lifetime plans. Sessions are saved to your device for offline listening.
+            Sessions saved here are stored in your Daily Meds account. They stream normally — nothing is downloaded to your device.
           </p>
         </div>
 
@@ -179,7 +179,7 @@ export default function DownloadsPage() {
             </svg>
             <p className="text-sm text-white/30 mb-1">No downloads yet</p>
             <p className="text-xs text-white/20 mb-5">
-              Open any session and tap the download icon to save it for offline use
+              Open any session and tap the Save button to add it here
             </p>
             <Link
               href="/library"

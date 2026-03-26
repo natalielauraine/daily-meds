@@ -15,7 +15,6 @@ import AddToPlaylistModal from "../../components/AddToPlaylistModal";
 import ShareButton from "../../components/ShareButton";
 import ShareSessionModal from "../../components/ShareSessionModal";
 import { toggleWatchlist, isInWatchlist } from "../../../lib/watchlist";
-import { toggleSaved, isSaved } from "../../../lib/downloads";
 import { createClient } from "../../../lib/supabase-browser";
 import { usePlayer } from "../../../lib/player-context";
 import { MOCK_SESSIONS, SessionData } from "../../../lib/sessions-data";
@@ -36,6 +35,8 @@ export default function SessionPageClient({ session }: { session: SessionData | 
   const [hearted, setHearted] = useState(false);
   // Saved-in-app state — bookmark icon filled when saved within the app
   const [savedInApp, setSavedInApp] = useState(false);
+  // The logged-in user's ID — needed to save/unsave from Supabase
+  const [userId, setUserId] = useState<string | null>(null);
   // Playlist modal open/closed
   const [showPlaylistModal, setShowPlaylistModal] = useState(false);
   // User's subscription tier — fetched from Supabase to gate premium content
@@ -48,26 +49,27 @@ export default function SessionPageClient({ session }: { session: SessionData | 
   const [showShareModal, setShowShareModal] = useState(false);
   const [shareModalShown, setShareModalShown] = useState(false);
 
-  // Check watchlist + saved state on mount (localStorage is client-only)
+  // Check watchlist state on mount (localStorage is client-only)
   useEffect(() => {
-    if (session) {
-      setHearted(isInWatchlist(session.id));
-      setSavedInApp(isSaved(session.id));
-    }
+    if (session) setHearted(isInWatchlist(session.id));
   }, [session?.id]);
 
-  // Fetch subscription status from Supabase so we know if user can play premium content
+  // Fetch subscription status + saved state from Supabase on mount
   useEffect(() => {
     const supabase = createClient();
     supabase.auth.getUser().then(async ({ data: { user } }) => {
       setIsLoggedIn(!!user);
       if (!user) return;
-      const { data } = await supabase
-        .from("users")
-        .select("subscription_status")
-        .eq("id", user.id)
-        .single();
-      if (data?.subscription_status) setSubscriptionStatus(data.subscription_status);
+      setUserId(user.id);
+
+      // Get subscription status and check if this session is already saved
+      const [subRes, savedRes] = await Promise.all([
+        supabase.from("users").select("subscription_status").eq("id", user.id).single(),
+        session ? supabase.from("downloads").select("id").eq("user_id", user.id).eq("session_id", session.id).maybeSingle() : Promise.resolve({ data: null }),
+      ]);
+
+      if (subRes.data?.subscription_status) setSubscriptionStatus(subRes.data.subscription_status);
+      setSavedInApp(!!savedRes.data);
     });
   }, []);
 
@@ -115,10 +117,19 @@ export default function SessionPageClient({ session }: { session: SessionData | 
     setHearted(nowSaved);
   }
 
-  function handleSave() {
-    if (!session) return;
-    const nowSaved = toggleSaved(session.id);
-    setSavedInApp(nowSaved);
+  // Save or unsave this session — writes to the Supabase downloads table
+  async function handleSave() {
+    if (!session || !userId) return;
+    const supabase = createClient();
+    if (savedInApp) {
+      // Optimistic update first, then delete from Supabase
+      setSavedInApp(false);
+      await supabase.from("downloads").delete().eq("user_id", userId).eq("session_id", session.id);
+    } else {
+      // Optimistic update first, then insert into Supabase
+      setSavedInApp(true);
+      await supabase.from("downloads").upsert({ user_id: userId, session_id: session.id }, { onConflict: "user_id,session_id" });
+    }
   }
 
   if (!session) {
