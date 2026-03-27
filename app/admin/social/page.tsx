@@ -20,7 +20,7 @@ const PAGES: { slug: PageSlug; label: string; url: string; hint: string }[] = [
   { slug: "home",         label: "Homepage",          url: "/",             hint: "Shown when anyone shares the main site link" },
   { slug: "pricing",      label: "Pricing page",      url: "/pricing",      hint: "Shown when the pricing page is shared" },
   { slug: "live",         label: "Live sessions",      url: "/live",         hint: "Shown when the live page is shared" },
-  { slug: "breathe",      label: "Breathing timer",   url: "/breathe",      hint: "Shown when the breathe page is shared" },
+  { slug: "breathe",      label: "Breathing timer",   url: "/timer",      hint: "Shown when the breathe page is shared" },
   { slug: "testimonials", label: "Testimonials",       url: "/testimonials", hint: "Shown when the testimonials page is shared" },
   { slug: "affiliate",    label: "Affiliate programme", url: "/affiliate",  hint: "Shown when the affiliate page is shared" },
   { slug: "free",         label: "Free sessions",      url: "/free",         hint: "Shown when the free content page is shared" },

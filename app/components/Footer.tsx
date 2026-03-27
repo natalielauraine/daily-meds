@@ -34,7 +34,7 @@ export default function Footer() {
             <Link href="/library" className="text-sm text-white/60 hover:text-white transition-colors">Library</Link>
             <Link href="/live" className="text-sm text-white/60 hover:text-white transition-colors">Live Sessions</Link>
             <Link href="/free" className="text-sm text-white/60 hover:text-white transition-colors">Free Sessions</Link>
-            <Link href="/breathe" className="text-sm text-white/60 hover:text-white transition-colors">Breathing Timer</Link>
+            <Link href="/timer" className="text-sm text-white/60 hover:text-white transition-colors">Breathing Timer</Link>
           </div>
 
           {/* Account column */}

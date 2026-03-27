@@ -50,7 +50,7 @@ export async function middleware(request: NextRequest) {
     "/stats",
     "/watchlist",
     "/downloads",
-    "/breathe",
+    "/timer",
     "/rooms",
     "/affiliate/dashboard",
     "/admin",

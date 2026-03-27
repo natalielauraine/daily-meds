@@ -101,7 +101,7 @@ export default function Navbar() {
             <Link href="/live" className="text-sm text-white/70 hover:text-white transition-colors">
               {t("nav", "live")}
             </Link>
-            <Link href="/breathe" className="text-sm text-white/70 hover:text-white transition-colors">
+            <Link href="/timer" className="text-sm text-white/70 hover:text-white transition-colors">
               {t("nav", "breathe")}
             </Link>
             <Link href="/pricing" className="text-sm text-white/70 hover:text-white transition-colors">
