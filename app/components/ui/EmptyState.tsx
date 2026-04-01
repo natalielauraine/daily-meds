@@ -18,7 +18,7 @@ export default function EmptyState({ message, action, href, onClick }: EmptyStat
     >
       <p className="text-sm text-white/25 mb-2">{message}</p>
       {action && href && (
-        <Link href={href} className="text-xs text-purple-400 hover:text-purple-300 transition-colors">
+        <Link href={href} className="text-xs text-pink-400 hover:text-pink-300 transition-colors">
           {action}
         </Link>
       )}

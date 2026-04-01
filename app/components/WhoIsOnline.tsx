@@ -49,7 +49,7 @@ export default function WhoIsOnline() {
     return (
       <div
         className="flex items-center gap-3 px-4 py-3 rounded-[10px]"
-        style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.08)" }}
+        style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.08)" }}
       >
         <div className="w-2 h-2 rounded-full bg-green-400 shrink-0" />
         <p className="text-xs text-white/40">
@@ -65,7 +65,7 @@ export default function WhoIsOnline() {
   return (
     <div
       className="rounded-[10px] p-4"
-      style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.08)" }}
+      style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.08)" }}
     >
       {/* Header row */}
       <div className="flex items-center justify-between mb-3">
@@ -96,7 +96,7 @@ export default function WhoIsOnline() {
               {/* Circle avatar */}
               <div
                 className="w-11 h-11 rounded-full flex items-center justify-center text-sm text-white relative shrink-0"
-                style={{ background: "linear-gradient(135deg, #8B5CF6, #6366F1)", fontWeight: 500 }}
+                style={{ background: "linear-gradient(135deg, #ff41b3, #adf225)", fontWeight: 500 }}
               >
                 {u.avatar_url ? (
                   <img
@@ -111,7 +111,7 @@ export default function WhoIsOnline() {
                 {/* Green online dot */}
                 <span
                   className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-green-400 border-2"
-                  style={{ borderColor: "#1A1A2E" }}
+                  style={{ borderColor: "#1F1F1F" }}
                 />
               </div>
 
@@ -128,7 +128,7 @@ export default function WhoIsOnline() {
               <div
                 className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 flex items-center gap-1 px-2 py-2 rounded-xl z-20 shadow-lg"
                 style={{
-                  backgroundColor: "#0D0D1A",
+                  backgroundColor: "#131313",
                   border: "0.5px solid rgba(255,255,255,0.18)",
                 }}
               >
@@ -146,7 +146,7 @@ export default function WhoIsOnline() {
                 {/* Small caret */}
                 <span
                   className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 rotate-45"
-                  style={{ backgroundColor: "#0D0D1A", border: "0.5px solid rgba(255,255,255,0.18)" }}
+                  style={{ backgroundColor: "#131313", border: "0.5px solid rgba(255,255,255,0.18)" }}
                 />
               </div>
             )}

@@ -21,10 +21,10 @@ import {
 
 // Available gradient colours for group session cards
 const GRADIENTS = [
-  "linear-gradient(135deg, #6B21E8 0%, #8B3CF7 25%, #6366F1 60%, #3B82F6 80%, #22D3EE 100%)",
-  "linear-gradient(135deg, #F43F5E 0%, #EC4899 20%, #D946EF 35%, #F97316 65%, #FACC15 100%)",
-  "linear-gradient(135deg, #10B981 0%, #22C55E 35%, #84CC16 70%, #D9F100 100%)",
-  "linear-gradient(135deg, #8B3CF7 0%, #6366F1 100%)",
+  "linear-gradient(135deg, #ff41b3 0%, #ec723d 25%, #adf225 60%, #adf225 80%, #adf225 100%)",
+  "linear-gradient(135deg, #ff41b3 0%, #ff41b3 20%, #ff41b3 35%, #ec723d 65%, #f4e71d 100%)",
+  "linear-gradient(135deg, #adf225 0%, #adf225 35%, #adf225 70%, #f4e71d 100%)",
+  "linear-gradient(135deg, #ec723d 0%, #adf225 100%)",
 ];
 
 const TIMER_DURATIONS = [5, 10, 15, 20, 30];
@@ -231,17 +231,17 @@ export default function RoomsPage() {
 
   if (loading) {
     return (
-      <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#0D0D1A" }}>
+      <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#131313" }}>
         <Navbar />
         <main className="flex-1 flex items-center justify-center">
-          <div className="w-6 h-6 rounded-full border-2 border-white/20 border-t-purple-400 animate-spin" />
+          <div className="w-6 h-6 rounded-full border-2 border-white/20 border-t-pink-400 animate-spin" />
         </main>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#0D0D1A" }}>
+    <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#131313" }}>
       <Navbar />
 
       <main className="flex-1 w-full max-w-2xl mx-auto px-4 sm:px-6 py-10 pb-24">
@@ -255,7 +255,7 @@ export default function RoomsPage() {
           <button
             onClick={() => setShowModal(true)}
             className="flex items-center gap-2 px-4 py-2 rounded-full text-sm text-white transition-opacity hover:opacity-80 shrink-0"
-            style={{ backgroundColor: "#8B5CF6", fontWeight: 500 }}
+            style={{ backgroundColor: "#ff41b3", fontWeight: 500 }}
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
               <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
@@ -327,7 +327,7 @@ export default function RoomsPage() {
             <button
               onClick={() => setShowModal(true)}
               className="px-5 py-2 rounded-full text-sm text-white hover:opacity-80 transition-opacity"
-              style={{ backgroundColor: "#8B5CF6", fontWeight: 500 }}
+              style={{ backgroundColor: "#ff41b3", fontWeight: 500 }}
             >
               Create Group Med
             </button>
@@ -365,7 +365,7 @@ function SessionCard({
   isJoined: boolean;
   onOpen: () => void;
 }) {
-  const gradient = session.gradient ?? "linear-gradient(135deg, #6B21E8, #22D3EE)";
+  const gradient = session.gradient ?? "linear-gradient(135deg, #ff41b3, #ec723d)";
   const secsUntil = secondsUntil(session.scheduled_at);
 
   // Human-readable time until start
@@ -381,7 +381,7 @@ function SessionCard({
   return (
     <div
       className="rounded-[10px] overflow-hidden"
-      style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.08)" }}
+      style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.08)" }}
     >
       {/* Gradient top stripe */}
       <div className="h-0.5 w-full" style={{ background: gradient }} />
@@ -406,7 +406,7 @@ function SessionCard({
             </p>
             <p
               className="text-xs mt-1"
-              style={{ color: session.status === "active" ? "#22C55E" : "rgba(255,255,255,0.4)" }}
+              style={{ color: session.status === "active" ? "#adf225" : "rgba(255,255,255,0.4)" }}
             >
               {timeLabel}
             </p>
@@ -467,7 +467,7 @@ function CreateModal({
     >
       <div
         className="w-full max-w-md rounded-[16px] overflow-hidden"
-        style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.1)" }}
+        style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.1)" }}
       >
         {/* Modal header */}
         <div
@@ -535,7 +535,7 @@ function CreateModal({
                     onClick={() => setForm({ ...form, durationMinutes: d })}
                     className="px-4 py-2 rounded-full text-sm transition-colors"
                     style={{
-                      backgroundColor: form.durationMinutes === d ? "#8B5CF6" : "rgba(255,255,255,0.06)",
+                      backgroundColor: form.durationMinutes === d ? "#ff41b3" : "rgba(255,255,255,0.06)",
                       color: form.durationMinutes === d ? "white" : "rgba(255,255,255,0.45)",
                       border: form.durationMinutes === d ? "none" : "0.5px solid rgba(255,255,255,0.1)",
                       fontWeight: form.durationMinutes === d ? 500 : 400,
@@ -599,7 +599,7 @@ function CreateModal({
             <button
               onClick={() => setForm({ ...form, isPublic: !form.isPublic })}
               className="relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors ml-4"
-              style={{ backgroundColor: form.isPublic ? "#8B5CF6" : "rgba(255,255,255,0.15)" }}
+              style={{ backgroundColor: form.isPublic ? "#ff41b3" : "rgba(255,255,255,0.15)" }}
             >
               <span
                 className="inline-block h-5 w-5 rounded-full bg-white shadow transition-transform"
@@ -635,7 +635,7 @@ function CreateModal({
               onClick={onSubmit}
               disabled={creating}
               className="flex-1 py-3 rounded-[10px] text-sm text-white transition-opacity hover:opacity-80 disabled:opacity-50"
-              style={{ backgroundColor: "#8B5CF6", fontWeight: 500 }}
+              style={{ backgroundColor: "#ff41b3", fontWeight: 500 }}
             >
               {creating ? "Creating…" : "Create Group Med"}
             </button>

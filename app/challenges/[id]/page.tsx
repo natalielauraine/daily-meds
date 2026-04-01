@@ -142,10 +142,10 @@ export default function ChallengeDetailPage() {
 
   if (loading) {
     return (
-      <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#0D0D1A" }}>
+      <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#131313" }}>
         <Navbar />
         <div className="flex-1 flex items-center justify-center">
-          <div className="w-6 h-6 rounded-full border-2 border-white/20 border-t-purple-400 animate-spin" />
+          <div className="w-6 h-6 rounded-full border-2 border-white/20 border-t-pink-400 animate-spin" />
         </div>
       </div>
     );
@@ -153,12 +153,12 @@ export default function ChallengeDetailPage() {
 
   if (error || !challenge) {
     return (
-      <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#0D0D1A" }}>
+      <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#131313" }}>
         <Navbar />
         <div className="flex-1 flex items-center justify-center px-4">
           <div className="text-center">
             <p className="text-white/40 text-sm mb-4">{error || "Challenge not found."}</p>
-            <Link href="/challenges" className="text-sm text-[#8B5CF6]">← All challenges</Link>
+            <Link href="/challenges" className="text-sm text-[#ff41b3]">← All challenges</Link>
           </div>
         </div>
       </div>
@@ -170,7 +170,7 @@ export default function ChallengeDetailPage() {
   const remaining = myParticipation ? daysRemaining(myParticipation.started_at, challenge.duration_days) : challenge.duration_days;
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#0D0D1A" }}>
+    <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#131313" }}>
       <Navbar />
 
       <main className="flex-1 max-w-2xl mx-auto w-full px-4 py-8">
@@ -186,7 +186,7 @@ export default function ChallengeDetailPage() {
         {/* Challenge header */}
         <div
           className="rounded-[12px] p-6 mb-6"
-          style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.08)" }}
+          style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.08)" }}
         >
           <div className="flex items-start gap-4 mb-4">
             <div
@@ -201,7 +201,7 @@ export default function ChallengeDetailPage() {
                 {challenge.is_official && (
                   <span
                     className="text-[10px] px-2 py-0.5 rounded-full"
-                    style={{ backgroundColor: "rgba(139,92,246,0.2)", color: "#8B5CF6" }}
+                    style={{ backgroundColor: "rgba(255,65,179,0.2)", color: "#ff41b3" }}
                   >
                     Official
                   </span>
@@ -286,7 +286,7 @@ export default function ChallengeDetailPage() {
             </p>
             <div
               className="rounded-[10px] overflow-hidden"
-              style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.08)" }}
+              style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.08)" }}
             >
               {participants.map((p, i) => {
                 const pProgress = progressPercent(p.progress_value, challenge.target_value);
@@ -297,13 +297,13 @@ export default function ChallengeDetailPage() {
                     className="flex items-center gap-3 px-4 py-3"
                     style={{
                       borderTop: i > 0 ? "0.5px solid rgba(255,255,255,0.05)" : "none",
-                      backgroundColor: isMe ? "rgba(139,92,246,0.05)" : "transparent",
+                      backgroundColor: isMe ? "rgba(255,65,179,0.05)" : "transparent",
                     }}
                   >
                     {/* Rank */}
                     <p
                       className="text-sm w-6 text-center shrink-0"
-                      style={{ color: i === 0 ? "#FACC15" : i === 1 ? "rgba(255,255,255,0.4)" : "rgba(255,255,255,0.2)", fontWeight: 500 }}
+                      style={{ color: i === 0 ? "#f4e71d" : i === 1 ? "rgba(255,255,255,0.4)" : "rgba(255,255,255,0.2)", fontWeight: 500 }}
                     >
                       {i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `${i + 1}`}
                     </p>

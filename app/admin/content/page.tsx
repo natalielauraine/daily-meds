@@ -23,17 +23,17 @@ const MOOD_CATEGORIES = [
 const SESSION_TYPES = ["Guided Meditation", "Breathwork", "Sleep Audio", "Focus Session", "Movement"];
 
 const MOOD_GRADIENTS: Record<string, string> = {
-  "Hungover":       "linear-gradient(135deg, #6B21E8, #22D3EE)",
-  "After The Sesh": "linear-gradient(135deg, #F43F5E, #FACC15)",
-  "On A Comedown":  "linear-gradient(135deg, #10B981, #D9F100)",
-  "Feeling Empty":  "linear-gradient(135deg, #6B21E8, #22D3EE)",
-  "Can't Sleep":    "linear-gradient(135deg, #8B3CF7, #6366F1)",
-  "Anxious":        "linear-gradient(135deg, #F43F5E, #F97316)",
-  "Heartbroken":    "linear-gradient(135deg, #EC4899, #D946EF)",
-  "Overwhelmed":    "linear-gradient(135deg, #F97316, #FACC15)",
-  "Low Energy":     "linear-gradient(135deg, #10B981, #22C55E)",
-  "Morning Reset":  "linear-gradient(135deg, #F43F5E, #FACC15)",
-  "Focus Mode":     "linear-gradient(135deg, #6B21E8, #6366F1)",
+  "Hungover":       "linear-gradient(135deg, #ff41b3, #ec723d)",
+  "After The Sesh": "linear-gradient(135deg, #ff41b3, #f4e71d)",
+  "On A Comedown":  "linear-gradient(135deg, #adf225, #f4e71d)",
+  "Feeling Empty":  "linear-gradient(135deg, #ff41b3, #ec723d)",
+  "Can't Sleep":    "linear-gradient(135deg, #ff41b3, #adf225)",
+  "Anxious":        "linear-gradient(135deg, #ec723d, #f4e71d)",
+  "Heartbroken":    "linear-gradient(135deg, #ff41b3, #ec723d)",
+  "Overwhelmed":    "linear-gradient(135deg, #ec723d, #f4e71d)",
+  "Low Energy":     "linear-gradient(135deg, #adf225, #f4e71d)",
+  "Morning Reset":  "linear-gradient(135deg, #ff41b3, #f4e71d)",
+  "Focus Mode":     "linear-gradient(135deg, #adf225, #ec723d)",
 };
 
 type Session = {
@@ -434,7 +434,7 @@ export default function AdminContentPage() {
           <button
             onClick={openNew}
             className="flex items-center gap-2 px-4 py-2 rounded-full text-sm text-white transition-opacity hover:opacity-80 shrink-0"
-            style={{ backgroundColor: "#8B5CF6", fontWeight: 500 }}
+            style={{ backgroundColor: "#ff41b3", fontWeight: 500 }}
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
               <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
@@ -450,7 +450,7 @@ export default function AdminContentPage() {
         {showForm && (
           <div
             className="rounded-[10px] p-5 mb-6"
-            style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.1)" }}
+            style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.1)" }}
           >
             <h2 className="text-white text-base mb-5" style={{ fontWeight: 500 }}>
               {editingId ? "Edit session" : "Add new session"}
@@ -534,9 +534,9 @@ export default function AdminContentPage() {
                     // Uploaded file row
                     <div
                       className="flex items-center gap-3 p-3 rounded-lg"
-                      style={{ backgroundColor: "rgba(139,92,246,0.08)", border: "0.5px solid rgba(139,92,246,0.25)" }}
+                      style={{ backgroundColor: "rgba(255,65,179,0.08)", border: "0.5px solid rgba(255,65,179,0.25)" }}
                     >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="#8B5CF6">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="#ff41b3">
                         <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
                       </svg>
                       <div className="flex-1 min-w-0">
@@ -564,7 +564,7 @@ export default function AdminContentPage() {
                       <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: "rgba(255,255,255,0.1)" }}>
                         <div
                           className="h-full rounded-full transition-all duration-300"
-                          style={{ width: `${audioProgress}%`, backgroundColor: "#8B5CF6" }}
+                          style={{ width: `${audioProgress}%`, backgroundColor: "#ff41b3" }}
                         />
                       </div>
                       <p className="text-[10px] text-white/25 mt-1">{audioProgress}%</p>
@@ -584,8 +584,8 @@ export default function AdminContentPage() {
                       onClick={() => audioInputRef.current?.click()}
                       className="flex flex-col items-center gap-2 py-8 rounded-lg cursor-pointer transition-colors"
                       style={{
-                        border: `1px dashed ${audioDragOver ? "rgba(139,92,246,0.6)" : "rgba(255,255,255,0.12)"}`,
-                        backgroundColor: audioDragOver ? "rgba(139,92,246,0.06)" : "rgba(255,255,255,0.02)",
+                        border: `1px dashed ${audioDragOver ? "rgba(255,65,179,0.6)" : "rgba(255,255,255,0.12)"}`,
+                        backgroundColor: audioDragOver ? "rgba(255,65,179,0.06)" : "rgba(255,255,255,0.02)",
                       }}
                     >
                       <svg width="22" height="22" viewBox="0 0 24 24" fill="rgba(255,255,255,0.25)">
@@ -593,7 +593,7 @@ export default function AdminContentPage() {
                       </svg>
                       <p className="text-xs text-white/35">
                         Drop an mp3 or m4a here, or{" "}
-                        <span style={{ color: "#8B5CF6" }}>browse files</span>
+                        <span style={{ color: "#ff41b3" }}>browse files</span>
                       </p>
                       <input
                         ref={audioInputRef}
@@ -678,7 +678,7 @@ export default function AdminContentPage() {
                   <button
                     onClick={() => setForm({ ...form, is_free: !form.is_free })}
                     className="w-10 h-6 rounded-full transition-colors relative"
-                    style={{ backgroundColor: form.is_free ? "#8B5CF6" : "rgba(255,255,255,0.12)" }}
+                    style={{ backgroundColor: form.is_free ? "#ff41b3" : "rgba(255,255,255,0.12)" }}
                     role="switch"
                     aria-checked={form.is_free}
                   >
@@ -696,9 +696,9 @@ export default function AdminContentPage() {
                     onClick={() => setForm({ ...form, status: form.status === "draft" ? "published" : "draft" })}
                     className="px-3 py-1 rounded-full text-xs transition-colors"
                     style={{
-                      backgroundColor: form.status === "published" ? "rgba(16,185,129,0.12)" : "rgba(251,191,36,0.1)",
-                      border: `0.5px solid ${form.status === "published" ? "rgba(16,185,129,0.35)" : "rgba(251,191,36,0.3)"}`,
-                      color: form.status === "published" ? "#10B981" : "#FBB924",
+                      backgroundColor: form.status === "published" ? "rgba(173,242,37,0.12)" : "rgba(251,191,36,0.1)",
+                      border: `0.5px solid ${form.status === "published" ? "rgba(173,242,37,0.35)" : "rgba(251,191,36,0.3)"}`,
+                      color: form.status === "published" ? "#adf225" : "#FBB924",
                       fontWeight: 500,
                     }}
                   >
@@ -715,7 +715,7 @@ export default function AdminContentPage() {
                 onClick={handleSave}
                 disabled={saving}
                 className="flex-1 py-2.5 rounded-lg text-sm text-white transition-opacity hover:opacity-80 disabled:opacity-50"
-                style={{ backgroundColor: "#8B5CF6", fontWeight: 500 }}
+                style={{ backgroundColor: "#ff41b3", fontWeight: 500 }}
               >
                 {saving
                   ? "Saving…"
@@ -736,7 +736,7 @@ export default function AdminContentPage() {
         {/* ── BULK UPLOAD ── */}
         <div
           className="rounded-[10px] p-5 mb-6"
-          style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.08)" }}
+          style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.08)" }}
         >
           <h2 className="text-white text-base mb-1" style={{ fontWeight: 500 }}>Bulk Upload</h2>
           <p className="text-xs text-white/35 mb-4">
@@ -755,8 +755,8 @@ export default function AdminContentPage() {
             onClick={() => bulkInputRef.current?.click()}
             className="flex flex-col items-center gap-2 py-8 rounded-lg cursor-pointer transition-colors mb-4"
             style={{
-              border: `1px dashed ${bulkDragOver ? "rgba(139,92,246,0.55)" : "rgba(255,255,255,0.1)"}`,
-              backgroundColor: bulkDragOver ? "rgba(139,92,246,0.05)" : "rgba(255,255,255,0.015)",
+              border: `1px dashed ${bulkDragOver ? "rgba(255,65,179,0.55)" : "rgba(255,255,255,0.1)"}`,
+              backgroundColor: bulkDragOver ? "rgba(255,65,179,0.05)" : "rgba(255,255,255,0.015)",
             }}
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="rgba(255,255,255,0.2)">
@@ -764,7 +764,7 @@ export default function AdminContentPage() {
             </svg>
             <p className="text-sm text-white/30">
               Drop multiple files here, or{" "}
-              <span style={{ color: "#8B5CF6" }}>browse</span>
+              <span style={{ color: "#ff41b3" }}>browse</span>
             </p>
             <p className="text-xs text-white/20">mp3 · m4a · up to 20 files at once</p>
             <input
@@ -811,7 +811,7 @@ export default function AdminContentPage() {
                         disabled={item.status !== "queued"}
                       >
                         {MOOD_CATEGORIES.map((m) => (
-                          <option key={m} value={m} style={{ backgroundColor: "#1A1A2E" }}>{m}</option>
+                          <option key={m} value={m} style={{ backgroundColor: "#1F1F1F" }}>{m}</option>
                         ))}
                       </select>
 
@@ -825,9 +825,9 @@ export default function AdminContentPage() {
                         ))}
                         className="text-[10px] px-2 py-0.5 rounded-full transition-colors shrink-0"
                         style={{
-                          backgroundColor: item.is_free ? "rgba(139,92,246,0.15)" : "rgba(255,255,255,0.06)",
-                          border: `0.5px solid ${item.is_free ? "rgba(139,92,246,0.3)" : "rgba(255,255,255,0.1)"}`,
-                          color: item.is_free ? "#8B5CF6" : "rgba(255,255,255,0.3)",
+                          backgroundColor: item.is_free ? "rgba(255,65,179,0.15)" : "rgba(255,255,255,0.06)",
+                          border: `0.5px solid ${item.is_free ? "rgba(255,65,179,0.3)" : "rgba(255,255,255,0.1)"}`,
+                          color: item.is_free ? "#ff41b3" : "rgba(255,255,255,0.3)",
                         }}
                         disabled={item.status !== "queued"}
                       >
@@ -846,17 +846,17 @@ export default function AdminContentPage() {
                         </button>
                       )}
                       {item.status === "uploading" && (
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="#8B5CF6" className="animate-spin shrink-0">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="#ff41b3" className="animate-spin shrink-0">
                           <path d="M12 4V2A10 10 0 0 0 2 12h2a8 8 0 0 1 8-8z"/>
                         </svg>
                       )}
                       {item.status === "done" && (
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="#10B981" className="shrink-0">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="#adf225" className="shrink-0">
                           <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
                         </svg>
                       )}
                       {item.status === "error" && (
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="#EC4899" className="shrink-0">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="#ff41b3" className="shrink-0">
                           <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
                         </svg>
                       )}
@@ -867,7 +867,7 @@ export default function AdminContentPage() {
                       <div className="mt-2 h-1 rounded-full overflow-hidden" style={{ backgroundColor: "rgba(255,255,255,0.07)" }}>
                         <div
                           className="h-full rounded-full transition-all"
-                          style={{ width: `${item.progress}%`, backgroundColor: "#8B5CF6" }}
+                          style={{ width: `${item.progress}%`, backgroundColor: "#ff41b3" }}
                         />
                       </div>
                     )}
@@ -885,7 +885,7 @@ export default function AdminContentPage() {
                   <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: "rgba(255,255,255,0.08)" }}>
                     <div
                       className="h-full rounded-full transition-all duration-300"
-                      style={{ width: `${bulkOverallProgress}%`, background: "linear-gradient(90deg, #8B5CF6, #6366F1)" }}
+                      style={{ width: `${bulkOverallProgress}%`, background: "linear-gradient(90deg, #ff41b3, #adf225)" }}
                     />
                   </div>
                 </div>
@@ -896,7 +896,7 @@ export default function AdminContentPage() {
                   onClick={handleBulkPublishAll}
                   disabled={bulkUploading || bulkFiles.every((f) => f.status !== "queued")}
                   className="flex-1 py-2.5 rounded-lg text-sm text-white transition-opacity hover:opacity-80 disabled:opacity-40"
-                  style={{ backgroundColor: "#8B5CF6", fontWeight: 500 }}
+                  style={{ backgroundColor: "#ff41b3", fontWeight: 500 }}
                 >
                   {bulkUploading
                     ? "Uploading…"
@@ -924,9 +924,9 @@ export default function AdminContentPage() {
               onClick={() => setStatusFilter(f)}
               className="px-3 py-1.5 rounded-full text-xs transition-colors capitalize"
               style={{
-                backgroundColor: statusFilter === f ? "rgba(139,92,246,0.15)" : "rgba(255,255,255,0.05)",
-                border: `0.5px solid ${statusFilter === f ? "rgba(139,92,246,0.4)" : "rgba(255,255,255,0.1)"}`,
-                color: statusFilter === f ? "#8B5CF6" : "rgba(255,255,255,0.35)",
+                backgroundColor: statusFilter === f ? "rgba(255,65,179,0.15)" : "rgba(255,255,255,0.05)",
+                border: `0.5px solid ${statusFilter === f ? "rgba(255,65,179,0.4)" : "rgba(255,255,255,0.1)"}`,
+                color: statusFilter === f ? "#ff41b3" : "rgba(255,255,255,0.35)",
                 fontWeight: statusFilter === f ? 500 : 400,
               }}
             >
@@ -947,7 +947,7 @@ export default function AdminContentPage() {
               <div
                 key={session.id}
                 className="flex items-center gap-4 p-4 rounded-[10px]"
-                style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.08)" }}
+                style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.08)" }}
               >
                 {/* Gradient dot */}
                 <div className="w-10 h-10 rounded-full shrink-0" style={{ background: session.gradient }} />
@@ -958,7 +958,7 @@ export default function AdminContentPage() {
                     <p className="text-sm text-white truncate" style={{ fontWeight: 500 }}>{session.title}</p>
                     {session.is_free && (
                       <span className="text-[10px] px-1.5 py-0.5 rounded text-white shrink-0"
-                        style={{ backgroundColor: "rgba(16,185,129,0.8)", fontWeight: 500 }}>FREE</span>
+                        style={{ backgroundColor: "rgba(173,242,37,0.8)", fontWeight: 500 }}>FREE</span>
                     )}
                     {(session.status || "draft") === "draft" && (
                       <span className="text-[10px] px-1.5 py-0.5 rounded shrink-0"
@@ -976,7 +976,7 @@ export default function AdminContentPage() {
                   {/* Preview */}
                   <button
                     onClick={() => setPreviewSession(session)}
-                    className="p-2 text-white/25 hover:text-purple-400 transition-colors"
+                    className="p-2 text-white/25 hover:text-pink-400 transition-colors"
                     aria-label="Preview"
                     title="Preview this session"
                   >
@@ -1003,7 +1003,7 @@ export default function AdminContentPage() {
                   <button
                     onClick={() => handleNotify(session)}
                     disabled={notifyingId === session.id}
-                    className="p-2 text-white/25 hover:text-indigo-400 transition-colors disabled:opacity-40"
+                    className="p-2 text-white/25 hover:text-pink-400 transition-colors disabled:opacity-40"
                     aria-label="Notify members"
                     title="Email all users about this session"
                   >
@@ -1054,7 +1054,7 @@ export default function AdminContentPage() {
           >
             <div
               className="w-full max-w-sm rounded-[12px] overflow-hidden"
-              style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.12)" }}
+              style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.12)" }}
               onClick={(e) => e.stopPropagation()}
             >
               {/* Modal header */}
@@ -1080,7 +1080,7 @@ export default function AdminContentPage() {
                   <p className="text-[10px] text-white/25 uppercase tracking-widest mb-2">Homepage card</p>
                   <div
                     className="flex items-center gap-3 p-3 rounded-[10px]"
-                    style={{ backgroundColor: "#0D0D1A", border: "0.5px solid rgba(255,255,255,0.07)" }}
+                    style={{ backgroundColor: "#131313", border: "0.5px solid rgba(255,255,255,0.07)" }}
                   >
                     <div
                       className="w-12 h-12 rounded-full shrink-0 flex items-center justify-center"
@@ -1096,7 +1096,7 @@ export default function AdminContentPage() {
                     </div>
                     {previewSession.is_free && (
                       <span className="text-[10px] px-1.5 py-0.5 rounded text-white shrink-0"
-                        style={{ backgroundColor: "rgba(16,185,129,0.8)", fontWeight: 500 }}>FREE</span>
+                        style={{ backgroundColor: "rgba(173,242,37,0.8)", fontWeight: 500 }}>FREE</span>
                     )}
                   </div>
                 </div>
@@ -1106,13 +1106,13 @@ export default function AdminContentPage() {
                   <p className="text-[10px] text-white/25 uppercase tracking-widest mb-2">Session player</p>
                   <div
                     className="flex flex-col items-center text-center py-6 px-4 rounded-[10px]"
-                    style={{ backgroundColor: "#0D0D1A", border: "0.5px solid rgba(255,255,255,0.06)" }}
+                    style={{ backgroundColor: "#131313", border: "0.5px solid rgba(255,255,255,0.06)" }}
                   >
                     <div
                       className="w-20 h-20 rounded-full flex items-center justify-center mb-3"
                       style={{
                         background: previewSession.gradient,
-                        boxShadow: `0 0 40px 10px ${previewSession.gradient.match(/#[0-9A-Fa-f]{6}/)?.[0] ?? "#8B5CF6"}35`,
+                        boxShadow: `0 0 40px 10px ${previewSession.gradient.match(/#[0-9A-Fa-f]{6}/)?.[0] ?? "#ff41b3"}35`,
                       }}
                     >
                       <svg width="32" height="32" viewBox="0 0 48 48" fill="none">

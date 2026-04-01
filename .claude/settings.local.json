@@ -20,7 +20,13 @@
       "Bash(grep -E '\"\"framer-motion|canvas-confetti|number-flow|radix-ui|class-variance|lucide|clsx|tailwind-merge\"\"' package.json)",
       "Bash(find '/Users/natalielauraine/Desktop/ç Daily Meds/app' -name *.tsx)",
       "Bash(find '/Users/natalielauraine/Desktop/ç Daily Meds/app/api' -name *.ts -o -name *.tsx)",
-      "Bash(grep -rn \"from ''@/components/ui/pricing''\" \"/Users/natalielauraine/Desktop/ç Daily Meds/app/pricing/page.tsx\")"
+      "Bash(grep -rn \"from ''@/components/ui/pricing''\" \"/Users/natalielauraine/Desktop/ç Daily Meds/app/pricing/page.tsx\")",
+      "Read(//Users/natalielauraine/.claude/**)",
+      "Bash(python3 -m json.tool)",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "Bash(gcloud --version)",
+      "Bash(npx --version)"
     ]
   }
 }

@@ -62,7 +62,7 @@ function Step({
 
 export default function AboutPage() {
   return (
-    <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#0D0D1A" }}>
+    <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#131313" }}>
       <Navbar />
 
       <main className="flex-1">
@@ -70,20 +70,20 @@ export default function AboutPage() {
         {/* ── 1. HERO ───────────────────────────────────────────── */}
         <section
           className="relative w-full px-4 sm:px-6 py-24 sm:py-36 flex flex-col items-center justify-center text-center overflow-hidden"
-          style={{ backgroundColor: "#0D0D1A" }}
+          style={{ backgroundColor: "#131313" }}
         >
           {/* Soft purple glow behind the text */}
           <div
             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] rounded-full pointer-events-none"
             style={{
-              background: "radial-gradient(ellipse at center, rgba(139,92,246,0.12) 0%, transparent 70%)",
+              background: "radial-gradient(ellipse at center, rgba(255,65,179,0.1) 0%, transparent 70%)",
             }}
           />
 
           {/* Gradient lotus icon */}
           <div
             className="w-16 h-16 rounded-full flex items-center justify-center mb-8"
-            style={{ background: "linear-gradient(135deg, #6B21E8 0%, #8B3CF7 25%, #6366F1 60%, #3B82F6 80%, #22D3EE 100%)" }}
+            style={{ background: "linear-gradient(135deg, #ff41b3, #ec723d)" }}
           >
             <svg width="28" height="28" viewBox="0 0 48 48" fill="none">
               <path d="M24 4C24 4 16 12 16 20C16 24.4 19.6 28 24 28C28.4 28 32 24.4 32 20C32 12 24 4 24 4Z" fill="white" opacity="0.95"/>
@@ -103,8 +103,8 @@ export default function AboutPage() {
           </p>
 
           <h1
-            className="text-4xl sm:text-6xl text-white mb-6 max-w-2xl leading-tight"
-            style={{ fontWeight: 500 }}
+            className="text-4xl sm:text-6xl text-white mb-6 max-w-2xl leading-tight uppercase"
+            style={{ fontFamily: "var(--font-plus-jakarta)", fontWeight: 800, letterSpacing: "-0.02em" }}
           >
             Audio for emotional emergencies
           </h1>
@@ -118,11 +118,11 @@ export default function AboutPage() {
         {/* ── 2. THE STORY ─────────────────────────────────────── */}
         <section className="w-full max-w-3xl mx-auto px-4 sm:px-6 py-20">
           <div
-            className="rounded-[10px] p-8 sm:p-12"
-            style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.08)" }}
+            className="rounded-xl p-8 sm:p-12"
+            style={{ backgroundColor: "#1F1F1F", border: "1px solid rgba(255,255,255,0.07)" }}
           >
             <SectionLabel>The story</SectionLabel>
-            <h2 className="text-2xl sm:text-3xl text-white mb-8" style={{ fontWeight: 500 }}>
+            <h2 className="text-2xl sm:text-3xl text-white mb-8 uppercase" style={{ fontFamily: "var(--font-plus-jakarta)", fontWeight: 800 }}>
               Why I built this
             </h2>
 
@@ -151,7 +151,7 @@ export default function AboutPage() {
             {/* Pull quote */}
             <div
               className="mt-10 pl-5 border-l-2"
-              style={{ borderColor: "rgba(139,92,246,0.5)" }}
+              style={{ borderColor: "rgba(255,65,179,0.4)" }}
             >
               <p className="text-white/70 text-base sm:text-lg leading-relaxed italic" style={{ fontWeight: 400 }}>
                 &ldquo;[Your most honest, personal quote about why you built Daily Meds.
@@ -183,7 +183,7 @@ export default function AboutPage() {
                     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/>
                   </svg>
                 ),
-                gradient: "linear-gradient(135deg, #6B21E8, #22D3EE)",
+                gradient: "linear-gradient(135deg, #ff41b3, #ec723d)",
                 title: "Practical",
                 body: "Every session is built around a specific feeling — not a vague wellness goal. Hungover. Anxious. Heartbroken. You pick the moment, we have the session.",
               },
@@ -193,7 +193,7 @@ export default function AboutPage() {
                     <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/>
                   </svg>
                 ),
-                gradient: "linear-gradient(135deg, #F43F5E, #FACC15)",
+                gradient: "linear-gradient(135deg, #ec723d, #f4e71d)",
                 title: "Grounded",
                 body: "No woo. No jargon. No pretending you need to be spiritual to regulate your nervous system. These are real techniques that actually work.",
               },
@@ -203,7 +203,7 @@ export default function AboutPage() {
                     <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                   </svg>
                 ),
-                gradient: "linear-gradient(135deg, #10B981, #D9F100)",
+                gradient: "linear-gradient(135deg, #adf225, #f4e71d)",
                 title: "Human",
                 body: "Built by someone who has actually been there. Who has needed this on a Sunday morning and found nothing that felt right. That&apos;s why this exists.",
               },
@@ -211,7 +211,7 @@ export default function AboutPage() {
               <div
                 key={item.title}
                 className="rounded-[10px] p-5"
-                style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.08)" }}
+                style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.08)" }}
               >
                 <div
                   className="w-9 h-9 rounded-full flex items-center justify-center text-white mb-4"
@@ -229,7 +229,7 @@ export default function AboutPage() {
         {/* ── 4. HOW IT WORKS ─────────────────────────────────── */}
         <section
           className="w-full py-20 px-4 sm:px-6"
-          style={{ backgroundColor: "#1A1A2E", borderTop: "0.5px solid rgba(255,255,255,0.06)", borderBottom: "0.5px solid rgba(255,255,255,0.06)" }}
+          style={{ backgroundColor: "#1B1B1B", borderTop: "1px solid rgba(255,255,255,0.05)", borderBottom: "1px solid rgba(255,255,255,0.05)" }}
         >
           <div className="max-w-3xl mx-auto">
             <SectionLabel>How it works</SectionLabel>
@@ -242,19 +242,19 @@ export default function AboutPage() {
                 number="1"
                 title="Choose your mood"
                 description="Pick how you actually feel right now — not how you want to feel. Hungover, anxious, heartbroken, overwhelmed. We have a session for it."
-                gradient="linear-gradient(135deg, #6B21E8 0%, #8B3CF7 25%, #6366F1 60%, #3B82F6 80%, #22D3EE 100%)"
+                gradient="linear-gradient(135deg, #ff41b3, #ec723d)"
               />
               <Step
                 number="2"
                 title="Press play"
                 description="Guided audio sessions from 5 to 45 minutes. No setup, no equipment. Just put your headphones in wherever you are."
-                gradient="linear-gradient(135deg, #F43F5E 0%, #EC4899 20%, #D946EF 35%, #F97316 65%, #FACC15 100%)"
+                gradient="linear-gradient(135deg, #ff41b3, #f4e71d)"
               />
               <Step
                 number="3"
                 title="Feel better"
                 description="Your nervous system actually shifts. Not because of magic — because these techniques work. Come back whenever you need."
-                gradient="linear-gradient(135deg, #10B981 0%, #22C55E 35%, #84CC16 70%, #D9F100 100%)"
+                gradient="linear-gradient(135deg, #adf225, #f4e71d)"
               />
             </div>
           </div>
@@ -269,9 +269,10 @@ export default function AboutPage() {
               <div
                 className="w-28 h-28 rounded-full flex items-center justify-center text-4xl text-white"
                 style={{
-                  background: "linear-gradient(135deg, #8B5CF6, #6366F1)",
+                  background: "linear-gradient(135deg, #ff41b3, #ec723d)",
                   border: "2px solid rgba(255,255,255,0.1)",
-                  fontWeight: 500,
+                  fontFamily: "var(--font-plus-jakarta)",
+                  fontWeight: 800,
                 }}
               >
                 N
@@ -326,13 +327,13 @@ export default function AboutPage() {
         {/* ── 6. CTA ───────────────────────────────────────────── */}
         <section
           className="w-full py-24 px-4 sm:px-6 flex flex-col items-center text-center relative overflow-hidden"
-          style={{ backgroundColor: "#1A1A2E", borderTop: "0.5px solid rgba(255,255,255,0.06)" }}
+          style={{ backgroundColor: "#1B1B1B", borderTop: "1px solid rgba(255,255,255,0.05)" }}
         >
           {/* Subtle glow */}
           <div
             className="absolute inset-0 pointer-events-none"
             style={{
-              background: "radial-gradient(ellipse at 50% 100%, rgba(139,92,246,0.1) 0%, transparent 60%)",
+              background: "radial-gradient(ellipse at 50% 100%, rgba(255,65,179,0.08) 0%, transparent 60%)",
             }}
           />
 
@@ -348,7 +349,7 @@ export default function AboutPage() {
             <Link
               href="/pricing"
               className="px-8 py-3.5 rounded-[10px] text-sm text-white transition-opacity hover:opacity-80"
-              style={{ background: "linear-gradient(135deg, #6B21E8, #8B5CF6)", fontWeight: 500 }}
+              style={{ background: "#ff41b3", fontFamily: "var(--font-space-grotesk)", fontWeight: 700, boxShadow: "0 0 20px rgba(255,65,179,0.35)" }}
             >
               Join Daily Meds
             </Link>

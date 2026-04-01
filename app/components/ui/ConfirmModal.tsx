@@ -24,7 +24,7 @@ export default function ConfirmModal({
     >
       <div
         className="w-full max-w-sm rounded-[10px] p-6"
-        style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.08)" }}
+        style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.08)" }}
       >
         <p className="text-sm text-white/80 mb-6 leading-relaxed">{message}</p>
         <div className="flex gap-3 justify-end">

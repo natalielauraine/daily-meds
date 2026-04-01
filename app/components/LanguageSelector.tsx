@@ -57,7 +57,7 @@ export default function LanguageSelector() {
         <div
           className="absolute top-full mt-1.5 right-0 rounded-[10px] py-1 z-50 min-w-[140px]"
           style={{
-            backgroundColor: "#1A1A2E",
+            backgroundColor: "#1F1F1F",
             border: "0.5px solid rgba(255,255,255,0.1)",
             boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
           }}
@@ -75,7 +75,7 @@ export default function LanguageSelector() {
               <span>{lang.flag}</span>
               <span>{lang.label}</span>
               {lang.code === language && (
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="#8B5CF6" className="ml-auto shrink-0">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="#ff41b3" className="ml-auto shrink-0">
                   <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
                 </svg>
               )}

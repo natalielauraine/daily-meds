@@ -14,7 +14,7 @@ export default function LoadingSkeleton({ height = 64, count = 1, className = ""
         <div
           key={i}
           className={`rounded-[10px] animate-pulse ${className}`}
-          style={{ height, backgroundColor: "#1A1A2E" }}
+          style={{ height, backgroundColor: "#1F1F1F" }}
         />
       ))}
     </>

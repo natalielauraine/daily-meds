@@ -87,7 +87,7 @@ export default function AdminBrandCrewsPage() {
   };
 
   return (
-    <div className="min-h-screen px-4 py-8 max-w-4xl mx-auto" style={{ backgroundColor: "#0D0D1A" }}>
+    <div className="min-h-screen px-4 py-8 max-w-4xl mx-auto" style={{ backgroundColor: "#131313" }}>
 
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
@@ -124,7 +124,7 @@ export default function AdminBrandCrewsPage() {
             onClick={() => setFilter(tab)}
             className="px-3 py-1.5 rounded-lg text-xs transition-colors capitalize"
             style={{
-              backgroundColor: filter === tab ? "#8B5CF6" : "rgba(255,255,255,0.05)",
+              backgroundColor: filter === tab ? "#ff41b3" : "rgba(255,255,255,0.05)",
               color: filter === tab ? "white" : "rgba(255,255,255,0.4)",
             }}
           >
@@ -136,7 +136,7 @@ export default function AdminBrandCrewsPage() {
       {/* Applications list */}
       {loading ? (
         <div className="flex justify-center py-16">
-          <div className="w-6 h-6 rounded-full border-2 border-white/20 border-t-purple-400 animate-spin" />
+          <div className="w-6 h-6 rounded-full border-2 border-white/20 border-t-pink-400 animate-spin" />
         </div>
       ) : filtered.length === 0 ? (
         <p className="text-white/30 text-sm text-center py-16">No {filter} applications.</p>
@@ -146,7 +146,7 @@ export default function AdminBrandCrewsPage() {
             <div
               key={crew.id}
               className="rounded-[10px] p-5"
-              style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.08)" }}
+              style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.08)" }}
             >
               <div className="flex items-start justify-between gap-4 mb-3">
                 <div className="flex-1 min-w-0">
@@ -174,7 +174,7 @@ export default function AdminBrandCrewsPage() {
                   <p className="text-xs text-white/40 mb-1">{crew.contact_email}</p>
                   {crew.website_url && (
                     <a href={crew.website_url} target="_blank" rel="noopener noreferrer"
-                      className="text-xs text-[#8B5CF6] hover:opacity-80">{crew.website_url}</a>
+                      className="text-xs text-[#ff41b3] hover:opacity-80">{crew.website_url}</a>
                   )}
                 </div>
                 <div className="text-right shrink-0">
@@ -222,7 +222,7 @@ export default function AdminBrandCrewsPage() {
                       onClick={() => handleAction(crew.id, "approve")}
                       disabled={actionLoading === crew.id}
                       className="px-3 py-1.5 rounded-lg text-xs text-white transition-opacity hover:opacity-80 disabled:opacity-40"
-                      style={{ backgroundColor: "#8B5CF6", fontWeight: 500 }}
+                      style={{ backgroundColor: "#ff41b3", fontWeight: 500 }}
                     >
                       {actionLoading === crew.id ? "Approving…" : "Approve"}
                     </button>
@@ -245,7 +245,7 @@ export default function AdminBrandCrewsPage() {
                 {crew.status === "approved" && (
                   <Link
                     href={`/brand-crews/${crew.id}`}
-                    className="text-xs text-[#8B5CF6] hover:opacity-80"
+                    className="text-xs text-[#ff41b3] hover:opacity-80"
                   >
                     View live page →
                   </Link>

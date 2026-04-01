@@ -11,7 +11,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { generateBrandCode, BRAND_TYPES } from "../../lib/brand-crews";
 
-const GRADIENT = "linear-gradient(135deg, #F43F5E 0%, #EC4899 20%, #D946EF 35%, #F97316 65%, #EAB308 85%, #FACC15 100%)";
+const GRADIENT = "linear-gradient(135deg, #ff41b3 0%, #ff41b3 20%, #ff41b3 35%, #ec723d 65%, #f4e71d 85%, #f4e71d 100%)";
 
 export default function PartnershipsPage() {
   const router = useRouter();
@@ -74,7 +74,7 @@ export default function PartnershipsPage() {
 
   if (submitted) {
     return (
-      <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#0D0D1A" }}>
+      <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#131313" }}>
         <Navbar />
         <div className="flex-1 flex items-center justify-center px-4">
           <div className="text-center max-w-sm">
@@ -105,7 +105,7 @@ export default function PartnershipsPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#0D0D1A" }}>
+    <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#131313" }}>
       <Navbar />
 
       <main className="flex-1 max-w-xl mx-auto w-full px-4 py-10">
@@ -127,7 +127,7 @@ export default function PartnershipsPage() {
         {/* What you get */}
         <div
           className="rounded-[10px] p-5 mb-8"
-          style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.08)" }}
+          style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.08)" }}
         >
           <p className="text-xs text-white/40 mb-3 uppercase tracking-wide">What you get</p>
           <div className="flex flex-col gap-2">
@@ -172,7 +172,7 @@ export default function PartnershipsPage() {
               value={form.brand_type}
               onChange={(e) => update("brand_type", e.target.value)}
               className="w-full rounded-lg px-3 py-2.5 text-sm text-white outline-none"
-              style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.1)", colorScheme: "dark" }}
+              style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.1)", colorScheme: "dark" }}
             >
               <option value="">Select a type...</option>
               {BRAND_TYPES.map((t) => (

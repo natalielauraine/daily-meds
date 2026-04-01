@@ -36,7 +36,7 @@ export default function MiniPlayer() {
     <div
       className="fixed bottom-0 left-0 right-0 z-50 flex items-center gap-3 px-4 sm:px-6"
       style={{
-        backgroundColor: "#1A1A2E",
+        backgroundColor: "#1F1F1F",
         borderTop: "0.5px solid rgba(255,255,255,0.1)",
         height: "64px",
       }}
@@ -76,7 +76,12 @@ export default function MiniPlayer() {
           style={{ background: currentSession.gradient }}
         >
           <svg width="16" height="16" viewBox="0 0 48 48" fill="none">
-            <path d="M24 4C24 4 16 12 16 20C16 24.4 19.6 28 24 28C28.4 28 32 24.4 32 20C32 12 24 4 24 4Z" fill="white" opacity="0.9"/>
+            <path d="M24 4C24 4 16 12 16 20C16 24.4 19.6 28 24 28C28.4 28 32 24.4 32 20C32 12 24 4 24 4Z" fill="white" opacity="0.95"/>
+            <path d="M10 14C10 14 2 18 2 25C2 29.4 5.6 33 10 33C13 33 15.6 31.4 17 29" stroke="white" strokeWidth="2.5" strokeLinecap="round" fill="none" opacity="0.8"/>
+            <path d="M38 14C38 14 46 18 46 25C46 29.4 42.4 33 38 33C35 33 32.4 31.4 31 29" stroke="white" strokeWidth="2.5" strokeLinecap="round" fill="none" opacity="0.8"/>
+            <path d="M24 28L20 35" stroke="white" strokeWidth="2.5" strokeLinecap="round" fill="none" opacity="0.7"/>
+            <path d="M24 28L28 35" stroke="white" strokeWidth="2.5" strokeLinecap="round" fill="none" opacity="0.7"/>
+            <circle cx="24" cy="28" r="2" fill="white" opacity="0.9"/>
           </svg>
         </div>
 

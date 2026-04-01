@@ -16,7 +16,7 @@ export default function VideoPlayer({ vimeoId, title }: VideoPlayerProps) {
     "?title=0",          // Hide video title
     "&byline=0",         // Hide uploader name
     "&portrait=0",       // Hide uploader avatar
-    "&color=8B5CF6",     // Brand purple for progress bar
+    "&color=ff41b3",     // Brand pink for progress bar
     "&transparent=0",    // Solid background
     "&dnt=1",            // Do Not Track
   ].join("");

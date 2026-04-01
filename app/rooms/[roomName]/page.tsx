@@ -25,7 +25,7 @@ import {
 } from "../../../lib/group-sessions";
 
 const EMOJIS = ["❤️", "🧡", "💛", "💚", "💙", "💜", "🤍", "🤎", "🔥", "⭐", "🌟", "💫", "✨", "🏁", "🚩"];
-const FALLBACK_GRADIENT = "linear-gradient(135deg, #6B21E8 0%, #8B3CF7 25%, #6366F1 60%, #3B82F6 80%, #22D3EE 100%)";
+const FALLBACK_GRADIENT = "linear-gradient(135deg, #ff41b3 0%, #ec723d 25%, #adf225 60%, #adf225 80%, #adf225 100%)";
 
 type FloatingEmoji = { id: number; emoji: string; x: number };
 
@@ -462,17 +462,17 @@ export default function GroupSessionPage() {
 
   if (loading) {
     return (
-      <div className="flex flex-col min-h-screen items-center justify-center" style={{ backgroundColor: "#0D0D1A" }}>
-        <div className="w-6 h-6 rounded-full border-2 border-white/20 border-t-purple-400 animate-spin" />
+      <div className="flex flex-col min-h-screen items-center justify-center" style={{ backgroundColor: "#131313" }}>
+        <div className="w-6 h-6 rounded-full border-2 border-white/20 border-t-pink-400 animate-spin" />
       </div>
     );
   }
 
   if (error || !session) {
     return (
-      <div className="flex flex-col min-h-screen items-center justify-center px-4" style={{ backgroundColor: "#0D0D1A" }}>
+      <div className="flex flex-col min-h-screen items-center justify-center px-4" style={{ backgroundColor: "#131313" }}>
         <p className="text-white/40 text-sm mb-4 text-center">{error || "Session not found."}</p>
-        <Link href="/rooms" className="text-sm text-[#8B5CF6] hover:opacity-80 transition-opacity">
+        <Link href="/rooms" className="text-sm text-[#ff41b3] hover:opacity-80 transition-opacity">
           ← Back to rooms
         </Link>
       </div>
@@ -484,7 +484,7 @@ export default function GroupSessionPage() {
   const TopBar = () => (
     <div
       className="shrink-0 px-4 sm:px-6 py-3 flex items-center justify-between"
-      style={{ backgroundColor: "#1A1A2E", borderBottom: "0.5px solid rgba(255,255,255,0.08)" }}
+      style={{ backgroundColor: "#1F1F1F", borderBottom: "0.5px solid rgba(255,255,255,0.08)" }}
     >
       <Link
         href="/rooms"
@@ -504,7 +504,7 @@ export default function GroupSessionPage() {
 
   if (session.status === "completed") {
     return (
-      <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#0D0D1A" }}>
+      <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#131313" }}>
         <TopBar />
         <div className="flex-1 flex items-center justify-center px-4 py-10">
           <div className="w-full max-w-sm text-center">
@@ -525,14 +525,14 @@ export default function GroupSessionPage() {
             <div className="flex gap-4 justify-center mb-8">
               <div
                 className="flex flex-col items-center px-6 py-4 rounded-[10px]"
-                style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.08)" }}
+                style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.08)" }}
               >
                 <span className="text-3xl text-white mb-1" style={{ fontWeight: 500 }}>{completedCount}</span>
                 <span className="text-xs text-white/35">people completed</span>
               </div>
               <div
                 className="flex flex-col items-center px-6 py-4 rounded-[10px]"
-                style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.08)" }}
+                style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.08)" }}
               >
                 <span className="text-3xl text-white mb-1" style={{ fontWeight: 500 }}>{totalGroupMinutes}</span>
                 <span className="text-xs text-white/35">group minutes</span>
@@ -558,7 +558,7 @@ export default function GroupSessionPage() {
 
   if (session.status === "active") {
     return (
-      <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#0D0D1A" }}>
+      <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#131313" }}>
         <TopBar />
 
         <div className="flex-1 overflow-y-auto">
@@ -597,7 +597,7 @@ export default function GroupSessionPage() {
             {audioUrl && (
               <div
                 className="rounded-[10px] p-4 mb-6 flex items-center gap-3"
-                style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.08)" }}
+                style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.08)" }}
               >
                 <div
                   className="w-10 h-10 rounded-full shrink-0 flex items-center justify-center"
@@ -664,7 +664,7 @@ export default function GroupSessionPage() {
                 <button
                   onClick={() => setFlagPickerOpen((o) => !o)}
                   className="w-10 h-10 rounded-full flex items-center justify-center text-xl transition-transform hover:scale-125 active:scale-95"
-                  style={{ backgroundColor: flagPickerOpen ? "rgba(139,92,246,0.25)" : "rgba(255,255,255,0.05)" }}
+                  style={{ backgroundColor: flagPickerOpen ? "rgba(255,65,179,0.25)" : "rgba(255,255,255,0.05)" }}
                   title="Country flags"
                 >
                   🌍
@@ -675,7 +675,7 @@ export default function GroupSessionPage() {
               {flagPickerOpen && (
                 <div
                   className="rounded-[10px] p-3 mt-1 flex flex-wrap gap-1 justify-center"
-                  style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.1)" }}
+                  style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.1)" }}
                 >
                   {[
                     "🇬🇧","🇺🇸","🇦🇺","🇨🇦","🇮🇪","🇳🇿","🇿🇦",
@@ -705,7 +705,7 @@ export default function GroupSessionPage() {
               <p className="text-xs text-white/40 mb-3">Group chat</p>
               <div
                 className="rounded-[10px] overflow-hidden"
-                style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.08)" }}
+                style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.08)" }}
               >
                 <div className="h-44 overflow-y-auto px-4 py-3 flex flex-col gap-2">
                   {messages.length === 0 ? (
@@ -776,7 +776,7 @@ export default function GroupSessionPage() {
   // ── SCHEDULED: WAITING ROOM ──────────────────────────────────────────────────
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#0D0D1A" }}>
+    <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#131313" }}>
       <TopBar />
 
       <div className="flex-1 overflow-y-auto">
@@ -785,7 +785,7 @@ export default function GroupSessionPage() {
           {/* Session info + countdown card */}
           <div
             className="rounded-[10px] p-6 mb-6 text-center"
-            style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.08)" }}
+            style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.08)" }}
           >
             <div
               className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
@@ -844,7 +844,7 @@ export default function GroupSessionPage() {
               )
             ) : (
               <div className="flex flex-col gap-2">
-                <p className="text-sm text-[#22C55E] mb-1">You&apos;re in ✓</p>
+                <p className="text-sm text-[#adf225] mb-1">You&apos;re in ✓</p>
                 <button
                   onClick={handleLeave}
                   className="w-full py-2 rounded-[10px] text-sm text-white/40 transition-colors hover:text-white/70"
@@ -860,7 +860,7 @@ export default function GroupSessionPage() {
           {!session.is_public && isParticipant && (
             <div
               className="rounded-[10px] p-4 mb-6 flex items-center justify-between"
-              style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.08)" }}
+              style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.08)" }}
             >
               <div>
                 <p className="text-xs text-white/40 mb-0.5">Invite code</p>
@@ -873,7 +873,7 @@ export default function GroupSessionPage() {
                 className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-colors"
                 style={{
                   border: "0.5px solid rgba(255,255,255,0.15)",
-                  color: inviteCopied ? "#22C55E" : "rgba(255,255,255,0.6)",
+                  color: inviteCopied ? "#adf225" : "rgba(255,255,255,0.6)",
                 }}
               >
                 {inviteCopied ? (
@@ -904,7 +904,7 @@ export default function GroupSessionPage() {
               </p>
               <div
                 className="rounded-[10px] p-4"
-                style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.08)" }}
+                style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.08)" }}
               >
                 <ParticipantAvatars participants={participants} gradient={gradient} showNames />
               </div>
@@ -917,7 +917,7 @@ export default function GroupSessionPage() {
               <p className="text-xs text-white/40 mb-3">Waiting room chat</p>
               <div
                 className="rounded-[10px] overflow-hidden"
-                style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.08)" }}
+                style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.08)" }}
               >
                 {/* Message list */}
                 <div className="h-52 overflow-y-auto px-4 py-3 flex flex-col gap-2">

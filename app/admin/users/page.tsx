@@ -18,10 +18,10 @@ type User = {
 
 // Colour and label for each subscription tier
 function tierColour(status: string) {
-  if (status === "monthly")       return { bg: "rgba(139,92,246,0.15)", text: "#8B5CF6" };
-  if (status === "annual")        return { bg: "rgba(59,130,246,0.15)",  text: "#3B82F6" };
-  if (status === "lifetime")      return { bg: "rgba(16,185,129,0.15)", text: "#10B981" };
-  if (status === "payment_failed") return { bg: "rgba(244,63,94,0.15)", text: "#F43F5E" };
+  if (status === "monthly")       return { bg: "rgba(255,65,179,0.15)", text: "#ff41b3" };
+  if (status === "annual")        return { bg: "rgba(173,242,37,0.15)", text: "#adf225" };
+  if (status === "lifetime")      return { bg: "rgba(173,242,37,0.15)", text: "#adf225" };
+  if (status === "payment_failed") return { bg: "rgba(244,63,94,0.15)", text: "#ff41b3" };
   return { bg: "rgba(255,255,255,0.06)", text: "rgba(255,255,255,0.4)" };
 }
 
@@ -112,7 +112,7 @@ export default function AdminUsersPage() {
                 onClick={() => setFilter(f.value)}
                 className="px-3 py-2 rounded-lg text-xs transition-colors"
                 style={{
-                  backgroundColor: filter === f.value ? "#8B5CF6" : "rgba(255,255,255,0.06)",
+                  backgroundColor: filter === f.value ? "#ff41b3" : "rgba(255,255,255,0.06)",
                   color: filter === f.value ? "white" : "rgba(255,255,255,0.4)",
                   fontWeight: filter === f.value ? 500 : 400,
                 }}
@@ -129,7 +129,7 @@ export default function AdminUsersPage() {
           {/* Table header */}
           <div
             className="grid grid-cols-[1fr_auto_auto] sm:grid-cols-[1fr_140px_100px_100px] px-4 py-3 text-xs text-white/30"
-            style={{ backgroundColor: "#1A1A2E", borderBottom: "0.5px solid rgba(255,255,255,0.06)", fontWeight: 500, letterSpacing: "0.04em", textTransform: "uppercase" }}
+            style={{ backgroundColor: "#1F1F1F", borderBottom: "0.5px solid rgba(255,255,255,0.06)", fontWeight: 500, letterSpacing: "0.04em", textTransform: "uppercase" }}
           >
             <span>User</span>
             <span className="hidden sm:block">Joined</span>
@@ -141,11 +141,11 @@ export default function AdminUsersPage() {
           {loading ? (
             <div className="flex flex-col">
               {[0,1,2,3,4,5].map((i) => (
-                <div key={i} className="h-14 animate-pulse border-b" style={{ backgroundColor: "#1A1A2E", borderColor: "rgba(255,255,255,0.04)" }} />
+                <div key={i} className="h-14 animate-pulse border-b" style={{ backgroundColor: "#1F1F1F", borderColor: "rgba(255,255,255,0.04)" }} />
               ))}
             </div>
           ) : filtered.length === 0 ? (
-            <div className="py-12 text-center" style={{ backgroundColor: "#1A1A2E" }}>
+            <div className="py-12 text-center" style={{ backgroundColor: "#1F1F1F" }}>
               <p className="text-sm text-white/25">{search ? "No users match your search" : "No users yet"}</p>
             </div>
           ) : (

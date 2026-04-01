@@ -170,17 +170,17 @@ export default function ChallengesPage() {
 
   if (loading) {
     return (
-      <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#0D0D1A" }}>
+      <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#131313" }}>
         <Navbar />
         <div className="flex-1 flex items-center justify-center">
-          <div className="w-6 h-6 rounded-full border-2 border-white/20 border-t-purple-400 animate-spin" />
+          <div className="w-6 h-6 rounded-full border-2 border-white/20 border-t-pink-400 animate-spin" />
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#0D0D1A" }}>
+    <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#131313" }}>
       <Navbar />
 
       <main className="flex-1 max-w-3xl mx-auto w-full px-4 py-8">
@@ -194,7 +194,7 @@ export default function ChallengesPage() {
           <button
             onClick={() => setShowCreate(true)}
             className="px-4 py-2 rounded-lg text-sm text-white transition-opacity hover:opacity-80"
-            style={{ backgroundColor: "#8B5CF6", fontWeight: 500 }}
+            style={{ backgroundColor: "#ff41b3", fontWeight: 500 }}
           >
             + Create
           </button>
@@ -219,7 +219,7 @@ export default function ChallengesPage() {
               <p className="text-xs text-white/40 uppercase tracking-wide">Official Challenges</p>
               <span
                 className="text-[10px] px-2 py-0.5 rounded-full"
-                style={{ backgroundColor: "rgba(139,92,246,0.2)", color: "#8B5CF6" }}
+                style={{ backgroundColor: "rgba(255,65,179,0.2)", color: "#ff41b3" }}
               >
                 by Daily Meds
               </span>
@@ -266,7 +266,7 @@ export default function ChallengesPage() {
         >
           <div
             className="w-full max-w-md rounded-[14px] p-6 max-h-[90vh] overflow-y-auto"
-            style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.12)" }}
+            style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.12)" }}
           >
             <h2 className="text-white text-base mb-5" style={{ fontWeight: 500 }}>Create a Challenge</h2>
 
@@ -308,8 +308,8 @@ export default function ChallengesPage() {
                       onClick={() => updateForm("challenge_type", type)}
                       className="py-2.5 px-3 rounded-lg text-xs text-left transition-colors"
                       style={{
-                        backgroundColor: form.challenge_type === type ? "rgba(139,92,246,0.25)" : "rgba(255,255,255,0.04)",
-                        border: `0.5px solid ${form.challenge_type === type ? "rgba(139,92,246,0.5)" : "rgba(255,255,255,0.08)"}`,
+                        backgroundColor: form.challenge_type === type ? "rgba(255,65,179,0.25)" : "rgba(255,255,255,0.04)",
+                        border: `0.5px solid ${form.challenge_type === type ? "rgba(255,65,179,0.5)" : "rgba(255,255,255,0.08)"}`,
                         color: form.challenge_type === type ? "#C4B5FD" : "rgba(255,255,255,0.5)",
                       }}
                     >
@@ -357,7 +357,7 @@ export default function ChallengesPage() {
                   type="button"
                   onClick={() => updateForm("is_public", !form.is_public)}
                   className="w-11 h-6 rounded-full transition-colors relative"
-                  style={{ backgroundColor: form.is_public ? "#8B5CF6" : "rgba(255,255,255,0.1)" }}
+                  style={{ backgroundColor: form.is_public ? "#ff41b3" : "rgba(255,255,255,0.1)" }}
                 >
                   <div
                     className="w-4 h-4 rounded-full bg-white absolute top-1 transition-all"
@@ -380,7 +380,7 @@ export default function ChallengesPage() {
                   onClick={handleCreate}
                   disabled={creating || !form.title.trim()}
                   className="flex-1 py-2.5 rounded-lg text-sm text-white transition-opacity hover:opacity-80 disabled:opacity-40"
-                  style={{ backgroundColor: "#8B5CF6", fontWeight: 500 }}
+                  style={{ backgroundColor: "#ff41b3", fontWeight: 500 }}
                 >
                   {creating ? "Creating…" : "Create & Join"}
                 </button>
@@ -413,7 +413,7 @@ function ChallengeCard({
     <Link
       href={`/challenges/${challenge.id}`}
       className="block rounded-[10px] p-5 transition-all hover:scale-[1.01]"
-      style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.08)" }}
+      style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.08)" }}
     >
       {/* Top row */}
       <div className="flex items-start gap-3 mb-3">
@@ -429,7 +429,7 @@ function ChallengeCard({
             {challenge.is_official && (
               <span
                 className="text-[9px] px-1.5 py-0.5 rounded-full"
-                style={{ backgroundColor: "rgba(139,92,246,0.2)", color: "#8B5CF6" }}
+                style={{ backgroundColor: "rgba(255,65,179,0.2)", color: "#ff41b3" }}
               >
                 Official
               </span>

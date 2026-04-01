@@ -44,7 +44,7 @@ const SHOPIFY_OPTIONS: Record<string, unknown> = {
   product: {
     styles: {
       product: {
-        "background-color": "#1A1A2E",
+        "background-color": "#1F1F1F",
         "border-radius": "10px",
         "border": "0.5px solid rgba(255,255,255,0.08)",
         "overflow": "hidden",
@@ -68,14 +68,14 @@ const SHOPIFY_OPTIONS: Record<string, unknown> = {
         "color": "rgba(255,255,255,0.25)",
       },
       button: {
-        "background-color": "#8B5CF6",
+        "background-color": "#ff41b3",
         "border-radius": "6px",
         "color": "white",
         "font-weight": "500",
         "font-family": "Inter, sans-serif",
         "font-size": "13px",
-        ":hover": { "background-color": "#7C3AED" },
-        ":focus": { "background-color": "#7C3AED" },
+        ":hover": { "background-color": "#ff41b3" },
+        ":focus": { "background-color": "#ff41b3" },
       },
     },
     text: { button: "Add to bag" },
@@ -93,15 +93,15 @@ const SHOPIFY_OPTIONS: Record<string, unknown> = {
     styles: {
       product: {
         "@media (min-width: 601px)": { "max-width": "100%", "margin-left": "0", "margin-bottom": "0" },
-        "background-color": "#0D0D1A",
+        "background-color": "#131313",
       },
       title: { "color": "rgba(255,255,255,0.9)", "font-family": "Inter, sans-serif" },
       price: { "color": "rgba(255,255,255,0.55)", "font-family": "Inter, sans-serif" },
       button: {
-        "background-color": "#8B5CF6",
+        "background-color": "#ff41b3",
         "color": "white",
         "font-family": "Inter, sans-serif",
-        ":hover": { "background-color": "#7C3AED" },
+        ":hover": { "background-color": "#ff41b3" },
       },
     },
     googleFonts: [],
@@ -109,10 +109,10 @@ const SHOPIFY_OPTIONS: Record<string, unknown> = {
   option: {},
   cart: {
     styles: {
-      cart: { "background-color": "#1A1A2E" },
+      cart: { "background-color": "#1F1F1F" },
       title: { "color": "rgba(255,255,255,0.85)", "font-family": "Inter, sans-serif" },
-      header: { "background-color": "#1A1A2E" },
-      lineItems: { "background-color": "#0D0D1A" },
+      header: { "background-color": "#1F1F1F" },
+      lineItems: { "background-color": "#131313" },
       subtotalText: { "color": "rgba(255,255,255,0.55)", "font-family": "Inter, sans-serif" },
       subtotal: { "color": "rgba(255,255,255,0.85)", "font-family": "Inter, sans-serif" },
       notice: { "color": "rgba(255,255,255,0.35)", "font-family": "Inter, sans-serif" },
@@ -124,12 +124,12 @@ const SHOPIFY_OPTIONS: Record<string, unknown> = {
       discountIcon: { "fill": "rgba(255,255,255,0.55)" },
       discountAmount: { "color": "rgba(255,255,255,0.55)" },
       button: {
-        "background-color": "#8B5CF6",
+        "background-color": "#ff41b3",
         "color": "white",
         "font-family": "Inter, sans-serif",
         "font-weight": "500",
-        ":hover": { "background-color": "#7C3AED" },
-        ":focus": { "background-color": "#7C3AED" },
+        ":hover": { "background-color": "#ff41b3" },
+        ":focus": { "background-color": "#ff41b3" },
       },
     },
     text: {
@@ -142,9 +142,9 @@ const SHOPIFY_OPTIONS: Record<string, unknown> = {
   toggle: {
     styles: {
       toggle: {
-        "background-color": "#8B5CF6",
-        ":hover": { "background-color": "#7C3AED" },
-        ":focus": { "background-color": "#7C3AED" },
+        "background-color": "#ff41b3",
+        ":hover": { "background-color": "#ff41b3" },
+        ":focus": { "background-color": "#ff41b3" },
       },
       count: { "color": "white" },
       iconPath: { "fill": "white" },
@@ -243,7 +243,7 @@ export default function ShopPage() {
   }, []);
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#0D0D1A" }}>
+    <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#131313" }}>
       <Navbar />
 
       <main className="flex-1">
@@ -289,7 +289,7 @@ export default function ShopPage() {
           {/* Loading spinner — shown while the SDK script loads */}
           {status === "loading" && (
             <div className="flex justify-center py-24">
-              <div className="w-6 h-6 rounded-full border-2 border-white/20 border-t-purple-400 animate-spin" />
+              <div className="w-6 h-6 rounded-full border-2 border-white/20 border-t-pink-400 animate-spin" />
             </div>
           )}
 
@@ -300,7 +300,7 @@ export default function ShopPage() {
             >
               <div
                 className="w-16 h-16 rounded-full flex items-center justify-center mb-5"
-                style={{ background: "linear-gradient(135deg, #F97316, #FACC15)" }}
+                style={{ background: "linear-gradient(135deg, #ec723d, #f4e71d)" }}
               >
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="white">
                   <path d="M20 6h-2.18c.07-.44.18-.88.18-1.3C18 2.1 15.9 0 13.3 0c-1.4 0-2.6.56-3.5 1.46L8 3.18 6.2 1.46C5.3.56 4.1 0 2.7 0 .1 0-2 2.1-2 4.7c0 .42.11.86.18 1.3H-2c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h22c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-7.5-4.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5S11 3.83 11 3s.67-1.5 1.5-1.5zM5.5 3c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5S7.83 4.5 7 4.5 5.5 3.83 5.5 3zM20 19H2V8h7.08L7 10.08l1.41 1.41 3.09-3.09.5-.5.5.5 3.09 3.09L17 10.08 14.92 8H20v11z"/>
@@ -341,7 +341,7 @@ export default function ShopPage() {
             <a
               href="/pricing"
               className="shrink-0 text-sm text-white px-5 py-2.5 rounded-full transition-opacity hover:opacity-80"
-              style={{ backgroundColor: "#8B5CF6", fontWeight: 500 }}
+              style={{ backgroundColor: "#ff41b3", fontWeight: 500 }}
             >
               View plans
             </a>

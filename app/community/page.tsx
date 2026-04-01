@@ -15,20 +15,20 @@ import { type Challenge, challengeGradient, TYPE_ICONS } from "../../lib/challen
 
 // Mood category gradients for post pills
 const MOOD_GRADIENTS: Record<string, string> = {
-  "Hungover":       "linear-gradient(135deg, #6B21E8, #22D3EE)",
-  "After The Sesh": "linear-gradient(135deg, #F43F5E, #FACC15)",
-  "On A Comedown":  "linear-gradient(135deg, #10B981, #D9F100)",
-  "Feeling Empty":  "linear-gradient(135deg, #6B21E8, #22D3EE)",
-  "Can't Sleep":    "linear-gradient(135deg, #8B3CF7, #6366F1)",
-  "Anxious":        "linear-gradient(135deg, #F43F5E, #F97316)",
-  "Heartbroken":    "linear-gradient(135deg, #EC4899, #D946EF)",
-  "Overwhelmed":    "linear-gradient(135deg, #F97316, #FACC15)",
-  "Low Energy":     "linear-gradient(135deg, #10B981, #22C55E)",
-  "Morning Reset":  "linear-gradient(135deg, #F43F5E, #FACC15)",
-  "Focus Mode":     "linear-gradient(135deg, #6B21E8, #6366F1)",
+  "Hungover":       "linear-gradient(135deg, #ff41b3, #ec723d)",
+  "After The Sesh": "linear-gradient(135deg, #ff41b3, #f4e71d)",
+  "On A Comedown":  "linear-gradient(135deg, #adf225, #f4e71d)",
+  "Feeling Empty":  "linear-gradient(135deg, #ff41b3, #ec723d)",
+  "Can't Sleep":    "linear-gradient(135deg, #ff41b3, #adf225)",
+  "Anxious":        "linear-gradient(135deg, #ec723d, #f4e71d)",
+  "Heartbroken":    "linear-gradient(135deg, #ff41b3, #ec723d)",
+  "Overwhelmed":    "linear-gradient(135deg, #ec723d, #f4e71d)",
+  "Low Energy":     "linear-gradient(135deg, #adf225, #f4e71d)",
+  "Morning Reset":  "linear-gradient(135deg, #ff41b3, #f4e71d)",
+  "Focus Mode":     "linear-gradient(135deg, #adf225, #ec723d)",
 };
 
-const PURPLE = "linear-gradient(135deg, #8B5CF6 0%, #6366F1 50%, #3B82F6 100%)";
+const PURPLE = "linear-gradient(135deg, #ff41b3 0%, #ec723d 50%, #adf225 100%)";
 
 // The six reaction emojis — matches the design spec
 const POST_EMOJIS = ["🔥", "💜", "🙏", "⭐", "💪", "🧘"];
@@ -300,7 +300,7 @@ export default function CommunityPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#0D0D1A" }}>
+    <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#131313" }}>
       <Navbar />
 
       <main className="flex-1 max-w-5xl mx-auto w-full px-4 py-8">
@@ -325,7 +325,7 @@ export default function CommunityPage() {
         {/* Today's Activity banner */}
         <div
           className="rounded-[12px] p-5 mb-8 flex flex-wrap gap-6"
-          style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.08)" }}
+          style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.08)" }}
         >
           <div>
             <p className="text-2xl text-white mb-0.5" style={{ fontWeight: 500 }}>{todayStats.uniqueUsers}</p>
@@ -350,12 +350,12 @@ export default function CommunityPage() {
 
             {loading ? (
               <div className="flex justify-center py-12">
-                <div className="w-6 h-6 rounded-full border-2 border-white/20 border-t-purple-400 animate-spin" />
+                <div className="w-6 h-6 rounded-full border-2 border-white/20 border-t-pink-400 animate-spin" />
               </div>
             ) : posts.length === 0 ? (
               <div
                 className="rounded-[10px] p-8 text-center"
-                style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.08)" }}
+                style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.08)" }}
               >
                 <p className="text-2xl mb-2">✨</p>
                 <p className="text-sm text-white/30 mb-1">No posts yet</p>
@@ -369,7 +369,7 @@ export default function CommunityPage() {
                     <div
                       key={post.id}
                       className="rounded-[10px] p-4"
-                      style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.08)" }}
+                      style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.08)" }}
                     >
                       <div className="flex items-start gap-3">
                         {/* Avatar */}
@@ -416,8 +416,8 @@ export default function CommunityPage() {
                                   key={emoji}
                                   className="flex items-center rounded-lg text-xs overflow-hidden"
                                   style={{
-                                    backgroundColor: isReacted ? "rgba(139,92,246,0.2)" : "rgba(255,255,255,0.04)",
-                                    border: `0.5px solid ${isReacted ? "rgba(139,92,246,0.4)" : "rgba(255,255,255,0.07)"}`,
+                                    backgroundColor: isReacted ? "rgba(255,65,179,0.2)" : "rgba(255,255,255,0.04)",
+                                    border: `0.5px solid ${isReacted ? "rgba(255,65,179,0.4)" : "rgba(255,255,255,0.07)"}`,
                                   }}
                                 >
                                   {/* Left side: emoji — tap to react or unreact */}
@@ -466,7 +466,7 @@ export default function CommunityPage() {
               <div>
                 <div className="flex items-center justify-between mb-3">
                   <p className="text-xs text-white/40 uppercase tracking-wide">Find Your Crew</p>
-                  <Link href="/crew" className="text-xs text-[#8B5CF6] hover:opacity-80">See all</Link>
+                  <Link href="/crew" className="text-xs text-[#ff41b3] hover:opacity-80">See all</Link>
                 </div>
                 <div className="flex flex-col gap-2">
                   {crews.map((crew) => (
@@ -474,7 +474,7 @@ export default function CommunityPage() {
                       key={crew.id}
                       href={`/crew/${crew.id}`}
                       className="flex items-center gap-3 rounded-[10px] px-3 py-2.5 transition-opacity hover:opacity-80"
-                      style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.07)" }}
+                      style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.07)" }}
                     >
                       <div
                         className="w-8 h-8 rounded-full shrink-0 flex items-center justify-center text-xs text-white"
@@ -494,7 +494,7 @@ export default function CommunityPage() {
               <div>
                 <div className="flex items-center justify-between mb-3">
                   <p className="text-xs text-white/40 uppercase tracking-wide">Active Challenges</p>
-                  <Link href="/challenges" className="text-xs text-[#8B5CF6] hover:opacity-80">See all</Link>
+                  <Link href="/challenges" className="text-xs text-[#ff41b3] hover:opacity-80">See all</Link>
                 </div>
                 <div className="flex flex-col gap-2">
                   {challenges.map((c) => {
@@ -504,7 +504,7 @@ export default function CommunityPage() {
                         key={c.id}
                         href={`/challenges/${c.id}`}
                         className="flex items-center gap-3 rounded-[10px] px-3 py-2.5 transition-opacity hover:opacity-80"
-                        style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.07)" }}
+                        style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.07)" }}
                       >
                         <div
                           className="w-8 h-8 rounded-full shrink-0 flex items-center justify-center text-sm"
@@ -529,7 +529,7 @@ export default function CommunityPage() {
                 <p className="text-xs text-white/40 mb-3 uppercase tracking-wide">Most Active This Week</p>
                 <div
                   className="rounded-[10px] overflow-hidden"
-                  style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.07)" }}
+                  style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.07)" }}
                 >
                   {leaderboard.map((entry, i) => (
                     <div
@@ -538,7 +538,7 @@ export default function CommunityPage() {
                       style={{ borderTop: i > 0 ? "0.5px solid rgba(255,255,255,0.05)" : "none" }}
                     >
                       <p className="text-sm w-5 text-center shrink-0"
-                        style={{ color: i === 0 ? "#FACC15" : "rgba(255,255,255,0.2)" }}>
+                        style={{ color: i === 0 ? "#f4e71d" : "rgba(255,255,255,0.2)" }}>
                         {i === 0 ? "🌟" : `${i + 1}`}
                       </p>
                       <div
@@ -563,14 +563,14 @@ export default function CommunityPage() {
             {/* Privacy notice */}
             <div
               className="rounded-[10px] p-4"
-              style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.06)" }}
+              style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.06)" }}
             >
               <p className="text-xs text-white/40 mb-1" style={{ fontWeight: 500 }}>Your privacy</p>
               <p className="text-[11px] text-white/25 leading-relaxed mb-2">
                 Nothing is shared without your consent. Enable community visibility in your profile to appear here.
               </p>
               {user && (
-                <Link href="/profile" className="text-[11px] text-[#8B5CF6] hover:opacity-80">
+                <Link href="/profile" className="text-[11px] text-[#ff41b3] hover:opacity-80">
                   Manage settings →
                 </Link>
               )}
@@ -591,7 +591,7 @@ export default function CommunityPage() {
         >
           <div
             className="w-full max-w-sm rounded-[14px] p-6"
-            style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.12)" }}
+            style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.12)" }}
           >
             <h2 className="text-white text-base mb-1" style={{ fontWeight: 500 }}>Share a win</h2>
             <p className="text-xs text-white/30 mb-5">Celebrate with the community — never shows what you listened to</p>
@@ -609,8 +609,8 @@ export default function CommunityPage() {
                   onClick={() => setShareForm(f => ({ ...f, post_type: t.value }))}
                   className="py-2.5 rounded-lg text-xs flex flex-col items-center gap-1 transition-colors"
                   style={{
-                    backgroundColor: shareForm.post_type === t.value ? "rgba(139,92,246,0.2)" : "rgba(255,255,255,0.04)",
-                    border: `0.5px solid ${shareForm.post_type === t.value ? "rgba(139,92,246,0.5)" : "rgba(255,255,255,0.08)"}`,
+                    backgroundColor: shareForm.post_type === t.value ? "rgba(255,65,179,0.2)" : "rgba(255,255,255,0.04)",
+                    border: `0.5px solid ${shareForm.post_type === t.value ? "rgba(255,65,179,0.5)" : "rgba(255,255,255,0.08)"}`,
                     color: shareForm.post_type === t.value ? "#C4B5FD" : "rgba(255,255,255,0.45)",
                   }}
                 >
@@ -685,7 +685,7 @@ export default function CommunityPage() {
         >
           <div
             className="w-full max-w-xs rounded-[14px] p-5"
-            style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.12)" }}
+            style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.12)" }}
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
@@ -706,7 +706,7 @@ export default function CommunityPage() {
             {/* Loading spinner */}
             {reactorLoading && (
               <div className="flex justify-center py-4">
-                <div className="w-5 h-5 rounded-full border-2 border-white/10 border-t-purple-400 animate-spin" />
+                <div className="w-5 h-5 rounded-full border-2 border-white/10 border-t-pink-400 animate-spin" />
               </div>
             )}
 
@@ -717,7 +717,7 @@ export default function CommunityPage() {
                   <div key={i} className="flex items-center gap-2.5">
                     <div
                       className="w-7 h-7 rounded-full shrink-0 flex items-center justify-center text-xs text-white"
-                      style={{ background: "linear-gradient(135deg, #8B5CF6, #6366F1)", fontWeight: 500 }}
+                      style={{ background: "linear-gradient(135deg, #ff41b3, #adf225)", fontWeight: 500 }}
                     >
                       {name[0]?.toUpperCase()}
                     </div>

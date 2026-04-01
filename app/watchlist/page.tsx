@@ -77,7 +77,7 @@ export default function SavedPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#0D0D1A" }}>
+    <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#131313" }}>
       <Navbar />
 
       <main className="flex-1 w-full max-w-2xl mx-auto px-4 sm:px-6 py-10 pb-24">
@@ -95,7 +95,7 @@ export default function SavedPage() {
 
         {/* Page header */}
         <div className="mb-8">
-          <h1 className="text-2xl text-white mb-1" style={{ fontWeight: 500 }}>Saved</h1>
+          <h1 className="text-2xl text-white mb-1 uppercase" style={{ fontFamily: "var(--font-plus-jakarta)", fontWeight: 800, letterSpacing: "-0.01em" }}>Saved</h1>
           <p className="text-sm text-white/40">
             {loading ? "Loading…" : `${sessions.length} session${sessions.length !== 1 ? "s" : ""} saved`}
           </p>
@@ -108,7 +108,7 @@ export default function SavedPage() {
               <div
                 key={i}
                 className="h-20 rounded-[10px] animate-pulse"
-                style={{ backgroundColor: "#1A1A2E" }}
+                style={{ backgroundColor: "#1F1F1F" }}
               />
             ))}
           </div>
@@ -135,13 +135,13 @@ export default function SavedPage() {
               <div
                 key={session.watchlist_id}
                 className="flex items-center gap-4 p-4 rounded-[10px]"
-                style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.08)" }}
+                style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.08)" }}
               >
                 {/* Gradient icon */}
                 <Link href={`/session/${session.session_id}`} className="shrink-0">
                   <div
                     className="w-12 h-12 rounded-full flex items-center justify-center"
-                    style={{ background: session.gradient || "linear-gradient(135deg, #8B5CF6, #6366F1)" }}
+                    style={{ background: session.gradient || "linear-gradient(135deg, #ff41b3, #adf225)" }}
                   >
                     <svg width="20" height="20" viewBox="0 0 48 48" fill="none">
                       <path d="M24 4C24 4 16 12 16 20C16 24.4 19.6 28 24 28C28.4 28 32 24.4 32 20C32 12 24 4 24 4Z" fill="white" opacity="0.9"/>
@@ -161,7 +161,7 @@ export default function SavedPage() {
                   {session.is_free && (
                     <span
                       className="text-[10px] px-2 py-0.5 rounded text-white"
-                      style={{ backgroundColor: "rgba(16,185,129,0.8)", fontWeight: 500 }}
+                      style={{ backgroundColor: "rgba(173,242,37,0.8)", fontWeight: 500 }}
                     >
                       FREE
                     </span>

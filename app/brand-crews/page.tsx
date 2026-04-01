@@ -12,7 +12,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { type BrandCrew, type BrandCrewMember } from "../../lib/brand-crews";
 
-const GRADIENT = "linear-gradient(135deg, #F43F5E 0%, #EC4899 20%, #D946EF 35%, #F97316 65%, #EAB308 85%, #FACC15 100%)";
+const GRADIENT = "linear-gradient(135deg, #ff41b3 0%, #ff41b3 20%, #ff41b3 35%, #ec723d 65%, #f4e71d 85%, #f4e71d 100%)";
 
 type BrandCrewWithCount = BrandCrew & { memberCount: number; isMember: boolean };
 
@@ -98,7 +98,7 @@ export default function BrandCrewsPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#0D0D1A" }}>
+    <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#131313" }}>
       <Navbar />
 
       <main className="flex-1 max-w-5xl mx-auto w-full px-4 py-10">
@@ -122,7 +122,7 @@ export default function BrandCrewsPage() {
         {/* Brand crew grid */}
         {loading ? (
           <div className="flex justify-center py-16">
-            <div className="w-6 h-6 rounded-full border-2 border-white/20 border-t-purple-400 animate-spin" />
+            <div className="w-6 h-6 rounded-full border-2 border-white/20 border-t-pink-400 animate-spin" />
           </div>
         ) : crews.length === 0 ? (
           <div className="text-center py-16">
@@ -134,7 +134,7 @@ export default function BrandCrewsPage() {
               <div
                 key={crew.id}
                 className="rounded-[12px] p-6 flex flex-col"
-                style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.08)" }}
+                style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.08)" }}
               >
                 {/* Logo */}
                 <div className="flex items-start justify-between mb-4">
@@ -206,7 +206,7 @@ export default function BrandCrewsPage() {
         {/* Apply CTA */}
         <div
           className="rounded-[12px] p-6 text-center"
-          style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.08)" }}
+          style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.08)" }}
         >
           <p className="text-sm text-white mb-1" style={{ fontWeight: 500 }}>Are you a brand or festival?</p>
           <p className="text-xs text-white/40 mb-4">Create a branded crew for your audience and meditate together.</p>

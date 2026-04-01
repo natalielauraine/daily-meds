@@ -77,7 +77,7 @@ export default function AddToPlaylistModal({ sessionId, onClose }: Props) {
       {/* Modal panel — stop click bubbling so clicking inside doesn't close */}
       <div
         className="w-full sm:w-96 rounded-t-2xl sm:rounded-2xl p-6"
-        style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.1)" }}
+        style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.1)" }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -93,7 +93,7 @@ export default function AddToPlaylistModal({ sessionId, onClose }: Props) {
         {/* Loading state */}
         {loading ? (
           <div className="flex justify-center py-8">
-            <div className="w-5 h-5 rounded-full border-2 border-white/20 border-t-purple-400 animate-spin" />
+            <div className="w-5 h-5 rounded-full border-2 border-white/20 border-t-pink-400 animate-spin" />
           </div>
         ) : (
           <>
@@ -117,7 +117,7 @@ export default function AddToPlaylistModal({ sessionId, onClose }: Props) {
                     <div
                       className="w-5 h-5 rounded flex items-center justify-center shrink-0 transition-colors"
                       style={{
-                        backgroundColor: included ? "#8B5CF6" : "transparent",
+                        backgroundColor: included ? "#ff41b3" : "transparent",
                         border: included ? "none" : "1.5px solid rgba(255,255,255,0.25)",
                       }}
                     >
@@ -153,7 +153,7 @@ export default function AddToPlaylistModal({ sessionId, onClose }: Props) {
                 <button
                   onClick={handleCreate}
                   className="px-4 py-2 rounded-lg text-sm text-white transition-opacity hover:opacity-80"
-                  style={{ backgroundColor: "#8B5CF6", fontWeight: 500 }}
+                  style={{ backgroundColor: "#ff41b3", fontWeight: 500 }}
                 >
                   Create
                 </button>

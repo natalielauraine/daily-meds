@@ -12,7 +12,7 @@ import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import { type BrandCrew, type BrandCrewMember, timeAgo } from "../../../lib/brand-crews";
 
-const GRADIENT = "linear-gradient(135deg, #F43F5E 0%, #EC4899 20%, #D946EF 35%, #F97316 65%, #EAB308 85%, #FACC15 100%)";
+const GRADIENT = "linear-gradient(135deg, #ff41b3 0%, #ff41b3 20%, #ff41b3 35%, #ec723d 65%, #f4e71d 85%, #f4e71d 100%)";
 
 export default function BrandCrewDetailPage() {
   const params = useParams();
@@ -119,10 +119,10 @@ export default function BrandCrewDetailPage() {
 
   if (loading) {
     return (
-      <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#0D0D1A" }}>
+      <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#131313" }}>
         <Navbar />
         <div className="flex-1 flex items-center justify-center">
-          <div className="w-6 h-6 rounded-full border-2 border-white/20 border-t-purple-400 animate-spin" />
+          <div className="w-6 h-6 rounded-full border-2 border-white/20 border-t-pink-400 animate-spin" />
         </div>
       </div>
     );
@@ -130,12 +130,12 @@ export default function BrandCrewDetailPage() {
 
   if (error || !crew) {
     return (
-      <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#0D0D1A" }}>
+      <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#131313" }}>
         <Navbar />
         <div className="flex-1 flex items-center justify-center px-4">
           <div className="text-center">
             <p className="text-white/40 text-sm mb-4">{error || "Crew not found."}</p>
-            <Link href="/brand-crews" className="text-sm text-[#8B5CF6] hover:opacity-80">← All brand crews</Link>
+            <Link href="/brand-crews" className="text-sm text-[#ff41b3] hover:opacity-80">← All brand crews</Link>
           </div>
         </div>
       </div>
@@ -145,7 +145,7 @@ export default function BrandCrewDetailPage() {
   const socialLinks = crew.social_links ?? {};
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#0D0D1A" }}>
+    <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#131313" }}>
       <Navbar />
 
       <main className="flex-1 max-w-2xl mx-auto w-full px-4 py-8">
@@ -161,7 +161,7 @@ export default function BrandCrewDetailPage() {
         {/* Hero card */}
         <div
           className="rounded-[12px] p-6 mb-6"
-          style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.08)" }}
+          style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.08)" }}
         >
           <div className="flex items-start gap-4 mb-4">
             {/* Logo */}
@@ -282,7 +282,7 @@ export default function BrandCrewDetailPage() {
             </p>
             <div
               className="rounded-[10px] p-4"
-              style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.08)" }}
+              style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.08)" }}
             >
               <div className="flex flex-wrap gap-3">
                 {members.map((m) => (
@@ -321,7 +321,7 @@ export default function BrandCrewDetailPage() {
         <Link
           href="/rooms"
           className="flex items-center justify-between rounded-[10px] p-4 transition-opacity hover:opacity-80"
-          style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.08)" }}
+          style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.08)" }}
         >
           <div>
             <p className="text-sm text-white" style={{ fontWeight: 500 }}>Meditate together</p>

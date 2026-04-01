@@ -10,20 +10,20 @@ export const runtime = "edge";
 
 // Mood → brand gradient colours (matches the app design system exactly)
 const MOOD_COLORS: Record<string, { from: string; via?: string; to: string }> = {
-  "Hungover":        { from: "#6B21E8", via: "#6366F1", to: "#22D3EE" },
-  "After The Sesh":  { from: "#F43F5E", via: "#D946EF", to: "#FACC15" },
-  "On A Comedown":   { from: "#10B981", via: "#22C55E", to: "#D9F100" },
-  "Feeling Empty":   { from: "#6B21E8", via: "#6366F1", to: "#22D3EE" },
-  "Can't Sleep":     { from: "#8B3CF7", to: "#6366F1" },
-  "Anxious":         { from: "#F43F5E", to: "#F97316" },
-  "Heartbroken":     { from: "#EC4899", to: "#D946EF" },
-  "Overwhelmed":     { from: "#F97316", to: "#FACC15" },
-  "Low Energy":      { from: "#10B981", to: "#22C55E" },
-  "Morning Reset":   { from: "#F43F5E", via: "#F97316", to: "#FACC15" },
-  "Focus Mode":      { from: "#6B21E8", to: "#6366F1" },
+  "Hungover":        { from: "#ff41b3", to: "#ec723d" },
+  "After The Sesh":  { from: "#ff41b3", to: "#f4e71d" },
+  "On A Comedown":   { from: "#adf225", to: "#f4e71d" },
+  "Feeling Empty":   { from: "#ff41b3", to: "#ec723d" },
+  "Can't Sleep":     { from: "#ff41b3", to: "#adf225" },
+  "Anxious":         { from: "#ec723d", to: "#f4e71d" },
+  "Heartbroken":     { from: "#ff41b3", to: "#ec723d" },
+  "Overwhelmed":     { from: "#ec723d", to: "#f4e71d" },
+  "Low Energy":      { from: "#adf225", to: "#f4e71d" },
+  "Morning Reset":   { from: "#ff41b3", via: "#ec723d", to: "#f4e71d" },
+  "Focus Mode":      { from: "#adf225", to: "#ec723d" },
 };
 
-const DEFAULT_COLORS = { from: "#8B5CF6", to: "#22D3EE" };
+const DEFAULT_COLORS = { from: "#ff41b3", to: "#ec723d" };
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);

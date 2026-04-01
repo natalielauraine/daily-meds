@@ -1,17 +1,51 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Plus_Jakarta_Sans, Space_Grotesk, Lexend, Manrope } from "next/font/google";
 import "./globals.css";
 import { PlayerProvider } from "../lib/player-context";
 import { LanguageProvider } from "../lib/language-context";
 import { PresenceProvider } from "../lib/presence-context";
 import MiniPlayer from "./components/MiniPlayer";
+import PlayerSpacer from "./components/PlayerSpacer";
 import EmojiReactionToast from "./components/EmojiReactionToast";
 
-// Load Inter font from Google Fonts — latin + arabic subsets for multilingual support
+// Lexend — DESIGN.md headline font. All uppercase editorial titles.
+const lexend = Lexend({
+  subsets: ["latin"],
+  weight: ["400", "700", "800", "900"],
+  variable: "--font-lexend",
+  display: "swap",
+});
+
+// Manrope — DESIGN.md body font. Descriptions, labels, metadata.
+const manrope = Manrope({
+  subsets: ["latin"],
+  weight: ["300", "400", "600", "700", "800"],
+  variable: "--font-manrope",
+  display: "swap",
+});
+
+// Plus Jakarta Sans — kept for backwards compatibility
+const plusJakarta = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "700", "800"],
+  variable: "--font-plus-jakarta",
+  display: "swap",
+});
+
+// Space Grotesk — kept for backwards compatibility
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "700"],
+  variable: "--font-space-grotesk",
+  display: "swap",
+});
+
+// Inter — body copy, descriptions, form fields
 const inter = Inter({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600"],
   variable: "--font-inter",
+  display: "swap",
 });
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://thedailymeds.com";
@@ -67,7 +101,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={inter.variable}>
+    <html
+      lang="en"
+      className={`${lexend.variable} ${manrope.variable} ${plusJakarta.variable} ${spaceGrotesk.variable} ${inter.variable}`}
+    >
       <body className="bg-site-bg text-text-primary antialiased font-sans">
         {/* LanguageProvider manages the active language and RTL direction */}
         <LanguageProvider>
@@ -76,6 +113,8 @@ export default function RootLayout({
             {/* PlayerProvider wraps everything so audio persists across page navigation */}
             <PlayerProvider>
               {children}
+              {/* Spacer pushes page content up so it's not hidden behind the mini player */}
+              <PlayerSpacer />
               {/* MiniPlayer sits outside page content so it stays pinned to the bottom */}
               <MiniPlayer />
               {/* EmojiReactionToast shows floating emojis sent by other users */}

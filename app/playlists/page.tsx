@@ -119,7 +119,7 @@ export default function PlaylistsPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#0D0D1A" }}>
+    <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#131313" }}>
       <Navbar />
 
       <main className="flex-1 w-full max-w-2xl mx-auto px-4 sm:px-6 py-10 pb-24">
@@ -143,7 +143,7 @@ export default function PlaylistsPage() {
           <button
             onClick={() => setCreating(true)}
             className="flex items-center gap-2 px-4 py-2 rounded-full text-sm text-white transition-opacity hover:opacity-80"
-            style={{ backgroundColor: "#8B5CF6", fontWeight: 500 }}
+            style={{ backgroundColor: "#ff41b3", fontWeight: 500 }}
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
               <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
@@ -155,7 +155,7 @@ export default function PlaylistsPage() {
         {/* Loading state */}
         {loading && (
           <div className="flex justify-center py-16">
-            <div className="w-6 h-6 rounded-full border-2 border-white/20 border-t-purple-400 animate-spin" />
+            <div className="w-6 h-6 rounded-full border-2 border-white/20 border-t-pink-400 animate-spin" />
           </div>
         )}
 
@@ -163,7 +163,7 @@ export default function PlaylistsPage() {
         {creating && (
           <div
             className="flex gap-2 mb-4 p-4 rounded-[10px]"
-            style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.1)" }}
+            style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.1)" }}
           >
             <input
               autoFocus
@@ -177,7 +177,7 @@ export default function PlaylistsPage() {
             <button
               onClick={handleCreate}
               className="px-4 py-1.5 rounded-lg text-sm text-white"
-              style={{ backgroundColor: "#8B5CF6", fontWeight: 500 }}
+              style={{ backgroundColor: "#ff41b3", fontWeight: 500 }}
             >
               Create
             </button>
@@ -215,14 +215,14 @@ export default function PlaylistsPage() {
                 <div
                   key={playlist.id}
                   className="rounded-[10px] overflow-hidden"
-                  style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.08)" }}
+                  style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.08)" }}
                 >
                   {/* Playlist header row */}
                   <div className="flex items-center gap-3 px-4 py-4">
                     {/* Gradient icon */}
                     <div
                       className="w-10 h-10 rounded-lg shrink-0 flex items-center justify-center"
-                      style={{ background: "linear-gradient(135deg, #8B5CF6, #6366F1)" }}
+                      style={{ background: "linear-gradient(135deg, #ff41b3, #adf225)" }}
                     >
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="white" opacity={0.9}>
                         <path d="M3 6h18v2H3zm0 5h12v2H3zm0 5h18v2H3z"/>

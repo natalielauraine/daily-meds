@@ -26,8 +26,8 @@ export default function CopyButton({ value, label = "Copy" }: CopyButtonProps) {
       onClick={handleCopy}
       className="px-3 py-1.5 rounded-md text-xs transition-colors"
       style={{
-        backgroundColor: copied ? "rgba(16,185,129,0.15)" : "rgba(139,92,246,0.15)",
-        border: `0.5px solid ${copied ? "rgba(16,185,129,0.3)" : "rgba(139,92,246,0.3)"}`,
+        backgroundColor: copied ? "rgba(173,242,37,0.15)" : "rgba(255,65,179,0.15)",
+        border: `0.5px solid ${copied ? "rgba(173,242,37,0.3)" : "rgba(255,65,179,0.3)"}`,
         color: copied ? "#6ee7b7" : "#c4b5fd",
       }}
     >

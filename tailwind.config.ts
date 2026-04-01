@@ -1,6 +1,7 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
+  darkMode: "class",
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -9,56 +10,69 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Backgrounds
-        "site-bg": "#0D0D1A",
-        "card-bg": "#1A1A2E",
-        "logo-bg": "#000000",
+        // ── Surfaces (dark cinematic layers) ──────────────────────────────────
+        "site-bg":        "#131313",   // page background
+        "surface":        "#131313",   // base layer
+        "surface-low":    "#1B1B1B",   // section separator bg
+        "card-bg":        "#1F1F1F",   // primary cards / panels
+        "card-high":      "#2A2A2A",   // elevated cards
+        "card-highest":   "#353535",   // hover / active state
+        "surface-bright": "#393939",   // floating / glass elements
 
-        // Text
-        "text-primary": "#F0F0F0",
-        "text-muted": "rgba(255,255,255,0.5)",
+        // ── Text ──────────────────────────────────────────────────────────────
+        "text-primary": "#E2E2E2",
+        "text-muted":   "rgba(255,255,255,0.5)",
 
-        // Purple / Blue family (Calm, Sleep, Focus)
-        "purple-deep": "#6B21E8",
-        "purple-mid": "#8B3CF7",
-        "purple-accent": "#8B5CF6",
-        "indigo-blue": "#6366F1",
-        "bright-blue": "#3B82F6",
-        "cyan-blue": "#22D3EE",
+        // ── Brand Accent Colours (neon — confirmed from brand folder) ─────────
+        "neon-pink":   "#ff41b3",   // primary CTA, highlights, wordmark
+        "neon-green":  "#adf225",   // secondary accent, progress, icons
+        "neon-yellow": "#f4e71d",   // tags, energy, warmth
+        "neon-orange": "#ec723d",   // warm accent, session cards, wordmark
 
-        // Pink / Orange / Yellow family (Energy, Morning, After The Sesh)
-        "hot-pink": "#F43F5E",
-        "deep-pink": "#EC4899",
-        "magenta": "#D946EF",
-        "orange": "#F97316",
-        "golden-yellow": "#EAB308",
-        "bright-yellow": "#FACC15",
-
-        // Green / Lime family (Nature, Grounding, Comedown)
-        "teal-green": "#10B981",
-        "mid-green": "#22C55E",
-        "lime-green": "#84CC16",
-        "yellow-lime": "#D9F100",
+        // ── Legacy ────────────────────────────────────────────────────────────
+        "logo-bg": "#010101",
       },
+
       fontFamily: {
-        sans: ["Inter", "sans-serif"],
+        // Plus Jakarta Sans — headlines & display (weight 800, uppercase)
+        headline: ["var(--font-plus-jakarta)", "sans-serif"],
+        // Space Grotesk — labels, metadata, stats, timestamps
+        label:    ["var(--font-space-grotesk)", "sans-serif"],
+        // Inter — body copy and descriptions
+        sans:     ["var(--font-inter)", "sans-serif"],
       },
+
       borderRadius: {
-        card: "10px",
+        card: "12px",
       },
+
       keyframes: {
-        // Used by EmojiReactionToast — emoji floats upward and fades out
+        // Breathing animation — used on the Re-Center breathing tool
+        breath: {
+          "0%, 100%": { transform: "scale(1)",    opacity: "1" },
+          "50%":       { transform: "scale(0.85)", opacity: "0.5" },
+        },
+        // Emoji floats up and fades — used by EmojiReactionToast
         floatUp: {
           "0%":   { opacity: "1", transform: "translateY(0) scale(1)" },
           "60%":  { opacity: "1", transform: "translateY(-80px) scale(1.2)" },
           "100%": { opacity: "0", transform: "translateY(-160px) scale(0.8)" },
         },
+        // Neon glow pulse on primary buttons
+        glowPulse: {
+          "0%, 100%": { boxShadow: "0 0 12px rgba(255,65,179,0.4)" },
+          "50%":       { boxShadow: "0 0 28px rgba(255,65,179,0.7)" },
+        },
       },
+
       animation: {
-        "float-up": "floatUp 2.5s ease-out forwards",
+        "breath":     "breath 8s ease-in-out infinite",
+        "float-up":   "floatUp 2.5s ease-out forwards",
+        "glow-pulse": "glowPulse 3s ease-in-out infinite",
       },
     },
   },
   plugins: [],
 };
+
 export default config;

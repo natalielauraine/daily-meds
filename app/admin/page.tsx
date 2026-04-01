@@ -22,9 +22,9 @@ type Stats = {
 
 // Colour per subscription tier
 function tierColour(status: string) {
-  if (status === "monthly")  return "#8B5CF6";
-  if (status === "annual")   return "#3B82F6";
-  if (status === "lifetime") return "#10B981";
+  if (status === "monthly")  return "#ff41b3";
+  if (status === "annual")   return "#adf225";
+  if (status === "lifetime") return "#adf225";
   return "rgba(255,255,255,0.2)";
 }
 
@@ -61,18 +61,18 @@ export default function AdminDashboard() {
         {loading ? (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             {[0,1,2,3].map((i) => (
-              <div key={i} className="h-24 rounded-[10px] animate-pulse" style={{ backgroundColor: "#1A1A2E" }} />
+              <div key={i} className="h-24 rounded-[10px] animate-pulse" style={{ backgroundColor: "#1F1F1F" }} />
             ))}
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             <StatCard label="Total Users"    value={stats?.totalUsers ?? 0}  />
-            <StatCard label="Paid Members"   value={stats?.paidMembers ?? 0} accent="#8B5CF6" />
+            <StatCard label="Paid Members"   value={stats?.paidMembers ?? 0} accent="#ff41b3" />
             <StatCard label="Free Users"     value={stats?.freeUsers ?? 0}   />
             <StatCard
               label="Est. Monthly Revenue"
               value={`£${stats?.monthlyRevenue?.toFixed(0) ?? 0}`}
-              accent="#10B981"
+              accent="#adf225"
             />
           </div>
         )}
@@ -82,7 +82,7 @@ export default function AdminDashboard() {
           {/* ── SUBSCRIPTION BREAKDOWN ─────────────────────────── */}
           <div
             className="rounded-[10px] p-5"
-            style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.08)" }}
+            style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.08)" }}
           >
             <h2 className="text-sm text-white mb-4" style={{ fontWeight: 500 }}>Subscription Breakdown</h2>
             {loading ? (
@@ -92,9 +92,9 @@ export default function AdminDashboard() {
             ) : (
               <div className="flex flex-col gap-3">
                 {[
-                  { label: "Monthly",  count: stats?.monthlyMembers  ?? 0, colour: "#8B5CF6" },
-                  { label: "Annual",   count: stats?.annualMembers   ?? 0, colour: "#3B82F6" },
-                  { label: "Lifetime", count: stats?.lifetimeMembers ?? 0, colour: "#10B981" },
+                  { label: "Monthly",  count: stats?.monthlyMembers  ?? 0, colour: "#ff41b3" },
+                  { label: "Annual",   count: stats?.annualMembers   ?? 0, colour: "#adf225" },
+                  { label: "Lifetime", count: stats?.lifetimeMembers ?? 0, colour: "#adf225" },
                   { label: "Free",     count: stats?.freeUsers       ?? 0, colour: "rgba(255,255,255,0.2)" },
                 ].map(({ label, count, colour }) => {
                   const total = stats?.totalUsers || 1;
@@ -118,7 +118,7 @@ export default function AdminDashboard() {
           {/* ── RECENT SIGNUPS ─────────────────────────────────── */}
           <div
             className="rounded-[10px] p-5"
-            style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.08)" }}
+            style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.08)" }}
           >
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-sm text-white" style={{ fontWeight: 500 }}>Recent Signups</h2>
@@ -159,10 +159,10 @@ export default function AdminDashboard() {
           <h2 className="text-sm text-white/40 mb-3" style={{ fontWeight: 500, letterSpacing: "0.04em", textTransform: "uppercase" }}>Quick actions</h2>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {[
-              { label: "Add session",     href: "/admin/content",  colour: "#8B5CF6" },
-              { label: "Schedule live",   href: "/admin/live",     colour: "#F43F5E" },
-              { label: "View users",      href: "/admin/users",    colour: "#3B82F6" },
-              { label: "Edit OG images",  href: "/admin/social",   colour: "#10B981" },
+              { label: "Add session",     href: "/admin/content",  colour: "#ff41b3" },
+              { label: "Schedule live",   href: "/admin/live",     colour: "#ff41b3" },
+              { label: "View users",      href: "/admin/users",    colour: "#adf225" },
+              { label: "Edit OG images",  href: "/admin/social",   colour: "#adf225" },
             ].map(({ label, href, colour }) => (
               <Link
                 key={href}
@@ -180,7 +180,7 @@ export default function AdminDashboard() {
         <div className="mt-6">
           <div
             className="rounded-[10px] p-5"
-            style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.08)" }}
+            style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.08)" }}
           >
             <div className="flex items-center justify-between mb-3">
               <h2 className="text-sm text-white" style={{ fontWeight: 500 }}>Content Library</h2>
@@ -221,7 +221,7 @@ function StatCard({ label, value, accent }: { label: string; value: string | num
     <div
       className="rounded-[10px] p-4"
       style={{
-        backgroundColor: "#1A1A2E",
+        backgroundColor: "#1F1F1F",
         border: accent ? `0.5px solid ${accent}25` : "0.5px solid rgba(255,255,255,0.08)",
       }}
     >

@@ -78,7 +78,7 @@ export default function AudioPlayer({ session, gradient }: AudioPlayerProps) {
     if (!ctx) return;
 
     // Extract the first and last hex colours from the gradient string to build a canvas gradient
-    const colors = gradient.match(/#[0-9A-Fa-f]{6}/g) ?? ["#1A1A2E", "#1A1A2E"];
+    const colors = gradient.match(/#[0-9A-Fa-f]{6}/g) ?? ["#1F1F1F", "#1F1F1F"];
     const first = colors[0];
     const last = colors[colors.length - 1];
 
@@ -331,7 +331,7 @@ export default function AudioPlayer({ session, gradient }: AudioPlayerProps) {
               onClick={() => setSpeed(s)}
               className="px-3 py-1.5 text-xs transition-colors"
               style={{
-                backgroundColor: speed === s ? "rgba(139,92,246,0.8)" : "transparent",
+                backgroundColor: speed === s ? "rgba(255,65,179,0.8)" : "transparent",
                 color: speed === s ? "white" : "rgba(255,255,255,0.4)",
                 fontWeight: speed === s ? 500 : 400,
               }}
@@ -346,7 +346,7 @@ export default function AudioPlayer({ session, gradient }: AudioPlayerProps) {
           <button
             onClick={togglePiP}
             className="shrink-0 transition-colors p-2"
-            style={{ color: isPiP ? "rgba(139,92,246,0.9)" : "rgba(255,255,255,0.4)" }}
+            style={{ color: isPiP ? "rgba(255,65,179,0.9)" : "rgba(255,255,255,0.4)" }}
             aria-label={isPiP ? "Exit picture in picture" : "Picture in picture"}
             title={isPiP ? "Exit picture in picture" : "Picture in picture"}
           >

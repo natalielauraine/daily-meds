@@ -1,206 +1,227 @@
-"use client";
-
-// Free sessions page — publicly accessible, no login required.
-// Shows all sessions where is_free = true from the Supabase sessions table.
-// This is the taster page for new visitors to try before subscribing.
-
-import { useState, useEffect } from "react";
 import Link from "next/link";
-import { createClient } from "../../lib/supabase-browser";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
+import Logo from "../components/Logo";
+import dynamic from "next/dynamic";
 
-// Gradient for each mood category — matches the design system
-const MOOD_GRADIENTS: Record<string, string> = {
-  Hungover:         "linear-gradient(135deg, #6B21E8, #22D3EE)",
-  "After The Sesh": "linear-gradient(135deg, #F43F5E, #FACC15)",
-  "On A Comedown":  "linear-gradient(135deg, #10B981, #D9F100)",
-  "Feeling Empty":  "linear-gradient(135deg, #6B21E8, #22D3EE)",
-  "Can't Sleep":    "linear-gradient(135deg, #8B3CF7, #6366F1)",
-  Anxious:          "linear-gradient(135deg, #F43F5E, #F97316)",
-  Heartbroken:      "linear-gradient(135deg, #EC4899, #D946EF)",
-  Overwhelmed:      "linear-gradient(135deg, #F97316, #FACC15)",
-  "Low Energy":     "linear-gradient(135deg, #10B981, #22C55E)",
-  "Morning Reset":  "linear-gradient(135deg, #F43F5E, #FACC15)",
-  "Focus Mode":     "linear-gradient(135deg, #6B21E8, #6366F1)",
-};
+const CardCarousel = dynamic(
+  () => import("../../components/ui/card-carousel").then((m) => m.CardCarousel),
+  { ssr: false }
+);
 
-// A single free session card
-type FreeSession = {
-  id: string;
-  title: string;
-  description: string;
-  type: string;
-  duration: string;
-  mood_category: string;
-  gradient: string;
-  media_type: string;
-};
+const StoriesSection = dynamic(() => import("./StoriesSection"), { ssr: false });
 
-function SessionCard({ session }: { session: FreeSession }) {
-  const gradient = session.gradient || MOOD_GRADIENTS[session.mood_category] || "linear-gradient(135deg, #8B5CF6, #6366F1)";
-
-  return (
-    <Link href={`/session/${session.id}`}>
-      <div
-        className="rounded-[10px] p-4 flex gap-4 items-start hover:scale-[1.01] transition-transform cursor-pointer"
-        style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.08)" }}
-      >
-        {/* Gradient icon */}
-        <div
-          className="w-14 h-14 rounded-full flex items-center justify-center shrink-0"
-          style={{ background: gradient }}
-        >
-          {/* Audio icon */}
-          {session.media_type === "audio" ? (
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="white">
-              <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
-            </svg>
-          ) : (
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="white">
-              <path d="M8 5v14l11-7z"/>
-            </svg>
-          )}
-        </div>
-
-        {/* Session details */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
-            <span
-              className="text-[10px] px-1.5 py-0.5 rounded text-white shrink-0"
-              style={{ backgroundColor: "rgba(16,185,129,0.8)", fontWeight: 500 }}
-            >
-              FREE
-            </span>
-            <span className="text-[10px] text-white/30 truncate">{session.mood_category}</span>
-          </div>
-          <h3 className="text-sm text-white truncate" style={{ fontWeight: 500 }}>{session.title}</h3>
-          <p className="text-xs text-white/40 mt-0.5 line-clamp-2 leading-relaxed">{session.description}</p>
-          <div className="flex items-center gap-2 mt-2">
-            <span className="text-xs text-white/30">{session.type}</span>
-            <span className="text-white/15">·</span>
-            <span className="text-xs text-white/30">{session.duration}</span>
-          </div>
-        </div>
-
-        {/* Play arrow */}
-        <div className="shrink-0 mt-1">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="rgba(255,255,255,0.25)">
-            <path d="M8 5v14l11-7z"/>
-          </svg>
-        </div>
-      </div>
-    </Link>
-  );
-}
+const ALWAYS_FREE_IMAGES = [
+  { src: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=500&h=750&fit=crop&q=80", alt: "Morning Ritual" },
+  { src: "https://images.unsplash.com/photo-1474223960279-c596b5ac7c0c?w=500&h=750&fit=crop&q=80", alt: "Anxious session" },
+  { src: "https://images.unsplash.com/photo-1455642305367-68834a1da7ab?w=500&h=750&fit=crop&q=80", alt: "Sleep audio" },
+  { src: "https://images.unsplash.com/photo-1531353826977-0941b4779a1c?w=500&h=750&fit=crop&q=80", alt: "Snuggle Down" },
+  { src: "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=500&h=750&fit=crop&q=80", alt: "Healing session" },
+  { src: "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=500&h=750&fit=crop&q=80", alt: "Heartbreak session" },
+];
 
 export default function FreePage() {
-  const supabase = createClient();
-
-  const [sessions, setSessions] = useState<FreeSession[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  // Load all free sessions from Supabase on mount
-  useEffect(() => {
-    async function loadFreeSessions() {
-      const { data } = await supabase
-        .from("sessions")
-        .select("id, title, description, type, duration, mood_category, gradient, media_type")
-        .eq("is_free", true)
-        .order("created_at", { ascending: false });
-
-      if (data) setSessions(data as FreeSession[]);
-      setLoading(false);
-    }
-
-    loadFreeSessions();
-  }, []);
-
   return (
-    <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#0D0D1A" }}>
-      <Navbar />
+    <div style={{ backgroundColor: "#010101", color: "#ffffff", fontFamily: "var(--font-manrope)", minHeight: "100vh" }}>
 
-      <main className="flex-1 max-w-3xl mx-auto w-full px-4 sm:px-6 py-10 pb-24">
-
-        {/* Page header */}
-        <div className="mb-10">
-          <div
-            className="inline-block text-[10px] px-2.5 py-1 rounded-full mb-3 text-white"
-            style={{ background: "linear-gradient(135deg, #10B981, #22C55E)", fontWeight: 500 }}
-          >
-            No account needed
-          </div>
-          <h1 className="text-3xl text-white mb-3" style={{ fontWeight: 500 }}>
-            Try Daily Meds for free
-          </h1>
-          <p className="text-white/50 text-sm leading-relaxed max-w-lg">
-            Audio for emotional emergencies. These sessions are completely free — no sign up, no card.
-            Just press play.
-          </p>
-        </div>
-
-        {/* Loading skeleton */}
-        {loading && (
-          <div className="flex flex-col gap-3">
-            {[...Array(4)].map((_, i) => (
-              <div
-                key={i}
-                className="h-24 rounded-[10px] animate-pulse"
-                style={{ backgroundColor: "#1A1A2E" }}
-              />
-            ))}
-          </div>
-        )}
-
-        {/* Sessions list */}
-        {!loading && sessions.length > 0 && (
-          <div className="flex flex-col gap-3 mb-12">
-            {sessions.map((session) => (
-              <SessionCard key={session.id} session={session} />
-            ))}
-          </div>
-        )}
-
-        {/* Empty state — shown only if no free sessions are in the database yet */}
-        {!loading && sessions.length === 0 && (
-          <div
-            className="flex flex-col items-center justify-center py-20 rounded-[10px] text-center"
-            style={{ border: "0.5px dashed rgba(255,255,255,0.1)" }}
-          >
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="1.2" className="mb-4">
-              <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
-            </svg>
-            <p className="text-sm text-white/30 mb-1">Free sessions coming soon</p>
-            <p className="text-xs text-white/20">Check back shortly</p>
-          </div>
-        )}
-
-        {/* Upgrade prompt at the bottom */}
-        <div
-          className="rounded-[10px] p-6 text-center"
-          style={{
-            background: "linear-gradient(135deg, rgba(107,33,232,0.15), rgba(99,102,241,0.1))",
-            border: "0.5px solid rgba(139,92,246,0.2)",
-          }}
+      {/* ── HEADER ─────────────────────────────────────────────────────── */}
+      <header
+        className="sticky top-0 z-50 flex items-center justify-between px-6 py-4"
+        style={{
+          backgroundColor: "rgba(1,1,1,0.9)",
+          backdropFilter: "blur(20px)",
+          borderBottom: "0.5px solid rgba(255,255,255,0.06)",
+        }}
+      >
+        <Logo href="/" size="md" />
+        <nav className="hidden md:flex items-center gap-7">
+          {[
+            { label: "Home", href: "/" },
+            { label: "Library", href: "/library" },
+            { label: "Breathe", href: "/timer" },
+            { label: "Pricing", href: "/pricing" },
+          ].map((item) => (
+            <Link
+              key={item.label}
+              href={item.href}
+              className="text-xs uppercase tracking-widest font-bold transition-colors hover:text-white"
+              style={{ color: "rgba(255,255,255,0.5)", fontFamily: "var(--font-lexend)" }}
+            >
+              {item.label}
+            </Link>
+          ))}
+        </nav>
+        <Link
+          href="/signup"
+          className="px-5 py-2 rounded-full text-sm font-bold uppercase transition-transform hover:scale-105"
+          style={{ backgroundColor: "#ff41b3", color: "#fff", fontFamily: "var(--font-lexend)" }}
         >
-          <h2 className="text-white text-base mb-2" style={{ fontWeight: 500 }}>
-            Want the full library?
-          </h2>
-          <p className="text-white/40 text-sm mb-5">
-            Unlock every session — including ones for heartbreak, comedowns, 3am anxiety and more.
+          Start Free
+        </Link>
+      </header>
+
+      {/* ── HERO ───────────────────────────────────────────────────────── */}
+      <section
+        className="py-20 px-6 text-center"
+        style={{ background: "linear-gradient(160deg, #080808 0%, #010101 60%, #0a0500 100%)" }}
+      >
+        <div className="max-w-3xl mx-auto flex flex-col gap-6 items-center">
+          <span
+            className="text-xs uppercase tracking-widest px-4 py-1.5 rounded-full border"
+            style={{ borderColor: "rgba(170,238,32,0.3)", color: "#aaee20", fontFamily: "var(--font-lexend)" }}
+          >
+            No credit card needed
+          </span>
+          <h1
+            className="uppercase leading-none tracking-tight"
+            style={{
+              fontFamily: "var(--font-lexend)",
+              fontWeight: 900,
+              fontSize: "clamp(2.4rem, 7vw, 5rem)",
+            }}
+          >
+            Free content for when{" "}
+            <span className="italic" style={{ color: "#aaee20" }}>life&apos;s difficult</span>
+          </h1>
+          <p className="text-lg max-w-xl leading-relaxed" style={{ color: "#adaaaa" }}>
+            Add your email to unlock any session. No subscription required — just real support, right now.
           </p>
           <Link
-            href="/pricing"
-            className="inline-block px-6 py-2.5 rounded-md text-sm text-white transition-opacity hover:opacity-80"
-            style={{ backgroundColor: "#8B5CF6", fontWeight: 500 }}
+            href="/signup"
+            className="mt-2 px-10 py-4 rounded-full text-base font-black uppercase tracking-wide transition-all hover:scale-105"
+            style={{ backgroundColor: "#aaee20", color: "#1a2600", fontFamily: "var(--font-lexend)" }}
           >
-            See pricing
+            Unlock Free Sessions →
           </Link>
         </div>
+      </section>
 
-      </main>
+      {/* ── ALWAYS FREE ────────────────────────────────────────────────── */}
+      <section className="py-16 px-6" style={{ backgroundColor: "#010101" }}>
+        <div className="max-w-6xl mx-auto">
+          <div className="mb-10">
+            <h2
+              className="text-3xl md:text-4xl uppercase tracking-tighter mb-3"
+              style={{ fontFamily: "var(--font-lexend)", fontWeight: 900, color: "#aaee20" }}
+            >
+              Always Free
+            </h2>
+            <p className="text-sm" style={{ color: "rgba(255,255,255,0.45)" }}>
+              These sessions are yours — no strings attached. Enter your email to play.
+            </p>
+          </div>
 
-      <Footer />
+          {/* Email gate notice */}
+          <div
+            className="mb-8 flex items-center gap-4 px-5 py-4 rounded-xl"
+            style={{ backgroundColor: "rgba(170,238,32,0.07)", border: "1px solid rgba(170,238,32,0.15)" }}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#aaee20" strokeWidth="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+            <p className="text-sm" style={{ color: "rgba(255,255,255,0.65)" }}>
+              <span style={{ color: "#aaee20", fontWeight: 700 }}>Free to play</span> — just add your email to unlock any session below.{" "}
+              <Link href="/signup" className="underline hover:text-white transition-colors" style={{ color: "#aaee20" }}>
+                Sign up here →
+              </Link>
+            </p>
+          </div>
+
+          <CardCarousel
+            images={ALWAYS_FREE_IMAGES}
+            autoplayDelay={2000}
+            showPagination={true}
+            showNavigation={true}
+          />
+        </div>
+      </section>
+
+      {/* ── CRISIS MEDITATIONS ─────────────────────────────────────────── */}
+      <section className="py-16 px-6" style={{ backgroundColor: "#0a0a0a" }}>
+        <div className="max-w-6xl mx-auto">
+          <div className="mb-10">
+            <h2
+              className="text-3xl md:text-4xl uppercase tracking-tighter mb-3"
+              style={{ fontFamily: "var(--font-lexend)", fontWeight: 900, color: "#ff41b3" }}
+            >
+              Crisis Meditations
+            </h2>
+            <p className="text-sm" style={{ color: "rgba(255,255,255,0.45)" }}>
+              For the moments you need something right now. Hover to preview.
+            </p>
+          </div>
+
+          <StoriesSection />
+        </div>
+      </section>
+
+      {/* ── SIGN UP CTA ────────────────────────────────────────────────── */}
+      <section
+        className="py-24 px-6"
+        style={{ background: "linear-gradient(160deg, #0f0018 0%, #010101 100%)" }}
+      >
+        <div className="max-w-2xl mx-auto text-center flex flex-col gap-8 items-center">
+          <div
+            className="w-16 h-16 rounded-full flex items-center justify-center"
+            style={{ background: "linear-gradient(135deg, #ff41b3, #ec723d)" }}
+          >
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="white">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/>
+            </svg>
+          </div>
+          <h2
+            className="uppercase leading-none tracking-tight"
+            style={{ fontFamily: "var(--font-lexend)", fontWeight: 900, fontSize: "clamp(2rem, 6vw, 4rem)" }}
+          >
+            Want the full library?
+          </h2>
+          <p className="text-lg leading-relaxed" style={{ color: "#adaaaa" }}>
+            Unlock 100+ sessions, live events, group meditations, mood-based playlists and more — for just{" "}
+            <strong style={{ color: "#ffffff" }}>£9.99/month</strong>. Cancel anytime.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md justify-center">
+            <Link
+              href="/signup"
+              className="flex-1 text-center px-8 py-4 rounded-full font-black uppercase tracking-wide text-sm transition-all hover:scale-105"
+              style={{ backgroundColor: "#ff41b3", color: "#fff", fontFamily: "var(--font-lexend)", boxShadow: "0 0 24px rgba(255,65,179,0.35)" }}
+            >
+              Start Full Access
+            </Link>
+            <Link
+              href="/pricing"
+              className="flex-1 text-center px-8 py-4 rounded-full font-bold uppercase tracking-wide text-sm transition-all hover:bg-white/10"
+              style={{ border: "1px solid rgba(255,255,255,0.15)", color: "rgba(255,255,255,0.7)", fontFamily: "var(--font-lexend)" }}
+            >
+              See Pricing
+            </Link>
+          </div>
+          <p className="text-xs" style={{ color: "rgba(255,255,255,0.3)" }}>
+            No commitment. Cancel anytime. Trusted by thousands.
+          </p>
+        </div>
+      </section>
+
+      {/* ── FOOTER ─────────────────────────────────────────────────────── */}
+      <footer
+        className="py-10 px-6"
+        style={{ borderTop: "0.5px solid rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.35)" }}
+      >
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+          <Logo href="/" size="sm" />
+          <div className="flex items-center gap-6 text-xs">
+            {[
+              { label: "Privacy", href: "/privacy" },
+              { label: "Terms", href: "/terms" },
+              { label: "Pricing", href: "/pricing" },
+              { label: "About", href: "/about" },
+            ].map((link) => (
+              <Link key={link.label} href={link.href} className="hover:text-white transition-colors">
+                {link.label}
+              </Link>
+            ))}
+          </div>
+          <p className="text-xs">© {new Date().getFullYear()} The Daily Meds</p>
+        </div>
+      </footer>
     </div>
   );
 }

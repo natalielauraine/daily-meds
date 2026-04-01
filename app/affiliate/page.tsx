@@ -1,56 +1,81 @@
 "use client";
 
-// Affiliate landing page — explains the programme and lets people apply.
-// 20% commission on every subscription referred.
-// Application form saves to the Supabase affiliates table via /api/affiliate/apply.
-
 import { useState } from "react";
 import Link from "next/link";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
+import Logo from "../components/Logo";
 
-// The three steps shown in the "how it works" section
-const HOW_IT_WORKS = [
+const AUDIENCE_PLATFORMS = [
+  { key: "instagram", label: "Instagram followers",     placeholder: "e.g. 12,000" },
+  { key: "tiktok",    label: "TikTok followers",        placeholder: "e.g. 45,000" },
+  { key: "youtube",   label: "YouTube subscribers",     placeholder: "e.g. 8,000"  },
+  { key: "podcast",   label: "Podcast listeners/month", placeholder: "e.g. 2,000"  },
+  { key: "email",     label: "Email / mailing list",    placeholder: "e.g. 3,500"  },
+  { key: "twitter",   label: "Twitter / X followers",   placeholder: "e.g. 6,000"  },
+];
+
+const WHY_CARDS = [
   {
-    step: "01",
-    title: "Apply",
-    body: "Fill in the form below. We review every application and usually respond within 48 hours.",
-    gradient: "linear-gradient(135deg, #6B21E8, #22D3EE)",
+    icon: (
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="#ff41b3"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>
+    ),
+    title: "Predictable passive income",
+    body: "Secure 20% recurring commission on every subscription you bring in, month after month.",
   },
   {
-    step: "02",
-    title: "Share your link",
-    body: "Get your unique referral link. Share it on Instagram, TikTok, YouTube, your newsletter — wherever your audience is.",
-    gradient: "linear-gradient(135deg, #F43F5E, #FACC15)",
+    icon: (
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="#aaee20"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+    ),
+    title: "Support mental health",
+    body: "Give your community access to meditations designed for actual emotional survival and growth.",
   },
   {
-    step: "03",
-    title: "Earn 20%",
-    body: "You earn 20% of every subscription your referral signs up to — monthly, annual or lifetime. Paid monthly.",
-    gradient: "linear-gradient(135deg, #10B981, #D9F100)",
+    icon: (
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="#ef7f4e"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg>
+    ),
+    title: "Increase your value",
+    body: "Align yourself with a premium brand that prioritises authenticity over generic wellness tropes.",
+  },
+  {
+    icon: (
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="#ff41b3"><path d="M17 8C8 10 5.9 16.17 3.82 19.01L5.71 20l1-2.3A4.49 4.49 0 008 18c4 0 4-2 8-2s4 2 8 2v-2c-4 0-4-2-8-2-.46 0-.86.05-1.24.12C14.91 10.41 17 8 17 8z"/></svg>
+    ),
+    title: "Zero effort",
+    body: "We provide all the creative assets, tracking links, and dashboard access. You just share.",
+  },
+  {
+    icon: (
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="#aaee20"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+    ),
+    title: "Perfect for anyone",
+    body: "Whether you're a coach, creator, or just a fan — our programme fits any community size.",
+  },
+  {
+    icon: (
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="#ef7f4e"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+    ),
+    title: "Actual emotional support",
+    body: "Sharing a tool that actually works creates deeper trust between you and your audience.",
   },
 ];
 
-// All the platforms we ask follower counts for
-const AUDIENCE_PLATFORMS = [
-  { key: "instagram",  label: "Instagram followers",        placeholder: "e.g. 12,000" },
-  { key: "tiktok",     label: "TikTok followers",           placeholder: "e.g. 45,000" },
-  { key: "youtube",    label: "YouTube subscribers",        placeholder: "e.g. 8,000"  },
-  { key: "podcast",    label: "Podcast listeners/month",    placeholder: "e.g. 2,000"  },
-  { key: "email",      label: "Email / mailing list",       placeholder: "e.g. 3,500"  },
-  { key: "twitter",    label: "Twitter / X followers",      placeholder: "e.g. 6,000"  },
-  { key: "other",      label: "Other (blog, forum, etc.)",  placeholder: "e.g. 10,000" },
+const COMMISSION_POINTS = [
+  { title: "20% Recurring", body: "Earn on every payment, for as long as they stay subscribed." },
+  { title: "Monthly Payments", body: "Payouts happen like clockwork. No chasing invoices." },
+  { title: "No Minimums", body: "Earn from your very first referral. No arbitrary hurdles." },
+  { title: "Full Tracking", body: "A dedicated dashboard to see clicks, conversions, and earnings in real-time." },
+];
+
+const STEPS = [
+  { num: "1", label: "Apply Below", body: "Fill out our short application form. We review within 48 hours.", color: "#ff41b3" },
+  { num: "2", label: "Get Your Link", body: "Access your dashboard and grab your unique tracking link and assets.", color: "#aaee20" },
+  { num: "3", label: "Start Earning", body: "Share with your tribe and watch the recurring commissions grow.", color: "#ef7f4e" },
 ];
 
 export default function AffiliatePage() {
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    whyJoin: "",
-  });
-  // Follower counts per platform — stored separately so they're easy to read
+  const [form, setForm] = useState({ name: "", email: "", socialHandles: "", whyJoin: "" });
+  const [audienceSize, setAudienceSize] = useState("Under 1,000");
   const [audience, setAudience] = useState<Record<string, string>>({
-    instagram: "", tiktok: "", youtube: "", podcast: "", email: "", twitter: "", other: "",
+    instagram: "", tiktok: "", youtube: "", podcast: "", email: "", twitter: "",
   });
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -60,36 +85,26 @@ export default function AffiliatePage() {
     setForm((prev) => ({ ...prev, [field]: value }));
   }
 
-  function updateAudience(key: string, value: string) {
-    setAudience((prev) => ({ ...prev, [key]: value }));
-  }
-
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!form.name || !form.email || !form.whyJoin) {
-      setError("Please fill in your name, email and the why field.");
+    if (!form.name || !form.email) {
+      setError("Please fill in your name and email.");
       return;
     }
     setError("");
     setLoading(true);
-
-    // Serialise the audience numbers into a single string so we can store in one column
     const audienceSummary = AUDIENCE_PLATFORMS
       .filter((p) => audience[p.key])
       .map((p) => `${p.label}: ${audience[p.key]}`)
       .join(" | ");
-
     try {
       const res = await fetch("/api/affiliate/apply", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, platform: "multiple", audienceSize: audienceSummary }),
+        body: JSON.stringify({ ...form, platform: "multiple", audienceSize: audienceSummary || audienceSize }),
       });
       const data = await res.json();
-      if (!res.ok) {
-        setError(data.error ?? "Something went wrong. Please try again.");
-        return;
-      }
+      if (!res.ok) { setError(data.error ?? "Something went wrong."); return; }
       setSubmitted(true);
     } catch {
       setError("Network error — please try again.");
@@ -99,228 +114,474 @@ export default function AffiliatePage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#0D0D1A" }}>
-      <Navbar />
+    <div style={{ backgroundColor: "#000000", color: "#e5e5e5", fontFamily: "var(--font-manrope)", minHeight: "100vh" }}>
 
-      <main className="flex-1 w-full max-w-3xl mx-auto px-4 sm:px-6 py-12 pb-24">
-
-        {/* ── HERO ── */}
-        <div className="text-center mb-16">
-          <div
-            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs text-white mb-6"
-            style={{ background: "linear-gradient(135deg, #6B21E8, #22D3EE)", fontWeight: 500 }}
-          >
-            Affiliate Programme
-          </div>
-          <h1 className="text-4xl sm:text-5xl text-white mb-4 leading-tight" style={{ fontWeight: 500 }}>
-            Earn 20% on every
-            <br />
-            <span
-              style={{
-                background: "linear-gradient(135deg, #F43F5E, #D946EF, #F97316, #FACC15)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              }}
+      {/* ── NAV ─────────────────────────────────────────────────────────────── */}
+      <nav
+        className="fixed top-0 w-full z-50 flex justify-between items-center px-6 md:px-8 py-4"
+        style={{ background: "rgba(0,0,0,0.8)", backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)" }}
+      >
+        <Logo href="/" size="md" />
+        <div className="hidden md:flex items-center gap-8">
+          {["Benefits", "Commission", "Terms", "Support"].map((item) => (
+            <a
+              key={item}
+              href={`#${item.toLowerCase()}`}
+              className="text-sm font-bold uppercase tracking-widest transition-colors hover:text-white"
+              style={{ color: "rgba(255,255,255,0.4)", fontFamily: "var(--font-lexend)" }}
             >
-              referral you send
-            </span>
-          </h1>
-          <p className="text-white/45 text-base max-w-lg mx-auto leading-relaxed">
-            Share Daily Meds with your audience. When they subscribe, you earn 20% — every month, every year, or one big lifetime payment.
-          </p>
+              {item}
+            </a>
+          ))}
         </div>
-
-        {/* ── COMMISSION CALLOUT ── */}
-        <div
-          className="rounded-[14px] p-6 sm:p-8 mb-14 flex flex-col sm:flex-row items-center gap-6 text-center sm:text-left"
-          style={{
-            background: "linear-gradient(135deg, rgba(107,33,232,0.15), rgba(34,211,238,0.08))",
-            border: "0.5px solid rgba(107,33,232,0.3)",
-          }}
+        <a
+          href="#apply"
+          className="px-6 py-2 text-sm font-bold uppercase tracking-widest transition-all hover:scale-105"
+          style={{ background: "#ff41b3", color: "#fff", borderRadius: 4, fontFamily: "var(--font-lexend)" }}
         >
-          <div
-            className="w-16 h-16 rounded-full flex items-center justify-center shrink-0 mx-auto sm:mx-0"
-            style={{ background: "linear-gradient(135deg, #6B21E8, #22D3EE)" }}
+          Apply Now
+        </a>
+      </nav>
+
+      {/* ── HERO ────────────────────────────────────────────────────────────── */}
+      <section
+        className="relative flex items-center justify-center text-center pt-24 overflow-hidden"
+        style={{ minHeight: 870 }}
+      >
+        <div
+          className="absolute inset-0"
+          style={{ background: "linear-gradient(to bottom, rgba(255,65,142,0.08) 0%, #000 60%)" }}
+        />
+        <div className="relative z-10 px-6 max-w-5xl mx-auto">
+          <h1
+            className="uppercase leading-none tracking-tight mb-8"
+            style={{
+              fontFamily: "var(--font-nyata), var(--font-lexend)",
+              fontWeight: 900,
+              fontSize: "clamp(2.8rem, 8vw, 7rem)",
+              color: "#ffffff",
+            }}
           >
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="white">
-              <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/>
+            Become a{" "}
+            <span style={{ color: "#ff41b3", textShadow: "0 0 40px rgba(255,65,142,0.4)" }}>
+              Daily Meds
+            </span>{" "}
+            Affiliate
+          </h1>
+          <p
+            className="text-xl md:text-2xl max-w-3xl mx-auto mb-12"
+            style={{ color: "rgba(255,255,255,0.55)", fontFamily: "var(--font-lexend)" }}
+          >
+            Earn Monthly Income While Supporting Your Community&apos;s Mental Health
+          </p>
+          <a href="#apply">
+            <svg className="animate-bounce mx-auto" width="40" height="40" viewBox="0 0 24 24" fill="rgba(255,65,142,0.7)">
+              <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6z"/>
             </svg>
+          </a>
+        </div>
+      </section>
+
+      {/* ── INTRO GLASS ─────────────────────────────────────────────────────── */}
+      <section className="relative py-32 overflow-hidden">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=1400&h=800&fit=crop"
+          alt="moody atmospheric music environment"
+          className="absolute inset-0 w-full h-full object-cover"
+          style={{ opacity: 0.45 }}
+        />
+        <div className="absolute inset-0" style={{ background: "linear-gradient(to right, #000 30%, rgba(0,0,0,0.3) 100%)" }} />
+        <div className="container mx-auto px-6 relative z-10">
+          <div
+            className="max-w-2xl p-10 md:p-12 rounded-2xl"
+            style={{
+              background: "rgba(14,14,14,0.7)",
+              backdropFilter: "blur(40px)",
+              WebkitBackdropFilter: "blur(40px)",
+              border: "1px solid rgba(255,255,255,0.05)",
+            }}
+          >
+            <h2
+              className="uppercase tracking-tight mb-6"
+              style={{ fontFamily: "var(--font-nyata), var(--font-lexend)", fontWeight: 900, fontSize: "clamp(1.8rem, 4vw, 2.5rem)" }}
+            >
+              Meditation for{" "}
+              <span style={{ color: "#aaee20" }}>Real Life</span>.
+            </h2>
+            <p className="text-lg leading-relaxed mb-8" style={{ color: "rgba(255,255,255,0.7)" }}>
+              We built Daily Meds for the people often left out of the wellness conversation. For the DJs, the night owls, the creatives, and the high-performance seekers who need emotional support that feels honest.
+            </p>
+            <div
+              className="inline-flex items-center gap-4 px-6 py-4 rounded-full"
+              style={{ background: "rgba(239,127,78,0.15)", border: "1px solid rgba(239,127,78,0.3)" }}
+            >
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="#ef7f4e">
+                <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/>
+              </svg>
+              <span
+                className="text-xl uppercase tracking-tight font-bold"
+                style={{ color: "#ef7f4e", fontFamily: "var(--font-lexend)" }}
+              >
+                20% Recurring Revenue
+              </span>
+            </div>
           </div>
-          <div className="flex-1">
-            <p className="text-white text-xl mb-1" style={{ fontWeight: 500 }}>20% recurring commission</p>
-            <p className="text-white/45 text-sm leading-relaxed">
-              Monthly subscribers earn you £4/mo each. Annual = £40. Lifetime = £60 one-time. No cap, no expiry — you earn as long as they stay subscribed.
+        </div>
+      </section>
+
+      {/* ── WHY JOIN ────────────────────────────────────────────────────────── */}
+      <section id="benefits" className="py-32" style={{ backgroundColor: "#0e0e0e" }}>
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-20">
+            <h2
+              className="uppercase tracking-tight mb-4"
+              style={{ fontFamily: "var(--font-nyata), var(--font-lexend)", fontWeight: 900, fontSize: "clamp(2.5rem, 6vw, 4.5rem)" }}
+            >
+              Why Join Us?
+            </h2>
+            <p style={{ color: "rgba(255,255,255,0.45)", maxWidth: 480, margin: "0 auto" }}>
+              If you pressed play, something&apos;s on your mind. We make sharing that feeling rewarding.
             </p>
           </div>
-        </div>
-
-        {/* ── HOW IT WORKS ── */}
-        <div className="mb-16">
-          <h2 className="text-xl text-white mb-8 text-center" style={{ fontWeight: 500 }}>How it works</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-            {HOW_IT_WORKS.map((step) => (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            {WHY_CARDS.map((card) => (
               <div
-                key={step.step}
-                className="rounded-[12px] p-6"
-                style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.07)" }}
+                key={card.title}
+                className="p-8 rounded-2xl transition-all duration-300"
+                style={{ backgroundColor: "#1f1f1f", border: "1px solid rgba(255,255,255,0.06)" }}
+                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#262626")}
+                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#1f1f1f")}
               >
-                <div
-                  className="w-10 h-10 rounded-full flex items-center justify-center mb-4 text-white text-sm"
-                  style={{ background: step.gradient, fontWeight: 500 }}
+                <div className="mb-6">{card.icon}</div>
+                <h3
+                  className="uppercase mb-3 text-sm font-bold"
+                  style={{ color: "#ffffff", fontFamily: "var(--font-lexend)", letterSpacing: "0.05em" }}
                 >
-                  {step.step}
-                </div>
-                <h3 className="text-white text-sm mb-2" style={{ fontWeight: 500 }}>{step.title}</h3>
-                <p className="text-xs text-white/40 leading-relaxed">{step.body}</p>
+                  {card.title}
+                </h3>
+                <p className="text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.45)" }}>
+                  {card.body}
+                </p>
               </div>
             ))}
           </div>
         </div>
+      </section>
 
-        {/* ── APPLICATION FORM ── */}
-        <div
-          className="rounded-[14px] p-6 sm:p-8"
-          style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.08)" }}
-        >
-          {submitted ? (
-            /* Success state */
-            <div className="text-center py-8">
-              <div
-                className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-5"
-                style={{ background: "linear-gradient(135deg, #10B981, #22C55E)" }}
+      {/* ── COMMISSION STRUCTURE ────────────────────────────────────────────── */}
+      <section
+        id="commission"
+        className="py-32"
+        style={{ backgroundColor: "#131313", borderTop: "1px solid rgba(255,255,255,0.05)", borderBottom: "1px solid rgba(255,255,255,0.05)" }}
+      >
+        <div className="container mx-auto px-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center max-w-5xl mx-auto">
+            <div>
+              <h2
+                className="uppercase tracking-tight mb-8"
+                style={{ fontFamily: "var(--font-nyata), var(--font-lexend)", fontWeight: 900, fontSize: "clamp(2.5rem, 5vw, 4rem)" }}
               >
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="white">
-                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-                </svg>
+                Commission<br />
+                <span style={{ color: "#ff41b3" }}>Structure</span>
+              </h2>
+              <div className="flex flex-col gap-6">
+                {COMMISSION_POINTS.map((point) => (
+                  <div key={point.title} className="flex items-start gap-4">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="#ff41b3" style={{ flexShrink: 0, marginTop: 2 }}>
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/>
+                    </svg>
+                    <div>
+                      <h4
+                        className="uppercase text-sm font-bold mb-1"
+                        style={{ color: "#ffffff", fontFamily: "var(--font-lexend)" }}
+                      >
+                        {point.title}
+                      </h4>
+                      <p className="text-sm" style={{ color: "rgba(255,255,255,0.45)" }}>{point.body}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
-              <h3 className="text-white text-lg mb-2" style={{ fontWeight: 500 }}>Application received</h3>
-              <p className="text-sm text-white/40 mb-6 max-w-sm mx-auto leading-relaxed">
-                We review every application personally. You'll hear back within 48 hours. If approved, your dashboard will be waiting at the link below.
-              </p>
-              <Link
-                href="/affiliate/dashboard"
-                className="inline-flex px-5 py-2.5 rounded-[10px] text-sm text-white transition-opacity hover:opacity-80"
-                style={{ background: "linear-gradient(135deg, #6B21E8, #22D3EE)", fontWeight: 500 }}
-              >
-                View my dashboard
-              </Link>
             </div>
-          ) : (
-            <>
-              <h2 className="text-lg text-white mb-1" style={{ fontWeight: 500 }}>Apply to join</h2>
-              <p className="text-sm text-white/40 mb-7">
-                Tell us a bit about yourself and your audience. We welcome creators of all sizes.
-              </p>
 
-              {error && (
-                <div
-                  className="flex items-center gap-2 px-4 py-3 rounded-[8px] mb-5 text-sm text-red-300"
-                  style={{ backgroundColor: "rgba(244,63,94,0.08)", border: "0.5px solid rgba(244,63,94,0.25)" }}
+            <div className="relative">
+              <div
+                className="absolute inset-0 rounded-full"
+                style={{ background: "#ff41b3", filter: "blur(100px)", opacity: 0.08 }}
+              />
+              <div
+                className="relative z-10 rounded-2xl p-12 text-center"
+                style={{ backgroundColor: "#191919", border: "1px solid rgba(255,255,255,0.08)" }}
+              >
+                <p
+                  className="text-sm uppercase tracking-widest mb-2"
+                  style={{ color: "#ff41b3", fontFamily: "var(--font-lexend)" }}
                 >
-                  {error}
-                </div>
-              )}
+                  Our Standard Payout
+                </p>
+                <p
+                  className="leading-none font-black"
+                  style={{ fontFamily: "var(--font-nyata), var(--font-lexend)", fontSize: "8rem", color: "#ffffff" }}
+                >
+                  20%
+                </p>
+                <p
+                  className="text-xl uppercase mt-4"
+                  style={{ color: "rgba(255,255,255,0.45)", fontFamily: "var(--font-lexend)", fontWeight: 700 }}
+                >
+                  Lifetime Revenue Share
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
-              <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-
-                {/* Name + Email */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs text-white/40 mb-2">Your name *</label>
-                    <input
-                      type="text"
-                      value={form.name}
-                      onChange={(e) => updateField("name", e.target.value)}
-                      placeholder="Natalie Lauraine"
-                      className="w-full px-4 py-3 rounded-[8px] text-sm text-white outline-none transition-colors"
-                      style={{
-                        backgroundColor: "rgba(255,255,255,0.05)",
-                        border: "0.5px solid rgba(255,255,255,0.1)",
-                      }}
-                    />
+      {/* ── HOW TO GET STARTED ──────────────────────────────────────────────── */}
+      <section className="py-32" style={{ backgroundColor: "#0e0e0e" }}>
+        <div className="container mx-auto px-6">
+          <div className="max-w-4xl mx-auto">
+            <h2
+              className="uppercase text-center mb-20"
+              style={{ fontFamily: "var(--font-nyata), var(--font-lexend)", fontWeight: 900, fontSize: "clamp(2rem, 5vw, 3.5rem)" }}
+            >
+              How to Get Started
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+              {STEPS.map((step) => (
+                <div key={step.num} className="text-center">
+                  <div
+                    className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-black"
+                    style={{
+                      backgroundColor: "#1f1f1f",
+                      border: `1px solid ${step.color}30`,
+                      color: step.color,
+                      fontFamily: "var(--font-lexend)",
+                    }}
+                  >
+                    {step.num}
                   </div>
-                  <div>
-                    <label className="block text-xs text-white/40 mb-2">Email address *</label>
-                    <input
-                      type="email"
-                      value={form.email}
-                      onChange={(e) => updateField("email", e.target.value)}
-                      placeholder="you@example.com"
-                      className="w-full px-4 py-3 rounded-[8px] text-sm text-white outline-none transition-colors"
-                      style={{
-                        backgroundColor: "rgba(255,255,255,0.05)",
-                        border: "0.5px solid rgba(255,255,255,0.1)",
-                      }}
-                    />
-                  </div>
+                  <h4
+                    className="uppercase font-bold mb-3"
+                    style={{ color: "#ffffff", fontFamily: "var(--font-lexend)" }}
+                  >
+                    {step.label}
+                  </h4>
+                  <p className="text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.45)" }}>
+                    {step.body}
+                  </p>
                 </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
 
-                {/* Audience numbers per platform */}
-                <div>
-                  <label className="block text-xs text-white/40 mb-3">
-                    Your audience — fill in any that apply
-                  </label>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {AUDIENCE_PLATFORMS.map((p) => (
-                      <div key={p.key}>
-                        <label className="block text-[11px] text-white/30 mb-1.5">{p.label}</label>
+      {/* ── APPLICATION FORM ────────────────────────────────────────────────── */}
+      <section id="apply" className="py-32 relative overflow-hidden" style={{ backgroundColor: "#000000" }}>
+        <div
+          className="absolute right-0 top-0 w-1/2 h-full pointer-events-none"
+          style={{ background: "rgba(255,65,142,0.04)", filter: "blur(150px)" }}
+        />
+        <div className="container mx-auto px-6 relative z-10">
+          <div
+            className="max-w-3xl mx-auto p-10 md:p-12 rounded-2xl"
+            style={{ backgroundColor: "#131313", border: "1px solid rgba(255,255,255,0.06)" }}
+          >
+            {submitted ? (
+              <div className="text-center py-12">
+                <div
+                  className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6"
+                  style={{ background: "linear-gradient(135deg, #aaee20, #f4e71d)" }}
+                >
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="white">
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                  </svg>
+                </div>
+                <h3
+                  className="uppercase mb-3"
+                  style={{ fontFamily: "var(--font-nyata), var(--font-lexend)", fontWeight: 900, fontSize: "2rem" }}
+                >
+                  Application received
+                </h3>
+                <p className="text-sm mb-8 max-w-sm mx-auto leading-relaxed" style={{ color: "rgba(255,255,255,0.45)" }}>
+                  We review every application personally. You&apos;ll hear back within 48 hours. If approved, your dashboard will be waiting.
+                </p>
+                <Link
+                  href="/affiliate/dashboard"
+                  className="inline-block px-8 py-3 rounded-full text-sm font-bold uppercase tracking-wide transition-all hover:scale-105"
+                  style={{ background: "#ff41b3", color: "#fff", fontFamily: "var(--font-lexend)" }}
+                >
+                  View my dashboard
+                </Link>
+              </div>
+            ) : (
+              <>
+                <h2
+                  className="uppercase tracking-tight mb-2"
+                  style={{ fontFamily: "var(--font-nyata), var(--font-lexend)", fontWeight: 900, fontSize: "clamp(2rem, 4vw, 3rem)" }}
+                >
+                  Ready to Join?
+                </h2>
+                <p className="mb-10 text-sm" style={{ color: "rgba(255,255,255,0.45)" }}>
+                  Submit your application below and let&apos;s start supporting your community together.
+                </p>
+
+                {error && (
+                  <div
+                    className="px-4 py-3 rounded-xl mb-6 text-sm"
+                    style={{ background: "rgba(244,63,94,0.08)", border: "0.5px solid rgba(244,63,94,0.25)", color: "#fca5a5" }}
+                  >
+                    {error}
+                  </div>
+                )}
+
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {[
+                      { label: "Full Name", field: "name", type: "text" },
+                      { label: "Email Address", field: "email", type: "email" },
+                    ].map(({ label, field, type }) => (
+                      <div key={field}>
+                        <label
+                          className="block text-xs uppercase tracking-widest mb-2"
+                          style={{ color: "rgba(255,255,255,0.4)", fontFamily: "var(--font-lexend)" }}
+                        >
+                          {label}
+                        </label>
                         <input
-                          type="text"
-                          value={audience[p.key]}
-                          onChange={(e) => updateAudience(p.key, e.target.value)}
-                          placeholder={p.placeholder}
-                          className="w-full px-3 py-2.5 rounded-[8px] text-sm text-white outline-none"
-                          style={{
-                            backgroundColor: "rgba(255,255,255,0.05)",
-                            border: "0.5px solid rgba(255,255,255,0.1)",
-                          }}
+                          type={type}
+                          value={form[field as keyof typeof form]}
+                          onChange={(e) => updateField(field, e.target.value)}
+                          className="w-full px-4 py-3.5 rounded-xl text-sm text-white outline-none"
+                          style={{ backgroundColor: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.08)" }}
                         />
                       </div>
                     ))}
                   </div>
-                </div>
 
-                {/* Why join */}
-                <div>
-                  <label className="block text-xs text-white/40 mb-2">
-                    Why do you want to promote Daily Meds? *
-                  </label>
-                  <textarea
-                    value={form.whyJoin}
-                    onChange={(e) => updateField("whyJoin", e.target.value)}
-                    placeholder="Tell us about your audience and why Daily Meds is a good fit for them..."
-                    rows={4}
-                    className="w-full px-4 py-3 rounded-[8px] text-sm text-white outline-none resize-none leading-relaxed"
-                    style={{
-                      backgroundColor: "rgba(255,255,255,0.05)",
-                      border: "0.5px solid rgba(255,255,255,0.1)",
-                    }}
-                  />
-                </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label
+                        className="block text-xs uppercase tracking-widest mb-2"
+                        style={{ color: "rgba(255,255,255,0.4)", fontFamily: "var(--font-lexend)" }}
+                      >
+                        Social Handles
+                      </label>
+                      <input
+                        type="text"
+                        value={form.socialHandles}
+                        onChange={(e) => updateField("socialHandles", e.target.value)}
+                        placeholder="Instagram, TikTok, YouTube..."
+                        className="w-full px-4 py-3.5 rounded-xl text-sm text-white outline-none"
+                        style={{ backgroundColor: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.08)" }}
+                      />
+                    </div>
+                    <div>
+                      <label
+                        className="block text-xs uppercase tracking-widest mb-2"
+                        style={{ color: "rgba(255,255,255,0.4)", fontFamily: "var(--font-lexend)" }}
+                      >
+                        Audience Size
+                      </label>
+                      <select
+                        value={audienceSize}
+                        onChange={(e) => setAudienceSize(e.target.value)}
+                        className="w-full px-4 py-3.5 rounded-xl text-sm text-white outline-none appearance-none"
+                        style={{ backgroundColor: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.08)" }}
+                      >
+                        {["Under 1,000", "1,000 - 10,000", "10,000 - 50,000", "50,000 - 100,000", "100,000+"].map((o) => (
+                          <option key={o} style={{ backgroundColor: "#1f1f1f" }}>{o}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
 
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full py-4 rounded-[10px] text-sm text-white transition-opacity hover:opacity-80 disabled:opacity-50"
-                  style={{ background: "linear-gradient(135deg, #6B21E8, #22D3EE)", fontWeight: 500 }}
-                >
-                  {loading ? "Submitting…" : "Submit application"}
-                </button>
+                  <div>
+                    <label
+                      className="block text-xs uppercase tracking-widest mb-3"
+                      style={{ color: "rgba(255,255,255,0.4)", fontFamily: "var(--font-lexend)" }}
+                    >
+                      Your audience — fill in any that apply
+                    </label>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {AUDIENCE_PLATFORMS.map((p) => (
+                        <div key={p.key}>
+                          <label className="block text-[11px] mb-1.5" style={{ color: "rgba(255,255,255,0.3)" }}>{p.label}</label>
+                          <input
+                            type="text"
+                            value={audience[p.key]}
+                            onChange={(e) => setAudience((prev) => ({ ...prev, [p.key]: e.target.value }))}
+                            placeholder={p.placeholder}
+                            className="w-full px-3 py-2.5 rounded-xl text-sm text-white outline-none"
+                            style={{ backgroundColor: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.08)" }}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
 
-                <p className="text-xs text-white/20 text-center">
-                  Already applied?{" "}
-                  <Link href="/affiliate/dashboard" className="text-white/40 hover:text-white/60 transition-colors">
-                    View your dashboard →
-                  </Link>
-                </p>
-              </form>
-            </>
-          )}
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full py-5 rounded-xl text-base font-black uppercase tracking-tight transition-all hover:brightness-110 active:scale-[0.98] disabled:opacity-50"
+                    style={{ background: "#ff41b3", color: "#fff", fontFamily: "var(--font-lexend)" }}
+                  >
+                    {loading ? "Submitting…" : "Submit Application"}
+                  </button>
+
+                  <p className="text-xs text-center" style={{ color: "rgba(255,255,255,0.2)" }}>
+                    Already applied?{" "}
+                    <Link href="/affiliate/dashboard" className="transition-colors hover:text-white" style={{ color: "rgba(255,255,255,0.4)" }}>
+                      View your dashboard →
+                    </Link>
+                  </p>
+                </form>
+              </>
+            )}
+          </div>
         </div>
+      </section>
 
-      </main>
-
-      <Footer />
+      {/* ── FOOTER ──────────────────────────────────────────────────────────── */}
+      <footer
+        className="px-8 md:px-12 py-16 grid grid-cols-1 md:grid-cols-2 gap-10"
+        style={{ backgroundColor: "#0e0e0e", borderTop: "1px solid rgba(255,255,255,0.05)" }}
+      >
+        <div>
+          <p
+            className="text-sm font-bold uppercase mb-3"
+            style={{ color: "rgba(255,255,255,0.9)", fontFamily: "var(--font-lexend)" }}
+          >
+            Daily Meds
+          </p>
+          <p className="text-sm mb-4" style={{ color: "rgba(255,255,255,0.4)" }}>
+            Meditation for real life. Created with love by Natalie Lauraine.
+          </p>
+          <p className="text-xs" style={{ color: "#ff41b3", fontFamily: "var(--font-lexend)" }}>
+            © {new Date().getFullYear()} I AM Sound Ltd, Trading as Daily Meds.
+          </p>
+        </div>
+        <div className="flex flex-col md:items-end gap-4">
+          <div className="flex flex-wrap gap-x-6 gap-y-3 justify-start md:justify-end">
+            {[
+              { label: "Privacy Policy", href: "/privacy" },
+              { label: "Affiliate Terms", href: "/terms" },
+              { label: "Contact Us", href: "mailto:joy@thedailymeds.com" },
+            ].map(({ label, href }) => (
+              <Link
+                key={label}
+                href={href}
+                className="text-xs uppercase tracking-widest transition-colors hover:text-white"
+                style={{ color: "rgba(255,255,255,0.35)", fontFamily: "var(--font-lexend)" }}
+              >
+                {label}
+              </Link>
+            ))}
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

@@ -36,7 +36,6 @@ export async function GET(request: NextRequest) {
     await supabase.auth.exchangeCodeForSession(code);
   }
 
-  // Send the user to the homepage after successful login
-  // (will change to /library once that page is built in Phase 4)
-  return NextResponse.redirect(`${origin}/`);
+  // Send the user to the welcome page after successful login
+  return NextResponse.redirect(`${origin}/welcome`);
 }

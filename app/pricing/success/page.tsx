@@ -11,17 +11,17 @@ import Navbar from "../../components/Navbar";
 const PLAN_DETAILS: Record<string, { label: string; gradient: string; message: string }> = {
   monthly: {
     label: "Monthly",
-    gradient: "linear-gradient(135deg, #6B21E8 0%, #8B3CF7 25%, #6366F1 60%, #3B82F6 80%, #22D3EE 100%)",
+    gradient: "linear-gradient(135deg, #ff41b3 0%, #ec723d 25%, #adf225 60%, #adf225 80%, #adf225 100%)",
     message: "Your monthly membership is now active. Full library unlocked.",
   },
   annual: {
     label: "Annual",
-    gradient: "linear-gradient(135deg, #F43F5E 0%, #EC4899 20%, #D946EF 35%, #F97316 65%, #EAB308 85%, #FACC15 100%)",
+    gradient: "linear-gradient(135deg, #ff41b3 0%, #ff41b3 20%, #ff41b3 35%, #ec723d 65%, #f4e71d 85%, #f4e71d 100%)",
     message: "Your annual membership is now active. Enjoy two months free.",
   },
   lifetime: {
     label: "Lifetime",
-    gradient: "linear-gradient(135deg, #10B981 0%, #22C55E 35%, #84CC16 70%, #D9F100 100%)",
+    gradient: "linear-gradient(135deg, #adf225 0%, #adf225 35%, #adf225 70%, #f4e71d 100%)",
     message: "You're a founding member. Access everything, forever. Thank you.",
   },
 };
@@ -39,7 +39,7 @@ function SuccessContent() {
         {/* Animated checkmark circle */}
         <div
           className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-8"
-          style={{ background: details.gradient, boxShadow: `0 0 60px rgba(139,92,246,0.25)` }}
+          style={{ background: details.gradient, boxShadow: `0 0 60px rgba(255,65,179,0.25)` }}
         >
           <svg width="36" height="36" viewBox="0 0 24 24" fill="white">
             <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
@@ -81,7 +81,7 @@ function SuccessContent() {
 
 export default function PricingSuccessPage() {
   return (
-    <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#0D0D1A" }}>
+    <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#131313" }}>
       <Navbar />
       <Suspense fallback={null}>
         <SuccessContent />

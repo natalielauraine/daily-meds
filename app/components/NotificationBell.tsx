@@ -107,7 +107,7 @@ export default function NotificationBell({ user }: { user: User }) {
         {unreadCount > 0 && (
           <span
             className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full flex items-center justify-center text-[9px] text-white"
-            style={{ backgroundColor: "#EC4899", fontWeight: 500 }}
+            style={{ backgroundColor: "#ff41b3", fontWeight: 500 }}
           >
             {unreadCount > 9 ? "9+" : unreadCount}
           </span>
@@ -118,7 +118,7 @@ export default function NotificationBell({ user }: { user: User }) {
       {open && (
         <div
           className="absolute right-0 top-11 w-80 rounded-[10px] z-50 overflow-hidden"
-          style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.12)" }}
+          style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.12)" }}
         >
           {/* Header */}
           <div
@@ -153,14 +153,14 @@ export default function NotificationBell({ user }: { user: User }) {
                   className="px-4 py-3 flex items-start gap-3"
                   style={{
                     borderTop: i > 0 ? "0.5px solid rgba(255,255,255,0.04)" : "none",
-                    backgroundColor: n.read ? "transparent" : "rgba(139,92,246,0.05)",
-                    borderLeft: n.read ? "2px solid transparent" : "2px solid rgba(139,92,246,0.5)",
+                    backgroundColor: n.read ? "transparent" : "rgba(255,65,179,0.05)",
+                    borderLeft: n.read ? "2px solid transparent" : "2px solid rgba(255,65,179,0.5)",
                   }}
                 >
                   {/* Avatar initial */}
                   <div
                     className="w-7 h-7 rounded-full shrink-0 flex items-center justify-center text-xs text-white mt-0.5"
-                    style={{ background: "linear-gradient(135deg, #8B5CF6, #6366F1)", fontWeight: 500 }}
+                    style={{ background: "linear-gradient(135deg, #ff41b3, #adf225)", fontWeight: 500 }}
                   >
                     {n.from_display_name?.[0]?.toUpperCase() ?? "?"}
                   </div>
@@ -173,7 +173,7 @@ export default function NotificationBell({ user }: { user: User }) {
 
                   {/* Unread dot */}
                   {!n.read && (
-                    <div className="w-1.5 h-1.5 rounded-full bg-purple-400 shrink-0 mt-1.5" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-pink-400 shrink-0 mt-1.5" />
                   )}
                 </div>
               ))

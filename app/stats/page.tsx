@@ -1,10 +1,7 @@
 "use client";
 
-// Personal stats dashboard — shows the logged-in user's real session history.
-// Fetches from Supabase user_progress table joined with sessions.
-// Milestone cards (streak + sessions) have a Share button and live reaction pills.
-
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { createClient } from "../../lib/supabase-browser";
 import type { User } from "@supabase/supabase-js";
 import Navbar from "../components/Navbar";
@@ -13,38 +10,26 @@ import Footer from "../components/Footer";
 // ── MOOD GRADIENT MAP ─────────────────────────────────────────────────────────
 
 const MOOD_GRADIENTS: Record<string, string> = {
-  Hungover:         "linear-gradient(90deg, #6B21E8, #22D3EE)",
-  "After The Sesh": "linear-gradient(90deg, #F43F5E, #FACC15)",
-  "On A Comedown":  "linear-gradient(90deg, #10B981, #D9F100)",
-  "Feeling Empty":  "linear-gradient(90deg, #6B21E8, #22D3EE)",
-  "Can't Sleep":    "linear-gradient(90deg, #8B3CF7, #6366F1)",
-  Anxious:          "linear-gradient(90deg, #F43F5E, #F97316)",
-  Heartbroken:      "linear-gradient(90deg, #EC4899, #D946EF)",
-  Overwhelmed:      "linear-gradient(90deg, #F97316, #FACC15)",
-  "Low Energy":     "linear-gradient(90deg, #10B981, #22C55E)",
-  "Morning Reset":  "linear-gradient(90deg, #F43F5E, #F97316)",
-  "Focus Mode":     "linear-gradient(90deg, #6B21E8, #6366F1)",
+  Hungover:         "linear-gradient(135deg, #ff41b3, #ec723d)",
+  "After The Sesh": "linear-gradient(135deg, #ff41b3, #f4e71d)",
+  "On A Comedown":  "linear-gradient(135deg, #adf225, #f4e71d)",
+  "Feeling Empty":  "linear-gradient(135deg, #ff41b3, #ec723d)",
+  "Can't Sleep":    "linear-gradient(135deg, #ff41b3, #adf225)",
+  Anxious:          "linear-gradient(135deg, #ec723d, #f4e71d)",
+  Heartbroken:      "linear-gradient(135deg, #ff41b3, #ec723d)",
+  Overwhelmed:      "linear-gradient(135deg, #ec723d, #f4e71d)",
+  "Low Energy":     "linear-gradient(135deg, #adf225, #f4e71d)",
+  "Morning Reset":  "linear-gradient(135deg, #ff41b3, #f4e71d)",
+  "Focus Mode":     "linear-gradient(135deg, #adf225, #ec723d)",
 };
 
-const MONTH_LABELS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
-// The six reaction emojis — matches the rest of the app
-const REACTION_EMOJIS = ["🔥", "💜", "🙏", "⭐", "💪", "🧘"];
-
-type Reaction = { emoji: string; count: number; userReacted: boolean };
-
-// Shape of a shared milestone post's data
-type MilestoneShare = {
-  post_id: string;
-  reactions: Reaction[];
-};
-
-function heatmapColor(intensity: number): string {
-  return ["rgba(255,255,255,0.07)", "#5B21B6", "#7C3AED", "#6366F1", "#22D3EE"][Math.min(intensity, 4)];
+function parseMins(duration: string | number): number {
+  if (typeof duration === "number") return duration;
+  return parseInt(duration) || 0;
 }
 
-function parseMins(duration: string): number {
-  return parseInt(duration) || 0;
+function formatNumber(n: number): string {
+  return n.toLocaleString("en-GB");
 }
 
 function calculateStreaks(dates: string[]): { current: number; longest: number } {
@@ -67,111 +52,108 @@ function calculateStreaks(dates: string[]): { current: number; longest: number }
   return { current, longest };
 }
 
-function buildHeatmap(dateCounts: Record<string, number>): { date: string; intensity: number }[][] {
-  const weeks: { date: string; intensity: number }[][] = [];
-  const start = new Date();
-  start.setDate(start.getDate() - 364);
-  for (let w = 0; w < 52; w++) {
-    const days = [];
-    for (let d = 0; d < 7; d++) {
-      const date = new Date(start);
-      date.setDate(start.getDate() + w * 7 + d);
-      const dateStr = date.toISOString().split("T")[0];
-      days.push({ date: dateStr, intensity: Math.min(dateCounts[dateStr] || 0, 4) });
-    }
-    weeks.push(days);
+function buildWeeklyData(rows: { updated_at: string }[]) {
+  const labels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const result = labels.map((day) => ({ day, sessions: 0 }));
+  const now = Date.now();
+  for (const r of rows) {
+    if (!r.updated_at) continue;
+    const date = new Date(r.updated_at);
+    if (now - date.getTime() > 7 * 86400000) continue;
+    result[date.getDay()].sessions++;
   }
-  return weeks;
+  return result;
 }
 
-// ── STAT CARD ─────────────────────────────────────────────────────────────────
+function formatMemberSince(isoDate: string): string {
+  return new Date(isoDate).toLocaleDateString("en-GB", { month: "long", year: "numeric" });
+}
 
-function StatCard({ value, label, sublabel, gradient, icon }: {
-  value: string; label: string; sublabel?: string; gradient: string; icon: React.ReactNode;
-}) {
+// ── LIVE SHOWS ────────────────────────────────────────────────────────────────
+
+const LIVE_SHOWS = [
+  {
+    title: "Live Audio Hug",
+    host: "Host: Natalie Lauraine",
+    when: "Monday 8am UK",
+    accent: "#ff41b3",
+    img: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=600&h=400&fit=crop",
+  },
+  {
+    title: "Live Podcast",
+    host: "Guest: TBC",
+    when: "Wednesday 7pm UK",
+    accent: "#ec723d",
+    img: "https://images.unsplash.com/photo-1478737270239-2f02b77fc618?w=600&h=400&fit=crop",
+  },
+  {
+    title: "Alchemy Rewire",
+    host: "Host: Natalie Lauraine",
+    when: "Friday 8am UK",
+    accent: "#adf225",
+    img: "https://images.unsplash.com/photo-1519682337058-a94d519337bc?w=600&h=400&fit=crop",
+  },
+];
+
+// ── GLASS CARD ────────────────────────────────────────────────────────────────
+
+function GlassCard({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
-    <div className="rounded-[10px] p-5 flex flex-col gap-3" style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.08)" }}>
-      <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: gradient }}>{icon}</div>
-      <div>
-        <div className="text-2xl text-white" style={{ fontWeight: 500 }}>{value}</div>
-        <div className="text-xs text-white/40 mt-0.5">{label}</div>
-        {sublabel && <div className="text-xs text-white/25 mt-0.5">{sublabel}</div>}
-      </div>
+    <div
+      className={`rounded-3xl border ${className}`}
+      style={{
+        background: "rgba(0,0,0,0.45)",
+        backdropFilter: "blur(24px)",
+        WebkitBackdropFilter: "blur(24px)",
+        borderColor: "rgba(255,255,255,0.06)",
+        boxShadow: "0 8px 40px rgba(0,0,0,0.4)",
+      }}
+    >
+      {children}
     </div>
   );
 }
 
-// ── MILESTONE CARD ────────────────────────────────────────────────────────────
-// Like StatCard but with a Share button and live reaction pills below the value.
+// ── WEEKLY BAR CHART ──────────────────────────────────────────────────────────
 
-function MilestoneCard({ value, label, sublabel, gradient, icon, share, onShare, sharing }: {
-  value: string; label: string; sublabel?: string; gradient: string; icon: React.ReactNode;
-  share: MilestoneShare | null;
-  onShare: () => void;
-  sharing: boolean;
-}) {
+function WeeklyChart({ data }: { data: { day: string; sessions: number }[] }) {
+  const max = Math.max(...data.map((d) => d.sessions), 1);
+  const today = new Date().getDay();
+
   return (
-    <div className="rounded-[10px] p-5 flex flex-col gap-3" style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.08)" }}>
-      <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: gradient }}>{icon}</div>
-      <div>
-        <div className="text-2xl text-white" style={{ fontWeight: 500 }}>{value}</div>
-        <div className="text-xs text-white/40 mt-0.5">{label}</div>
-        {sublabel && <div className="text-xs text-white/25 mt-0.5">{sublabel}</div>}
-      </div>
-
-      {/* Share button — only shown if not yet shared */}
-      {!share && (
-        <button
-          onClick={onShare}
-          disabled={sharing}
-          className="self-start flex items-center gap-1 text-[10px] px-2.5 py-1 rounded-full transition-opacity hover:opacity-70 disabled:opacity-40"
-          style={{ backgroundColor: "rgba(139,92,246,0.15)", border: "0.5px solid rgba(139,92,246,0.3)", color: "#C4B5FD" }}
-        >
-          {sharing ? "Sharing…" : (
-            <>
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/>
-              </svg>
-              Share to community
-            </>
-          )}
-        </button>
-      )}
-
-      {/* Reaction pills — shown after sharing */}
-      {share && (
-        <div className="flex items-center gap-1 flex-wrap">
-          {REACTION_EMOJIS.map((emoji) => {
-            const r = share.reactions.find((x) => x.emoji === emoji);
-            const isReacted = r?.userReacted ?? false;
-            return (
+    <div className="flex items-end justify-between gap-2" style={{ height: 96 }}>
+      {data.map((d, i) => {
+        const pct = Math.max((d.sessions / max) * 100, d.sessions > 0 ? 12 : 5);
+        const isToday = i === today;
+        return (
+          <div key={d.day} className="flex flex-col items-center gap-2 flex-1">
+            <div className="w-full flex items-end" style={{ height: 72 }}>
               <div
-                key={emoji}
-                className="flex items-center rounded-lg overflow-hidden"
+                className="w-full rounded-t-lg transition-all duration-500"
                 style={{
-                  backgroundColor: isReacted ? "rgba(139,92,246,0.2)" : "rgba(255,255,255,0.04)",
-                  border: `0.5px solid ${isReacted ? "rgba(139,92,246,0.4)" : "rgba(255,255,255,0.07)"}`,
+                  height: `${pct}%`,
+                  backgroundColor: isToday ? "#ff41b3" : d.sessions > 0 ? "rgba(255,65,179,0.3)" : "rgba(255,255,255,0.05)",
                 }}
-              >
-                <span className="px-1.5 py-0.5 text-xs" style={{ color: isReacted ? "#C4B5FD" : "rgba(255,255,255,0.3)" }}>
-                  {emoji}
-                </span>
-                {r && r.count > 0 && (
-                  <span className="pr-1.5 py-0.5 text-xs" style={{ color: isReacted ? "#C4B5FD" : "rgba(255,255,255,0.4)" }}>
-                    {r.count}
-                  </span>
-                )}
-              </div>
-            );
-          })}
-          <span className="text-[10px] text-white/20 ml-1">Shared ✓</span>
-        </div>
-      )}
+              />
+            </div>
+            <span
+              className="text-[9px] uppercase tracking-wider"
+              style={{
+                color: isToday ? "#ff41b3" : "rgba(255,255,255,0.3)",
+                fontFamily: "var(--font-lexend)",
+                fontWeight: isToday ? 700 : 400,
+              }}
+            >
+              {d.day}
+            </span>
+          </div>
+        );
+      })}
     </div>
   );
 }
 
-// ── MAIN PAGE ─────────────────────────────────────────────────────────────────
+// ── PAGE ──────────────────────────────────────────────────────────────────────
 
 export default function StatsPage() {
   const supabase = createClient();
@@ -179,16 +161,13 @@ export default function StatsPage() {
   const [loading, setLoading] = useState(true);
 
   const [stats, setStats] = useState({
-    currentStreak: 0, longestStreak: 0, totalMinutes: 0,
-    totalSessions: 0, thisWeekMinutes: 0, avgSessionLength: 0,
+    currentStreak: 0, longestStreak: 0,
+    totalMinutes: 0,  totalSessions: 0, moodsExplored: 0,
   });
+  const [topMood, setTopMood]           = useState<{ label: string; gradient: string } | null>(null);
+  const [mostListened, setMostListened] = useState<{ title: string; gradient: string; mood: string } | null>(null);
+  const [weeklyData, setWeeklyData]     = useState<{ day: string; sessions: number }[]>([]);
   const [moodBreakdown, setMoodBreakdown] = useState<{ label: string; count: number; gradient: string }[]>([]);
-  const [heatmap, setHeatmap] = useState<{ date: string; intensity: number }[][]>([]);
-  const [topMood, setTopMood] = useState("");
-
-  // Milestone sharing state — one entry per type ("streak" | "milestone")
-  const [milestoneShares, setMilestoneShares] = useState<Record<string, MilestoneShare>>({});
-  const [sharing, setSharing] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadAll() {
@@ -196,353 +175,417 @@ export default function StatsPage() {
       setUser(u);
       if (!u) { setLoading(false); return; }
 
-      // ── Load session progress ──────────────────────────────────────────────
       const { data: progress } = await supabase
         .from("user_progress")
-        .select("completed, last_watched, sessions(duration, mood_category)")
+        .select("completed, updated_at, sessions(title, duration, mood_category)")
         .eq("user_id", u.id);
 
       if (progress && progress.length > 0) {
-        const completed = progress.filter((p) => p.completed && p.sessions) as unknown as
-          { completed: boolean; last_watched: string; sessions: { duration: string; mood_category: string } }[];
-
-        const totalMinutes = completed.reduce((sum, p) => sum + parseMins(p.sessions.duration), 0);
-        const sevenDaysAgo = new Date(Date.now() - 7 * 86400000).toISOString();
-        const thisWeekMinutes = completed
-          .filter((p) => p.last_watched > sevenDaysAgo)
-          .reduce((sum, p) => sum + parseMins(p.sessions.duration), 0);
-
-        const activityDates = completed.map((p) => p.last_watched.split("T")[0]);
+        type NormRow = { completed: boolean; updated_at: string; title: string; duration: string | number; mood_category: string; gradient: string };
+        const rows: NormRow[] = [];
+        for (const p of progress as unknown as { completed: boolean; updated_at: string; sessions: { title: string; duration: string | number; mood_category: string } | null | { title: string; duration: string | number; mood_category: string }[] }[]) {
+          if (!p.sessions) continue;
+          const s = Array.isArray(p.sessions) ? p.sessions[0] : p.sessions;
+          if (!s) continue;
+          rows.push({ completed: p.completed, updated_at: p.updated_at, title: s.title, duration: s.duration, mood_category: s.mood_category, gradient: MOOD_GRADIENTS[s.mood_category] || "linear-gradient(135deg, #ff41b3, #ec723d)" });
+        }
+        const completedRows = rows.filter((r) => r.completed);
+        const totalMinutes  = completedRows.reduce((sum, r) => sum + parseMins(r.duration), 0);
+        const totalSessions = completedRows.length;
+        const activityDates = rows.map((r) => r.updated_at?.split("T")[0]).filter(Boolean) as string[];
         const { current: currentStreak, longest: longestStreak } = calculateStreaks(activityDates);
-
         const moodCounts: Record<string, number> = {};
-        for (const p of completed) {
-          const mood = p.sessions.mood_category;
-          if (mood) moodCounts[mood] = (moodCounts[mood] || 0) + 1;
-        }
-        const moodBreakdownData = Object.entries(moodCounts)
-          .map(([label, count]) => ({ label, count, gradient: MOOD_GRADIENTS[label] || "linear-gradient(90deg, #8B5CF6, #6366F1)" }))
-          .sort((a, b) => b.count - a.count)
-          .slice(0, 8);
-
-        const dateCounts: Record<string, number> = {};
-        for (const p of progress) {
-          if (p.last_watched) {
-            const date = p.last_watched.split("T")[0];
-            dateCounts[date] = (dateCounts[date] || 0) + 1;
-          }
-        }
-
-        const totalSessions = completed.length;
-        const avgSessionLength = totalSessions > 0 ? Math.round(totalMinutes / totalSessions) : 0;
-
-        setStats({ currentStreak, longestStreak, totalMinutes, totalSessions, thisWeekMinutes, avgSessionLength });
-        setMoodBreakdown(moodBreakdownData);
-        setHeatmap(buildHeatmap(dateCounts));
-        setTopMood(moodBreakdownData[0]?.label || "");
+        for (const r of completedRows) { if (r.mood_category) moodCounts[r.mood_category] = (moodCounts[r.mood_category] || 0) + 1; }
+        const moodBreakdownData = Object.entries(moodCounts).map(([label, count]) => ({ label, count, gradient: MOOD_GRADIENTS[label] || "linear-gradient(135deg, #ff41b3, #ec723d)" })).sort((a, b) => b.count - a.count);
+        const sessionCounts: Record<string, { title: string; gradient: string; mood: string; count: number }> = {};
+        for (const r of completedRows) { if (!r.title) continue; if (!sessionCounts[r.title]) sessionCounts[r.title] = { title: r.title, gradient: r.gradient, mood: r.mood_category, count: 0 }; sessionCounts[r.title].count++; }
+        const mostListenedData = Object.values(sessionCounts).sort((a, b) => b.count - a.count)[0] || null;
+        const weekly = buildWeeklyData(rows.map((r) => ({ updated_at: r.updated_at })));
+        setStats({ currentStreak, longestStreak, totalMinutes, totalSessions, moodsExplored: moodBreakdownData.length });
+        setTopMood(moodBreakdownData[0] ? { label: moodBreakdownData[0].label, gradient: moodBreakdownData[0].gradient } : null);
+        setMostListened(mostListenedData);
+        setWeeklyData(weekly);
+        setMoodBreakdown(moodBreakdownData.slice(0, 6));
       }
-
-      // ── Load existing milestone shares + their reactions ───────────────────
-      const { data: milestonePosts } = await supabase
-        .from("community_posts")
-        .select("id, post_type")
-        .eq("user_id", u.id)
-        .in("post_type", ["streak", "milestone"])
-        .order("created_at", { ascending: false })
-        .limit(10);
-
-      if (milestonePosts && milestonePosts.length > 0) {
-        // Find most recent streak share and milestone share
-        const streakPost    = milestonePosts.find((p) => p.post_type === "streak");
-        const sessionsPost  = milestonePosts.find((p) => p.post_type === "milestone");
-        const postIds       = milestonePosts.map((p) => p.id);
-
-        // Fetch all reactions for these posts
-        const { data: allReactions } = await supabase
-          .from("community_post_reactions")
-          .select("post_id, emoji, user_id")
-          .in("post_id", postIds);
-
-        // Build reaction summary per post
-        const buildReactions = (postId: string): Reaction[] => {
-          const reactionMap: Record<string, Reaction> = {};
-          (allReactions ?? []).filter((r) => r.post_id === postId).forEach((r) => {
-            if (!reactionMap[r.emoji]) reactionMap[r.emoji] = { emoji: r.emoji, count: 0, userReacted: false };
-            reactionMap[r.emoji].count++;
-            if (r.user_id === u.id) reactionMap[r.emoji].userReacted = true;
-          });
-          return Object.values(reactionMap);
-        };
-
-        const shares: Record<string, MilestoneShare> = {};
-        if (streakPost)   shares["streak"]    = { post_id: streakPost.id,   reactions: buildReactions(streakPost.id) };
-        if (sessionsPost) shares["milestone"]  = { post_id: sessionsPost.id, reactions: buildReactions(sessionsPost.id) };
-        setMilestoneShares(shares);
-      }
-
       setLoading(false);
     }
     loadAll();
   }, []);
 
-  // Realtime: update reaction counts on milestone cards when anyone reacts
-  useEffect(() => {
-    const postIds = Object.values(milestoneShares).map((s) => s.post_id);
-    if (postIds.length === 0) return;
+  const displayName  = user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email?.split("@")[0] || "Meditator";
+  const handle       = "@" + (user?.email?.split("@")[0] || "dailymeds");
+  const avatarInitial = displayName.charAt(0).toUpperCase();
+  const avatarUrl     = user?.user_metadata?.avatar_url as string | undefined;
+  const memberSince   = user?.created_at ? formatMemberSince(user.created_at) : "";
+  const maxMoodCount  = moodBreakdown.length > 0 ? Math.max(...moodBreakdown.map((m) => m.count)) : 1;
 
-    const channel = supabase
-      .channel("milestone_reactions")
-      .on("postgres_changes", { event: "*", schema: "public", table: "community_post_reactions" }, async () => {
-        const { data: allReactions } = await supabase
-          .from("community_post_reactions")
-          .select("post_id, emoji, user_id")
-          .in("post_id", postIds);
-
-        const { data: { user: u } } = await supabase.auth.getUser();
-
-        setMilestoneShares((prev) => {
-          const updated = { ...prev };
-          for (const [type, share] of Object.entries(prev)) {
-            const reactionMap: Record<string, Reaction> = {};
-            (allReactions ?? []).filter((r) => r.post_id === share.post_id).forEach((r) => {
-              if (!reactionMap[r.emoji]) reactionMap[r.emoji] = { emoji: r.emoji, count: 0, userReacted: false };
-              reactionMap[r.emoji].count++;
-              if (u && r.user_id === u.id) reactionMap[r.emoji].userReacted = true;
-            });
-            updated[type] = { ...share, reactions: Object.values(reactionMap) };
-          }
-          return updated;
-        });
-      })
-      .subscribe();
-
-    return () => { supabase.removeChannel(channel); };
-  }, [milestoneShares]);
-
-  // Share a milestone to the community feed
-  async function shareMilestone(type: "streak" | "milestone", value: number) {
-    if (!user) return;
-    setSharing(type);
-
-    const displayName = user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split("@")[0] || "Anonymous";
-    const note = type === "streak"
-      ? `${value}-day streak 🔥`
-      : `${value} sessions completed 🧘`;
-
-    const { data } = await supabase
-      .from("community_posts")
-      .insert({
-        user_id: user.id,
-        display_name: displayName,
-        avatar_url: user.user_metadata?.avatar_url ?? null,
-        post_type: type,
-        mood_category: null,
-        note,
-        streak_count: type === "streak" ? value : 0,
-      })
-      .select("id")
-      .single();
-
-    if (data) {
-      setMilestoneShares((prev) => ({
-        ...prev,
-        [type]: { post_id: data.id, reactions: [] },
-      }));
-    }
-    setSharing(null);
-  }
-
-  const maxMoodCount = moodBreakdown.length > 0 ? Math.max(...moodBreakdown.map((m) => m.count)) : 1;
+  const emptyWeekly = [
+    { day: "Sun", sessions: 0 }, { day: "Mon", sessions: 0 }, { day: "Tue", sessions: 0 },
+    { day: "Wed", sessions: 0 }, { day: "Thu", sessions: 0 }, { day: "Fri", sessions: 0 }, { day: "Sat", sessions: 0 },
+  ];
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#0D0D1A]">
+    <div className="min-h-screen" style={{ backgroundColor: "#010101", color: "white" }}>
       <Navbar />
 
-      <main className="flex-1 max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-10">
-
-        {/* Page header */}
-        <div className="mb-10">
-          <h1 className="text-2xl text-white mb-1">Your Stats</h1>
-          <p className="text-white/40 text-sm">Keep going — every session counts.</p>
+      {/* ── CINEMATIC HERO ── */}
+      <section
+        className="relative w-full flex items-end pt-16 pb-32 overflow-hidden"
+        style={{ minHeight: 500 }}
+      >
+        {/* Background image */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="https://images.unsplash.com/photo-1493612276216-ee3925520721?q=80&w=2000&auto=format&fit=crop"
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover"
+          style={{ opacity: 0.35 }}
+        />
+        {/* Gradient overlay */}
+        <div
+          className="absolute inset-0"
+          style={{ background: "linear-gradient(to bottom, rgba(1,1,1,0.2) 0%, #010101 100%)" }}
+        />
+        <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <p
+            className="text-xs font-bold uppercase tracking-[0.3em] mb-2"
+            style={{ color: "#ff41b3", fontFamily: "var(--font-lexend)" }}
+          >
+            The Daily Meds
+          </p>
+          <h1
+            className="uppercase leading-none"
+            style={{
+              fontFamily: "var(--font-nyata), var(--font-lexend)",
+              fontWeight: 900,
+              fontSize: "clamp(2.5rem, 6vw, 5rem)",
+              letterSpacing: "-0.03em",
+            }}
+          >
+            Your ritual,<br />recorded.
+          </h1>
         </div>
+      </section>
 
-        {/* Loading skeleton */}
-        {loading && (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-10">
-            {[...Array(5)].map((_, i) => (
-              <div key={i} className="rounded-[10px] p-5 h-28 animate-pulse" style={{ backgroundColor: "#1A1A2E" }} />
-            ))}
-          </div>
-        )}
+      {/* ── PROFILE + STATS CANVAS ── */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16" style={{ marginTop: "-80px", position: "relative", zIndex: 10 }}>
 
-        {/* ── OVERVIEW CARDS ── */}
-        {!loading && (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-10">
-
-            {/* Current streak — MILESTONE CARD with share + reactions */}
-            <MilestoneCard
-              value={`${stats.currentStreak} days`}
-              label="Current streak"
-              sublabel="Keep it up"
-              gradient="linear-gradient(135deg, #F43F5E, #F97316)"
-              share={milestoneShares["streak"] ?? null}
-              onShare={() => shareMilestone("streak", stats.currentStreak)}
-              sharing={sharing === "streak"}
-              icon={
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
-                  <path d="M13.5 0.67s.74 2.65.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l.03-.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5.67zM11.71 19c-1.78 0-3.22-1.4-3.22-3.14 0-1.62 1.05-2.76 2.81-3.12 1.77-.36 3.6-1.21 4.62-2.58.39 1.29.59 2.65.59 4.04 0 2.65-2.15 4.8-4.8 4.8z"/>
-                </svg>
-              }
-            />
-
-            {/* Longest streak — plain StatCard */}
-            <StatCard
-              value={`${stats.longestStreak} days`}
-              label="Longest streak"
-              sublabel="Personal best"
-              gradient="linear-gradient(135deg, #8B3CF7, #6366F1)"
-              icon={
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
-                  <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/>
-                </svg>
-              }
-            />
-
-            {/* Total minutes — plain StatCard */}
-            <StatCard
-              value={`${stats.totalMinutes} min`}
-              label="Total listened"
-              sublabel={`${Math.floor(stats.totalMinutes / 60)}h ${stats.totalMinutes % 60}m`}
-              gradient="linear-gradient(135deg, #10B981, #22C55E)"
-              icon={
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/>
-                </svg>
-              }
-            />
-
-            {/* Sessions completed — MILESTONE CARD with share + reactions */}
-            <MilestoneCard
-              value={`${stats.totalSessions}`}
-              label="Sessions completed"
-              sublabel={`Avg ${stats.avgSessionLength} min each`}
-              gradient="linear-gradient(135deg, #EC4899, #D946EF)"
-              share={milestoneShares["milestone"] ?? null}
-              onShare={() => shareMilestone("milestone", stats.totalSessions)}
-              sharing={sharing === "milestone"}
-              icon={
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
-                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
-                </svg>
-              }
-            />
-
-            {/* This week — plain StatCard */}
-            <StatCard
-              value={`${stats.thisWeekMinutes} min`}
-              label="This week"
-              sublabel="Last 7 days"
-              gradient="linear-gradient(135deg, #F97316, #FACC15)"
-              icon={
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
-                  <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
-                </svg>
-              }
-            />
-          </div>
-        )}
-
-        {/* ── HEATMAP CALENDAR ── */}
-        {!loading && heatmap.length > 0 && (
-          <div className="rounded-[10px] p-6 mb-8" style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.08)" }}>
-            <div className="flex items-center justify-between mb-5">
-              <h2 className="text-sm text-white" style={{ fontWeight: 500 }}>Activity — last 12 months</h2>
-              <div className="flex items-center gap-1.5">
-                <span className="text-white/30 text-xs">Less</span>
-                {[0, 1, 2, 3, 4].map((i) => (
-                  <div key={i} className="rounded-sm" style={{ width: "13px", height: "13px", backgroundColor: heatmapColor(i) }} />
-                ))}
-                <span className="text-white/30 text-xs">More</span>
-              </div>
-            </div>
-            <div className="flex mb-1 pl-8 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
-              {MONTH_LABELS.map((month) => (
-                <div key={month} className="text-white/25 shrink-0" style={{ fontSize: "10px", width: `${Math.round(52 / 12) * 13}px` }}>
-                  {month}
-                </div>
+        {loading ? (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <div className="lg:col-span-5 rounded-3xl h-96 animate-pulse" style={{ background: "rgba(255,255,255,0.04)" }} />
+            <div className="lg:col-span-7 grid grid-cols-2 gap-6">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="rounded-3xl h-40 animate-pulse" style={{ background: "rgba(255,255,255,0.04)" }} />
               ))}
             </div>
-            <div className="flex gap-1 overflow-x-auto pb-2" style={{ scrollbarWidth: "none" }}>
-              <div className="flex flex-col gap-1 mr-1 shrink-0">
-                {["", "Mon", "", "Wed", "", "Fri", ""].map((day, i) => (
-                  <div key={i} className="text-white/25 flex items-center justify-end" style={{ fontSize: "9px", height: "12px", width: "24px" }}>{day}</div>
-                ))}
-              </div>
-              {heatmap.map((week, wi) => (
-                <div key={wi} className="flex flex-col gap-1 shrink-0">
-                  {week.map((day, di) => (
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+            {/* ── PROFILE CARD ── */}
+            <div className="lg:col-span-5">
+              <GlassCard className="p-8 flex flex-col items-center text-center">
+
+                {/* Avatar */}
+                <div className="relative mb-6">
+                  <div
+                    className="absolute inset-0 rounded-full"
+                    style={{ background: "rgba(255,65,179,0.25)", filter: "blur(24px)" }}
+                  />
+                  <div
+                    className="relative p-[2px] rounded-3xl"
+                    style={{ background: "linear-gradient(135deg, #ff41b3, #ec723d)" }}
+                  >
                     <div
-                      key={di}
-                      className="rounded-sm transition-opacity hover:opacity-80 cursor-default"
-                      style={{ width: "13px", height: "13px", backgroundColor: heatmapColor(day.intensity) }}
-                      title={`${day.date}: ${day.intensity > 0 ? `${day.intensity} session${day.intensity > 1 ? "s" : ""}` : "No session"}`}
-                    />
+                      className="w-32 h-32 rounded-3xl overflow-hidden flex items-center justify-center"
+                      style={{ backgroundColor: "#0e0e0e" }}
+                    >
+                      {avatarUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={avatarUrl} alt={displayName} className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="text-4xl font-black text-white" style={{ fontFamily: "var(--font-lexend)" }}>
+                          {avatarInitial}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Name / email / handle */}
+                <h2 className="text-3xl font-black text-white mb-1" style={{ fontFamily: "var(--font-lexend)" }}>
+                  {displayName}
+                </h2>
+                <p className="text-sm mb-3" style={{ color: "rgba(255,255,255,0.4)" }}>{user?.email}</p>
+                <span
+                  className="text-sm font-bold px-4 py-1 rounded-full"
+                  style={{ backgroundColor: "rgba(255,65,179,0.12)", border: "0.5px solid rgba(255,65,179,0.3)", color: "#ff41b3" }}
+                >
+                  {handle}
+                </span>
+
+                <div className="w-full my-8" style={{ height: "0.5px", backgroundColor: "rgba(255,255,255,0.08)" }} />
+
+                {/* Counters */}
+                <div className="grid grid-cols-2 gap-4 w-full">
+                  {[
+                    { icon: "👥", value: formatNumber(stats.totalSessions), label: "Sessions" },
+                    { icon: "🌀", value: String(stats.moodsExplored), label: "Moods" },
+                  ].map((item) => (
+                    <div
+                      key={item.label}
+                      className="p-4 rounded-2xl flex flex-col items-center gap-1"
+                      style={{ backgroundColor: "rgba(255,255,255,0.04)" }}
+                    >
+                      <span className="text-2xl">{item.icon}</span>
+                      <span className="text-xl font-black text-white" style={{ fontFamily: "var(--font-lexend)" }}>{item.value}</span>
+                      <span className="text-[10px] uppercase tracking-wider font-bold" style={{ color: "rgba(255,255,255,0.3)" }}>{item.label}</span>
+                    </div>
                   ))}
                 </div>
-              ))}
+
+                {memberSince && (
+                  <p className="text-xs mt-6" style={{ color: "rgba(255,255,255,0.2)" }}>
+                    Member since {memberSince}
+                  </p>
+                )}
+
+                <Link
+                  href="/profile"
+                  className="mt-6 w-full py-3 rounded-2xl text-sm font-bold uppercase tracking-widest transition-all hover:opacity-80"
+                  style={{ border: "0.5px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.4)", fontFamily: "var(--font-lexend)" }}
+                >
+                  Edit profile & settings
+                </Link>
+              </GlassCard>
+            </div>
+
+            {/* ── BENTO STATS GRID ── */}
+            <div className="lg:col-span-7 grid grid-cols-1 md:grid-cols-2 gap-6">
+
+              {/* Active Streak */}
+              <GlassCard className="p-6 flex flex-col justify-between group">
+                <div className="flex justify-between items-start mb-8">
+                  <div
+                    className="w-11 h-11 rounded-xl flex items-center justify-center"
+                    style={{ backgroundColor: "rgba(255,65,179,0.12)" }}
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="#ff41b3">
+                      <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
+                    </svg>
+                  </div>
+                  <span className="text-xs font-bold uppercase tracking-widest" style={{ color: "#ff41b3", fontFamily: "var(--font-lexend)" }}>
+                    Active Streak
+                  </span>
+                </div>
+                <div>
+                  <p
+                    className="font-black text-white leading-none mb-2 transition-transform group-hover:scale-105 origin-left"
+                    style={{ fontFamily: "var(--font-lexend)", fontSize: "clamp(44px, 5vw, 64px)" }}
+                  >
+                    {formatNumber(stats.currentStreak)}
+                  </p>
+                  <p className="text-sm" style={{ color: "rgba(255,255,255,0.4)" }}>Day consecutive meditation</p>
+                </div>
+              </GlassCard>
+
+              {/* Total Presence */}
+              <GlassCard className="p-6 flex flex-col justify-between group">
+                <div className="flex justify-between items-start mb-8">
+                  <div
+                    className="w-11 h-11 rounded-xl flex items-center justify-center"
+                    style={{ backgroundColor: "rgba(236,114,61,0.12)" }}
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="#ec723d">
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/>
+                    </svg>
+                  </div>
+                  <span className="text-xs font-bold uppercase tracking-widest" style={{ color: "#ec723d", fontFamily: "var(--font-lexend)" }}>
+                    Total Presence
+                  </span>
+                </div>
+                <div>
+                  <p
+                    className="font-black text-white leading-none mb-2 transition-transform group-hover:scale-105 origin-left"
+                    style={{ fontFamily: "var(--font-lexend)", fontSize: "clamp(36px, 4vw, 56px)" }}
+                  >
+                    {formatNumber(stats.totalMinutes)}
+                  </p>
+                  <p className="text-sm" style={{ color: "rgba(255,255,255,0.4)" }}>Minutes of mindfulness</p>
+                </div>
+              </GlassCard>
+
+              {/* Most Listened Track */}
+              <GlassCard className="md:col-span-2 p-8 relative overflow-hidden group">
+                <div
+                  className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity pointer-events-none"
+                  style={{ fontSize: 120 }}
+                >
+                  ♫
+                </div>
+                <span className="text-xs font-bold uppercase tracking-[0.2em] block mb-5" style={{ color: "#adf225", fontFamily: "var(--font-lexend)" }}>
+                  Most Listened Track
+                </span>
+                {mostListened ? (
+                  <div className="flex items-center gap-6">
+                    <div
+                      className="w-20 h-20 rounded-2xl flex-shrink-0 flex items-center justify-center"
+                      style={{ background: mostListened.gradient }}
+                    >
+                      <svg width="28" height="28" viewBox="0 0 48 48" fill="none">
+                        <path d="M24 4C24 4 16 12 16 20C16 24.4 19.6 28 24 28C28.4 28 32 24.4 32 20C32 12 24 4 24 4Z" fill="white" opacity="0.9"/>
+                        <path d="M10 14C10 14 2 18 2 25C2 29.4 5.6 33 10 33C13 33 15.6 31.4 17 29" stroke="white" strokeWidth="2.5" strokeLinecap="round" fill="none" opacity="0.8"/>
+                        <path d="M38 14C38 14 46 18 46 25C46 29.4 42.4 33 38 33C35 33 32.4 31.4 31 29" stroke="white" strokeWidth="2.5" strokeLinecap="round" fill="none" opacity="0.8"/>
+                        <circle cx="24" cy="28" r="2" fill="white" opacity="0.9"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-3xl font-black text-white leading-tight" style={{ fontFamily: "var(--font-lexend)" }}>
+                        {mostListened.title}
+                      </p>
+                      <p className="text-sm italic mt-1" style={{ color: "rgba(255,255,255,0.4)" }}>{mostListened.mood}</p>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-sm" style={{ color: "rgba(255,255,255,0.25)" }}>Complete a session to see your most listened track</p>
+                )}
+              </GlassCard>
+
+              {/* Weekly Energy */}
+              <GlassCard className="md:col-span-2 p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <span className="text-sm font-bold uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.3)", fontFamily: "var(--font-lexend)" }}>
+                    Weekly Energy
+                  </span>
+                  <div className="flex gap-1">
+                    {[0.4, 1, 0.4].map((o, i) => (
+                      <div key={i} className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: `rgba(255,65,179,${o})` }} />
+                    ))}
+                  </div>
+                </div>
+                <WeeklyChart data={weeklyData.length > 0 ? weeklyData : emptyWeekly} />
+              </GlassCard>
+
             </div>
           </div>
         )}
 
         {/* ── MOOD BREAKDOWN ── */}
         {!loading && moodBreakdown.length > 0 && (
-          <div className="rounded-[10px] p-6" style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.08)" }}>
-            <h2 className="text-sm text-white mb-5" style={{ fontWeight: 500 }}>Mood breakdown</h2>
-            <div className="flex flex-col gap-4">
+          <GlassCard className="p-6 mt-6">
+            <div className="flex items-center justify-between mb-6">
+              <span className="text-sm font-bold uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.3)", fontFamily: "var(--font-lexend)" }}>
+                Mood Breakdown
+              </span>
+              <span className="text-xs" style={{ color: "rgba(255,255,255,0.2)" }}>{moodBreakdown.length} moods explored</span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {moodBreakdown.map((mood) => {
                 const pct = Math.round((mood.count / maxMoodCount) * 100);
                 return (
-                  <div key={mood.label} className="flex flex-col gap-1.5">
-                    <div className="flex items-center justify-between">
-                      <span className="text-white/60 text-xs">{mood.label}</span>
-                      <span className="text-white/35 text-xs">{mood.count} session{mood.count !== 1 ? "s" : ""}</span>
+                  <div key={mood.label}>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="text-sm" style={{ color: "rgba(255,255,255,0.6)" }}>{mood.label}</span>
+                      <span className="text-xs" style={{ color: "rgba(255,255,255,0.3)" }}>{mood.count}×</span>
                     </div>
-                    <div className="w-full h-2 rounded-full overflow-hidden" style={{ backgroundColor: "rgba(255,255,255,0.06)" }}>
-                      <div className="h-full rounded-full transition-all duration-700" style={{ width: `${pct}%`, background: mood.gradient }} />
+                    <div className="w-full h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: "rgba(255,255,255,0.06)" }}>
+                      <div className="h-full rounded-full" style={{ width: `${pct}%`, background: mood.gradient, transition: "width 0.7s ease" }} />
                     </div>
                   </div>
                 );
               })}
             </div>
-            <div className="mt-6 pt-5 flex flex-wrap gap-6" style={{ borderTop: "0.5px solid rgba(255,255,255,0.06)" }}>
-              <div>
-                <div className="text-white/25 text-xs mb-1">Most used mood</div>
-                <div className="text-white text-sm">{topMood || "—"}</div>
+            {topMood && (
+              <div className="flex flex-wrap gap-6 mt-6 pt-5" style={{ borderTop: "0.5px solid rgba(255,255,255,0.06)" }}>
+                <div>
+                  <p className="text-xs mb-1" style={{ color: "rgba(255,255,255,0.25)" }}>Go-to mood</p>
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs text-white font-bold" style={{ background: topMood.gradient }}>
+                    {topMood.label}
+                  </div>
+                </div>
+                <div>
+                  <p className="text-xs mb-1" style={{ color: "rgba(255,255,255,0.25)" }}>Longest streak</p>
+                  <p className="text-sm text-white font-bold">{stats.longestStreak} days</p>
+                </div>
               </div>
-              <div>
-                <div className="text-white/25 text-xs mb-1">Total sessions</div>
-                <div className="text-white text-sm">{stats.totalSessions}</div>
-              </div>
-              <div>
-                <div className="text-white/25 text-xs mb-1">Moods explored</div>
-                <div className="text-white text-sm">{moodBreakdown.length} of 11</div>
-              </div>
-            </div>
-          </div>
+            )}
+          </GlassCard>
         )}
 
-        {/* Empty state */}
+        {/* ── LIVE SHOWS ── */}
+        <div className="mt-16 mb-4">
+          <h3
+            className="text-xl font-black uppercase tracking-[0.2em] mb-8 text-white"
+            style={{ fontFamily: "var(--font-lexend)" }}
+          >
+            Live Shows Coming Up
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {LIVE_SHOWS.map((show) => (
+              <Link href="/live" key={show.title}>
+                <div
+                  className="rounded-3xl overflow-hidden group transition-all duration-300 cursor-pointer"
+                  style={{
+                    background: "rgba(0,0,0,0.45)",
+                    backdropFilter: "blur(24px)",
+                    WebkitBackdropFilter: "blur(24px)",
+                    border: "0.5px solid rgba(255,255,255,0.06)",
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.borderColor = `${show.accent}50`)}
+                  onMouseLeave={(e) => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)")}
+                >
+                  <div className="relative h-48 overflow-hidden">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={show.img}
+                      alt={show.title}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.75), transparent)" }} />
+                    <div className="absolute bottom-4 left-4">
+                      <span
+                        className="text-[10px] font-black uppercase px-2 py-0.5 rounded tracking-widest"
+                        style={{ backgroundColor: show.accent, color: "#000" }}
+                      >
+                        {show.when}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="p-6">
+                    <h4 className="text-xl font-black text-white mb-1" style={{ fontFamily: "var(--font-lexend)" }}>{show.title}</h4>
+                    <p className="text-sm" style={{ color: "rgba(255,255,255,0.4)" }}>{show.host}</p>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+
+        {/* ── EMPTY STATE ── */}
         {!loading && stats.totalSessions === 0 && (
-          <div className="flex flex-col items-center justify-center py-20 rounded-[10px] text-center" style={{ border: "0.5px dashed rgba(255,255,255,0.1)" }}>
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="1.2" className="mb-4">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/>
-            </svg>
-            <p className="text-sm text-white/30 mb-1">No sessions yet</p>
-            <p className="text-xs text-white/20">Complete your first session to see your stats here</p>
-          </div>
+          <GlassCard className="p-16 mt-6 text-center">
+            <div
+              className="w-16 h-16 rounded-2xl mx-auto mb-5 flex items-center justify-center"
+              style={{ background: "linear-gradient(135deg, #ff41b3, #ec723d)" }}
+            >
+              <svg width="28" height="28" viewBox="0 0 48 48" fill="none">
+                <path d="M24 4C24 4 16 12 16 20C16 24.4 19.6 28 24 28C28.4 28 32 24.4 32 20C32 12 24 4 24 4Z" fill="white" opacity="0.9"/>
+                <circle cx="24" cy="28" r="2" fill="white" opacity="0.9"/>
+              </svg>
+            </div>
+            <h3 className="text-lg font-black text-white mb-2" style={{ fontFamily: "var(--font-lexend)" }}>Your story starts here</h3>
+            <p className="text-sm" style={{ color: "rgba(255,255,255,0.35)" }}>Complete your first session to see your ritual recorded.</p>
+            <Link
+              href="/library"
+              className="inline-block mt-6 px-8 py-3 rounded-full text-sm font-bold uppercase tracking-widest transition-all hover:scale-105"
+              style={{ background: "#ff41b3", color: "#fff", fontFamily: "var(--font-lexend)" }}
+            >
+              Browse Library
+            </Link>
+          </GlassCard>
         )}
 
-      </main>
+      </div>
 
       <Footer />
     </div>

@@ -35,9 +35,9 @@ export default function LoginPage() {
       return;
     }
 
-    // Login successful — send to the ?next= redirect path, or homepage if none
+    // Login successful — send to the ?next= redirect path, or welcome page if none
     const params = new URLSearchParams(window.location.search);
-    const next = params.get("next") || "/";
+    const next = params.get("next") || "/welcome";
     router.push(next);
     router.refresh();
   }
@@ -64,46 +64,62 @@ export default function LoginPage() {
   return (
     <div
       className="min-h-screen flex items-center justify-center px-4 py-12"
-      style={{ backgroundColor: "#0D0D1A" }}
+      style={{ backgroundColor: "#131313" }}
     >
       <div className="w-full max-w-sm">
 
         {/* Logo */}
         <div className="flex flex-col items-center mb-8">
           <Link href="/" className="flex items-center gap-2 mb-4">
-            {/* Lotus icon */}
+            {/* Correct lotus icon — pink → orange gradient */}
             <div
               className="w-10 h-10 rounded-full flex items-center justify-center"
-              style={{
-                background: "linear-gradient(135deg, #6B21E8, #8B3CF7, #6366F1, #3B82F6, #22D3EE)",
-              }}
+              style={{ background: "linear-gradient(135deg, #ff41b3, #ec723d)" }}
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <path d="M12 2C12 2 8 6 8 10C8 12.2 9.8 14 12 14C14.2 14 16 12.2 16 10C16 6 12 2 12 2Z" fill="white" opacity="0.9"/>
-                <path d="M6 8C6 8 2 10 2 13C2 15.2 3.8 17 6 17C7.5 17 8.8 16.2 9.5 15" stroke="white" strokeWidth="1.5" strokeLinecap="round" fill="none" opacity="0.8"/>
-                <path d="M18 8C18 8 22 10 22 13C22 15.2 20.2 17 18 17C16.5 17 15.2 16.2 14.5 15" stroke="white" strokeWidth="1.5" strokeLinecap="round" fill="none" opacity="0.8"/>
-                <path d="M12 14C12 14 12 18 12 20C12 21.1 11.1 22 10 22" stroke="white" strokeWidth="1.5" strokeLinecap="round" fill="none" opacity="0.7"/>
-                <path d="M12 14C12 14 12 18 12 20C12 21.1 12.9 22 14 22" stroke="white" strokeWidth="1.5" strokeLinecap="round" fill="none" opacity="0.7"/>
+              <svg width="20" height="20" viewBox="0 0 48 48" fill="none">
+                <path d="M24 4C24 4 16 12 16 20C16 24.4 19.6 28 24 28C28.4 28 32 24.4 32 20C32 12 24 4 24 4Z" fill="white" opacity="0.95"/>
+                <path d="M10 14C10 14 2 18 2 25C2 29.4 5.6 33 10 33C13 33 15.6 31.4 17 29" stroke="white" strokeWidth="2.5" strokeLinecap="round" fill="none" opacity="0.85"/>
+                <path d="M38 14C38 14 46 18 46 25C46 29.4 42.4 33 38 33C35 33 32.4 31.4 31 29" stroke="white" strokeWidth="2.5" strokeLinecap="round" fill="none" opacity="0.85"/>
+                <path d="M24 28L20 35" stroke="white" strokeWidth="2.5" strokeLinecap="round" fill="none" opacity="0.75"/>
+                <path d="M24 28L28 35" stroke="white" strokeWidth="2.5" strokeLinecap="round" fill="none" opacity="0.75"/>
+                <circle cx="24" cy="28" r="2" fill="white" opacity="0.9"/>
               </svg>
             </div>
-            <span className="text-sm tracking-wide" style={{ fontWeight: 500 }}>
-              <span style={{ color: "#F43F5E" }}>THE </span>
-              <span style={{ color: "#F97316" }}>DAILY </span>
-              <span style={{ color: "#22C55E" }}>MEDS</span>
+            {/* Wordmark — neon pink → orange gradient */}
+            <span
+              className="text-xs uppercase tracking-widest"
+              style={{
+                fontFamily: "var(--font-plus-jakarta)",
+                fontWeight: 800,
+                background: "linear-gradient(90deg, #ff41b3 0%, #ec723d 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+              }}
+            >
+              The Daily Meds
             </span>
           </Link>
-          <h1 className="text-xl text-white" style={{ fontWeight: 500 }}>
+          <h1
+            className="text-xl text-white"
+            style={{ fontFamily: "var(--font-plus-jakarta)", fontWeight: 800 }}
+          >
             Welcome back
           </h1>
-          <p className="text-sm text-white/40 mt-1">Log in to your account</p>
+          <p
+            className="text-sm mt-1"
+            style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.4)" }}
+          >
+            Log in to your account
+          </p>
         </div>
 
         {/* Card */}
         <div
-          className="rounded-[10px] p-6"
+          className="rounded-xl p-6"
           style={{
-            backgroundColor: "#1A1A2E",
-            border: "0.5px solid rgba(255,255,255,0.08)",
+            backgroundColor: "#1F1F1F",
+            border: "1px solid rgba(255,255,255,0.07)",
           }}
         >
 
@@ -147,7 +163,7 @@ export default function LoginPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 placeholder="you@example.com"
-                className="w-full px-3 py-2.5 rounded-md text-sm text-white placeholder-white/20 outline-none focus:ring-1 focus:ring-purple-500"
+                className="w-full px-3 py-2.5 rounded-md text-sm text-white placeholder-white/20 outline-none focus:ring-1 focus:ring-pink-500"
                 style={{
                   backgroundColor: "rgba(255,255,255,0.05)",
                   border: "0.5px solid rgba(255,255,255,0.12)",
@@ -172,7 +188,7 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 placeholder="••••••••"
-                className="w-full px-3 py-2.5 rounded-md text-sm text-white placeholder-white/20 outline-none focus:ring-1 focus:ring-purple-500"
+                className="w-full px-3 py-2.5 rounded-md text-sm text-white placeholder-white/20 outline-none focus:ring-1 focus:ring-pink-500"
                 style={{
                   backgroundColor: "rgba(255,255,255,0.05)",
                   border: "0.5px solid rgba(255,255,255,0.12)",
@@ -190,7 +206,7 @@ export default function LoginPage() {
               type="submit"
               disabled={loading || googleLoading}
               className="w-full py-2.5 rounded-md text-sm text-white transition-opacity hover:opacity-90 disabled:opacity-50 mt-1"
-              style={{ backgroundColor: "#8B5CF6", fontWeight: 500 }}
+              style={{ backgroundColor: "#ff41b3", fontWeight: 700, fontFamily: "var(--font-space-grotesk)", boxShadow: "0 0 16px rgba(255,65,179,0.3)" }}
             >
               {loading ? "Logging in…" : "Log in"}
             </button>

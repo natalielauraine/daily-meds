@@ -1,249 +1,371 @@
 import type { Metadata } from "next";
-import { getPageSettings, PAGE_DEFAULTS } from "../lib/site-settings";
+import Link from "next/link";
+import Logo from "./components/Logo";
+import LandingEmailForm from "./components/LandingEmailForm";
+import LandingFAQ from "./components/LandingFAQ";
 import dynamic from "next/dynamic";
-import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";
-import HeroSection from "./components/HeroSection";
-import MoodCategorySection from "./components/MoodCategorySection";
-import ContentRow from "./components/ContentRow";
-import FriendsActivityFeed from "./components/FriendsActivityFeed";
-import { type Session } from "./components/SessionCard";
 
-// Load ReferralTracker only on the client — it uses useSearchParams which
-// cannot run on the server, and causes hydration errors if server-rendered
+const CircularGallery = dynamic(() => import("../components/ui/circular-gallery").then(m => m.CircularGallery), { ssr: false });
+import type { GalleryItem } from "../components/ui/circular-gallery";
+
 const ReferralTracker = dynamic(() => import("./components/ReferralTracker"), { ssr: false });
-
-// Load ContinueWatchingRow client-only — it fetches from Supabase and is only shown to logged-in users
-const ContinueWatchingRow = dynamic(() => import("./components/ContinueWatchingRow"), { ssr: false });
-
-// Load WhoIsOnline client-only — uses Supabase realtime presence (cannot run on server)
-const WhoIsOnline = dynamic(() => import("./components/WhoIsOnline"), { ssr: false });
-
-// ── PLACEHOLDER SESSIONS ──────────────────────────────────────────────────────
-// These are mock sessions until real content is added in the admin panel.
-// Each has a gradient thumbnail using the mood's brand colours from CLAUDE.md.
-
-const FEATURED_SESSIONS: Session[] = [
-  {
-    id: "f1",
-    title: "Hungover & Overwhelmed",
-    description: "A gentle reset for when your body and mind are paying the price.",
-    duration: "18 min",
-    type: "Guided Meditation",
-    moodCategory: "Hungover",
-    gradient: "linear-gradient(135deg, #6B21E8 0%, #8B3CF7 40%, #22D3EE 100%)",
-    glowColor: "#8B3CF7",
-    isFree: false,
-  },
-  {
-    id: "f2",
-    title: "Anxious at 3am",
-    description: "Slow your nervous system down. No fluff, just calm.",
-    duration: "12 min",
-    type: "Breathwork",
-    moodCategory: "Anxious",
-    gradient: "linear-gradient(135deg, #F43F5E 0%, #F97316 100%)",
-    glowColor: "#F43F5E",
-    isFree: false,
-  },
-  {
-    id: "f3",
-    title: "After The Party",
-    description: "Come back to yourself after a big night out.",
-    duration: "22 min",
-    type: "Guided Meditation",
-    moodCategory: "After The Sesh",
-    gradient: "linear-gradient(135deg, #F43F5E 0%, #EC4899 20%, #D946EF 35%, #F97316 65%, #FACC15 100%)",
-    glowColor: "#F43F5E",
-    isFree: false,
-  },
-  {
-    id: "f4",
-    title: "Can't Switch Off",
-    description: "For the nights your brain just won't stop.",
-    duration: "30 min",
-    type: "Sleep Audio",
-    moodCategory: "Can't Sleep",
-    gradient: "linear-gradient(135deg, #8B3CF7 0%, #6366F1 100%)",
-    glowColor: "#8B3CF7",
-    isFree: false,
-  },
-  {
-    id: "f5",
-    title: "The Comedown Reset",
-    description: "Grounding and steady. One breath at a time.",
-    duration: "25 min",
-    type: "Guided Meditation",
-    moodCategory: "On A Comedown",
-    gradient: "linear-gradient(135deg, #10B981 0%, #22C55E 35%, #84CC16 70%, #D9F100 100%)",
-    glowColor: "#22C55E",
-    isFree: false,
-  },
-  {
-    id: "f6",
-    title: "Heartbreak at Midnight",
-    description: "Feel it. Sit with it. Then let it move through you.",
-    duration: "20 min",
-    type: "Guided Meditation",
-    moodCategory: "Heartbroken",
-    gradient: "linear-gradient(135deg, #EC4899 0%, #D946EF 100%)",
-    glowColor: "#EC4899",
-    isFree: false,
-  },
-  {
-    id: "f7",
-    title: "Morning Reset",
-    description: "A gentle start before the day takes over.",
-    duration: "10 min",
-    type: "Breathwork",
-    moodCategory: "Morning Reset",
-    gradient: "linear-gradient(135deg, #F43F5E 0%, #F97316 60%, #FACC15 100%)",
-    glowColor: "#F97316",
-    isFree: false,
-  },
-  {
-    id: "f8",
-    title: "Empty Inside",
-    description: "For when you feel hollow and can't explain why.",
-    duration: "15 min",
-    type: "Guided Meditation",
-    moodCategory: "Feeling Empty",
-    gradient: "linear-gradient(135deg, #6B21E8 0%, #6366F1 60%, #22D3EE 100%)",
-    glowColor: "#6366F1",
-    isFree: false,
-  },
-];
-
-const FREE_SESSIONS: Session[] = [
-  {
-    id: "free1",
-    title: "Box Breathing Basics",
-    description: "The simplest tool for anxiety. Four counts in, four out.",
-    duration: "8 min",
-    type: "Breathwork",
-    moodCategory: "Anxious",
-    gradient: "linear-gradient(135deg, #F43F5E 0%, #F97316 100%)",
-    glowColor: "#F43F5E",
-    isFree: true,
-  },
-  {
-    id: "free2",
-    title: "Five Minute Grounding",
-    description: "Quick reset. No setup needed. Works anywhere.",
-    duration: "5 min",
-    type: "Guided Meditation",
-    moodCategory: "Overwhelmed",
-    gradient: "linear-gradient(135deg, #F97316 0%, #FACC15 100%)",
-    glowColor: "#F97316",
-    isFree: true,
-  },
-  {
-    id: "free3",
-    title: "Low Energy Lift",
-    description: "Gentle energy without the pressure to perform.",
-    duration: "10 min",
-    type: "Guided Meditation",
-    moodCategory: "Low Energy",
-    gradient: "linear-gradient(135deg, #10B981 0%, #22C55E 100%)",
-    glowColor: "#10B981",
-    isFree: true,
-  },
-  {
-    id: "free4",
-    title: "Deep Sleep Drop",
-    description: "Drift off faster. No counting sheep required.",
-    duration: "20 min",
-    type: "Sleep Audio",
-    moodCategory: "Can't Sleep",
-    gradient: "linear-gradient(135deg, #8B3CF7 0%, #6366F1 100%)",
-    glowColor: "#8B3CF7",
-    isFree: true,
-  },
-  {
-    id: "free5",
-    title: "Focus in 7",
-    description: "Seven minutes to quiet the noise and go deep.",
-    duration: "7 min",
-    type: "Breathwork",
-    moodCategory: "Focus Mode",
-    gradient: "linear-gradient(135deg, #6B21E8 0%, #6366F1 100%)",
-    glowColor: "#6B21E8",
-    isFree: true,
-  },
-  {
-    id: "free6",
-    title: "Morning Check-In",
-    description: "Start the day before the day starts you.",
-    duration: "6 min",
-    type: "Guided Meditation",
-    moodCategory: "Morning Reset",
-    gradient: "linear-gradient(135deg, #F43F5E 0%, #F97316 60%, #FACC15 100%)",
-    glowColor: "#F97316",
-    isFree: true,
-  },
-];
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://thedailymeds.com";
 
-// Per-page metadata — pulls from Supabase site_settings so Natalie can edit
-// the social sharing preview from the admin > Social Sharing page.
-export async function generateMetadata(): Promise<Metadata> {
-  const setting = await getPageSettings("home");
-  const title       = setting?.og_title       || PAGE_DEFAULTS.home.title;
-  const description = setting?.og_description || PAGE_DEFAULTS.home.description;
-  const imageUrl    = setting?.og_image_url   || `${APP_URL}/api/og?title=Daily+Meds&mood=Anxious`;
+export const metadata: Metadata = {
+  title: "The Daily Meds — Audio for Emotional Emergencies",
+  description: "Dubbed 'Netflix for Meditations'. Start for free, or pay £9.99 for full access. Cancel anytime.",
+  openGraph: {
+    title: "The Daily Meds — Something Different. Unique. Needed. Real.",
+    description: "Meditations for real life — hangovers, heartbreak, anxiety, comedowns. Meet yourself where you are.",
+    url: APP_URL,
+    images: [{ url: `${APP_URL}/api/share-card?title=Daily+Meds`, width: 1200, height: 630 }],
+  },
+  twitter: { card: "summary_large_image", title: "The Daily Meds", description: "Audio for emotional emergencies." },
+};
 
-  return {
-    title: "Daily Meds — Audio for Emotional Emergencies",
-    description,
-    openGraph: { title, description, url: APP_URL, images: [{ url: imageUrl, width: 1200, height: 630 }] },
-    twitter:   { card: "summary_large_image", title, description, images: [imageUrl] },
-  };
-}
+const TRENDING = [
+  { title: "Hungover", badge: "Essential", gradient: "linear-gradient(160deg, #2a0800 0%, #ec723d 100%)", href: "/free" },
+  { title: "Anxious", badge: "High Intensity", gradient: "linear-gradient(160deg, #2a0018 0%, #ff41b3 100%)", href: "/free" },
+  { title: "Guilty", badge: "Deep Dive", gradient: "linear-gradient(160deg, #1a1500 0%, #f4e71d 100%)", href: "/free" },
+  { title: "Daily Ritual", badge: "Morning", gradient: "linear-gradient(160deg, #0a1800 0%, #aaee20 100%)", href: "/free" },
+  { title: "Snuggle Down", badge: "Sleep", gradient: "linear-gradient(160deg, #00050f 0%, #3b82f6 100%)", href: "/free" },
+];
 
-// Phase 2 homepage — cinematic hero + mood categories + content rows
+const GALLERY_ITEMS: GalleryItem[] = [
+  { common: "Hungover", binomial: "Guided Release · 20 min", photo: { url: "https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?w=900&auto=format&fit=crop&q=80", text: "Hungover session", by: "The Daily Meds", pos: "50% 30%" } },
+  { common: "Anxious", binomial: "Breathwork · 18 min", photo: { url: "https://images.unsplash.com/photo-1474223960279-c596b5ac7c0c?w=900&auto=format&fit=crop&q=80", text: "Anxious session", by: "The Daily Meds", pos: "50% 20%" } },
+  { common: "Guilty", binomial: "Guided Meditation · 15 min", photo: { url: "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=900&auto=format&fit=crop&q=80", text: "Guilty session", by: "The Daily Meds", pos: "50% 30%" } },
+  { common: "Daily Ritual", binomial: "Morning Reset · 10 min", photo: { url: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=900&auto=format&fit=crop&q=80", text: "Daily Ritual session", by: "The Daily Meds" } },
+  { common: "Snuggle Down", binomial: "Sleep Audio · 45 min", photo: { url: "https://images.unsplash.com/photo-1531353826977-0941b4779a1c?w=900&auto=format&fit=crop&q=80", text: "Snuggle Down session", by: "The Daily Meds" } },
+  { common: "Heartbroken", binomial: "Emotional Release · 22 min", photo: { url: "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=900&auto=format&fit=crop&q=80", text: "Heartbroken session", by: "The Daily Meds", pos: "50% 20%" } },
+  { common: "Can't Switch Off", binomial: "Sleep Audio · 30 min", photo: { url: "https://images.unsplash.com/photo-1455642305367-68834a1da7ab?w=900&auto=format&fit=crop&q=80", text: "Can't Switch Off session", by: "The Daily Meds" } },
+  { common: "Overwhelmed", binomial: "Breathwork · 12 min", photo: { url: "https://images.unsplash.com/photo-1542596768-5d1d21f1cf98?w=900&auto=format&fit=crop&q=80", text: "Overwhelmed session", by: "The Daily Meds", pos: "50% 25%" } },
+];
+
+const FACE_REALITY = [
+  { title: "Guilt", gradient: "linear-gradient(135deg, #0d0015 0%, #7c3aed 100%)" },
+  { title: "No Money", gradient: "linear-gradient(135deg, #150000 0%, #dc2626 100%)" },
+  { title: "Stressed", gradient: "linear-gradient(135deg, #150800 0%, #ea580c 100%)" },
+  { title: "Sober", gradient: "linear-gradient(135deg, #001510 0%, #059669 100%)" },
+];
+
+const REASONS = [
+  {
+    icon: <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>,
+    title: "Meditate with Friends",
+    body: "Join live sessions and feel the collective energy of a community breathing as one.",
+  },
+  {
+    icon: <path d="M21 3H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h5v2h8v-2h5c1.1 0 1.99-.9 1.99-2L23 5c0-1.1-.9-2-2-2zm0 14H3V5h18v12z"/>,
+    title: "Screen Share to your TV",
+    body: "Turn your living room into a sanctuary. Support for AirPlay and Chromecast built-in.",
+  },
+  {
+    icon: <path d="M4 6h18V4H4c-1.1 0-2 .9-2 2v11H0v3h14v-3H4V6zm19 2h-6c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h6c.55 0 1-.45 1-1V9c0-.55-.45-1-1-1zm-1 9h-4v-7h4v7z"/>,
+    title: "Watch on any Device",
+    body: "From your phone to your laptop, your peace follows you everywhere you go.",
+  },
+  {
+    icon: <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>,
+    title: "Feel Your Feelings",
+    body: "We don't hide from the dark stuff. We sit with it until it turns into light.",
+  },
+];
+
 export default function Home() {
   return (
-    <div className="flex flex-col min-h-screen bg-[#0D0D1A]">
-      {/* Tracks ?ref= in the URL and fires affiliate click tracking — renders nothing visible */}
+    <div style={{ backgroundColor: "#010101", color: "#ffffff", fontFamily: "var(--font-manrope)" }}>
       <ReferralTracker />
-      <Navbar />
-      <main className="flex-1">
-        <HeroSection />
-        <MoodCategorySection />
 
-        {/* Thin divider between mood section and content rows */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div style={{ height: "0.5px", background: "rgba(255,255,255,0.06)" }} />
-        </div>
+      {/* ── HEADER ─────────────────────────────────────────────────────── */}
+      <header
+        className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4"
+        style={{
+          backgroundColor: "rgba(1,1,1,0.85)",
+          backdropFilter: "blur(20px)",
+          borderBottom: "0.5px solid rgba(255,255,255,0.06)",
+        }}
+      >
+        <Logo href="/" size="md" />
+        {/* Nav links */}
+        <nav className="hidden md:flex items-center gap-7">
+          {[
+            { label: "Home", href: "/" },
+            { label: "Library", href: "/library" },
+            { label: "Pricing", href: "/pricing" },
+            { label: "Breathe", href: "/timer" },
+            { label: "About", href: "/about" },
+            { label: "Login", href: "/login" },
+          ].map((item) => (
+            <Link
+              key={item.label}
+              href={item.href}
+              className="text-xs uppercase tracking-widest font-bold transition-colors hover:text-[#aaee20]"
+              style={{ color: "rgba(255,255,255,0.5)", fontFamily: "var(--font-lexend)" }}
+            >
+              {item.label}
+            </Link>
+          ))}
+        </nav>
 
-        {/* Continue Watching — only visible to logged-in users with in-progress sessions */}
-        <ContinueWatchingRow />
+        <Link
+          href="/signup"
+          className="px-6 py-2 rounded-full text-sm font-bold uppercase transition-transform hover:scale-105"
+          style={{ backgroundColor: "#aaee20", color: "#1a2600", fontFamily: "var(--font-lexend)" }}
+        >
+          Sign In
+        </Link>
+      </header>
 
-        <ContentRow
-          title="Featured Sessions"
-          seeAllHref="/library"
-          sessions={FEATURED_SESSIONS}
+      {/* ── HERO ───────────────────────────────────────────────────────── */}
+      <section
+        className="relative min-h-screen flex items-center justify-center pt-20 px-6 overflow-hidden"
+        style={{ background: "linear-gradient(160deg, #080808 0%, #010101 50%, #090500 100%)" }}
+      >
+        {/* Glow orbs */}
+        <div
+          className="absolute top-1/3 left-1/4 w-[500px] h-[500px] rounded-full pointer-events-none"
+          style={{ background: "radial-gradient(circle, rgba(170,238,32,0.07) 0%, transparent 70%)", filter: "blur(60px)" }}
+        />
+        <div
+          className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full pointer-events-none"
+          style={{ background: "radial-gradient(circle, rgba(255,65,179,0.06) 0%, transparent 70%)", filter: "blur(50px)" }}
+        />
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{ background: "radial-gradient(ellipse at center, transparent 40%, #010101 100%)" }}
         />
 
-        <ContentRow
-          title="Free Sessions — Start Here"
-          seeAllHref="/free"
-          sessions={FREE_SESSIONS}
-        />
+        <div className="relative z-10 max-w-4xl mx-auto text-center flex flex-col items-center gap-8">
+          <h1
+            className="uppercase leading-none tracking-tight"
+            style={{
+              fontFamily: "var(--font-lexend)",
+              fontWeight: 900,
+              fontSize: "clamp(2.8rem, 8vw, 6.5rem)",
+              color: "#ffffff",
+            }}
+          >
+            This is something different —{" "}
+            <span className="italic" style={{ color: "#aaee20" }}>unique</span>
+            {" "}— needed — real.
+          </h1>
 
-        {/* Who's Online Now — shows users currently meditating with emoji reactions */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-2">
-          <p className="text-xs text-white/30 uppercase tracking-wide mb-3">Live Now</p>
-          <WhoIsOnline />
-        </div>
+          <p
+            className="text-lg md:text-xl max-w-2xl leading-relaxed"
+            style={{ color: "#adaaaa" }}
+          >
+            Dubbed &lsquo;Netflix for Meditations&rsquo;. Start for free, or pay £9.99 for full access. Cancel anytime.
+          </p>
 
-        {/* Friends activity feed */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <FriendsActivityFeed limit={4} />
+          <div className="w-full max-w-xl flex flex-col gap-4">
+            <p className="text-sm font-bold uppercase tracking-widest text-white">
+              Ready to dive in? Enter your email to start your meditations.
+            </p>
+            <LandingEmailForm />
+          </div>
         </div>
-      </main>
-      <Footer />
+      </section>
+
+      {/* ── TRENDING MEDS ──────────────────────────────────────────────── */}
+      <section className="py-12" style={{ backgroundColor: "#010101" }}>
+        <div className="px-6 md:px-12">
+          <h2
+            className="text-2xl uppercase tracking-widest mb-8"
+            style={{ fontFamily: "var(--font-lexend)", fontWeight: 900, color: "#aaee20" }}
+          >
+            Trending Meds
+          </h2>
+          <div
+            className="flex gap-4 pb-6"
+            style={{ overflowX: "auto", scrollSnapType: "x mandatory" }}
+          >
+            {TRENDING.map((item) => (
+              <Link
+                key={item.title}
+                href="/signup"
+                className="group shrink-0"
+                style={{ minWidth: "260px", scrollSnapAlign: "start" }}
+              >
+                <div
+                  className="relative overflow-hidden rounded-xl"
+                  style={{ aspectRatio: "2/3", border: "0.5px solid rgba(255,255,255,0.08)" }}
+                >
+                  <div className="absolute inset-0 transition-transform duration-500 group-hover:scale-105" style={{ background: item.gradient }} />
+                  {/* Hover overlay */}
+                  <div
+                    className="absolute inset-0 flex flex-col justify-end p-5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    style={{ background: "linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 60%)" }}
+                  >
+                    <span
+                      className="self-start text-[10px] font-black px-2 py-1 rounded mb-2 uppercase tracking-tighter"
+                      style={{ backgroundColor: "#aaee20", color: "#1a2600" }}
+                    >
+                      {item.badge}
+                    </span>
+                    <h3
+                      className="text-xl uppercase italic"
+                      style={{ fontFamily: "var(--font-lexend)", fontWeight: 900 }}
+                    >
+                      {item.title}
+                    </h3>
+                  </div>
+                  {/* Always-visible label */}
+                  <div
+                    className="absolute bottom-0 left-0 right-0 p-4"
+                    style={{ background: "linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 100%)" }}
+                  >
+                    <p className="text-[10px] uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.5)" }}>{item.title}</p>
+                  </div>
+                </div>
+                <p
+                  className="mt-3 text-sm uppercase tracking-wide font-bold group-hover:text-[#aaee20] transition-colors"
+                  style={{ fontFamily: "var(--font-lexend)" }}
+                >
+                  {item.title}
+                </p>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── CIRCULAR GALLERY ──────────────────────────────────────────── */}
+      <section style={{ backgroundColor: "#010101", height: "600px", overflow: "hidden" }}>
+        <CircularGallery items={GALLERY_ITEMS} radius={500} autoRotateSpeed={0.03} />
+      </section>
+
+      {/* ── FACE REALITY ───────────────────────────────────────────────── */}
+      <section className="py-12" style={{ backgroundColor: "#010101" }}>
+        <div className="px-6 md:px-12">
+          <h2
+            className="text-2xl uppercase tracking-widest mb-8"
+            style={{ fontFamily: "var(--font-lexend)", fontWeight: 900, color: "#ff6a9e" }}
+          >
+            Face Reality
+          </h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {FACE_REALITY.map((item) => (
+              <Link key={item.title} href="/signup" className="group cursor-pointer">
+                <div
+                  className="relative overflow-hidden rounded-xl"
+                  style={{ aspectRatio: "16/9", border: "0.5px solid rgba(255,255,255,0.07)" }}
+                >
+                  <div className="absolute inset-0 transition-transform duration-500 group-hover:scale-105" style={{ background: item.gradient }} />
+                  <div className="absolute inset-0 transition-colors" style={{ background: "rgba(0,0,0,0.35)" }} />
+                  <div className="absolute bottom-4 left-4">
+                    <h3
+                      className="text-lg uppercase italic group-hover:text-[#aaee20] transition-colors"
+                      style={{ fontFamily: "var(--font-lexend)", fontWeight: 900 }}
+                    >
+                      {item.title}
+                    </h3>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── MORE REASONS TO JOIN ───────────────────────────────────────── */}
+      <section className="py-20" style={{ backgroundColor: "#0e0e0e" }}>
+        <div className="max-w-[1200px] mx-auto px-6">
+          <h2
+            className="text-3xl md:text-4xl uppercase tracking-tighter mb-12 text-center"
+            style={{ fontFamily: "var(--font-lexend)", fontWeight: 900 }}
+          >
+            More Reasons To Join
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {REASONS.map((item, i) => (
+              <div
+                key={i}
+                className="p-8 rounded-2xl flex flex-col gap-4"
+                style={{ backgroundColor: "#1a1919", border: "0.5px solid rgba(255,255,255,0.05)" }}
+              >
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="#aaee20">
+                  {item.icon}
+                </svg>
+                <h3
+                  className="text-xl uppercase font-bold"
+                  style={{ fontFamily: "var(--font-lexend)" }}
+                >
+                  {item.title}
+                </h3>
+                <p className="text-sm leading-relaxed" style={{ color: "#adaaaa" }}>
+                  {item.body}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── FAQ ────────────────────────────────────────────────────────── */}
+      <section className="py-20" style={{ backgroundColor: "#010101" }}>
+        <div className="max-w-3xl mx-auto px-6">
+          <h2
+            className="text-3xl md:text-4xl uppercase tracking-tighter mb-12 text-center"
+            style={{ fontFamily: "var(--font-lexend)", fontWeight: 900 }}
+          >
+            Frequently Asked Questions
+          </h2>
+          <LandingFAQ />
+        </div>
+      </section>
+
+      {/* ── BOTTOM CTA ─────────────────────────────────────────────────── */}
+      <section className="py-24" style={{ backgroundColor: "#010101" }}>
+        <div className="max-w-xl mx-auto px-6 text-center flex flex-col gap-6 items-center">
+          <p className="font-bold uppercase tracking-widest text-white text-sm">
+            Ready to dive in? Enter your email to start your meditations.
+          </p>
+          <div className="w-full">
+            <LandingEmailForm />
+          </div>
+        </div>
+      </section>
+
+      {/* ── FOOTER ─────────────────────────────────────────────────────── */}
+      <footer
+        className="py-12 px-6"
+        style={{ borderTop: "0.5px solid rgba(255,255,255,0.06)", color: "#adaaaa" }}
+      >
+        <div className="max-w-[1200px] mx-auto flex flex-col gap-8">
+          <p className="text-sm">Questions? Contact us.</p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
+            {[
+              { label: "FAQ", href: "/free" },
+              { label: "Help Center", href: "/about" },
+              { label: "Account", href: "/profile" },
+              { label: "Media Center", href: "/about" },
+              { label: "Partnerships", href: "/partnerships" },
+              { label: "Affiliate", href: "/affiliate" },
+              { label: "Terms of Use", href: "/about" },
+              { label: "Privacy", href: "/about" },
+            ].map((link) => (
+              <Link
+                key={link.label}
+                href={link.href}
+                className="underline underline-offset-4 hover:text-[#aaee20] transition-colors"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
+          <div className="flex flex-col md:flex-row justify-between items-center pt-4 gap-4">
+            <p
+              className="text-[10px] uppercase tracking-widest font-black italic"
+              style={{ color: "#aaee20", fontFamily: "var(--font-lexend)" }}
+            >
+              The Daily Meds
+            </p>
+            <p className="text-[10px]">© 2024 The Daily Meds. All Rights Reserved.</p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

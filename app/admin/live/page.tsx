@@ -127,7 +127,7 @@ export default function AdminLivePage() {
           <button
             onClick={() => setShowForm(true)}
             className="flex items-center gap-2 px-4 py-2 rounded-full text-sm text-white transition-opacity hover:opacity-80"
-            style={{ backgroundColor: "#8B5CF6", fontWeight: 500 }}
+            style={{ backgroundColor: "#ff41b3", fontWeight: 500 }}
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
               <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
@@ -145,7 +145,7 @@ export default function AdminLivePage() {
             className="flex items-start gap-3 px-4 py-3 rounded-[10px] mb-6"
             style={{ backgroundColor: "rgba(234,179,8,0.08)", border: "0.5px solid rgba(234,179,8,0.25)" }}
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="#EAB308" className="shrink-0 mt-0.5">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="#f4e71d" className="shrink-0 mt-0.5">
               <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
             </svg>
             <div>
@@ -164,7 +164,7 @@ export default function AdminLivePage() {
         {showForm && (
           <div
             className="p-5 rounded-[10px] mb-6"
-            style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.1)" }}
+            style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.1)" }}
           >
             <h2 className="text-white text-base mb-5" style={{ fontWeight: 500 }}>Schedule a new session</h2>
 
@@ -239,7 +239,7 @@ export default function AdminLivePage() {
               <button
                 onClick={handleCreate}
                 className="flex-1 py-2.5 rounded-lg text-sm text-white transition-opacity hover:opacity-80"
-                style={{ backgroundColor: "#8B5CF6", fontWeight: 500 }}
+                style={{ backgroundColor: "#ff41b3", fontWeight: 500 }}
               >
                 Schedule Session
               </button>
@@ -327,7 +327,7 @@ function AdminSessionCard({ session, isLive, goingLive, onGoLive, onEnd, onDelet
     <div
       className="p-4 rounded-[10px]"
       style={{
-        backgroundColor: "#1A1A2E",
+        backgroundColor: "#1F1F1F",
         border: isLive
           ? "0.5px solid rgba(244,63,94,0.4)"
           : "0.5px solid rgba(255,255,255,0.08)",
@@ -354,7 +354,7 @@ function AdminSessionCard({ session, isLive, goingLive, onGoLive, onEnd, onDelet
           <div className="flex items-center gap-2 mb-0.5">
             <p className="text-sm text-white truncate" style={{ fontWeight: 500 }}>{session.title}</p>
             {isLive && (
-              <span className="text-[10px] px-1.5 py-0.5 rounded text-white shrink-0" style={{ backgroundColor: "#F43F5E", fontWeight: 500 }}>
+              <span className="text-[10px] px-1.5 py-0.5 rounded text-white shrink-0" style={{ backgroundColor: "#ff41b3", fontWeight: 500 }}>
                 LIVE
               </span>
             )}
@@ -367,7 +367,7 @@ function AdminSessionCard({ session, isLive, goingLive, onGoLive, onEnd, onDelet
             <Link
               href={`/live/${session.dailyRoomName}`}
               target="_blank"
-              className="text-xs text-purple-400 hover:text-purple-300 transition-colors"
+              className="text-xs text-pink-400 hover:text-pink-300 transition-colors"
             >
               Join as host →
             </Link>
@@ -389,7 +389,7 @@ function AdminSessionCard({ session, isLive, goingLive, onGoLive, onEnd, onDelet
               onClick={onGoLive}
               disabled={goingLive}
               className="px-3 py-1.5 rounded-lg text-xs text-white transition-opacity hover:opacity-80 disabled:opacity-50"
-              style={{ background: "linear-gradient(135deg, #F43F5E, #F97316)", fontWeight: 500 }}
+              style={{ background: "linear-gradient(135deg, #ec723d, #f4e71d)", fontWeight: 500 }}
             >
               {goingLive ? "Starting…" : "Go Live"}
             </button>

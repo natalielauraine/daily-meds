@@ -67,13 +67,13 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
   }
 
   return (
-    <div className="flex min-h-screen" style={{ backgroundColor: "#0D0D1A" }}>
+    <div className="flex min-h-screen" style={{ backgroundColor: "#131313" }}>
 
       {/* ── SIDEBAR ────────────────────────────────────────────── */}
       <aside
         className="hidden md:flex flex-col w-56 shrink-0 py-6 px-3"
         style={{
-          backgroundColor: "#1A1A2E",
+          backgroundColor: "#1F1F1F",
           borderRight: "0.5px solid rgba(255,255,255,0.08)",
           position: "sticky",
           top: 0,
@@ -84,7 +84,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
         <Link href="/" className="flex items-center gap-2.5 px-3 mb-8">
           <div
             className="w-7 h-7 rounded-full flex items-center justify-center shrink-0"
-            style={{ background: "linear-gradient(135deg, #6B21E8, #22D3EE)" }}
+            style={{ background: "linear-gradient(135deg, #ff41b3, #ec723d)" }}
           >
             <svg width="14" height="14" viewBox="0 0 48 48" fill="none">
               <path d="M24 4C24 4 16 12 16 20C16 24.4 19.6 28 24 28C28.4 28 32 24.4 32 20C32 12 24 4 24 4Z" fill="white" opacity="0.95"/>
@@ -107,11 +107,11 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
               className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors"
               style={{
                 color: isActive(item.href) ? "white" : "rgba(255,255,255,0.4)",
-                backgroundColor: isActive(item.href) ? "rgba(139,92,246,0.15)" : "transparent",
+                backgroundColor: isActive(item.href) ? "rgba(255,65,179,0.15)" : "transparent",
                 fontWeight: isActive(item.href) ? 500 : 400,
               }}
             >
-              <span style={{ color: isActive(item.href) ? "#8B5CF6" : "rgba(255,255,255,0.3)" }}>
+              <span style={{ color: isActive(item.href) ? "#ff41b3" : "rgba(255,255,255,0.3)" }}>
                 {item.icon}
               </span>
               {item.label}
@@ -135,12 +135,12 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
 
       {/* ── MOBILE TOP BAR ─────────────────────────────────────── */}
       <div className="md:hidden fixed top-0 left-0 right-0 z-40 px-4 py-3 flex items-center justify-between"
-        style={{ backgroundColor: "#1A1A2E", borderBottom: "0.5px solid rgba(255,255,255,0.08)" }}
+        style={{ backgroundColor: "#1F1F1F", borderBottom: "0.5px solid rgba(255,255,255,0.08)" }}
       >
         <Link href="/admin" className="flex items-center gap-2">
           <div
             className="w-6 h-6 rounded-full flex items-center justify-center"
-            style={{ background: "linear-gradient(135deg, #6B21E8, #22D3EE)" }}
+            style={{ background: "linear-gradient(135deg, #ff41b3, #ec723d)" }}
           >
             <svg width="12" height="12" viewBox="0 0 48 48" fill="none">
               <path d="M24 4C24 4 16 12 16 20C16 24.4 19.6 28 24 28C28.4 28 32 24.4 32 20C32 12 24 4 24 4Z" fill="white" opacity="0.95"/>
@@ -156,8 +156,8 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
               href={item.href}
               className="p-2 rounded-lg transition-colors"
               style={{
-                color: isActive(item.href) ? "#8B5CF6" : "rgba(255,255,255,0.3)",
-                backgroundColor: isActive(item.href) ? "rgba(139,92,246,0.15)" : "transparent",
+                color: isActive(item.href) ? "#ff41b3" : "rgba(255,255,255,0.3)",
+                backgroundColor: isActive(item.href) ? "rgba(255,65,179,0.15)" : "transparent",
               }}
               aria-label={item.label}
             >

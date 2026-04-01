@@ -1,71 +1,137 @@
 import Link from "next/link";
+import Logo from "./Logo";
 
 // Site footer — shown on every page at the bottom.
-// Contains nav links, legal links, and branding.
+// Dark surface with neon pink → orange wordmark gradient.
 export default function Footer() {
   return (
-    <footer className="bg-[#0D0D1A] border-t border-white/[0.08] mt-auto">
+    <footer
+      className="mt-auto"
+      style={{ background: "#0e0e0e", borderTop: "1px solid rgba(255,255,255,0.05)" }}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
 
-        {/* Top section — logo + nav columns */}
+        {/* Top section — brand column + nav columns */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
 
           {/* Brand column */}
           <div className="flex flex-col gap-4">
-            {/* Wordmark */}
-            <div>
-              <span className="text-sm font-500 tracking-widest">
-                <span style={{ color: "#F43F5E" }}>THE </span>
-                <span style={{ color: "#F97316" }}>DAILY </span>
-                <span style={{ color: "#22C55E" }}>MEDS</span>
-              </span>
-            </div>
-            <p className="text-xs text-white/40 leading-relaxed max-w-[200px]">
-              Audio for emotional emergencies. Meditation for life's most awkward moments.
+            <Logo href="/" size="sm" />
+
+            <p
+              className="text-xs leading-relaxed max-w-[200px]"
+              style={{ fontFamily: "var(--font-inter)", color: "rgba(255,255,255,0.35)" }}
+            >
+              Audio for emotional emergencies. Meditation for life&apos;s most awkward moments.
             </p>
-            <p className="text-xs text-white/30">
+            <p
+              className="text-xs"
+              style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.25)" }}
+            >
               By Natalie Lauraine
             </p>
           </div>
 
           {/* Explore column */}
           <div className="flex flex-col gap-3">
-            <h4 className="text-xs text-white/50 uppercase tracking-widest mb-1">Explore</h4>
-            <Link href="/library" className="text-sm text-white/60 hover:text-white transition-colors">Library</Link>
-            <Link href="/live" className="text-sm text-white/60 hover:text-white transition-colors">Live Sessions</Link>
-            <Link href="/free" className="text-sm text-white/60 hover:text-white transition-colors">Free Sessions</Link>
-            <Link href="/timer" className="text-sm text-white/60 hover:text-white transition-colors">Breathing Timer</Link>
+            <h4
+              className="text-[10px] uppercase tracking-widest mb-1"
+              style={{ fontFamily: "var(--font-space-grotesk)", fontWeight: 700, color: "rgba(255,255,255,0.35)" }}
+            >
+              Explore
+            </h4>
+            {[
+              { href: "/library", label: "Library" },
+              { href: "/live", label: "Live Sessions" },
+              { href: "/free", label: "Free Sessions" },
+              { href: "/timer", label: "Breathing Timer" },
+            ].map(({ href, label }) => (
+              <Link
+                key={href}
+                href={href}
+                className="text-sm transition-colors hover:text-white/80"
+                style={{ fontFamily: "var(--font-inter)", color: "rgba(255,255,255,0.5)" }}
+              >
+                {label}
+              </Link>
+            ))}
           </div>
 
           {/* Account column */}
           <div className="flex flex-col gap-3">
-            <h4 className="text-xs text-white/50 uppercase tracking-widest mb-1">Account</h4>
-            <Link href="/pricing" className="text-sm text-white/60 hover:text-white transition-colors">Pricing</Link>
-            <Link href="/signup" className="text-sm text-white/60 hover:text-white transition-colors">Sign Up</Link>
-            <Link href="/login" className="text-sm text-white/60 hover:text-white transition-colors">Log In</Link>
-            <Link href="/affiliate" className="text-sm text-white/60 hover:text-white transition-colors">Affiliates</Link>
+            <h4
+              className="text-[10px] uppercase tracking-widest mb-1"
+              style={{ fontFamily: "var(--font-space-grotesk)", fontWeight: 700, color: "rgba(255,255,255,0.35)" }}
+            >
+              Account
+            </h4>
+            {[
+              { href: "/pricing", label: "Pricing" },
+              { href: "/signup", label: "Sign Up" },
+              { href: "/login", label: "Log In" },
+              { href: "/affiliate", label: "Affiliates" },
+            ].map(({ href, label }) => (
+              <Link
+                key={href}
+                href={href}
+                className="text-sm transition-colors hover:text-white/80"
+                style={{ fontFamily: "var(--font-inter)", color: "rgba(255,255,255,0.5)" }}
+              >
+                {label}
+              </Link>
+            ))}
           </div>
 
           {/* About column */}
           <div className="flex flex-col gap-3">
-            <h4 className="text-xs text-white/50 uppercase tracking-widest mb-1">About</h4>
-            <Link href="/about" className="text-sm text-white/60 hover:text-white transition-colors">About Natalie</Link>
-            <Link href="/testimonials" className="text-sm text-white/60 hover:text-white transition-colors">Testimonials</Link>
-            <Link href="/review" className="text-sm text-white/60 hover:text-white transition-colors">Leave a review</Link>
-            <Link href="/shop" className="text-sm text-white/60 hover:text-white transition-colors">Shop</Link>
+            <h4
+              className="text-[10px] uppercase tracking-widest mb-1"
+              style={{ fontFamily: "var(--font-space-grotesk)", fontWeight: 700, color: "rgba(255,255,255,0.35)" }}
+            >
+              About
+            </h4>
+            {[
+              { href: "/about", label: "About Natalie" },
+              { href: "/testimonials", label: "Testimonials" },
+              { href: "/review", label: "Leave a review" },
+              { href: "/shop", label: "Shop" },
+            ].map(({ href, label }) => (
+              <Link
+                key={href}
+                href={href}
+                className="text-sm transition-colors hover:text-white/80"
+                style={{ fontFamily: "var(--font-inter)", color: "rgba(255,255,255,0.5)" }}
+              >
+                {label}
+              </Link>
+            ))}
           </div>
         </div>
 
         {/* Bottom bar — copyright + legal */}
-        <div className="border-t border-white/[0.06] pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="text-xs text-white/30">
-            &copy; {new Date().getFullYear()} Daily Meds. All rights reserved.
+        <div
+          className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-3"
+          style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}
+        >
+          <p
+            className="text-xs"
+            style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.25)" }}
+          >
+            &copy; {new Date().getFullYear()} The Daily Meds. All rights reserved.
           </p>
-          <div className="flex items-center gap-4">
-            <Link href="/privacy" className="text-xs text-white/30 hover:text-white/60 transition-colors">
+          <div className="flex items-center gap-5">
+            <Link
+              href="/privacy"
+              className="text-xs transition-colors hover:text-white/50"
+              style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.25)" }}
+            >
               Privacy Policy
             </Link>
-            <Link href="/terms" className="text-xs text-white/30 hover:text-white/60 transition-colors">
+            <Link
+              href="/terms"
+              className="text-xs transition-colors hover:text-white/50"
+              style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.25)" }}
+            >
               Terms of Use
             </Link>
           </div>

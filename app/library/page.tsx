@@ -44,19 +44,19 @@ const TYPE_OPTIONS = [
   { label: "Video", value: "video" },
 ];
 
-// Gradient for each mood badge
+// Gradient for each mood badge — neon brand palette
 const MOOD_GRADIENTS: Record<string, string> = {
-  Hungover: "linear-gradient(135deg, #6B21E8, #22D3EE)",
-  "After The Sesh": "linear-gradient(135deg, #F43F5E, #FACC15)",
-  "On A Comedown": "linear-gradient(135deg, #10B981, #D9F100)",
-  "Feeling Empty": "linear-gradient(135deg, #6B21E8, #22D3EE)",
-  "Can't Sleep": "linear-gradient(135deg, #8B3CF7, #6366F1)",
-  Anxious: "linear-gradient(135deg, #F43F5E, #F97316)",
-  Heartbroken: "linear-gradient(135deg, #EC4899, #D946EF)",
-  Overwhelmed: "linear-gradient(135deg, #F97316, #FACC15)",
-  "Low Energy": "linear-gradient(135deg, #10B981, #22C55E)",
-  "Morning Reset": "linear-gradient(135deg, #F43F5E, #FACC15)",
-  "Focus Mode": "linear-gradient(135deg, #6B21E8, #6366F1)",
+  Hungover:          "linear-gradient(135deg, #ff41b3, #ec723d)",
+  "After The Sesh":  "linear-gradient(135deg, #ff41b3, #f4e71d)",
+  "On A Comedown":   "linear-gradient(135deg, #adf225, #f4e71d)",
+  "Feeling Empty":   "linear-gradient(135deg, #ff41b3, #ec723d)",
+  "Can't Sleep":     "linear-gradient(135deg, #ff41b3, #adf225)",
+  Anxious:           "linear-gradient(135deg, #ec723d, #f4e71d)",
+  Heartbroken:       "linear-gradient(135deg, #ff41b3, #ec723d)",
+  Overwhelmed:       "linear-gradient(135deg, #ec723d, #f4e71d)",
+  "Low Energy":      "linear-gradient(135deg, #adf225, #f4e71d)",
+  "Morning Reset":   "linear-gradient(135deg, #ff41b3, #f4e71d)",
+  "Focus Mode":      "linear-gradient(135deg, #adf225, #ec723d)",
 };
 
 // ── TYPES ─────────────────────────────────────────────────────────────────────
@@ -90,10 +90,83 @@ function matchesDuration(session: LibrarySession, filter: string): boolean {
   return true;
 }
 
+// ── PLACEHOLDER VIDEO CARDS ───────────────────────────────────────────────────
+// These represent slots where new video sessions will be uploaded.
+
+const PLACEHOLDER_VIDEOS = [
+  { label: "Hungover & Overwhelmed",   gradient: "linear-gradient(135deg, #1a0a18, #0d1220)", accent: "#ff41b3", duration: "12 min" },
+  { label: "After The Sesh",           gradient: "linear-gradient(135deg, #0f1a0a, #1a150d)", accent: "#aaee20", duration: "18 min" },
+  { label: "Can't Sleep",              gradient: "linear-gradient(135deg, #0a1020, #18100a)", accent: "#ec723d", duration: "22 min" },
+  { label: "Anxious & Overstimulated", gradient: "linear-gradient(135deg, #1a0a10, #0a0f1a)", accent: "#ff41b3", duration: "15 min" },
+  { label: "Morning Reset",            gradient: "linear-gradient(135deg, #151a0a, #0d1a18)", accent: "#aaee20", duration: "10 min" },
+  { label: "Heartbroken",              gradient: "linear-gradient(135deg, #1a0a14, #150a1a)", accent: "#ec723d", duration: "20 min" },
+  { label: "Focus Mode",               gradient: "linear-gradient(135deg, #0a181a, #100a1a)", accent: "#ff41b3", duration: "25 min" },
+  { label: "On A Comedown",            gradient: "linear-gradient(135deg, #1a120a, #0a1a14)", accent: "#aaee20", duration: "16 min" },
+];
+
+function PlaceholderCard({ item }: { item: typeof PLACEHOLDER_VIDEOS[number] }) {
+  return (
+    <div className="flex flex-col opacity-50">
+      <div
+        className="relative rounded-[10px] overflow-hidden mb-3"
+        style={{
+          aspectRatio: "16/9",
+          background: item.gradient,
+          border: "1px dashed rgba(255,255,255,0.12)",
+        }}
+      >
+        {/* Centre icon */}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div
+            className="w-10 h-10 rounded-full flex items-center justify-center"
+            style={{ border: `1px dashed ${item.accent}40`, background: `${item.accent}10` }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill={item.accent} opacity={0.5}>
+              <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
+            </svg>
+          </div>
+        </div>
+
+        {/* Coming Soon badge */}
+        <div
+          className="absolute top-2 left-2 text-[9px] px-2 py-0.5 rounded uppercase tracking-widest font-bold"
+          style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.3)", border: "0.5px solid rgba(255,255,255,0.1)" }}
+        >
+          Coming Soon
+        </div>
+
+        {/* Duration */}
+        <div
+          className="absolute bottom-2 left-2 text-[10px] px-1.5 py-0.5 rounded flex items-center gap-1"
+          style={{ background: "rgba(0,0,0,0.4)", color: "rgba(255,255,255,0.4)" }}
+        >
+          <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
+          </svg>
+          {item.duration}
+        </div>
+      </div>
+
+      {/* Info */}
+      <div className="flex flex-col gap-1">
+        <span
+          className="text-[9px] px-2 py-0.5 rounded-full self-start uppercase"
+          style={{ background: `${item.accent}20`, color: item.accent, fontWeight: 700, letterSpacing: "0.04em" }}
+        >
+          {item.label}
+        </span>
+        <div className="h-3.5 rounded w-3/4" style={{ background: "rgba(255,255,255,0.06)" }} />
+        <div className="h-2.5 rounded w-1/2" style={{ background: "rgba(255,255,255,0.04)" }} />
+      </div>
+    </div>
+  );
+}
+
 // ── LIBRARY CARD ──────────────────────────────────────────────────────────────
 // Grid-specific session card — adapts to any column width (unlike the horizontal row card).
 
-function LibraryCard({ session }: { session: LibrarySession }) {
+// isPaidMember is passed down from LibraryPage so every card knows whether to show the lock
+function LibraryCard({ session, isPaidMember }: { session: LibrarySession; isPaidMember: boolean }) {
   const [hovered, setHovered] = useState(false);
   const [hearted, setHearted] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
@@ -123,7 +196,7 @@ function LibraryCard({ session }: { session: LibrarySession }) {
     setHearted(nowSaved);
   }
 
-  const moodGradient = MOOD_GRADIENTS[session.mood_category] ?? "linear-gradient(135deg, #6B21E8, #22D3EE)";
+  const moodGradient = MOOD_GRADIENTS[session.mood_category] ?? "linear-gradient(135deg, #ff41b3, #ec723d)";
 
   return (
     <>
@@ -175,7 +248,7 @@ function LibraryCard({ session }: { session: LibrarySession }) {
             >
               <div
                 className="w-12 h-12 rounded-full flex items-center justify-center"
-                style={{ background: "rgba(139,92,246,0.9)", backdropFilter: "blur(4px)" }}
+                style={{ background: "#ff41b3", boxShadow: "0 0 20px rgba(255,65,179,0.6)" }}
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="white" style={{ marginLeft: "2px" }}>
                   <path d="M8 5v14l11-7z"/>
@@ -186,10 +259,28 @@ function LibraryCard({ session }: { session: LibrarySession }) {
             {/* Free badge — top left */}
             {session.is_free && (
               <div
-                className="absolute top-2 left-2 text-white text-[10px] px-1.5 py-0.5 rounded"
-                style={{ background: "rgba(16,185,129,0.85)", fontWeight: 500 }}
+                className="absolute top-2 left-2 text-[10px] px-1.5 py-0.5 rounded"
+                style={{
+                  background: "rgba(173,242,37,0.85)",
+                  color: "#131313",
+                  fontFamily: "var(--font-space-grotesk)",
+                  fontWeight: 700,
+                  letterSpacing: "0.05em",
+                }}
               >
                 FREE
+              </div>
+            )}
+
+            {/* Lock icon — top right — shown on premium sessions for free users */}
+            {!session.is_free && !isPaidMember && (
+              <div
+                className="absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center"
+                style={{ background: "rgba(0,0,0,0.55)", backdropFilter: "blur(4px)" }}
+              >
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="rgba(255,255,255,0.6)">
+                  <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+                </svg>
               </div>
             )}
 
@@ -224,7 +315,7 @@ function LibraryCard({ session }: { session: LibrarySession }) {
             aria-label={hearted ? "Remove from watchlist" : "Save to watchlist"}
           >
             {hearted ? (
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="#F43F5E">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="#ff41b3">
                 <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
               </svg>
             ) : (
@@ -239,17 +330,24 @@ function LibraryCard({ session }: { session: LibrarySession }) {
         <Link href={`/session/${session.id}`} className="flex flex-col gap-1">
           {/* Mood badge */}
           <span
-            className="text-[10px] px-2 py-0.5 rounded-full self-start"
-            style={{ background: moodGradient, color: "white", fontWeight: 500 }}
+            className="text-[9px] px-2 py-0.5 rounded-full self-start text-white uppercase"
+            style={{
+              background: moodGradient,
+              fontFamily: "var(--font-space-grotesk)",
+              fontWeight: 700,
+              letterSpacing: "0.04em",
+            }}
           >
             {session.mood_category}
           </span>
 
           {/* Title */}
           <h3
-            className="text-sm text-white/85 leading-snug transition-colors group-hover:text-white"
+            className="text-sm leading-snug transition-colors group-hover:text-white"
             style={{
-              fontWeight: 500,
+              fontFamily: "var(--font-plus-jakarta)",
+              fontWeight: 700,
+              color: "rgba(226,226,226,0.85)",
               display: "-webkit-box",
               WebkitLineClamp: 2,
               WebkitBoxOrient: "vertical",
@@ -260,7 +358,12 @@ function LibraryCard({ session }: { session: LibrarySession }) {
           </h3>
 
           {/* Type */}
-          <p className="text-[11px] text-white/35">{session.type}</p>
+          <p
+            className="text-[10px] uppercase tracking-wider"
+            style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.3)" }}
+          >
+            {session.type}
+          </p>
         </Link>
       </div>
 
@@ -291,10 +394,11 @@ function FilterPill({
       onClick={onClick}
       className="shrink-0 px-3 py-1.5 rounded-full text-xs transition-all"
       style={{
-        backgroundColor: active ? "#8B5CF6" : "rgba(255,255,255,0.06)",
-        border: active ? "0.5px solid #8B5CF6" : "0.5px solid rgba(255,255,255,0.1)",
+        backgroundColor: active ? "#ff41b3" : "rgba(255,255,255,0.06)",
+        border: active ? "0.5px solid #ff41b3" : "0.5px solid rgba(255,255,255,0.1)",
         color: active ? "white" : "rgba(255,255,255,0.5)",
-        fontWeight: active ? 500 : 400,
+        fontFamily: "var(--font-space-grotesk)",
+        fontWeight: active ? 700 : 400,
       }}
     >
       {label}
@@ -309,6 +413,8 @@ export default function LibraryPage() {
 
   const [sessions, setSessions] = useState<LibrarySession[]>([]);
   const [loading, setLoading] = useState(true);
+  // Whether the logged-in user has an active paid subscription
+  const [isPaidMember, setIsPaidMember] = useState(false);
 
   // Filter state
   const [search, setSearch] = useState("");
@@ -316,18 +422,37 @@ export default function LibraryPage() {
   const [activeDuration, setActiveDuration] = useState("all");
   const [activeType, setActiveType] = useState("all");
 
-  // Load all sessions from Supabase on mount
+  // Load sessions and subscription status in parallel on mount
   useEffect(() => {
-    async function loadSessions() {
+    async function loadData() {
       setLoading(true);
-      const { data, error } = await supabase
-        .from("sessions")
-        .select("id, title, description, duration, type, mood_category, media_type, is_free, gradient")
-        .order("created_at", { ascending: false });
-      if (!error && data) setSessions(data as LibrarySession[]);
+
+      // Fetch sessions and the logged-in user's subscription at the same time
+      const [{ data: sessionsData, error }, { data: { user } }] = await Promise.all([
+        supabase
+          .from("sessions")
+          .select("id, title, description, duration, type, mood_category, media_type, is_free, gradient")
+          .order("created_at", { ascending: false }),
+        supabase.auth.getUser(),
+      ]);
+
+      if (!error && sessionsData) setSessions(sessionsData as LibrarySession[]);
+
+      // If user is logged in, check their subscription tier
+      if (user) {
+        const { data: profile } = await supabase
+          .from("users")
+          .select("subscription_status")
+          .eq("id", user.id)
+          .single();
+        if (profile?.subscription_status && profile.subscription_status !== "free") {
+          setIsPaidMember(true);
+        }
+      }
+
       setLoading(false);
     }
-    loadSessions();
+    loadData();
   }, []);
 
   // Apply all active filters to the session list
@@ -358,15 +483,20 @@ export default function LibraryPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#0D0D1A" }}>
+    <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#131313" }}>
       <Navbar />
 
       <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 py-10 pb-28">
 
         {/* ── PAGE HEADER ── */}
         <div className="mb-8">
-          <h1 className="text-2xl sm:text-3xl text-white mb-1" style={{ fontWeight: 500 }}>Library</h1>
-          <p className="text-sm text-white/40">
+          <h1
+            className="text-2xl sm:text-3xl text-white mb-1 uppercase"
+            style={{ fontFamily: "var(--font-plus-jakarta)", fontWeight: 800, letterSpacing: "-0.01em" }}
+          >
+            Library
+          </h1>
+          <p className="text-sm text-white/40" style={{ fontFamily: "var(--font-space-grotesk)" }}>
             {loading ? "Loading sessions…" : `${sessions.length} session${sessions.length !== 1 ? "s" : ""}`}
           </p>
         </div>
@@ -386,8 +516,9 @@ export default function LibraryPage() {
             placeholder="Search sessions…"
             className="w-full pl-10 pr-4 py-3 rounded-[10px] text-sm text-white outline-none placeholder:text-white/25"
             style={{
-              backgroundColor: "#1A1A2E",
+              backgroundColor: "#1F1F1F",
               border: "0.5px solid rgba(255,255,255,0.1)",
+              fontFamily: "var(--font-space-grotesk)",
             }}
           />
           {search && (
@@ -466,29 +597,31 @@ export default function LibraryPage() {
               <div key={i} className="flex flex-col gap-2">
                 <div
                   className="rounded-[10px] animate-pulse w-full"
-                  style={{ aspectRatio: "16/9", backgroundColor: "#1A1A2E" }}
+                  style={{ aspectRatio: "16/9", backgroundColor: "#1F1F1F" }}
                 />
-                <div className="h-3 rounded animate-pulse w-16" style={{ backgroundColor: "#1A1A2E" }} />
-                <div className="h-4 rounded animate-pulse w-3/4" style={{ backgroundColor: "#1A1A2E" }} />
-                <div className="h-3 rounded animate-pulse w-1/2" style={{ backgroundColor: "#1A1A2E" }} />
+                <div className="h-3 rounded animate-pulse w-16" style={{ backgroundColor: "#1F1F1F" }} />
+                <div className="h-4 rounded animate-pulse w-3/4" style={{ backgroundColor: "#1F1F1F" }} />
+                <div className="h-3 rounded animate-pulse w-1/2" style={{ backgroundColor: "#1F1F1F" }} />
               </div>
             ))}
           </div>
-        ) : filtered.length === 0 ? (
+        ) : filtered.length === 0 && (search || activeFilterCount > 0) ? (
           <EmptyState
-            message={
-              search || activeFilterCount > 0
-                ? "No sessions match your filters"
-                : "No sessions in the library yet"
-            }
-            action={search || activeFilterCount > 0 ? "Clear all filters" : undefined}
-            onClick={search || activeFilterCount > 0 ? clearAllFilters : undefined}
+            message="No sessions match your filters"
+            action="Clear all filters"
+            onClick={clearAllFilters}
           />
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
             {filtered.map((session) => (
-              <LibraryCard key={session.id} session={session} />
+              <LibraryCard key={session.id} session={session} isPaidMember={isPaidMember} />
             ))}
+            {/* Placeholder slots — shown when no filters are active so the grid always looks populated */}
+            {!search && activeMood === "All" && activeDuration === "all" && activeType === "all" &&
+              PLACEHOLDER_VIDEOS.map((item) => (
+                <PlaceholderCard key={item.label} item={item} />
+              ))
+            }
           </div>
         )}
 

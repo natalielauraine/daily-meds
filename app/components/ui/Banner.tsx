@@ -9,8 +9,8 @@ type BannerProps = {
 export default function Banner({ type, message }: BannerProps) {
   const isSuccess = type === "success";
 
-  const bg     = isSuccess ? "rgba(16,185,129,0.1)"  : "rgba(244,63,94,0.1)";
-  const border = isSuccess ? "rgba(16,185,129,0.3)"  : "rgba(244,63,94,0.3)";
+  const bg     = isSuccess ? "rgba(173,242,37,0.1)"  : "rgba(244,63,94,0.1)";
+  const border = isSuccess ? "rgba(173,242,37,0.3)"  : "rgba(244,63,94,0.3)";
   const text   = isSuccess ? "text-green-300"         : "text-red-300";
 
   return (

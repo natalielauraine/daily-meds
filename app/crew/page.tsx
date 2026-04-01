@@ -120,13 +120,19 @@ export default function CrewPage() {
     }
 
     // Add creator as admin
-    await supabase.from("crew_members").insert({
+    const { error: memberErr } = await supabase.from("crew_members").insert({
       crew_id: crew.id,
       user_id: user.id,
       display_name: displayName,
       avatar_url: user.user_metadata?.avatar_url ?? null,
       role: "admin",
     });
+
+    if (memberErr) {
+      setCreateError("Crew created but could not add you as member: " + memberErr.message);
+      setCreating(false);
+      return;
+    }
 
     // Post "joined" activity
     await supabase.from("crew_activity").insert({
@@ -195,17 +201,17 @@ export default function CrewPage() {
 
   if (loading) {
     return (
-      <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#0D0D1A" }}>
+      <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#131313" }}>
         <Navbar />
         <div className="flex-1 flex items-center justify-center">
-          <div className="w-6 h-6 rounded-full border-2 border-white/20 border-t-purple-400 animate-spin" />
+          <div className="w-6 h-6 rounded-full border-2 border-white/20 border-t-pink-400 animate-spin" />
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#0D0D1A" }}>
+    <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#131313" }}>
       <Navbar />
 
       <main className="flex-1 max-w-2xl mx-auto w-full px-4 py-8">
@@ -219,7 +225,7 @@ export default function CrewPage() {
           <button
             onClick={() => setShowCreate(true)}
             className="px-4 py-2 rounded-lg text-sm text-white transition-opacity hover:opacity-80"
-            style={{ backgroundColor: "#8B5CF6", fontWeight: 500 }}
+            style={{ backgroundColor: "#ff41b3", fontWeight: 500 }}
           >
             + Create Crew
           </button>
@@ -228,7 +234,7 @@ export default function CrewPage() {
         {/* Join by invite code */}
         <div
           className="rounded-[10px] p-4 mb-6 flex items-center gap-3"
-          style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.08)" }}
+          style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.08)" }}
         >
           <input
             type="text"
@@ -242,7 +248,7 @@ export default function CrewPage() {
             onClick={handleJoin}
             disabled={joining || joinCode.trim().length < 8}
             className="px-4 py-2 rounded-lg text-sm text-white transition-opacity hover:opacity-80 disabled:opacity-30"
-            style={{ backgroundColor: "#8B5CF6", fontWeight: 500 }}
+            style={{ backgroundColor: "#ff41b3", fontWeight: 500 }}
           >
             {joining ? "Joining…" : "Join Crew"}
           </button>
@@ -254,7 +260,7 @@ export default function CrewPage() {
           <div className="text-center py-20">
             <div
               className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4"
-              style={{ background: "linear-gradient(135deg, #6B21E8, #8B3CF7, #6366F1, #3B82F6, #22D3EE)" }}
+              style={{ background: "linear-gradient(135deg, #ff41b3, #ec723d, #adf225, #adf225, #adf225)" }}
             >
               <svg width="22" height="22" viewBox="0 0 24 24" fill="white" opacity={0.9}>
                 <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
@@ -270,7 +276,7 @@ export default function CrewPage() {
                 key={crew.id}
                 href={`/crew/${crew.id}`}
                 className="block rounded-[10px] p-5 transition-all hover:scale-[1.01]"
-                style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.08)" }}
+                style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.08)" }}
               >
                 <div className="flex items-start justify-between mb-3">
                   <div>
@@ -282,7 +288,7 @@ export default function CrewPage() {
                   <div
                     className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm shrink-0"
                     style={{
-                      background: "linear-gradient(135deg, #6B21E8, #8B3CF7, #6366F1, #3B82F6, #22D3EE)",
+                      background: "linear-gradient(135deg, #ff41b3, #ec723d, #adf225, #adf225, #adf225)",
                       fontWeight: 500,
                     }}
                   >
@@ -307,7 +313,7 @@ export default function CrewPage() {
         >
           <div
             className="w-full max-w-sm rounded-[14px] p-6"
-            style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.12)" }}
+            style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.12)" }}
           >
             <h2 className="text-white text-base mb-1" style={{ fontWeight: 500 }}>Create a Crew</h2>
             <p className="text-xs text-white/35 mb-5">An 8-character invite code is generated automatically for you to share.</p>
@@ -339,7 +345,7 @@ export default function CrewPage() {
                 onClick={handleCreate}
                 disabled={creating || !crewName.trim()}
                 className="flex-1 py-2.5 rounded-lg text-sm text-white transition-opacity hover:opacity-80 disabled:opacity-40"
-                style={{ backgroundColor: "#8B5CF6", fontWeight: 500 }}
+                style={{ backgroundColor: "#ff41b3", fontWeight: 500 }}
               >
                 {creating ? "Creating…" : "Create Crew"}
               </button>

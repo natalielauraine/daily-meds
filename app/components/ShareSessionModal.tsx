@@ -144,7 +144,7 @@ export default function ShareSessionModal({ session, onClose }: Props) {
       <div
         className="fixed bottom-0 left-0 right-0 z-50 rounded-t-[20px] overflow-y-auto"
         style={{
-          backgroundColor: "#1A1A2E",
+          backgroundColor: "#1F1F1F",
           border: "0.5px solid rgba(255,255,255,0.1)",
           maxHeight: "92vh",
         }}
@@ -264,7 +264,7 @@ export default function ShareSessionModal({ session, onClose }: Props) {
               <button
                 onClick={handleCopyCaption}
                 className="text-xs transition-colors"
-                style={{ color: copied ? "#10B981" : "#8B5CF6", fontWeight: 500 }}
+                style={{ color: copied ? "#adf225" : "#ff41b3", fontWeight: 500 }}
               >
                 {copied ? "Copied!" : "Copy"}
               </button>

@@ -1,665 +1,451 @@
 "use client";
 
-// Breathing timer page.
-// Supports box breathing, 4-7-8, and custom patterns.
-// Animated circle expands on inhale and contracts on exhale.
-// Ambient sounds (rain, bowls, nature) are generated via Web Audio API — no audio files needed.
-// A gentle bell plays when the session ends.
-
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
+import { createClient } from "../../lib/supabase-browser";
+import type { User } from "@supabase/supabase-js";
+import Logo from "../components/Logo";
 
-// ── BREATHING PATTERNS ────────────────────────────────────────────────────────
-// All durations are in seconds. holdOut: 0 means skip that phase.
+const DURATIONS = [1, 5, 10, 20, 30];
 
-const PATTERNS = {
-  box: { label: "Box", sub: "4 · 4 · 4 · 4", in: 4, holdIn: 4, out: 4, holdOut: 4 },
-  "4-7-8": { label: "4-7-8", sub: "4 · 7 · 8", in: 4, holdIn: 7, out: 8, holdOut: 0 },
-  custom: { label: "Custom", sub: "Set your own", in: 4, holdIn: 4, out: 4, holdOut: 0 },
-} as const;
+const TRENDING = [
+  { title: "Hungover", tag: "Guided Release · 20 min", gradient: "linear-gradient(160deg, #2a0800 0%, #ec723d 100%)", href: "/signup" },
+  { title: "Anxious", tag: "Breathwork · 18 min", gradient: "linear-gradient(160deg, #2a0018 0%, #ff41b3 100%)", href: "/signup" },
+  { title: "Guilty", tag: "Guided Meditation · 15 min", gradient: "linear-gradient(160deg, #1a1500 0%, #f4e71d 100%)", href: "/signup" },
+  { title: "Daily Ritual", tag: "Morning Reset · 10 min", gradient: "linear-gradient(160deg, #0a1800 0%, #aaee20 100%)", href: "/signup" },
+  { title: "Snuggle Down", tag: "Sleep Audio · 45 min", gradient: "linear-gradient(160deg, #00050f 0%, #3b82f6 100%)", href: "/signup" },
+  { title: "Heartbroken", tag: "Emotional Release · 22 min", gradient: "linear-gradient(160deg, #150000 0%, #dc2626 100%)", href: "/signup" },
+];
 
-type PatternKey = keyof typeof PATTERNS;
-type Phase = "inhale" | "holdIn" | "exhale" | "holdOut";
-type AmbientType = "silence" | "rain" | "bowls" | "nature";
-
-const SESSION_LENGTHS = [5, 10, 15, 20, 30];
-
-// ── NATALIE'S VOICE FILES ──────────────────────────────────────────────────────
-// Upload Natalie's recordings to Supabase Storage → audio-files bucket.
-// Then paste the public URLs here.
-// Intro plays before the timer starts. Outro plays after the session ends.
-const VOICE_INTRO_URL = ""; // e.g. "https://xxx.supabase.co/storage/v1/object/public/audio-files/breathe-intro.mp3"
-const VOICE_OUTRO_URL = ""; // e.g. "https://xxx.supabase.co/storage/v1/object/public/audio-files/breathe-outro.mp3"
-
-const PHASE_LABEL: Record<Phase, string> = {
-  inhale:  "Breathe in",
-  holdIn:  "Hold",
-  exhale:  "Breathe out",
-  holdOut: "Rest",
-};
-
-// Circle pixel sizes
-const MIN_SIZE = 140;
-const MAX_SIZE = 260;
-
-// ── WEB AUDIO HELPERS ─────────────────────────────────────────────────────────
-
-// Play a gentle 528Hz bell tone — called when the session ends
-function playBell(ctx: AudioContext) {
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
-  osc.connect(gain);
-  gain.connect(ctx.destination);
-  osc.frequency.setValueAtTime(528, ctx.currentTime);
-  osc.type = "sine";
-  gain.gain.setValueAtTime(0, ctx.currentTime);
-  gain.gain.linearRampToValueAtTime(0.35, ctx.currentTime + 0.05);
-  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 4);
-  osc.start(ctx.currentTime);
-  osc.stop(ctx.currentTime + 4);
+function pad(n: number) {
+  return String(n).padStart(2, "0");
 }
 
-// Create a looping rain sound — white noise through a lowpass filter
-function startRain(ctx: AudioContext): AudioNode {
-  const bufferSize = 2 * ctx.sampleRate;
-  const buf = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-  const data = buf.getChannelData(0);
-  for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
-
-  const source = ctx.createBufferSource();
-  source.buffer = buf;
-  source.loop = true;
-
-  const filter = ctx.createBiquadFilter();
-  filter.type = "lowpass";
-  filter.frequency.value = 600;
-
-  const gain = ctx.createGain();
-  gain.gain.value = 0.25;
-
-  source.connect(filter);
-  filter.connect(gain);
-  gain.connect(ctx.destination);
-  source.start();
-  return gain; // return so we can disconnect later
-}
-
-// Create singing bowl tones — multiple sine waves at harmonic frequencies
-function startBowls(ctx: AudioContext): OscillatorNode[] {
-  const freqs = [396, 528, 639, 741];
-  return freqs.map((freq, i) => {
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = "sine";
-    osc.frequency.value = freq;
-    gain.gain.value = 0.045 - i * 0.006; // quieter for higher harmonics
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start();
-    return osc;
-  });
-}
-
-// Create brown noise for a nature / forest sound
-function startNature(ctx: AudioContext): AudioNode {
-  const bufferSize = 2 * ctx.sampleRate;
-  const buf = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-  const data = buf.getChannelData(0);
-  let lastOut = 0;
-  for (let i = 0; i < bufferSize; i++) {
-    const white = Math.random() * 2 - 1;
-    data[i] = (lastOut + 0.02 * white) / 1.02;
-    lastOut = data[i];
-    data[i] *= 3.5;
-  }
-
-  const source = ctx.createBufferSource();
-  source.buffer = buf;
-  source.loop = true;
-
-  const filter = ctx.createBiquadFilter();
-  filter.type = "bandpass";
-  filter.frequency.value = 1200;
-  filter.Q.value = 0.4;
-
-  const gain = ctx.createGain();
-  gain.gain.value = 0.18;
-
-  source.connect(filter);
-  filter.connect(gain);
-  gain.connect(ctx.destination);
-  source.start();
-  return gain;
-}
-
-// ── COMPONENT ─────────────────────────────────────────────────────────────────
-
-export default function BreathePage() {
-  const [patternKey, setPatternKey] = useState<PatternKey>("box");
-  const [custom, setCustom] = useState({ in: 4, holdIn: 4, out: 4, holdOut: 0 });
-  const [sessionMinutes, setSessionMinutes] = useState(10);
-  const [ambient, setAmbient] = useState<AmbientType>("silence");
-  const [showCustom, setShowCustom] = useState(false);
+export default function TimerPage() {
+  const supabase = createClient();
+  const [user, setUser] = useState<User | null>(null);
+  const [authChecked, setAuthChecked] = useState(false);
 
   // Timer state
+  const [selectedDuration, setSelectedDuration] = useState(10);
+  const [secondsLeft, setSecondsLeft] = useState(10 * 60);
   const [running, setRunning] = useState(false);
-  const [done, setDone] = useState(false);
-  const [phase, setPhase] = useState<Phase>("inhale");
-  const [phaseProgress, setPhaseProgress] = useState(0); // 0–1 within current phase
-  const [secondsLeft, setSecondsLeft] = useState(sessionMinutes * 60);
-  const [breathCount, setBreathCount] = useState(0);
+  const [finished, setFinished] = useState(false);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Refs for values needed inside the setInterval callback
-  const phaseRef = useRef<Phase>("inhale");
-  const phaseElapsedRef = useRef(0); // seconds elapsed in current phase
-  const secondsLeftRef = useRef(sessionMinutes * 60);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  // Intro voice state — true while Natalie's intro is playing before the timer starts
-  const [introPlaying, setIntroPlaying] = useState(false);
-
-  // Audio refs
-  const audioCtxRef = useRef<AudioContext | null>(null);
-  const ambientNodeRef = useRef<AudioNode | OscillatorNode[] | null>(null);
-  const voiceRef = useRef<HTMLAudioElement | null>(null);
-
-  // Get the active pattern object (merging custom counts when custom is selected)
-  const pattern = patternKey === "custom"
-    ? { ...PATTERNS.custom, ...custom }
-    : PATTERNS[patternKey];
-
-  // How long the current phase lasts in seconds
-  function getPhaseDuration(p: Phase): number {
-    switch (p) {
-      case "inhale":  return pattern.in;
-      case "holdIn":  return pattern.holdIn;
-      case "exhale":  return pattern.out;
-      case "holdOut": return pattern.holdOut;
-    }
-  }
-
-  // Which phase comes after the current one
-  function getNextPhase(p: Phase): Phase {
-    switch (p) {
-      case "inhale":  return pattern.holdIn  > 0 ? "holdIn"  : "exhale";
-      case "holdIn":  return "exhale";
-      case "exhale":  return pattern.holdOut > 0 ? "holdOut" : "inhale";
-      case "holdOut": return "inhale";
-    }
-  }
-
-  // Circle size — grows on inhale, stays big on holdIn, shrinks on exhale, stays small on holdOut
-  function getCircleSize(): number {
-    switch (phase) {
-      case "inhale":  return MIN_SIZE + (MAX_SIZE - MIN_SIZE) * phaseProgress;
-      case "holdIn":  return MAX_SIZE;
-      case "exhale":  return MAX_SIZE - (MAX_SIZE - MIN_SIZE) * phaseProgress;
-      case "holdOut": return MIN_SIZE;
-    }
-  }
-
-  // Play a voice recording — resolves when it finishes (or immediately if URL is empty)
-  function playVoice(url: string): Promise<void> {
-    return new Promise((resolve) => {
-      if (!url) { resolve(); return; }
-      const audio = new Audio(url);
-      voiceRef.current = audio;
-      audio.addEventListener("ended", () => resolve());
-      audio.addEventListener("error", () => resolve()); // skip gracefully on error
-      audio.play().catch(() => resolve()); // skip if browser blocks autoplay
+  // Auth
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      setUser(data.user);
+      setAuthChecked(true);
     });
-  }
-
-  // Stop ambient sound
-  const stopAmbient = useCallback(() => {
-    if (!ambientNodeRef.current) return;
-    if (Array.isArray(ambientNodeRef.current)) {
-      ambientNodeRef.current.forEach((osc) => { try { osc.stop(); } catch {} });
-    } else {
-      try { ambientNodeRef.current.disconnect(); } catch {}
-    }
-    ambientNodeRef.current = null;
+    const { data: listener } = supabase.auth.onAuthStateChange((_e, session) => {
+      setUser(session?.user ?? null);
+    });
+    return () => listener.subscription.unsubscribe();
   }, []);
 
-  // Start ambient sound
-  const startAmbient = useCallback((type: AmbientType) => {
-    stopAmbient();
-    if (type === "silence") return;
-    if (!audioCtxRef.current) audioCtxRef.current = new AudioContext();
-    const ctx = audioCtxRef.current;
-    if (type === "rain")    ambientNodeRef.current = startRain(ctx);
-    if (type === "bowls")   ambientNodeRef.current = startBowls(ctx);
-    if (type === "nature")  ambientNodeRef.current = startNature(ctx);
-  }, [stopAmbient]);
-
-  // Start the timer — plays Natalie's intro voice first, then begins the countdown
-  async function handleStart() {
-    if (!audioCtxRef.current) audioCtxRef.current = new AudioContext();
-
-    // Show the intro state on the circle while her voice plays
-    setIntroPlaying(true);
-    await playVoice(VOICE_INTRO_URL);
-    setIntroPlaying(false);
-
-    // Now start the actual breathing timer
-    phaseRef.current = "inhale";
-    phaseElapsedRef.current = 0;
-    secondsLeftRef.current = sessionMinutes * 60;
-    setPhase("inhale");
-    setPhaseProgress(0);
-    setSecondsLeft(sessionMinutes * 60);
-    setBreathCount(0);
-    setDone(false);
-    setRunning(true);
-    startAmbient(ambient);
-  }
-
-  // Pause / resume
-  function handleTogglePause() {
+  // Timer tick
+  useEffect(() => {
     if (running) {
-      setRunning(false);
-      stopAmbient();
+      intervalRef.current = setInterval(() => {
+        setSecondsLeft((prev) => {
+          if (prev <= 1) {
+            clearInterval(intervalRef.current!);
+            setRunning(false);
+            setFinished(true);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
     } else {
-      setRunning(true);
-      startAmbient(ambient);
-    }
-  }
-
-  // Reset everything
-  function handleReset() {
-    if (intervalRef.current) clearInterval(intervalRef.current);
-    stopAmbient();
-    // Stop any playing voice audio
-    if (voiceRef.current) { voiceRef.current.pause(); voiceRef.current = null; }
-    setIntroPlaying(false);
-    setRunning(false);
-    setDone(false);
-    setPhase("inhale");
-    setPhaseProgress(0);
-    setSecondsLeft(sessionMinutes * 60);
-    setBreathCount(0);
-    phaseRef.current = "inhale";
-    phaseElapsedRef.current = 0;
-    secondsLeftRef.current = sessionMinutes * 60;
-  }
-
-  // Main timer tick — runs every 100ms when running
-  useEffect(() => {
-    if (!running) {
       if (intervalRef.current) clearInterval(intervalRef.current);
-      return;
     }
-
-    intervalRef.current = setInterval(() => {
-      const TICK = 0.1; // seconds per tick
-
-      // Decrement overall session countdown
-      secondsLeftRef.current = Math.max(0, secondsLeftRef.current - TICK);
-      setSecondsLeft(Math.ceil(secondsLeftRef.current));
-
-      // Session done
-      if (secondsLeftRef.current <= 0) {
-        clearInterval(intervalRef.current!);
-        setRunning(false);
-        setDone(true);
-        stopAmbient();
-        if (audioCtxRef.current) playBell(audioCtxRef.current);
-        // Play Natalie's outro after a short pause so the bell is heard first
-        setTimeout(() => { playVoice(VOICE_OUTRO_URL); }, 2000);
-        return;
-      }
-
-      // Advance phase elapsed
-      phaseElapsedRef.current += TICK;
-      const phaseDur = getPhaseDuration(phaseRef.current);
-      const progress = Math.min(phaseElapsedRef.current / phaseDur, 1);
-      setPhaseProgress(progress);
-
-      // Move to next phase when current one finishes
-      if (phaseElapsedRef.current >= phaseDur) {
-        const next = getNextPhase(phaseRef.current);
-        // Count a breath every time we complete a full inhale
-        if (next === "inhale") setBreathCount((n) => n + 1);
-        phaseRef.current = next;
-        phaseElapsedRef.current = 0;
-        setPhase(next);
-        setPhaseProgress(0);
-      }
-    }, 100);
-
     return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [running, patternKey, custom]);
+  }, [running]);
 
-  // When session length changes while not running, reset the countdown display
-  useEffect(() => {
-    if (!running && !done) {
-      setSecondsLeft(sessionMinutes * 60);
-      secondsLeftRef.current = sessionMinutes * 60;
-    }
-  }, [sessionMinutes, running, done]);
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-      stopAmbient();
-      if (voiceRef.current) { voiceRef.current.pause(); voiceRef.current = null; }
-    };
-  }, [stopAmbient]);
-
-  const circleSize = getCircleSize();
-  const sessionProgress = 1 - secondsLeft / (sessionMinutes * 60);
-
-  // Format seconds as m:ss
-  function fmt(s: number) {
-    const m = Math.floor(s / 60);
-    const sec = s % 60;
-    return `${m}:${sec.toString().padStart(2, "0")}`;
+  function selectDuration(mins: number) {
+    setSelectedDuration(mins);
+    setSecondsLeft(mins * 60);
+    setRunning(false);
+    setFinished(false);
   }
 
-  const started = running || done || introPlaying || secondsLeft < sessionMinutes * 60;
+  function handleStart() {
+    if (finished) {
+      setSecondsLeft(selectedDuration * 60);
+      setFinished(false);
+    }
+    setRunning(true);
+  }
+
+  function handleReset() {
+    setRunning(false);
+    setFinished(false);
+    setSecondsLeft(selectedDuration * 60);
+  }
+
+  const mins = Math.floor(secondsLeft / 60);
+  const secs = secondsLeft % 60;
+  const timeDisplay = `${pad(mins)}:${pad(secs)}`;
+  const progress = 1 - secondsLeft / (selectedDuration * 60);
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#0D0D1A" }}>
-      <Navbar />
+    <div className="min-h-screen flex flex-col" style={{ backgroundColor: "#001716", color: "#ffffff", fontFamily: "var(--font-manrope)" }}>
 
-      <main className="flex-1 w-full max-w-lg mx-auto px-4 sm:px-6 py-8 pb-24 flex flex-col">
+      {/* ── FIXED BACKGROUND ──────────────────────────────────────────── */}
+      <div className="fixed inset-0 z-0 overflow-hidden">
+        <img
+          src="https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?w=1600&h=900&fit=crop&q=60"
+          alt=""
+          className="w-full h-full object-cover"
+          style={{ filter: "grayscale(60%) brightness(0.35)" }}
+        />
+        <div className="absolute inset-0" style={{ background: "rgba(0,23,22,0.6)", backdropFilter: "blur(24px)" }} />
+      </div>
 
-        {/* Back */}
-        <Link href="/" className="inline-flex items-center gap-1.5 text-sm text-white/40 hover:text-white/70 transition-colors mb-8">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
-          </svg>
-          Back
-        </Link>
+      {/* Floating glow accents */}
+      <div className="fixed top-1/4 -right-20 w-96 h-96 rounded-full pointer-events-none" style={{ background: "rgba(255,65,142,0.08)", filter: "blur(120px)" }} />
+      <div className="fixed bottom-1/4 -left-20 w-80 h-80 rounded-full pointer-events-none" style={{ background: "rgba(236,114,61,0.08)", filter: "blur(100px)" }} />
 
-        {/* Title */}
-        <div className="mb-8">
-          <h1 className="text-2xl text-white" style={{ fontWeight: 500 }}>Breathing Timer</h1>
-          <p className="text-sm text-white/40 mt-1">Calm your nervous system. No fluff.</p>
-        </div>
-
-        {/* ── PATTERN SELECTOR ─────────────────────────────────── */}
-        {!started && (
-          <div className="mb-8">
-            <p className="text-xs text-white/40 mb-3" style={{ letterSpacing: "0.05em", textTransform: "uppercase" }}>Pattern</p>
-            <div className="flex gap-2">
-              {(Object.keys(PATTERNS) as PatternKey[]).map((key) => (
-                <button
-                  key={key}
-                  onClick={() => { setPatternKey(key); setShowCustom(key === "custom"); }}
-                  className="flex-1 py-3 rounded-[10px] text-sm transition-colors"
-                  style={{
-                    backgroundColor: patternKey === key ? "rgba(139,92,246,0.2)" : "rgba(255,255,255,0.04)",
-                    border: patternKey === key ? "0.5px solid rgba(139,92,246,0.5)" : "0.5px solid rgba(255,255,255,0.08)",
-                    color: patternKey === key ? "#C4B5FD" : "rgba(255,255,255,0.45)",
-                    fontWeight: patternKey === key ? 500 : 400,
-                  }}
-                >
-                  <span className="block">{PATTERNS[key].label}</span>
-                  <span className="block text-[11px] mt-0.5 opacity-60">{PATTERNS[key].sub}</span>
-                </button>
-              ))}
-            </div>
-
-            {/* Custom pattern inputs */}
-            {showCustom && (
-              <div
-                className="mt-3 p-4 rounded-[10px] grid grid-cols-4 gap-3"
-                style={{ backgroundColor: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.08)" }}
-              >
-                {(["in", "holdIn", "out", "holdOut"] as const).map((field) => (
-                  <div key={field} className="flex flex-col items-center gap-1.5">
-                    <label className="text-[10px] text-white/30 text-center leading-tight">
-                      {field === "in" ? "In" : field === "holdIn" ? "Hold in" : field === "out" ? "Out" : "Hold out"}
-                    </label>
-                    <div className="flex flex-col items-center gap-1">
-                      <button
-                        onClick={() => setCustom((c) => ({ ...c, [field]: Math.min(20, c[field] + 1) }))}
-                        className="text-white/40 hover:text-white transition-colors text-lg leading-none p-2"
-                      >+</button>
-                      <span className="text-white text-lg tabular-nums" style={{ fontWeight: 500 }}>{custom[field]}</span>
-                      <button
-                        onClick={() => setCustom((c) => ({ ...c, [field]: Math.max(0, c[field] - 1) }))}
-                        className="text-white/40 hover:text-white transition-colors text-lg leading-none p-2"
-                      >−</button>
-                    </div>
-                    <span className="text-[10px] text-white/20">sec</span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* ── ANIMATED CIRCLE ──────────────────────────────────── */}
-        <div className="flex flex-col items-center justify-center flex-1 py-2">
-
-          {/* Outer glow ring */}
-          <div className="relative flex items-center justify-center" style={{ width: MAX_SIZE + 80, height: MAX_SIZE + 80 }}>
-
-            {/* Subtle pulsing ring behind the circle */}
-            {running && (
-              <div
-                className="absolute rounded-full"
-                style={{
-                  width: circleSize + 40,
-                  height: circleSize + 40,
-                  background: "rgba(139,92,246,0.06)",
-                  transition: "width 0.1s linear, height 0.1s linear",
-                }}
-              />
-            )}
-
-            {/* Main breathing circle */}
-            <div
-              className="rounded-full flex items-center justify-center"
+      {/* ── HEADER ─────────────────────────────────────────────────────── */}
+      <header
+        className="fixed top-0 w-full z-50 flex items-center justify-between px-6 py-4"
+        style={{
+          background: "rgba(0,0,0,0.5)",
+          backdropFilter: "blur(16px)",
+          borderBottom: "1px solid rgba(255,255,255,0.08)",
+        }}
+      >
+        <Logo href="/" size="md" />
+        <nav className="hidden md:flex items-center gap-8">
+          {[
+            { label: "Timer", href: "/timer" },
+            { label: "Library", href: "/library" },
+            { label: "Live", href: "/live" },
+            { label: "About", href: "/about" },
+            { label: "Group Meds", href: "/rooms" },
+          ].map((item) => (
+            <Link
+              key={item.label}
+              href={item.href}
+              className="text-sm font-bold transition-colors hover:text-white"
               style={{
-                width: circleSize,
-                height: circleSize,
-                background: done
-                  ? "linear-gradient(135deg, #10B981, #22C55E)"
-                  : "linear-gradient(135deg, #6B21E8 0%, #8B3CF7 25%, #6366F1 60%, #3B82F6 80%, #22D3EE 100%)",
-                boxShadow: running
-                  ? `0 0 ${circleSize * 0.3}px rgba(139,92,246,0.25)`
-                  : "none",
-                transition: "width 0.1s linear, height 0.1s linear, box-shadow 0.5s ease",
+                color: item.label === "Timer" ? "#aaee20" : "rgba(255,255,255,0.55)",
+                fontFamily: "var(--font-lexend)",
+                borderBottom: item.label === "Timer" ? "2px solid #aaee20" : "none",
+                paddingBottom: "2px",
               }}
             >
-              {/* Phase text inside circle */}
-              <div className="text-center px-4">
-                {done ? (
-                  <>
-                    <p className="text-2xl">🙏</p>
-                    <p className="text-white text-sm mt-1" style={{ fontWeight: 500 }}>Done</p>
-                  </>
-                ) : introPlaying ? (
-                  <p className="text-white/70 text-sm leading-snug text-center" style={{ fontWeight: 500 }}>
-                    Get comfortable…
-                  </p>
-                ) : running ? (
-                  <>
-                    <p className="text-white text-sm" style={{ fontWeight: 500 }}>{PHASE_LABEL[phase]}</p>
-                    <p className="text-white/60 text-xs mt-0.5">{Math.ceil(getPhaseDuration(phase) - getPhaseDuration(phase) * phaseProgress)}s</p>
-                  </>
-                ) : (
-                  <p className="text-white/60 text-sm">Ready</p>
-                )}
-              </div>
-            </div>
-          </div>
+              {item.label}
+            </Link>
+          ))}
+        </nav>
+        <Link
+          href={user ? "/profile" : "/login"}
+          className="px-6 py-2 rounded-full text-sm font-bold uppercase tracking-wide transition-all hover:opacity-90"
+          style={{ backgroundColor: "#ff41b3", color: "#fff", fontFamily: "var(--font-lexend)" }}
+        >
+          {user ? "My Account" : "Sign In"}
+        </Link>
+      </header>
 
-          {/* Session time remaining */}
-          <div className="flex items-center gap-4 mt-6">
-            <p
-              className="text-3xl tabular-nums text-white"
-              style={{ fontWeight: 300, letterSpacing: "-0.02em" }}
+      {/* ── MAIN CONTENT ───────────────────────────────────────────────── */}
+      <main className="relative z-10 flex-grow flex flex-col items-center justify-center px-4 pt-28 pb-16">
+
+        {/* Micro copy */}
+        <div className="mb-10 text-center">
+          <span
+            className="tracking-[0.4em] text-xs font-bold uppercase block mb-2"
+            style={{ color: "#ffb690", opacity: 0.8 }}
+          >
+            The Daily Meds
+          </span>
+          <h2
+            className="text-lg font-light tracking-wide italic"
+            style={{ color: "rgba(255,255,255,0.6)", fontFamily: "var(--font-lexend)" }}
+          >
+            Your ritual, recorded.
+          </h2>
+        </div>
+
+        {/* ── TIMER SECTION ──────────────────────────────────────────── */}
+        <div className="flex flex-col items-center w-full max-w-4xl">
+
+          {/* Big timer display */}
+          <div className="relative group cursor-default mb-14">
+            <div
+              className="absolute pointer-events-none"
+              style={{
+                inset: "-2.5rem",
+                background: "rgba(255,65,142,0.05)",
+                filter: "blur(100px)",
+                borderRadius: "9999px",
+                opacity: running ? 1 : 0.5,
+                transition: "opacity 0.5s",
+              }}
+            />
+            {/* Progress ring */}
+            <svg
+              className="absolute pointer-events-none"
+              style={{ inset: "-24px", width: "calc(100% + 48px)", height: "calc(100% + 48px)" }}
+              viewBox="0 0 400 160"
             >
-              {fmt(secondsLeft)}
-            </p>
-            {running && (
-              <p className="text-xs text-white/30">
-                {breathCount} breath{breathCount !== 1 ? "s" : ""}
+              <rect x="0" y="0" width="400" height="160" fill="none" />
+            </svg>
+            <h1
+              className="font-black leading-none text-white drop-shadow-2xl"
+              style={{
+                fontFamily: "var(--font-lexend)",
+                fontSize: "clamp(5rem, 18vw, 14rem)",
+                fontVariantNumeric: "tabular-nums",
+                letterSpacing: "-0.05em",
+                fontWeight: 100,
+                color: finished ? "#aaee20" : "#ffffff",
+                transition: "color 0.5s",
+              }}
+            >
+              {timeDisplay}
+            </h1>
+            {finished && (
+              <p className="text-center text-sm mt-2 font-bold uppercase tracking-widest" style={{ color: "#aaee20", fontFamily: "var(--font-lexend)" }}>
+                Session complete ✓
               </p>
             )}
           </div>
 
-          {/* Session progress bar */}
-          <div className="w-full max-w-xs mt-4 h-0.5 rounded-full" style={{ backgroundColor: "rgba(255,255,255,0.07)" }}>
-            <div
-              className="h-full rounded-full transition-all duration-500"
-              style={{
-                width: `${sessionProgress * 100}%`,
-                background: "linear-gradient(90deg, #6B21E8, #22D3EE)",
-              }}
-            />
-          </div>
-        </div>
-
-        {/* ── CONTROLS ─────────────────────────────────────────── */}
-        <div className="flex flex-col gap-5 mt-4">
-
-          {/* Start / Pause / Reset buttons */}
-          <div className="flex gap-3">
-            {!started ? (
-              <button
-                onClick={handleStart}
-                className="flex-1 py-4 rounded-[10px] text-white text-sm transition-opacity hover:opacity-80"
-                style={{ background: "linear-gradient(135deg, #6B21E8, #22D3EE)", fontWeight: 500 }}
-              >
-                Start Session
-              </button>
-            ) : done ? (
-              <button
-                onClick={handleReset}
-                className="flex-1 py-4 rounded-[10px] text-white text-sm transition-opacity hover:opacity-80"
-                style={{ background: "linear-gradient(135deg, #10B981, #22C55E)", fontWeight: 500 }}
-              >
-                Start Again
-              </button>
-            ) : (
-              <>
+          {/* Duration selection */}
+          <div className="flex flex-wrap justify-center gap-4 mb-14">
+            {DURATIONS.map((d) => {
+              const active = d === selectedDuration;
+              return (
                 <button
-                  onClick={handleTogglePause}
-                  className="flex-1 py-4 rounded-[10px] text-white text-sm transition-opacity hover:opacity-80"
+                  key={d}
+                  onClick={() => selectDuration(d)}
+                  className="px-8 py-4 rounded-xl transition-all active:scale-95"
                   style={{
-                    background: running
-                      ? "rgba(255,255,255,0.08)"
-                      : "linear-gradient(135deg, #6B21E8, #22D3EE)",
-                    border: running ? "0.5px solid rgba(255,255,255,0.12)" : "none",
-                    fontWeight: 500,
+                    background: active ? "rgba(255,255,255,0.12)" : "rgba(0,23,22,0.4)",
+                    backdropFilter: "blur(24px)",
+                    border: active ? "1px solid rgba(255,65,142,0.4)" : "1px solid rgba(255,255,255,0.08)",
                   }}
                 >
-                  {running ? "Pause" : "Resume"}
+                  <span
+                    className="block text-xs font-bold uppercase tracking-widest mb-1"
+                    style={{ color: active ? "#ff41b3" : "rgba(255,255,255,0.4)", fontFamily: "var(--font-lexend)" }}
+                  >
+                    Duration
+                  </span>
+                  <span className="block text-xl font-bold text-white" style={{ fontFamily: "var(--font-lexend)" }}>
+                    {d} min
+                  </span>
                 </button>
-                <button
-                  onClick={handleReset}
-                  className="px-5 py-4 rounded-[10px] text-white/40 hover:text-white/70 transition-colors"
-                  style={{ border: "0.5px solid rgba(255,255,255,0.1)" }}
-                  aria-label="Reset"
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
-                  </svg>
-                </button>
-              </>
-            )}
+              );
+            })}
           </div>
 
-          {/* Session length + ambient sound — only shown before starting */}
-          {!started && (
-            <>
-              {/* Session length */}
-              <div>
-                <p className="text-xs text-white/40 mb-3" style={{ letterSpacing: "0.05em", textTransform: "uppercase" }}>Session length</p>
-                <div className="flex gap-2">
-                  {SESSION_LENGTHS.map((mins) => (
-                    <button
-                      key={mins}
-                      onClick={() => setSessionMinutes(mins)}
-                      className="flex-1 py-2.5 rounded-full text-sm transition-colors"
-                      style={{
-                        backgroundColor: sessionMinutes === mins ? "#8B5CF6" : "rgba(255,255,255,0.05)",
-                        color: sessionMinutes === mins ? "white" : "rgba(255,255,255,0.4)",
-                        border: sessionMinutes === mins ? "none" : "0.5px solid rgba(255,255,255,0.08)",
-                        fontWeight: sessionMinutes === mins ? 500 : 400,
-                      }}
-                    >
-                      {mins}m
-                    </button>
-                  ))}
-                  {/* Custom minutes input */}
-                  <div className="relative flex items-center">
-                    <input
-                      type="number"
-                      min={1}
-                      max={120}
-                      placeholder="?"
-                      value={SESSION_LENGTHS.includes(sessionMinutes) ? "" : sessionMinutes}
-                      onChange={(e) => {
-                        const val = parseInt(e.target.value, 10);
-                        if (!isNaN(val) && val >= 1 && val <= 120) setSessionMinutes(val);
-                      }}
-                      className="w-14 py-2.5 rounded-full text-sm text-center outline-none tabular-nums"
-                      style={{
-                        backgroundColor: !SESSION_LENGTHS.includes(sessionMinutes) ? "#8B5CF6" : "rgba(255,255,255,0.05)",
-                        color: !SESSION_LENGTHS.includes(sessionMinutes) ? "white" : "rgba(255,255,255,0.4)",
-                        border: !SESSION_LENGTHS.includes(sessionMinutes) ? "none" : "0.5px solid rgba(255,255,255,0.08)",
-                        fontWeight: 500,
-                        MozAppearance: "textfield",
-                      } as React.CSSProperties}
-                    />
-                  </div>
+          {/* Auth gate — if not logged in, show lock overlay */}
+          {authChecked && !user ? (
+            <div className="w-full max-w-md text-center">
+              <div
+                className="p-8 rounded-2xl mb-6"
+                style={{
+                  background: "rgba(0,23,22,0.6)",
+                  backdropFilter: "blur(24px)",
+                  border: "1px solid rgba(255,255,255,0.08)",
+                }}
+              >
+                <div
+                  className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4"
+                  style={{ background: "linear-gradient(135deg, #ff41b3, #ec723d)" }}
+                >
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+                    <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+                  </svg>
                 </div>
-                <p className="text-[11px] text-white/20 mt-1.5">Or type any number (1–120 mins)</p>
-              </div>
-
-              {/* Ambient sound */}
-              <div>
-                <p className="text-xs text-white/40 mb-3" style={{ letterSpacing: "0.05em", textTransform: "uppercase" }}>Ambient sound</p>
-                <div className="grid grid-cols-4 gap-2">
-                  {(["silence", "rain", "bowls", "nature"] as AmbientType[]).map((type) => {
-                    const icons: Record<AmbientType, string> = {
-                      silence: "🔇",
-                      rain:    "🌧️",
-                      bowls:   "🎵",
-                      nature:  "🌿",
-                    };
-                    const labels: Record<AmbientType, string> = {
-                      silence: "Silence",
-                      rain:    "Rain",
-                      bowls:   "Bowls",
-                      nature:  "Nature",
-                    };
-                    return (
-                      <button
-                        key={type}
-                        onClick={() => setAmbient(type)}
-                        className="flex flex-col items-center gap-1.5 py-3 rounded-[10px] transition-colors"
-                        style={{
-                          backgroundColor: ambient === type ? "rgba(139,92,246,0.18)" : "rgba(255,255,255,0.04)",
-                          border: ambient === type ? "0.5px solid rgba(139,92,246,0.45)" : "0.5px solid rgba(255,255,255,0.07)",
-                        }}
-                      >
-                        <span className="text-xl">{icons[type]}</span>
-                        <span className="text-[11px]" style={{ color: ambient === type ? "#C4B5FD" : "rgba(255,255,255,0.35)", fontWeight: ambient === type ? 500 : 400 }}>
-                          {labels[type]}
-                        </span>
-                      </button>
-                    );
-                  })}
+                <h3 className="text-xl font-black uppercase mb-2" style={{ fontFamily: "var(--font-lexend)" }}>
+                  Create a free account to use the timer
+                </h3>
+                <p className="text-sm mb-6" style={{ color: "rgba(255,255,255,0.5)" }}>
+                  The breathing timer is free for everyone — just sign up with your email to get started.
+                </p>
+                <div className="flex flex-col gap-3">
+                  <Link
+                    href="/signup"
+                    className="w-full py-4 rounded-2xl text-base font-black uppercase tracking-wide transition-all hover:opacity-90 text-center"
+                    style={{ background: "#ff41b3", color: "#fff", fontFamily: "var(--font-lexend)", boxShadow: "0 0 20px rgba(255,65,142,0.3)" }}
+                  >
+                    Create Free Account
+                  </Link>
+                  <Link
+                    href="/login"
+                    className="w-full py-4 rounded-2xl text-base font-bold uppercase tracking-wide transition-all hover:bg-white/5 text-center"
+                    style={{ border: "1px solid rgba(255,255,255,0.15)", color: "rgba(255,255,255,0.6)", fontFamily: "var(--font-lexend)" }}
+                  >
+                    Log In
+                  </Link>
                 </div>
               </div>
-            </>
-          )}
+            </div>
+          ) : authChecked && user ? (
+            /* Action buttons — logged in */
+            <div className="flex flex-col sm:flex-row items-center gap-6 w-full max-w-md">
+              <button
+                onClick={running ? () => setRunning(false) : handleStart}
+                className="w-full py-5 px-12 rounded-2xl font-black text-xl flex items-center justify-center gap-3 transition-all active:scale-95"
+                style={{
+                  background: running ? "rgba(255,65,142,0.3)" : "#ff4991",
+                  color: running ? "#ff4991" : "#fff",
+                  border: running ? "1px solid rgba(255,65,142,0.5)" : "none",
+                  fontFamily: "var(--font-lexend)",
+                  boxShadow: running ? "none" : "0 0 20px rgba(255,65,142,0.3)",
+                }}
+              >
+                {running ? (
+                  <>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                    PAUSE
+                  </>
+                ) : (
+                  <>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                    {finished ? "AGAIN" : "START"}
+                  </>
+                )}
+              </button>
+              <button
+                onClick={handleReset}
+                className="w-full py-5 px-12 rounded-2xl font-black text-xl flex items-center justify-center gap-3 transition-all active:scale-95 hover:bg-white/5"
+                style={{
+                  background: "rgba(0,23,22,0.4)",
+                  backdropFilter: "blur(24px)",
+                  border: "1px solid rgba(255,182,144,0.2)",
+                  color: "#ffb690",
+                  fontFamily: "var(--font-lexend)",
+                }}
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg>
+                RESET
+              </button>
+            </div>
+          ) : null}
         </div>
 
+        {/* ── TRENDING SESSIONS ──────────────────────────────────────── */}
+        <section className="w-full max-w-5xl mt-24">
+          <div className="flex items-end justify-between mb-8 px-2">
+            <h2
+              className="text-2xl uppercase tracking-tighter"
+              style={{ fontFamily: "var(--font-lexend)", fontWeight: 900, color: "#aaee20" }}
+            >
+              Trending Sessions
+            </h2>
+            <Link
+              href="/library"
+              className="text-xs font-bold uppercase tracking-widest hover:text-white transition-colors"
+              style={{ color: "rgba(255,255,255,0.4)", fontFamily: "var(--font-lexend)" }}
+            >
+              View All →
+            </Link>
+          </div>
+          <div className="flex gap-4 pb-4" style={{ overflowX: "auto", scrollSnapType: "x mandatory" }}>
+            {TRENDING.map((item) => (
+              <Link
+                key={item.title}
+                href={item.href}
+                className="group shrink-0"
+                style={{ minWidth: "200px", scrollSnapAlign: "start" }}
+              >
+                <div
+                  className="relative overflow-hidden rounded-xl"
+                  style={{ aspectRatio: "2/3", border: "0.5px solid rgba(255,255,255,0.08)" }}
+                >
+                  <div
+                    className="absolute inset-0 transition-transform duration-500 group-hover:scale-105"
+                    style={{ background: item.gradient }}
+                  />
+                  <div
+                    className="absolute bottom-0 left-0 right-0 p-4"
+                    style={{ background: "linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%)" }}
+                  >
+                    <p className="text-xs uppercase tracking-widest font-bold mb-1" style={{ color: "rgba(255,255,255,0.5)" }}>{item.tag}</p>
+                    <p className="text-sm font-black uppercase group-hover:text-[#aaee20] transition-colors" style={{ fontFamily: "var(--font-lexend)" }}>{item.title}</p>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        {/* ── SIGN UP BOX (only if not logged in) ───────────────────── */}
+        {authChecked && !user && (
+          <section className="w-full max-w-2xl mt-16">
+            <div
+              className="rounded-2xl p-10 text-center relative overflow-hidden"
+              style={{
+                background: "rgba(0,23,22,0.6)",
+                backdropFilter: "blur(24px)",
+                border: "1px solid rgba(255,255,255,0.07)",
+              }}
+            >
+              <div className="absolute top-0 right-0 w-48 h-48 pointer-events-none" style={{ background: "radial-gradient(circle, rgba(170,238,32,0.1) 0%, transparent 70%)", filter: "blur(40px)" }} />
+              <div className="absolute bottom-0 left-0 w-48 h-48 pointer-events-none" style={{ background: "radial-gradient(circle, rgba(255,65,179,0.1) 0%, transparent 70%)", filter: "blur(40px)" }} />
+              <h3 className="text-2xl font-black uppercase mb-3" style={{ fontFamily: "var(--font-lexend)" }}>
+                Want the full experience?
+              </h3>
+              <p className="text-sm mb-8 leading-relaxed" style={{ color: "rgba(255,255,255,0.5)" }}>
+                Get access to 100+ meditations, live sessions, group breathwork and more. Just £9.99/month.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <Link
+                  href="/signup"
+                  className="px-10 py-4 rounded-full font-black uppercase tracking-wide text-sm transition-all hover:scale-105 text-center"
+                  style={{ backgroundColor: "#aaee20", color: "#1a2600", fontFamily: "var(--font-lexend)" }}
+                >
+                  Start Free Today
+                </Link>
+                <Link
+                  href="/pricing"
+                  className="px-10 py-4 rounded-full font-bold uppercase tracking-wide text-sm transition-all hover:bg-white/5 text-center"
+                  style={{ border: "1px solid rgba(255,255,255,0.15)", color: "rgba(255,255,255,0.6)", fontFamily: "var(--font-lexend)" }}
+                >
+                  See Pricing
+                </Link>
+              </div>
+            </div>
+          </section>
+        )}
       </main>
 
-      <Footer />
+      {/* ── FOOTER ─────────────────────────────────────────────────────── */}
+      <footer
+        className="relative z-10 w-full py-8 flex flex-col md:flex-row items-center justify-between px-8 gap-4"
+        style={{
+          background: "rgba(0,0,0,0.7)",
+          backdropFilter: "blur(16px)",
+          borderTop: "1px solid rgba(255,255,255,0.05)",
+        }}
+      >
+        <Logo href="/" size="sm" />
+        <p className="text-sm" style={{ color: "rgba(255,255,255,0.3)", fontFamily: "var(--font-manrope)" }}>
+          © {new Date().getFullYear()} The Daily Meds. Breathe deeply.
+        </p>
+        <div className="flex gap-6">
+          {[
+            { label: "Privacy Policy", href: "/privacy" },
+            { label: "Terms of Service", href: "/terms" },
+          ].map((link) => (
+            <Link
+              key={link.label}
+              href={link.href}
+              className="text-sm hover:text-white transition-colors"
+              style={{ color: "rgba(255,255,255,0.35)" }}
+            >
+              {link.label}
+            </Link>
+          ))}
+        </div>
+      </footer>
     </div>
   );
 }

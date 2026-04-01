@@ -32,7 +32,7 @@ function StarPicker({ value, onChange }: { value: number; onChange: (n: number) 
             width="32"
             height="32"
             viewBox="0 0 24 24"
-            fill={star <= (hovered || value) ? "#FACC15" : "rgba(255,255,255,0.15)"}
+            fill={star <= (hovered || value) ? "#f4e71d" : "rgba(255,255,255,0.15)"}
             style={{ transition: "fill 0.1s" }}
           >
             <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
@@ -121,10 +121,10 @@ export default function ReviewPage() {
   // ── LOADING ────────────────────────────────────────────────────────────────
   if (loading) {
     return (
-      <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#0D0D1A" }}>
+      <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#131313" }}>
         <Navbar />
         <main className="flex-1 flex items-center justify-center">
-          <div className="w-6 h-6 rounded-full border-2 border-white/20 border-t-purple-400 animate-spin" />
+          <div className="w-6 h-6 rounded-full border-2 border-white/20 border-t-pink-400 animate-spin" />
         </main>
         <Footer />
       </div>
@@ -134,14 +134,14 @@ export default function ReviewPage() {
   // ── SUCCESS STATE ──────────────────────────────────────────────────────────
   if (submitted) {
     return (
-      <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#0D0D1A" }}>
+      <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#131313" }}>
         <Navbar />
         <main className="flex-1 flex items-center justify-center px-4">
           <div className="text-center max-w-sm">
             {/* Big star */}
             <div
               className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6"
-              style={{ background: "linear-gradient(135deg, #FACC15, #F97316)" }}
+              style={{ background: "linear-gradient(135deg, #f4e71d, #ec723d)" }}
             >
               <svg width="28" height="28" viewBox="0 0 24 24" fill="white">
                 <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
@@ -155,7 +155,7 @@ export default function ReviewPage() {
               <Link
                 href="/testimonials"
                 className="text-sm text-white px-5 py-2.5 rounded-full transition-opacity hover:opacity-80"
-                style={{ backgroundColor: "#8B5CF6", fontWeight: 500 }}
+                style={{ backgroundColor: "#ff41b3", fontWeight: 500 }}
               >
                 See all reviews
               </Link>
@@ -172,7 +172,7 @@ export default function ReviewPage() {
 
   // ── FORM ───────────────────────────────────────────────────────────────────
   return (
-    <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#0D0D1A" }}>
+    <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#131313" }}>
       <Navbar />
 
       <main className="flex-1 w-full max-w-xl mx-auto px-4 sm:px-6 py-10 pb-24">
@@ -207,7 +207,7 @@ export default function ReviewPage() {
               placeholder="How should we credit you?"
               className="w-full rounded-[10px] px-4 py-3 text-sm text-white outline-none placeholder:text-white/25"
               style={{
-                backgroundColor: "#1A1A2E",
+                backgroundColor: "#1F1F1F",
                 border: "0.5px solid rgba(255,255,255,0.1)",
               }}
             />
@@ -239,7 +239,7 @@ export default function ReviewPage() {
               rows={5}
               className="w-full rounded-[10px] px-4 py-3 text-sm text-white outline-none placeholder:text-white/25 resize-none leading-relaxed"
               style={{
-                backgroundColor: "#1A1A2E",
+                backgroundColor: "#1F1F1F",
                 border: "0.5px solid rgba(255,255,255,0.1)",
               }}
             />
@@ -258,7 +258,7 @@ export default function ReviewPage() {
               onChange={(e) => setSessionTag(e.target.value)}
               className="w-full rounded-[10px] px-4 py-3 text-sm text-white outline-none appearance-none"
               style={{
-                backgroundColor: "#1A1A2E",
+                backgroundColor: "#1F1F1F",
                 border: "0.5px solid rgba(255,255,255,0.1)",
                 color: sessionTag ? "white" : "rgba(255,255,255,0.4)",
               }}
@@ -295,7 +295,7 @@ export default function ReviewPage() {
             type="submit"
             disabled={submitting || rating === 0 || reviewText.trim().length < 20}
             className="w-full py-3.5 rounded-[10px] text-sm text-white transition-opacity hover:opacity-80 disabled:opacity-40 disabled:cursor-not-allowed"
-            style={{ backgroundColor: "#8B5CF6", fontWeight: 500 }}
+            style={{ backgroundColor: "#ff41b3", fontWeight: 500 }}
           >
             {submitting ? "Submitting…" : "Submit review"}
           </button>

@@ -28,17 +28,17 @@ type DownloadedSession = {
 
 // Gradient map for mood categories
 const MOOD_GRADIENTS: Record<string, string> = {
-  Hungover:         "linear-gradient(135deg, #6B21E8, #22D3EE)",
-  "After The Sesh": "linear-gradient(135deg, #F43F5E, #FACC15)",
-  "On A Comedown":  "linear-gradient(135deg, #10B981, #D9F100)",
-  "Feeling Empty":  "linear-gradient(135deg, #6B21E8, #22D3EE)",
-  "Can't Sleep":    "linear-gradient(135deg, #8B3CF7, #6366F1)",
-  Anxious:          "linear-gradient(135deg, #F43F5E, #F97316)",
-  Heartbroken:      "linear-gradient(135deg, #EC4899, #D946EF)",
-  Overwhelmed:      "linear-gradient(135deg, #F97316, #FACC15)",
-  "Low Energy":     "linear-gradient(135deg, #10B981, #22C55E)",
-  "Morning Reset":  "linear-gradient(135deg, #F43F5E, #FACC15)",
-  "Focus Mode":     "linear-gradient(135deg, #6B21E8, #6366F1)",
+  Hungover:         "linear-gradient(135deg, #ff41b3, #ec723d)",
+  "After The Sesh": "linear-gradient(135deg, #ff41b3, #f4e71d)",
+  "On A Comedown":  "linear-gradient(135deg, #adf225, #f4e71d)",
+  "Feeling Empty":  "linear-gradient(135deg, #ff41b3, #ec723d)",
+  "Can't Sleep":    "linear-gradient(135deg, #ff41b3, #adf225)",
+  Anxious:          "linear-gradient(135deg, #ec723d, #f4e71d)",
+  Heartbroken:      "linear-gradient(135deg, #ff41b3, #ec723d)",
+  Overwhelmed:      "linear-gradient(135deg, #ec723d, #f4e71d)",
+  "Low Energy":     "linear-gradient(135deg, #adf225, #f4e71d)",
+  "Morning Reset":  "linear-gradient(135deg, #ff41b3, #f4e71d)",
+  "Focus Mode":     "linear-gradient(135deg, #adf225, #ec723d)",
 };
 
 // Format a date string into a readable label like "Today", "Yesterday", or "12 Mar 2026"
@@ -116,7 +116,7 @@ export default function DownloadsPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#0D0D1A" }}>
+    <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#131313" }}>
       <Navbar />
 
       <main className="flex-1 w-full max-w-2xl mx-auto px-4 sm:px-6 py-10 pb-24">
@@ -134,7 +134,7 @@ export default function DownloadsPage() {
 
         {/* Page header */}
         <div className="mb-8">
-          <h1 className="text-2xl text-white mb-1" style={{ fontWeight: 500 }}>Downloads</h1>
+          <h1 className="text-2xl text-white mb-1 uppercase" style={{ fontFamily: "var(--font-plus-jakarta)", fontWeight: 800, letterSpacing: "-0.01em" }}>Downloads</h1>
           <p className="text-sm text-white/40">
             {loading
               ? "Loading…"
@@ -145,9 +145,9 @@ export default function DownloadsPage() {
         {/* Info note — annual/lifetime feature */}
         <div
           className="flex items-start gap-3 px-4 py-3 rounded-[10px] mb-6"
-          style={{ backgroundColor: "rgba(139,92,246,0.08)", border: "0.5px solid rgba(139,92,246,0.2)" }}
+          style={{ backgroundColor: "rgba(255,65,179,0.08)", border: "0.5px solid rgba(255,65,179,0.2)" }}
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="#8B5CF6" className="shrink-0 mt-0.5">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="#ff41b3" className="shrink-0 mt-0.5">
             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
           </svg>
           <p className="text-xs text-white/40 leading-relaxed">
@@ -162,7 +162,7 @@ export default function DownloadsPage() {
               <div
                 key={i}
                 className="h-20 rounded-[10px] animate-pulse"
-                style={{ backgroundColor: "#1A1A2E" }}
+                style={{ backgroundColor: "#1F1F1F" }}
               />
             ))}
           </div>
@@ -184,7 +184,7 @@ export default function DownloadsPage() {
             <Link
               href="/library"
               className="text-xs px-4 py-2 rounded-md text-white transition-opacity hover:opacity-80"
-              style={{ backgroundColor: "#8B5CF6" }}
+              style={{ backgroundColor: "#ff41b3" }}
             >
               Browse library
             </Link>
@@ -195,12 +195,12 @@ export default function DownloadsPage() {
         {!loading && downloads.length > 0 && (
           <div className="flex flex-col gap-3">
             {downloads.map((session) => {
-              const gradient = session.gradient || MOOD_GRADIENTS[session.mood_category] || "linear-gradient(135deg, #8B5CF6, #6366F1)";
+              const gradient = session.gradient || MOOD_GRADIENTS[session.mood_category] || "linear-gradient(135deg, #ff41b3, #adf225)";
               return (
                 <div
                   key={session.download_id}
                   className="flex items-center gap-4 p-4 rounded-[10px]"
-                  style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.08)" }}
+                  style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.08)" }}
                 >
                   {/* Gradient icon */}
                   <Link href={`/session/${session.session_id}`} className="shrink-0">
@@ -232,7 +232,7 @@ export default function DownloadsPage() {
                   {/* Offline badge + remove */}
                   <div className="flex flex-col items-end gap-2 shrink-0">
                     <div className="flex items-center gap-1">
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="rgba(16,185,129,0.8)">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="rgba(173,242,37,0.8)">
                         <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
                       </svg>
                       <span className="text-[10px] text-green-400/70">Offline</span>

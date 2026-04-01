@@ -1,461 +1,506 @@
 "use client";
 
-// User profile page — shows the logged-in user's avatar, membership status,
-// quick stats and recent session history.
-// Fetches the real user from Supabase on mount. Mock data used for session history
-// until Supabase user_progress table is populated with real content.
+// Profile / Settings page — same card design language as /stats.
+// Left: avatar card with change-photo. Right: bento settings cards.
+// Account, Security, Subscription, Preferences, Danger Zone.
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "../../lib/supabase-browser";
 import type { User } from "@supabase/supabase-js";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import StatusBadge from "../components/ui/StatusBadge";
 
-// ── MOCK SESSION HISTORY ───────────────────────────────────────────────────────
-// Replace with a real Supabase query to user_progress once content is uploaded.
+// ── REUSABLE CARD ─────────────────────────────────────────────────────────────
 
-const MOCK_HISTORY = [
-  { id: "1", title: "Hungover & Overwhelmed", type: "Guided Meditation", duration: "18 min", moodCategory: "Hungover", gradient: "linear-gradient(135deg, #6B21E8, #22D3EE)", completedAt: "Today" },
-  { id: "3", title: "3am Brain", type: "Sleep Audio", duration: "14 min", moodCategory: "Can't Sleep", gradient: "linear-gradient(135deg, #8B3CF7, #6366F1)", completedAt: "Yesterday" },
-  { id: "4", title: "Anxiety First Aid", type: "Breathwork", duration: "8 min", moodCategory: "Anxious", gradient: "linear-gradient(135deg, #F43F5E, #F97316)", completedAt: "2 days ago" },
-  { id: "2", title: "Come Down Slowly", type: "Breathwork", duration: "22 min", moodCategory: "On A Comedown", gradient: "linear-gradient(135deg, #10B981, #D9F100)", completedAt: "4 days ago" },
-  { id: "5", title: "The Morning After", type: "Guided Meditation", duration: "12 min", moodCategory: "After The Sesh", gradient: "linear-gradient(135deg, #F43F5E, #FACC15)", completedAt: "Last week" },
-];
-
-// Membership tier config — label, colours, description
-const MEMBERSHIP_CONFIG: Record<string, { label: string; gradient: string; description: string }> = {
-  free: {
-    label: "Free",
-    gradient: "linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.08))",
-    description: "Access to free sessions only",
-  },
-  monthly: {
-    label: "Monthly",
-    gradient: "linear-gradient(135deg, #8B5CF6, #6366F1)",
-    description: "Full library access · £19.99/mo",
-  },
-  annual: {
-    label: "Annual",
-    gradient: "linear-gradient(135deg, #F97316, #EAB308)",
-    description: "Full library + downloads · £199.99/yr",
-  },
-  lifetime: {
-    label: "Lifetime",
-    gradient: "linear-gradient(135deg, #F43F5E, #D946EF, #6366F1, #22D3EE)",
-    description: "Everything, forever",
-  },
-};
-
-// Quick stat card — shown in the row below the avatar
-function QuickStat({ value, label, href }: { value: string; label: string; href: string }) {
+function Card({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
-    <Link
-      href={href}
-      className="flex-1 flex flex-col items-center gap-1 py-4 rounded-[10px] hover:bg-white/[0.04] transition-colors"
-      style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.08)" }}
+    <div
+      className={`rounded-2xl ${className}`}
+      style={{ backgroundColor: "#1a1a1a", border: "0.5px solid rgba(255,255,255,0.07)" }}
     >
-      <span className="text-xl text-white" style={{ fontWeight: 500 }}>{value}</span>
-      <span className="text-xs text-white/40">{label}</span>
-    </Link>
+      {children}
+    </div>
   );
 }
 
-export default function ProfilePage() {
-  const router = useRouter();
-  const supabase = createClient();
+// ── SETTING ROW ───────────────────────────────────────────────────────────────
 
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [subscriptionStatus, setSubscriptionStatus] = useState("free");
-  const [renewalDate, setRenewalDate] = useState<string | null>(null);
-  const [portalLoading, setPortalLoading] = useState(false);
-  const [portalError, setPortalError] = useState("");
+function SettingRow({
+  label,
+  value,
+  accent = "rgba(255,255,255,0.5)",
+  onClick,
+  href,
+  danger = false,
+}: {
+  label: string;
+  value?: string;
+  accent?: string;
+  onClick?: () => void;
+  href?: string;
+  danger?: boolean;
+}) {
+  const inner = (
+    <div
+      className="flex items-center justify-between px-5 py-4 transition-colors cursor-pointer"
+      style={{ borderBottom: "0.5px solid rgba(255,255,255,0.05)" }}
+      onClick={onClick}
+    >
+      <div className="flex flex-col gap-0.5">
+        <span
+          className="text-sm"
+          style={{ color: danger ? "#ff5555" : "#e2e2e2", fontFamily: "var(--font-manrope)", fontWeight: 500 }}
+        >
+          {label}
+        </span>
+        {value && (
+          <span className="text-xs" style={{ color: "rgba(255,255,255,0.3)", fontFamily: "var(--font-manrope)" }}>
+            {value}
+          </span>
+        )}
+      </div>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill={danger ? "#ff5555" : "rgba(255,255,255,0.2)"}>
+        <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+      </svg>
+    </div>
+  );
 
-  // Community visibility settings
-  const [communitySettings, setCommunitySettings] = useState({ show_in_feed: false, show_in_leaderboard: false });
-  const [savingCommunity, setSavingCommunity] = useState(false);
+  if (href) return <Link href={href} className="block hover:bg-white/[0.02]">{inner}</Link>;
+  return <div className="hover:bg-white/[0.02]">{inner}</div>;
+}
 
-  // Fetch the current user and their subscription status on mount
-  useEffect(() => {
-    supabase.auth.getUser().then(async ({ data }) => {
-      if (!data.user) {
-        router.push("/login");
-        return;
-      }
-      setUser(data.user);
+// ── INLINE EDIT FIELD ─────────────────────────────────────────────────────────
 
-      // Fetch subscription_status from our users table
-      const { data: profile } = await supabase
-        .from("users")
-        .select("subscription_status")
-        .eq("id", data.user.id)
-        .single();
-      if (profile?.subscription_status) setSubscriptionStatus(profile.subscription_status);
+function InlineEdit({
+  label,
+  value,
+  type = "text",
+  onSave,
+  accent,
+}: {
+  label: string;
+  value: string;
+  type?: string;
+  onSave: (v: string) => Promise<void>;
+  accent?: string;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [val, setVal] = useState(value);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
 
-      // Fetch community settings
-      const { data: cs } = await supabase
-        .from("community_settings")
-        .select("*")
-        .eq("user_id", data.user.id)
-        .maybeSingle();
-      if (cs) setCommunitySettings({ show_in_feed: cs.show_in_feed, show_in_leaderboard: cs.show_in_leaderboard });
-
-      // Fetch renewal date from Stripe (only matters for paid subscribers)
-      if (profile?.subscription_status && profile.subscription_status !== "free") {
-        const portalRes = await fetch("/api/stripe/customer-portal");
-        if (portalRes.ok) {
-          const portalData = await portalRes.json();
-          if (portalData.renewalDate) setRenewalDate(portalData.renewalDate);
-        }
-      }
-
-      setLoading(false);
-    });
-  }, []);
-
-  // Open the Stripe Customer Portal so users can manage or cancel their subscription
-  async function handleManageSubscription() {
-    setPortalLoading(true);
-    setPortalError("");
-    try {
-      const res = await fetch("/api/stripe/customer-portal", { method: "POST" });
-      const data = await res.json();
-      if (!res.ok || !data.url) {
-        setPortalError(data.error ?? "Could not open billing portal. Please try again.");
-        return;
-      }
-      window.location.href = data.url;
-    } catch {
-      setPortalError("Network error — please try again.");
-    } finally {
-      setPortalLoading(false);
-    }
+  async function handleSave() {
+    setSaving(true);
+    await onSave(val);
+    setSaving(false);
+    setSaved(true);
+    setEditing(false);
+    setTimeout(() => setSaved(false), 2000);
   }
 
-  // Save community visibility settings
-  async function handleCommunityToggle(field: "show_in_feed" | "show_in_leaderboard") {
-    if (!user) return;
-    setSavingCommunity(true);
-    const updated = { ...communitySettings, [field]: !communitySettings[field] };
-    setCommunitySettings(updated);
-    await supabase.from("community_settings").upsert(
-      { user_id: user.id, ...updated, updated_at: new Date().toISOString() },
-      { onConflict: "user_id" }
-    );
-    setSavingCommunity(false);
-  }
-
-  // Sign out and redirect home
-  async function handleSignOut() {
-    await supabase.auth.signOut();
-    router.push("/");
-    router.refresh();
-  }
-
-  // Get display name — prefer Google name, fall back to email prefix
-  const displayName = user?.user_metadata?.full_name
-    || user?.user_metadata?.name
-    || user?.email?.split("@")[0]
-    || "Your Account";
-
-  // First letter of name for the avatar initial
-  const avatarInitial = displayName[0]?.toUpperCase() || "U";
-
-  // Google avatar photo (if user signed in with Google)
-  const avatarPhoto = user?.user_metadata?.avatar_url || null;
-
-  const membershipKey = MEMBERSHIP_CONFIG[subscriptionStatus] ? subscriptionStatus : "free";
-  const membership = MEMBERSHIP_CONFIG[membershipKey];
-
-  if (loading) {
+  if (editing) {
     return (
-      <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#0D0D1A" }}>
-        <Navbar />
-        <main className="flex-1 flex items-center justify-center">
-          <div className="w-6 h-6 rounded-full border-2 border-white/20 border-t-purple-400 animate-spin" />
-        </main>
-        <Footer />
+      <div
+        className="flex flex-col gap-3 px-5 py-4"
+        style={{ borderBottom: "0.5px solid rgba(255,255,255,0.05)" }}
+      >
+        <label className="text-xs uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.3)", fontFamily: "var(--font-lexend)" }}>
+          {label}
+        </label>
+        <input
+          type={type}
+          value={val}
+          onChange={(e) => setVal(e.target.value)}
+          className="w-full px-4 py-3 rounded-xl text-sm text-white outline-none"
+          style={{ backgroundColor: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,65,142,0.4)" }}
+          autoFocus
+        />
+        <div className="flex gap-3">
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            className="px-5 py-2 rounded-xl text-xs font-bold uppercase tracking-widest transition-all hover:opacity-90 disabled:opacity-50"
+            style={{ background: accent || "#ff41b3", color: "#fff", fontFamily: "var(--font-lexend)" }}
+          >
+            {saving ? "Saving…" : "Save"}
+          </button>
+          <button
+            onClick={() => { setEditing(false); setVal(value); }}
+            className="px-5 py-2 rounded-xl text-xs font-bold uppercase tracking-widest"
+            style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.5)", fontFamily: "var(--font-lexend)" }}
+          >
+            Cancel
+          </button>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#0D0D1A" }}>
+    <div
+      className="flex items-center justify-between px-5 py-4 hover:bg-white/[0.02] cursor-pointer transition-colors"
+      style={{ borderBottom: "0.5px solid rgba(255,255,255,0.05)" }}
+      onClick={() => setEditing(true)}
+    >
+      <div className="flex flex-col gap-0.5">
+        <span className="text-sm" style={{ color: "#e2e2e2", fontWeight: 500, fontFamily: "var(--font-manrope)" }}>{label}</span>
+        <span className="text-xs" style={{ color: saved ? "#adf225" : "rgba(255,255,255,0.3)", fontFamily: "var(--font-manrope)" }}>
+          {saved ? "Saved" : (value || "Not set")}
+        </span>
+      </div>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="rgba(255,255,255,0.2)">
+        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+      </svg>
+    </div>
+  );
+}
+
+// ── SECTION LABEL ─────────────────────────────────────────────────────────────
+
+function SectionLabel({ children, accent = "#ff41b3" }: { children: string; accent?: string }) {
+  return (
+    <p
+      className="text-xs uppercase tracking-widest px-5 pt-5 pb-3"
+      style={{ color: accent, fontFamily: "var(--font-space-grotesk)", fontWeight: 700 }}
+    >
+      {children}
+    </p>
+  );
+}
+
+// ── PAGE ──────────────────────────────────────────────────────────────────────
+
+export default function ProfilePage() {
+  const supabase = createClient();
+  const router = useRouter();
+
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [subscriptionStatus, setSubscriptionStatus] = useState("free");
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState<string | undefined>();
+  const [passwordMsg, setPasswordMsg] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    async function load() {
+      const { data: { user: u } } = await supabase.auth.getUser();
+      if (!u) { router.push("/login"); return; }
+      setUser(u);
+      setAvatarUrl(u.user_metadata?.avatar_url);
+
+      const { data: profile } = await supabase
+        .from("users")
+        .select("subscription_status")
+        .eq("id", u.id)
+        .single();
+      if (profile?.subscription_status) setSubscriptionStatus(profile.subscription_status);
+
+      setLoading(false);
+    }
+    load();
+  }, []);
+
+  const displayName = user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email?.split("@")[0] || "Member";
+  const avatarInitial = displayName.charAt(0).toUpperCase();
+
+  function formatMemberSince(iso: string) {
+    return new Date(iso).toLocaleDateString("en-GB", { month: "long", year: "numeric" });
+  }
+
+  // ── HANDLERS ──────────────────────────────────────────────────────────────
+
+  async function handleAvatarUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+    setUploadingAvatar(true);
+    const ext = file.name.split(".").pop();
+    const path = `avatars/${user.id}.${ext}`;
+    const { error: upErr } = await supabase.storage.from("avatars").upload(path, file, { upsert: true });
+    if (!upErr) {
+      const { data } = supabase.storage.from("avatars").getPublicUrl(path);
+      await supabase.auth.updateUser({ data: { avatar_url: data.publicUrl } });
+      setAvatarUrl(data.publicUrl);
+    }
+    setUploadingAvatar(false);
+  }
+
+  async function handleUpdateName(name: string) {
+    await supabase.auth.updateUser({ data: { full_name: name } });
+    setUser((u) => u ? { ...u, user_metadata: { ...u.user_metadata, full_name: name } } : u);
+  }
+
+  async function handleUpdateEmail(email: string) {
+    await supabase.auth.updateUser({ email });
+  }
+
+  async function handleSendPasswordReset() {
+    if (!user?.email) return;
+    await supabase.auth.resetPasswordForEmail(user.email, {
+      redirectTo: `${window.location.origin}/auth/callback`,
+    });
+    setPasswordMsg("Reset link sent to your email.");
+    setTimeout(() => setPasswordMsg(""), 4000);
+  }
+
+  async function handleSignOut() {
+    await supabase.auth.signOut();
+    router.push("/");
+  }
+
+  const PLAN_LABELS: Record<string, { label: string; color: string }> = {
+    free:     { label: "Free Plan",     color: "rgba(255,255,255,0.4)" },
+    monthly:  { label: "Monthly · £19.99/mo",   color: "#ff41b3" },
+    annual:   { label: "Annual · £199.99/yr",    color: "#ec723d" },
+    lifetime: { label: "Lifetime Access",        color: "#adf225" },
+  };
+  const plan = PLAN_LABELS[subscriptionStatus] ?? PLAN_LABELS.free;
+
+  return (
+    <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#131313" }}>
       <Navbar />
 
-      <main className="flex-1 max-w-2xl mx-auto w-full px-4 sm:px-6 py-10">
-
-        {/* ── PROFILE HEADER ── */}
-        <div
-          className="rounded-[10px] p-6 sm:p-8 mb-6 flex flex-col items-center text-center"
-          style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.08)" }}
-        >
-          {/* Avatar — Google photo if available, otherwise coloured initial */}
-          <div className="mb-4">
-            {avatarPhoto ? (
-              <img
-                src={avatarPhoto}
-                alt={displayName}
-                className="w-20 h-20 rounded-full object-cover"
-                style={{ border: "2px solid rgba(255,255,255,0.12)" }}
-              />
-            ) : (
-              <div
-                className="w-20 h-20 rounded-full flex items-center justify-center text-2xl text-white"
-                style={{
-                  background: "linear-gradient(135deg, #8B5CF6, #6366F1)",
-                  fontWeight: 500,
-                  border: "2px solid rgba(255,255,255,0.12)",
-                }}
-              >
-                {avatarInitial}
-              </div>
-            )}
-          </div>
-
-          {/* Name */}
-          <h1 className="text-xl text-white mb-1" style={{ fontWeight: 500 }}>
-            {displayName}
+      {/* ── HERO HEADER ── */}
+      <div
+        className="relative w-full"
+        style={{
+          background: "linear-gradient(180deg, rgba(30,10,25,0.9) 0%, #131313 100%)",
+          paddingTop: "64px",
+          paddingBottom: "48px",
+        }}
+      >
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <p
+            className="text-xs uppercase tracking-widest mb-2"
+            style={{ color: "#ff41b3", fontFamily: "var(--font-space-grotesk)", fontWeight: 700 }}
+          >
+            Your account
+          </p>
+          <h1
+            className="text-4xl sm:text-5xl text-white uppercase"
+            style={{ fontFamily: "var(--font-plus-jakarta)", fontWeight: 800, letterSpacing: "-0.02em", lineHeight: 1.1 }}
+          >
+            Profile &amp;<br />Settings
           </h1>
+        </div>
+      </div>
 
-          {/* Email */}
-          <p className="text-sm text-white/40 mb-4">{user?.email}</p>
+      <main className="flex-1 max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8 pb-16" style={{ marginTop: "-16px" }}>
 
-          {/* Membership badge */}
-          <div className="mb-5">
-            <StatusBadge tier={subscriptionStatus} />
-          </div>
-
-          <p className="text-xs text-white/30 mb-1">{membership.description}</p>
-
-          {/* Renewal date — shown for monthly/annual subscribers */}
-          {renewalDate && (
-            <p className="text-xs text-white/25 mb-5">Renews {renewalDate}</p>
-          )}
-          {/* Lifetime — never renews */}
-          {membershipKey === "lifetime" && (
-            <p className="text-xs text-white/25 mb-5">Never expires</p>
-          )}
-          {/* Free or no renewal info — just add spacing */}
-          {!renewalDate && membershipKey !== "lifetime" && (
-            <div className="mb-5" />
-          )}
-
-          {/* Upgrade button — only shown to free users */}
-          {membershipKey === "free" && (
-            <Link
-              href="/pricing"
-              className="px-5 py-2 rounded-md text-sm text-white transition-opacity hover:opacity-90"
-              style={{ backgroundColor: "#8B5CF6", fontWeight: 500 }}
-            >
-              Upgrade to Premium
-            </Link>
-          )}
-
-          {/* Manage subscription button — only shown to paid members */}
-          {membershipKey !== "free" && (
-            <div className="flex flex-col items-center gap-2">
-              <button
-                onClick={handleManageSubscription}
-                disabled={portalLoading}
-                className="px-5 py-2 rounded-md text-sm text-white/70 transition-opacity hover:opacity-80 disabled:opacity-50"
-                style={{ border: "0.5px solid rgba(255,255,255,0.15)", fontWeight: 500 }}
-              >
-                {portalLoading ? "Loading…" : "Manage subscription"}
-              </button>
-              {portalError && <p className="text-xs text-red-400">{portalError}</p>}
+        {loading ? (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div className="rounded-2xl h-80 animate-pulse" style={{ backgroundColor: "#1a1a1a" }} />
+            <div className="lg:col-span-2 flex flex-col gap-4">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="rounded-2xl h-36 animate-pulse" style={{ backgroundColor: "#1a1a1a" }} />
+              ))}
             </div>
-          )}
-        </div>
-
-        {/* ── QUICK STATS ROW ── */}
-        <div className="flex gap-3 mb-6">
-          <QuickStat value="7" label="Day streak" href="/stats" />
-          <QuickStat value="28" label="Sessions" href="/stats" />
-          <QuickStat value="342" label="Minutes" href="/stats" />
-        </div>
-
-        {/* ── RECENT SESSIONS ── */}
-        <div
-          className="rounded-[10px] p-6 mb-6"
-          style={{ backgroundColor: "#1A1A2E", border: "0.5px solid rgba(255,255,255,0.08)" }}
-        >
-          <div className="flex items-center justify-between mb-5">
-            <h2 className="text-sm text-white" style={{ fontWeight: 500 }}>Recent sessions</h2>
-            <Link href="/stats" className="text-xs text-white/40 hover:text-white/70 transition-colors">
-              View all stats →
-            </Link>
           </div>
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
 
-          <div className="flex flex-col gap-1">
-            {MOCK_HISTORY.map((session) => (
-              <Link
-                key={session.id}
-                href={`/session/${session.id}`}
-                className="flex items-center gap-3 p-3 -mx-3 rounded-lg hover:bg-white/[0.04] transition-colors group"
-              >
-                {/* Small gradient circle */}
+            {/* ── LEFT: AVATAR CARD ── */}
+            <Card className="p-6 flex flex-col items-center text-center gap-4 self-start">
+
+              {/* Avatar with pink gradient border */}
+              <div className="relative">
                 <div
-                  className="w-9 h-9 rounded-full shrink-0 flex items-center justify-center"
-                  style={{ background: session.gradient }}
+                  className="p-[3px] rounded-2xl"
+                  style={{ background: "linear-gradient(135deg, #ff41b3, #ec723d)" }}
                 >
-                  <svg width="16" height="16" viewBox="0 0 48 48" fill="none">
-                    <path d="M24 4C24 4 16 12 16 20C16 24.4 19.6 28 24 28C28.4 28 32 24.4 32 20C32 12 24 4 24 4Z" fill="white" opacity="0.9"/>
+                  <div
+                    className="w-28 h-28 rounded-xl overflow-hidden flex items-center justify-center"
+                    style={{ backgroundColor: "#1a1a1a" }}
+                  >
+                    {avatarUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={avatarUrl} alt={displayName} className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="text-4xl text-white" style={{ fontFamily: "var(--font-plus-jakarta)", fontWeight: 800 }}>
+                        {avatarInitial}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Upload overlay */}
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploadingAvatar}
+                  className="absolute -bottom-2 -right-2 w-8 h-8 rounded-full flex items-center justify-center transition-all hover:scale-110"
+                  style={{ background: "#ff41b3", border: "2px solid #131313" }}
+                  title="Change photo"
+                >
+                  {uploadingAvatar ? (
+                    <div className="w-3 h-3 rounded-full border border-white/30 border-t-white animate-spin" />
+                  ) : (
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="white">
+                      <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                    </svg>
+                  )}
+                </button>
+                <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
+              </div>
+
+              {/* Name + email */}
+              <div>
+                <h2 className="text-xl text-white mb-0.5" style={{ fontFamily: "var(--font-plus-jakarta)", fontWeight: 800 }}>
+                  {displayName}
+                </h2>
+                <p className="text-sm mb-3" style={{ color: "rgba(255,255,255,0.4)" }}>{user?.email}</p>
+                {/* Plan badge */}
+                <span
+                  className="text-xs px-3 py-1 rounded-full font-bold uppercase tracking-widest"
+                  style={{
+                    background: subscriptionStatus === "free" ? "rgba(255,255,255,0.06)" : "rgba(255,65,179,0.15)",
+                    border: `0.5px solid ${subscriptionStatus === "free" ? "rgba(255,255,255,0.1)" : "rgba(255,65,179,0.3)"}`,
+                    color: plan.color,
+                    fontFamily: "var(--font-space-grotesk)",
+                  }}
+                >
+                  {plan.label}
+                </span>
+              </div>
+
+              <div className="w-full" style={{ height: "0.5px", backgroundColor: "rgba(255,255,255,0.07)" }} />
+
+              {/* Quick links */}
+              <div className="w-full flex flex-col gap-2">
+                <Link
+                  href="/stats"
+                  className="flex items-center justify-between px-4 py-3 rounded-xl transition-colors hover:bg-white/[0.04]"
+                  style={{ backgroundColor: "#111111" }}
+                >
+                  <span className="text-sm text-white/60" style={{ fontFamily: "var(--font-manrope)" }}>View your stats</span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="rgba(255,255,255,0.2)">
+                    <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                  </svg>
+                </Link>
+                <Link
+                  href="/library"
+                  className="flex items-center justify-between px-4 py-3 rounded-xl transition-colors hover:bg-white/[0.04]"
+                  style={{ backgroundColor: "#111111" }}
+                >
+                  <span className="text-sm text-white/60" style={{ fontFamily: "var(--font-manrope)" }}>Browse library</span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="rgba(255,255,255,0.2)">
+                    <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                  </svg>
+                </Link>
+              </div>
+
+              {user?.created_at && (
+                <p className="text-xs" style={{ color: "rgba(255,255,255,0.2)", fontFamily: "var(--font-space-grotesk)" }}>
+                  Member since {formatMemberSince(user.created_at)}
+                </p>
+              )}
+            </Card>
+
+            {/* ── RIGHT: SETTINGS BENTO ── */}
+            <div className="lg:col-span-2 flex flex-col gap-4">
+
+              {/* ACCOUNT */}
+              <Card>
+                <SectionLabel accent="#ff41b3">Account</SectionLabel>
+                <InlineEdit
+                  label="Display name"
+                  value={displayName}
+                  onSave={handleUpdateName}
+                  accent="#ff41b3"
+                />
+                <InlineEdit
+                  label="Email address"
+                  value={user?.email || ""}
+                  type="email"
+                  onSave={handleUpdateEmail}
+                  accent="#ff41b3"
+                />
+                <div
+                  className="flex items-center justify-between px-5 py-4 hover:bg-white/[0.02] cursor-pointer transition-colors"
+                  onClick={handleSendPasswordReset}
+                >
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-sm" style={{ color: "#e2e2e2", fontWeight: 500, fontFamily: "var(--font-manrope)" }}>Change password</span>
+                    <span className="text-xs" style={{ color: passwordMsg ? "#adf225" : "rgba(255,255,255,0.3)", fontFamily: "var(--font-manrope)" }}>
+                      {passwordMsg || "Send reset link to your email"}
+                    </span>
+                  </div>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="rgba(255,255,255,0.2)">
+                    <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
                   </svg>
                 </div>
+              </Card>
 
-                {/* Session info */}
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm text-white/80 truncate group-hover:text-white transition-colors" style={{ fontWeight: 500 }}>
-                    {session.title}
-                  </p>
-                  <p className="text-xs text-white/35">{session.type} · {session.duration}</p>
+              {/* SUBSCRIPTION & BILLING */}
+              <Card>
+                <SectionLabel accent="#ec723d">Subscription &amp; Billing</SectionLabel>
+                <div
+                  className="flex items-center justify-between px-5 py-4"
+                  style={{ borderBottom: "0.5px solid rgba(255,255,255,0.05)" }}
+                >
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-sm" style={{ color: "#e2e2e2", fontWeight: 500, fontFamily: "var(--font-manrope)" }}>Current plan</span>
+                    <span className="text-xs font-bold" style={{ color: plan.color, fontFamily: "var(--font-manrope)" }}>
+                      {plan.label}
+                    </span>
+                  </div>
+                  {subscriptionStatus === "free" && (
+                    <Link
+                      href="/pricing"
+                      className="px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest transition-all hover:scale-105"
+                      style={{ background: "#ff41b3", color: "#fff", fontFamily: "var(--font-lexend)" }}
+                    >
+                      Upgrade
+                    </Link>
+                  )}
                 </div>
+                <SettingRow label="Billing details" value="Manage payment method" href="/pricing" />
+                <SettingRow label="Billing history" value="View past invoices" href="/pricing" />
+                {subscriptionStatus !== "free" && (
+                  <SettingRow label="Cancel subscription" value="You'll keep access until the end of your period" href="/pricing" />
+                )}
+              </Card>
 
-                {/* Date */}
-                <span className="text-xs text-white/25 shrink-0">{session.completedAt}</span>
-              </Link>
-            ))}
-          </div>
-        </div>
+              {/* PREFERENCES */}
+              <Card>
+                <SectionLabel accent="#adf225">Preferences</SectionLabel>
+                <SettingRow label="Notifications" value="Manage push and email alerts" href="/profile" />
+                <SettingRow label="Language" value="English" href="/profile" />
+                <SettingRow label="Offline downloads" value="Manage downloaded sessions" href="/downloads" />
+                <SettingRow label="Playlists" value="View and edit your playlists" href="/playlists" />
+              </Card>
 
-        {/* ── ACCOUNT SETTINGS ── */}
-        <div
-          className="rounded-[10px] overflow-hidden"
-          style={{ border: "0.5px solid rgba(255,255,255,0.08)" }}
-        >
-          {/* Row — membership (links to pricing for free users, opens portal for paid) */}
-          {membershipKey === "free" ? (
-            <Link
-              href="/pricing"
-              className="flex items-center justify-between px-5 py-4 hover:bg-white/[0.03] transition-colors"
-              style={{ backgroundColor: "#1A1A2E", borderBottom: "0.5px solid rgba(255,255,255,0.06)" }}
-            >
-              <span className="text-sm text-white/70">Membership &amp; billing</span>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="rgba(255,255,255,0.25)">
-                <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/>
-              </svg>
-            </Link>
-          ) : (
-            <button
-              onClick={handleManageSubscription}
-              disabled={portalLoading}
-              className="w-full flex items-center justify-between px-5 py-4 hover:bg-white/[0.03] transition-colors text-left disabled:opacity-50"
-              style={{ backgroundColor: "#1A1A2E", borderBottom: "0.5px solid rgba(255,255,255,0.06)" }}
-            >
-              <span className="text-sm text-white/70">Membership &amp; billing</span>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="rgba(255,255,255,0.25)">
-                <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/>
-              </svg>
-            </button>
-          )}
+              {/* DANGER ZONE */}
+              <Card>
+                <SectionLabel accent="rgba(255,85,85,0.8)">Account Actions</SectionLabel>
+                <div
+                  className="flex items-center justify-between px-5 py-4 hover:bg-white/[0.02] cursor-pointer transition-colors"
+                  style={{ borderBottom: "0.5px solid rgba(255,255,255,0.05)" }}
+                  onClick={handleSignOut}
+                >
+                  <span className="text-sm" style={{ color: "#e2e2e2", fontWeight: 500, fontFamily: "var(--font-manrope)" }}>Sign out</span>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="rgba(255,255,255,0.2)">
+                    <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
+                  </svg>
+                </div>
+                <div
+                  className="flex items-center justify-between px-5 py-4 hover:bg-red-500/5 cursor-pointer transition-colors"
+                  onClick={() => {/* TODO: delete account flow */}}
+                >
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-sm" style={{ color: "#ff5555", fontWeight: 500, fontFamily: "var(--font-manrope)" }}>Delete account</span>
+                    <span className="text-xs" style={{ color: "rgba(255,85,85,0.4)", fontFamily: "var(--font-manrope)" }}>Permanently remove your data</span>
+                  </div>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="rgba(255,85,85,0.4)">
+                    <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                  </svg>
+                </div>
+              </Card>
 
-          {/* Row — playlists */}
-          <Link
-            href="/playlists"
-            className="flex items-center justify-between px-5 py-4 hover:bg-white/[0.03] transition-colors"
-            style={{ backgroundColor: "#1A1A2E", borderBottom: "0.5px solid rgba(255,255,255,0.06)" }}
-          >
-            <span className="text-sm text-white/70">My playlists</span>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="rgba(255,255,255,0.25)">
-              <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/>
-            </svg>
-          </Link>
-
-          {/* Row — stats */}
-          <Link
-            href="/stats"
-            className="flex items-center justify-between px-5 py-4 hover:bg-white/[0.03] transition-colors"
-            style={{ backgroundColor: "#1A1A2E", borderBottom: "0.5px solid rgba(255,255,255,0.06)" }}
-          >
-            <span className="text-sm text-white/70">My stats</span>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="rgba(255,255,255,0.25)">
-              <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/>
-            </svg>
-          </Link>
-
-          {/* Row — affiliate */}
-          <Link
-            href="/affiliate"
-            className="flex items-center justify-between px-5 py-4 hover:bg-white/[0.03] transition-colors"
-            style={{ backgroundColor: "#1A1A2E", borderBottom: "0.5px solid rgba(255,255,255,0.06)" }}
-          >
-            <span className="text-sm text-white/70">Affiliate programme</span>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="rgba(255,255,255,0.25)">
-              <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/>
-            </svg>
-          </Link>
-
-          {/* Section header — community */}
-          <div
-            className="px-5 py-3"
-            style={{ backgroundColor: "#1A1A2E", borderTop: "0.5px solid rgba(255,255,255,0.06)", borderBottom: "0.5px solid rgba(255,255,255,0.06)" }}
-          >
-            <p className="text-xs text-white/30 uppercase tracking-wide">Community visibility</p>
-          </div>
-
-          {/* Toggle — show in community feed */}
-          <div
-            className="flex items-center justify-between px-5 py-4"
-            style={{ backgroundColor: "#1A1A2E", borderBottom: "0.5px solid rgba(255,255,255,0.06)" }}
-          >
-            <div>
-              <p className="text-sm text-white/70">Show my activity in the feed</p>
-              <p className="text-xs text-white/30 mt-0.5">Share completed sessions anonymously in the community</p>
             </div>
-            <button
-              onClick={() => handleCommunityToggle("show_in_feed")}
-              disabled={savingCommunity}
-              className="relative shrink-0 ml-4 w-10 h-6 rounded-full transition-colors duration-200 disabled:opacity-50"
-              style={{ backgroundColor: communitySettings.show_in_feed ? "#8B5CF6" : "rgba(255,255,255,0.12)" }}
-              aria-label="Toggle community feed visibility"
-            >
-              <span
-                className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform duration-200"
-                style={{ transform: communitySettings.show_in_feed ? "translateX(16px)" : "translateX(0)" }}
-              />
-            </button>
           </div>
-
-          {/* Toggle — show in leaderboard */}
-          <div
-            className="flex items-center justify-between px-5 py-4"
-            style={{ backgroundColor: "#1A1A2E", borderBottom: "0.5px solid rgba(255,255,255,0.06)" }}
-          >
-            <div>
-              <p className="text-sm text-white/70">Show me in the leaderboard</p>
-              <p className="text-xs text-white/30 mt-0.5">Appear in the most active this week rankings</p>
-            </div>
-            <button
-              onClick={() => handleCommunityToggle("show_in_leaderboard")}
-              disabled={savingCommunity}
-              className="relative shrink-0 ml-4 w-10 h-6 rounded-full transition-colors duration-200 disabled:opacity-50"
-              style={{ backgroundColor: communitySettings.show_in_leaderboard ? "#8B5CF6" : "rgba(255,255,255,0.12)" }}
-              aria-label="Toggle leaderboard visibility"
-            >
-              <span
-                className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform duration-200"
-                style={{ transform: communitySettings.show_in_leaderboard ? "translateX(16px)" : "translateX(0)" }}
-              />
-            </button>
-          </div>
-
-          {/* Row — sign out */}
-          <button
-            onClick={handleSignOut}
-            className="w-full flex items-center justify-between px-5 py-4 hover:bg-white/[0.03] transition-colors text-left"
-            style={{ backgroundColor: "#1A1A2E" }}
-          >
-            <span className="text-sm text-red-400/80">Sign out</span>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="rgba(248,113,113,0.5)">
-              <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
-            </svg>
-          </button>
-        </div>
-
+        )}
       </main>
 
       <Footer />
