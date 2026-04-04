@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Plus_Jakarta_Sans, Space_Grotesk, Lexend, Manrope } from "next/font/google";
+import { Lexend, Manrope } from "next/font/google";
 import "./globals.css";
 import { PlayerProvider } from "../lib/player-context";
 import { LanguageProvider } from "../lib/language-context";
@@ -24,29 +24,6 @@ const manrope = Manrope({
   display: "swap",
 });
 
-// Plus Jakarta Sans — kept for backwards compatibility
-const plusJakarta = Plus_Jakarta_Sans({
-  subsets: ["latin"],
-  weight: ["400", "500", "700", "800"],
-  variable: "--font-plus-jakarta",
-  display: "swap",
-});
-
-// Space Grotesk — kept for backwards compatibility
-const spaceGrotesk = Space_Grotesk({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "700"],
-  variable: "--font-space-grotesk",
-  display: "swap",
-});
-
-// Inter — body copy, descriptions, form fields
-const inter = Inter({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
-  variable: "--font-inter",
-  display: "swap",
-});
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://thedailymeds.com";
 
@@ -74,7 +51,7 @@ export const metadata: Metadata = {
     url: APP_URL,
     images: [
       {
-        url: `${APP_URL}/api/og?title=Daily+Meds&mood=Anxious`,
+        url: `${APP_URL}/api/og?title=Daily+Meds&description=Audio+for+Emotional+Emergencies&mood=Anxious`,
         width: 1200,
         height: 630,
         alt: "Daily Meds — Audio for Emotional Emergencies",
@@ -103,7 +80,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${lexend.variable} ${manrope.variable} ${plusJakarta.variable} ${spaceGrotesk.variable} ${inter.variable}`}
+      className={`${lexend.variable} ${manrope.variable}`}
     >
       <body className="bg-site-bg text-text-primary antialiased font-sans">
         {/* LanguageProvider manages the active language and RTL direction */}

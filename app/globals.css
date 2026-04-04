@@ -18,8 +18,13 @@
 @import 'swiper/css/navigation';
 
 /* ── CSS variables ───────────────────────────────────────────────────────── */
+/* Legacy font variables remapped to Lexend/Manrope so existing pages
+   continue working without needing individual file updates. */
 :root {
-  --font-nyata: 'Nyata', 'Space Grotesk', sans-serif;
+  --font-nyata: 'Nyata', var(--font-lexend), sans-serif;
+  --font-plus-jakarta: var(--font-lexend), sans-serif;
+  --font-space-grotesk: var(--font-lexend), sans-serif;
+  --font-inter: var(--font-manrope), sans-serif;
 }
 
 /* ── Base styles — whole site is dark themed ─────────────────────────────── */

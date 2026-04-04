@@ -38,27 +38,29 @@ function formatDate(iso: string) {
 }
 
 export default function AdminUsersPage() {
-  const [users, setUsers]       = useState<User[]>([]);
-  const [loading, setLoading]   = useState(true);
-  const [search, setSearch]     = useState("");
-  const [filter, setFilter]     = useState("all"); // all, paid, free
-  const [total, setTotal]       = useState(0);
+  const [users, setUsers]   = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState("all");
+  const [total, setTotal]   = useState(0);
+  const [page, setPage]     = useState(1);
+  const [pages, setPages]   = useState(1);
+  const limit = 100;
 
-  // Uses service role via env var — only works in a trusted context
   useEffect(() => {
     async function load() {
-      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-      // For user listing we use the admin stats API which has service role access
-      const res = await fetch("/api/admin/users");
+      setLoading(true);
+      const res = await fetch(`/api/admin/users?page=${page}&limit=${limit}`);
       if (res.ok) {
         const data = await res.json();
         setUsers(data.users ?? []);
         setTotal(data.total ?? 0);
+        setPages(data.pages ?? 1);
       }
       setLoading(false);
     }
     load();
-  }, []);
+  }, [page]);
 
   // Filter locally by search term and subscription filter
   const filtered = users.filter((u) => {
@@ -82,7 +84,7 @@ export default function AdminUsersPage() {
         {/* Header */}
         <div className="mb-6">
           <h1 className="text-2xl text-white mb-1" style={{ fontWeight: 500 }}>Users</h1>
-          <p className="text-sm text-white/40">{total} registered accounts</p>
+          <p className="text-sm text-white/40">{total} registered accounts · page {page} of {pages}</p>
         </div>
 
         {/* Search + filter bar */}
@@ -209,10 +211,45 @@ export default function AdminUsersPage() {
           )}
         </div>
 
-        {filtered.length > 0 && (
-          <p className="text-xs text-white/25 mt-3 text-right">
-            Showing {filtered.length} of {total} users
-          </p>
+        {/* Pagination */}
+        {pages > 1 && (
+          <div className="flex items-center justify-between mt-6">
+            <p className="text-xs text-white/25">
+              Showing {(page - 1) * limit + 1}–{Math.min(page * limit, total)} of {total} users
+            </p>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={page === 1}
+                className="px-3 py-1.5 rounded-lg text-xs transition-colors disabled:opacity-30"
+                style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.6)", border: "0.5px solid rgba(255,255,255,0.1)" }}
+              >
+                ← Prev
+              </button>
+              {Array.from({ length: pages }, (_, i) => i + 1).filter(p => Math.abs(p - page) <= 2).map(p => (
+                <button
+                  key={p}
+                  onClick={() => setPage(p)}
+                  className="w-8 h-8 rounded-lg text-xs transition-colors"
+                  style={{
+                    background: p === page ? "#ff41b3" : "rgba(255,255,255,0.06)",
+                    color: p === page ? "white" : "rgba(255,255,255,0.4)",
+                    border: "0.5px solid rgba(255,255,255,0.1)",
+                  }}
+                >
+                  {p}
+                </button>
+              ))}
+              <button
+                onClick={() => setPage((p) => Math.min(pages, p + 1))}
+                disabled={page === pages}
+                className="px-3 py-1.5 rounded-lg text-xs transition-colors disabled:opacity-30"
+                style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.6)", border: "0.5px solid rgba(255,255,255,0.1)" }}
+              >
+                Next →
+              </button>
+            </div>
+          </div>
         )}
 
       </div>

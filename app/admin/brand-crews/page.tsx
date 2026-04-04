@@ -6,6 +6,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import AdminShell from "../AdminShell";
 import { createClient } from "../../../lib/supabase-browser";
 import { type BrandCrew, BRAND_TYPES } from "../../../lib/brand-crews";
 
@@ -87,12 +88,12 @@ export default function AdminBrandCrewsPage() {
   };
 
   return (
-    <div className="min-h-screen px-4 py-8 max-w-4xl mx-auto" style={{ backgroundColor: "#131313" }}>
+    <AdminShell>
+    <div className="px-8 py-8 max-w-4xl mx-auto">
 
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <Link href="/admin" className="text-xs text-white/30 hover:text-white/60 mb-1 block">← Admin</Link>
           <h1 className="text-xl text-white" style={{ fontWeight: 500 }}>Brand Crew Applications</h1>
         </div>
         <Link
@@ -256,5 +257,6 @@ export default function AdminBrandCrewsPage() {
         </div>
       )}
     </div>
+    </AdminShell>
   );
 }

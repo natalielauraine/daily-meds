@@ -3,8 +3,12 @@
 // Uses the DAILY_API_KEY (server-side only — never exposed to the browser).
 
 import { NextRequest, NextResponse } from "next/server";
+import { requireAdmin } from "../../../../lib/require-admin";
 
 export async function POST(req: NextRequest) {
+  const authError = await requireAdmin();
+  if (authError) return authError;
+
   const apiKey = process.env.DAILY_API_KEY;
 
   if (!apiKey) {

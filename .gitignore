@@ -38,3 +38,6 @@ node_modules
 .next
 .env.local
 Netflix Style Images/
+
+# dev scripts — local only, not deployed
+/scripts/screenshot-*.mjs

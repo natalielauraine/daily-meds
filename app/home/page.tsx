@@ -301,7 +301,7 @@ export default function LoggedInHome() {
               key={item.title}
               href="/library"
               className="group shrink-0"
-              style={{ minWidth: "380px", scrollSnapAlign: "start" }}
+              style={{ minWidth: "min(340px, 85vw)", scrollSnapAlign: "start" }}
             >
               <div className="relative rounded-xl overflow-hidden" style={{ aspectRatio: "16/9", border: "0.5px solid rgba(255,255,255,0.07)" }}>
                 <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-105" style={{ background: item.gradient }} />
@@ -373,7 +373,7 @@ export default function LoggedInHome() {
         style={{ backgroundColor: "#010101", borderTop: "0.5px solid rgba(255,255,255,0.05)" }}
       >
         <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: LIME }}>
-          © 2024 The Daily Meds. Immersive Mindfulness.
+          © {new Date().getFullYear()} The Daily Meds. Immersive Mindfulness.
         </p>
         <div className="flex gap-8">
           {["Instagram", "Twitter", "YouTube"].map((s) => (

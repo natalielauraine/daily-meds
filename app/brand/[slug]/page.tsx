@@ -566,7 +566,7 @@ export default function BrandPortalPage() {
             className="text-[10px] uppercase tracking-widest"
             style={{ color: "rgba(255,255,255,0.2)", fontFamily: "var(--font-space-grotesk)" }}
           >
-            © 2024 The Daily Meds
+            © {new Date().getFullYear()} The Daily Meds
           </p>
         </div>
       </footer>

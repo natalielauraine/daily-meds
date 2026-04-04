@@ -749,7 +749,7 @@ export default function AffiliateOverviewPage() {
           className="mt-12 pt-6 flex items-center justify-between text-xs"
           style={{ borderTop: "1px solid rgba(255,255,255,0.06)", color: "rgba(224,250,250,0.2)", fontFamily: "var(--font-space-grotesk)" }}
         >
-          <span>© 2024 The Daily Meds — Admin Portal</span>
+          <span>© {new Date().getFullYear()} The Daily Meds — Admin Portal</span>
           <div className="flex gap-4">
             <Link href="/admin" className="hover:text-white/50 transition-colors">Admin Home</Link>
             <Link href="/affiliate/dashboard" className="hover:text-white/50 transition-colors">Affiliate Dashboard</Link>

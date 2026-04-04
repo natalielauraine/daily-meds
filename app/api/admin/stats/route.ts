@@ -26,6 +26,9 @@ export async function GET() {
     { count: annualMembers },
     { count: lifetimeMembers },
     { count: freeUsers },
+    { count: totalSessions },
+    { count: freeSessions },
+    { count: premiumSessions },
     { data: recentUsers },
   ] = await Promise.all([
     supabase.from("users").select("*", { count: "exact", head: true }),
@@ -33,22 +36,28 @@ export async function GET() {
     supabase.from("users").select("*", { count: "exact", head: true }).eq("subscription_status", "annual"),
     supabase.from("users").select("*", { count: "exact", head: true }).eq("subscription_status", "lifetime"),
     supabase.from("users").select("*", { count: "exact", head: true }).eq("subscription_status", "free"),
+    supabase.from("sessions").select("*", { count: "exact", head: true }),
+    supabase.from("sessions").select("*", { count: "exact", head: true }).eq("is_free", true),
+    supabase.from("sessions").select("*", { count: "exact", head: true }).eq("is_free", false),
     supabase.from("users").select("email, name, subscription_status, created_at").order("created_at", { ascending: false }).limit(5),
   ]);
 
   const paidMembers = (monthlyMembers ?? 0) + (annualMembers ?? 0) + (lifetimeMembers ?? 0);
 
-  // Rough monthly revenue estimate (in pence → pounds)
+  // Rough monthly revenue estimate
   const monthlyRevenue = (monthlyMembers ?? 0) * 19.99 + (annualMembers ?? 0) * (199.99 / 12);
 
   return NextResponse.json({
-    totalUsers:     totalUsers ?? 0,
+    totalUsers:      totalUsers ?? 0,
     paidMembers,
-    freeUsers:      freeUsers ?? 0,
-    monthlyMembers: monthlyMembers ?? 0,
-    annualMembers:  annualMembers ?? 0,
+    freeUsers:       freeUsers ?? 0,
+    monthlyMembers:  monthlyMembers ?? 0,
+    annualMembers:   annualMembers ?? 0,
     lifetimeMembers: lifetimeMembers ?? 0,
-    monthlyRevenue: parseFloat(monthlyRevenue.toFixed(2)),
-    recentUsers:    recentUsers ?? [],
+    monthlyRevenue:  parseFloat(monthlyRevenue.toFixed(2)),
+    totalSessions:   totalSessions ?? 0,
+    freeSessions:    freeSessions ?? 0,
+    premiumSessions: premiumSessions ?? 0,
+    recentUsers:     recentUsers ?? [],
   });
 }

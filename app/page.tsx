@@ -1,5 +1,7 @@
-import type { Metadata } from "next";
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
 import Logo from "./components/Logo";
 import LandingEmailForm from "./components/LandingEmailForm";
 import LandingFAQ from "./components/LandingFAQ";
@@ -11,18 +13,6 @@ import type { GalleryItem } from "../components/ui/circular-gallery";
 const ReferralTracker = dynamic(() => import("./components/ReferralTracker"), { ssr: false });
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://thedailymeds.com";
-
-export const metadata: Metadata = {
-  title: "The Daily Meds — Audio for Emotional Emergencies",
-  description: "Dubbed 'Netflix for Meditations'. Start for free, or pay £9.99 for full access. Cancel anytime.",
-  openGraph: {
-    title: "The Daily Meds — Something Different. Unique. Needed. Real.",
-    description: "Meditations for real life — hangovers, heartbreak, anxiety, comedowns. Meet yourself where you are.",
-    url: APP_URL,
-    images: [{ url: `${APP_URL}/api/share-card?title=Daily+Meds`, width: 1200, height: 630 }],
-  },
-  twitter: { card: "summary_large_image", title: "The Daily Meds", description: "Audio for emotional emergencies." },
-};
 
 const TRENDING = [
   { title: "Hungover", badge: "Essential", gradient: "linear-gradient(160deg, #2a0800 0%, #ec723d 100%)", href: "/free" },
@@ -73,49 +63,84 @@ const REASONS = [
   },
 ];
 
+const NAV_LINKS = [
+  { label: "Home",     href: "/" },
+  { label: "Library",  href: "/library" },
+  { label: "Pricing",  href: "/pricing" },
+  { label: "Breathe",  href: "/timer" },
+  { label: "About",    href: "/about" },
+  { label: "Login",    href: "/login" },
+];
+
 export default function Home() {
+  const [mobileOpen, setMobileOpen] = useState(false);
+
   return (
     <div style={{ backgroundColor: "#010101", color: "#ffffff", fontFamily: "var(--font-manrope)" }}>
       <ReferralTracker />
 
       {/* ── HEADER ─────────────────────────────────────────────────────── */}
       <header
-        className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4"
-        style={{
-          backgroundColor: "rgba(1,1,1,0.85)",
-          backdropFilter: "blur(20px)",
-          borderBottom: "0.5px solid rgba(255,255,255,0.06)",
-        }}
+        className="fixed top-0 left-0 right-0 z-50"
+        style={{ backgroundColor: "rgba(1,1,1,0.85)", backdropFilter: "blur(20px)", borderBottom: "0.5px solid rgba(255,255,255,0.06)" }}
       >
-        <Logo href="/" size="md" />
-        {/* Nav links */}
-        <nav className="hidden md:flex items-center gap-7">
-          {[
-            { label: "Home", href: "/" },
-            { label: "Library", href: "/library" },
-            { label: "Pricing", href: "/pricing" },
-            { label: "Breathe", href: "/timer" },
-            { label: "About", href: "/about" },
-            { label: "Login", href: "/login" },
-          ].map((item) => (
-            <Link
-              key={item.label}
-              href={item.href}
-              className="text-xs uppercase tracking-widest font-bold transition-colors hover:text-[#aaee20]"
-              style={{ color: "rgba(255,255,255,0.5)", fontFamily: "var(--font-lexend)" }}
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
+        <div className="flex items-center justify-between px-6 py-4">
+          <Logo href="/" size="md" />
 
-        <Link
-          href="/signup"
-          className="px-6 py-2 rounded-full text-sm font-bold uppercase transition-transform hover:scale-105"
-          style={{ backgroundColor: "#aaee20", color: "#1a2600", fontFamily: "var(--font-lexend)" }}
-        >
-          Sign In
-        </Link>
+          {/* Desktop nav */}
+          <nav className="hidden md:flex items-center gap-7">
+            {NAV_LINKS.map((item) => (
+              <Link
+                key={item.label}
+                href={item.href}
+                className="text-xs uppercase tracking-widest font-bold transition-colors hover:text-[#aaee20]"
+                style={{ color: "rgba(255,255,255,0.5)", fontFamily: "var(--font-lexend)" }}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+
+          <div className="flex items-center gap-3">
+            <Link
+              href="/signup"
+              className="px-6 py-2 rounded-full text-sm font-bold uppercase transition-transform hover:scale-105"
+              style={{ backgroundColor: "#aaee20", color: "#1a2600", fontFamily: "var(--font-lexend)" }}
+            >
+              Sign In
+            </Link>
+            {/* Mobile hamburger */}
+            <button
+              className="md:hidden flex flex-col justify-center items-center w-8 h-8 gap-1.5"
+              onClick={() => setMobileOpen(!mobileOpen)}
+              aria-label="Toggle menu"
+            >
+              <span className="block w-5 h-0.5 transition-all" style={{ backgroundColor: mobileOpen ? "#aaee20" : "rgba(255,255,255,0.6)", transform: mobileOpen ? "rotate(45deg) translate(3px, 3px)" : "none" }} />
+              <span className="block w-5 h-0.5 transition-all" style={{ backgroundColor: mobileOpen ? "transparent" : "rgba(255,255,255,0.6)", opacity: mobileOpen ? 0 : 1 }} />
+              <span className="block w-5 h-0.5 transition-all" style={{ backgroundColor: mobileOpen ? "#aaee20" : "rgba(255,255,255,0.6)", transform: mobileOpen ? "rotate(-45deg) translate(3px, -3px)" : "none" }} />
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile dropdown */}
+        {mobileOpen && (
+          <nav
+            className="md:hidden flex flex-col px-6 pb-6 gap-4"
+            style={{ borderTop: "0.5px solid rgba(255,255,255,0.06)" }}
+          >
+            {NAV_LINKS.map((item) => (
+              <Link
+                key={item.label}
+                href={item.href}
+                onClick={() => setMobileOpen(false)}
+                className="text-sm uppercase tracking-widest font-bold py-2 transition-colors hover:text-[#aaee20]"
+                style={{ color: "rgba(255,255,255,0.5)", fontFamily: "var(--font-lexend)" }}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+        )}
       </header>
 
       {/* ── HERO ───────────────────────────────────────────────────────── */}
@@ -362,7 +387,7 @@ export default function Home() {
             >
               The Daily Meds
             </p>
-            <p className="text-[10px]">© 2024 The Daily Meds. All Rights Reserved.</p>
+            <p className="text-[10px]">© {new Date().getFullYear()} The Daily Meds. All Rights Reserved.</p>
           </div>
         </div>
       </footer>

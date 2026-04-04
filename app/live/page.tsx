@@ -400,7 +400,7 @@ export default function LiveLandingPage() {
           <div className="grid grid-cols-2 md:grid-cols-3 gap-12">
             {[
               { heading: "Explore", links: [{ label: "Library", href: "/library" }, { label: "Pricing", href: "/pricing" }, { label: "Live", href: "/live" }] },
-              { heading: "Company", links: [{ label: "About", href: "/about" }, { label: "Contact", href: "/about" }, { label: "Journal", href: "/blog" }] },
+              { heading: "Company", links: [{ label: "About", href: "/about" }, { label: "Contact", href: "/about" }, { label: "Podcasts", href: "/podcasts" }] },
               { heading: "Legal", links: [{ label: "Privacy Policy", href: "/privacy" }, { label: "Terms of Service", href: "/terms" }] },
             ].map((col) => (
               <div key={col.heading}>

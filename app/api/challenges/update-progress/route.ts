@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    { cookies: { get: (n) => cookieStore.get(n)?.value } }
+    { cookies: { getAll() { return cookieStore.getAll(); }, setAll() {} } }
   );
 
   // Verify user is logged in

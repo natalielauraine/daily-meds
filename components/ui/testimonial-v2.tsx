@@ -23,12 +23,26 @@ function TestimonialCard({ testimonial }: { testimonial: Testimonial }) {
         &ldquo;{testimonial.quote}&rdquo;
       </p>
       <div className="flex items-center gap-3 mt-auto pt-2" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={testimonial.avatar}
-          alt={testimonial.name}
-          style={{ width: 36, height: 36, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }}
-        />
+        {testimonial.avatar ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={testimonial.avatar}
+            alt={testimonial.name}
+            style={{ width: 36, height: 36, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }}
+          />
+        ) : (
+          <div
+            style={{
+              width: 36, height: 36, borderRadius: "50%", flexShrink: 0,
+              background: "linear-gradient(135deg, #ff41b3 0%, #ec723d 100%)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontSize: 14, fontWeight: 700, color: "#fff",
+              fontFamily: "var(--font-lexend)",
+            }}
+          >
+            {testimonial.name.charAt(0).toUpperCase()}
+          </div>
+        )}
         <div>
           <p className="text-sm font-semibold" style={{ color: "#ffffff", fontFamily: "var(--font-lexend)" }}>
             {testimonial.name}

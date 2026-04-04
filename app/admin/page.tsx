@@ -7,8 +7,6 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import AdminShell from "./AdminShell";
-import { MOCK_SESSIONS } from "../../lib/sessions-data";
-
 type Stats = {
   totalUsers: number;
   paidMembers: number;
@@ -17,6 +15,9 @@ type Stats = {
   annualMembers: number;
   lifetimeMembers: number;
   monthlyRevenue: number;
+  totalSessions: number;
+  freeSessions: number;
+  premiumSessions: number;
   recentUsers: { email: string; name: string; subscription_status: string; created_at: string }[];
 };
 
@@ -190,19 +191,15 @@ export default function AdminDashboard() {
             </div>
             <div className="flex items-center gap-6">
               <div>
-                <p className="text-2xl text-white" style={{ fontWeight: 500 }}>{MOCK_SESSIONS.length}</p>
+                <p className="text-2xl text-white" style={{ fontWeight: 500 }}>{stats?.totalSessions ?? "—"}</p>
                 <p className="text-xs text-white/40">Total sessions</p>
               </div>
               <div>
-                <p className="text-2xl text-white" style={{ fontWeight: 500 }}>
-                  {MOCK_SESSIONS.filter((s) => s.isFree).length}
-                </p>
+                <p className="text-2xl text-white" style={{ fontWeight: 500 }}>{stats?.freeSessions ?? "—"}</p>
                 <p className="text-xs text-white/40">Free sessions</p>
               </div>
               <div>
-                <p className="text-2xl text-white" style={{ fontWeight: 500 }}>
-                  {MOCK_SESSIONS.filter((s) => !s.isFree).length}
-                </p>
+                <p className="text-2xl text-white" style={{ fontWeight: 500 }}>{stats?.premiumSessions ?? "—"}</p>
                 <p className="text-xs text-white/40">Premium</p>
               </div>
             </div>

@@ -567,7 +567,7 @@ export default function AffiliateDashboardPage() {
         {/* ── FOOTER ── */}
         <footer className="mt-12 pt-8 flex flex-col md:flex-row items-center justify-between gap-4" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
           <p className="text-xs uppercase tracking-widest" style={{ color: "rgba(224,250,250,0.25)", fontFamily: "var(--font-space-grotesk)" }}>
-            © 2024 The Daily Meds Cinematic Meditation
+            © {new Date().getFullYear()} The Daily Meds Cinematic Meditation
           </p>
           <div className="flex gap-6 text-xs uppercase tracking-widest" style={{ fontFamily: "var(--font-space-grotesk)" }}>
             <a href="#" className="transition-colors hover:text-white" style={{ color: "rgba(224,250,250,0.25)" }}>Help Center</a>
