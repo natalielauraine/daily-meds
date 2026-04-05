@@ -11,6 +11,7 @@ import { createClient } from "../../lib/supabase-browser";
 export default function LoginPage() {
   const router = useRouter();
   const supabase = createClient();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
 
   // Form field values
   const [email, setEmail] = useState("");
