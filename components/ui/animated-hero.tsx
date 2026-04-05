@@ -72,8 +72,8 @@ function Hero() {
             </h1>
 
             <p
-              className="text-lg md:text-xl leading-relaxed tracking-tight max-w-xl text-center"
-              style={{ color: "rgba(255,255,255,0.45)", fontFamily: "var(--font-manrope)" }}
+              className="text-xl md:text-2xl leading-relaxed tracking-tight max-w-xl text-center"
+              style={{ color: "#ffffff", fontFamily: "var(--font-manrope)" }}
             >
               The Netflix of meditation, for life&apos;s most awkward moments.
             </p>
