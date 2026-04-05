@@ -6,7 +6,7 @@
     },
     {
       "path": "/api/email/live-reminder",
-      "schedule": "0 * * * *"
+      "schedule": "0 9 * * *"
     },
     {
       "path": "/api/email/affiliate-earnings",
