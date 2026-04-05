@@ -75,6 +75,7 @@ export const CardCarousel: React.FC<CarouselProps> = ({
                   height={750}
                   className="size-full rounded-xl object-cover"
                   alt={image.alt}
+                  unoptimized
                 />
               </div>
             </SwiperSlide>
