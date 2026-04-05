@@ -8,7 +8,7 @@ import Link from "next/link";
 function Hero() {
   const [titleNumber, setTitleNumber] = useState(0);
   const titles = useMemo(
-    () => ["DIFFERENT", "NEEDED", "REAL", "HUMAN"],
+    () => ["DIFFERENT", "NEEDED", "REAL, RARE", "RAW"],
     []
   );
 
