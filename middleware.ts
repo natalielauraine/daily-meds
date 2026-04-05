@@ -6,14 +6,14 @@ import { createServerClient } from "@supabase/ssr";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function middleware(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({ request });
-
-  // If Supabase isn't configured yet (env vars are empty), just pass the request through
+  // If Supabase isn't configured yet (env vars are empty), just pass through
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-    return supabaseResponse;
+    return NextResponse.next({ request });
   }
 
-  // Create a Supabase client that can read and write cookies in the middleware
+  // Start with a plain pass-through response
+  let supabaseResponse = NextResponse.next({ request });
+
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -23,11 +23,13 @@ export async function middleware(request: NextRequest) {
           return request.cookies.getAll();
         },
         setAll(cookiesToSet) {
-          // Update both the request and response cookies so session stays in sync
+          // Step 1: write onto the request so subsequent reads in this middleware see them
           cookiesToSet.forEach(({ name, value }) =>
             request.cookies.set(name, value)
           );
+          // Step 2: rebuild the response from the mutated request
           supabaseResponse = NextResponse.next({ request });
+          // Step 3: write onto the response so the browser receives them
           cookiesToSet.forEach(({ name, value, options }) =>
             supabaseResponse.cookies.set(name, value, options)
           );
@@ -36,12 +38,10 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  // Refresh the session — this keeps the user logged in between page visits
+  // IMPORTANT: always call getUser() before any redirect — this refreshes
+  // the session token and writes updated cookies via setAll above.
   const { data: { user } } = await supabase.auth.getUser();
 
-  // Pages that require login — redirect to /login if user is not logged in
-  // Note: /session is intentionally NOT here — free sessions are public.
-  // Premium session gating is handled inside the session page itself.
   const protectedPaths = [
     // /session is intentionally NOT here — free sessions are public.
     // Premium gating and signup prompts are handled inside the session page.
@@ -63,17 +63,23 @@ export async function middleware(request: NextRequest) {
   if (isProtected && !user) {
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("next", request.nextUrl.pathname);
-    return NextResponse.redirect(loginUrl);
+    // Copy session cookies onto the redirect so they aren't lost
+    const redirectResponse = NextResponse.redirect(loginUrl);
+    supabaseResponse.cookies.getAll().forEach((cookie) => {
+      redirectResponse.cookies.set(cookie.name, cookie.value);
+    });
+    return redirectResponse;
   }
 
-  // Extra check for /admin routes — only Natalie can access these.
-  // ADMIN_EMAIL is set in .env.local and never exposed to the browser.
+  // Only Natalie can access /admin routes
   const adminEmail = process.env.ADMIN_EMAIL;
   const isAdminPath = request.nextUrl.pathname.startsWith("/admin");
   if (isAdminPath && user && adminEmail && user.email !== adminEmail) {
     return NextResponse.redirect(new URL("/", request.url));
   }
 
+  // Always return supabaseResponse (not a new NextResponse) so session
+  // cookies set by getUser() are forwarded to the browser.
   return supabaseResponse;
 }
 
