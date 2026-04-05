@@ -43,7 +43,7 @@ function Hero() {
               className="text-5xl md:text-7xl max-w-2xl tracking-tighter text-center"
               style={{ fontFamily: "var(--font-lexend)", fontWeight: 900, color: "#ffffff", lineHeight: 1.05 }}
             >
-              <span className="uppercase">THE NETFLIX OF MEDITATION, FOR LIFE&apos;S MOST AWKWARD MOMENTS.</span>
+              <span className="uppercase">THIS IS SOMETHING</span>
               <span className="relative flex w-full justify-center overflow-hidden text-center md:pb-4 md:pt-1" style={{ height: "1.2em" }}>
                 &nbsp;
                 {titles.map((title, index) => (
@@ -75,9 +75,7 @@ function Hero() {
               className="text-lg md:text-xl leading-relaxed tracking-tight max-w-xl text-center"
               style={{ color: "rgba(255,255,255,0.45)", fontFamily: "var(--font-manrope)" }}
             >
-              Audio for emotional emergencies. Guided meditation and breathwork
-              for life&apos;s most awkward moments — hangover, anxiety, heartbreak,
-              can&apos;t sleep. We&apos;ve got a session for that.
+              The Netflix of meditation — for life&apos;s most awkward moments.
             </p>
           </div>
 
