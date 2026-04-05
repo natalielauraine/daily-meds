@@ -31,12 +31,11 @@ const TRENDING = [
 ];
 
 const TRENDING_IMAGES = [
-  { src: "https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?w=500&h=750&fit=crop&q=80", alt: "Hungover — Guided Release" },
-  { src: "https://images.unsplash.com/photo-1474223960279-c596b5ac7c0c?w=500&h=750&fit=crop&q=80", alt: "Anxious — Breathwork" },
-  { src: "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=500&h=750&fit=crop&q=80", alt: "Guilty — Guided Meditation" },
-  { src: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=500&h=750&fit=crop&q=80", alt: "Daily Ritual — Morning Reset" },
-  { src: "https://images.unsplash.com/photo-1531353826977-0941b4779a1c?w=500&h=750&fit=crop&q=80", alt: "Snuggle Down — Sleep Audio" },
-  { src: "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=500&h=750&fit=crop&q=80", alt: "Heartbroken — Emotional Release" },
+  { src: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/Exhausted.png", alt: "Exhausted" },
+  { src: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/Hacked.png", alt: "Hacked" },
+  { src: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/High%20AF.png", alt: "High AF" },
+  { src: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/Smoking.png", alt: "Smoking" },
+  { src: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/Working%20Latehausted.png", alt: "Working Late" },
 ];
 
 const FREE_SESSIONS = [
