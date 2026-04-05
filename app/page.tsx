@@ -6,6 +6,7 @@ import Logo from "./components/Logo";
 import LandingEmailForm from "./components/LandingEmailForm";
 import LandingFAQ from "./components/LandingFAQ";
 import dynamic from "next/dynamic";
+import { Hero as AnimatedHero } from "../components/ui/animated-hero";
 
 const CircularGallery = dynamic(() => import("../components/ui/circular-gallery").then(m => m.CircularGallery), { ssr: false });
 import type { GalleryItem } from "../components/ui/circular-gallery";
@@ -145,7 +146,7 @@ export default function Home() {
 
       {/* ── HERO ───────────────────────────────────────────────────────── */}
       <section
-        className="relative min-h-screen flex items-center justify-center pt-20 px-6 overflow-hidden"
+        className="relative pt-20 overflow-hidden"
         style={{ background: "linear-gradient(160deg, #080808 0%, #010101 50%, #090500 100%)" }}
       >
         {/* Glow orbs */}
@@ -161,35 +162,8 @@ export default function Home() {
           className="absolute inset-0 pointer-events-none"
           style={{ background: "radial-gradient(ellipse at center, transparent 40%, #010101 100%)" }}
         />
-
-        <div className="relative z-10 max-w-4xl mx-auto text-center flex flex-col items-center gap-8">
-          <h1
-            className="uppercase leading-none tracking-tight"
-            style={{
-              fontFamily: "var(--font-lexend)",
-              fontWeight: 900,
-              fontSize: "clamp(2.8rem, 8vw, 6.5rem)",
-              color: "#ffffff",
-            }}
-          >
-            This is something different —{" "}
-            <span className="italic" style={{ color: "#aaee20" }}>unique</span>
-            {" "}— needed — real.
-          </h1>
-
-          <p
-            className="text-lg md:text-xl max-w-2xl leading-relaxed"
-            style={{ color: "#adaaaa" }}
-          >
-            Dubbed &lsquo;Netflix for Meditations&rsquo;. Start for free, or pay £9.99 for full access. Cancel anytime.
-          </p>
-
-          <div className="w-full max-w-xl flex flex-col gap-4">
-            <p className="text-sm font-bold uppercase tracking-widest text-white">
-              Ready to dive in? Enter your email to start your meditations.
-            </p>
-            <LandingEmailForm />
-          </div>
+        <div className="relative z-10">
+          <AnimatedHero />
         </div>
       </section>
 
