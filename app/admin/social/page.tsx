@@ -5,6 +5,7 @@
 
 import { useState, useEffect } from "react";
 import AdminShell from "../AdminShell";
+import Image from "next/image";
 
 const PAGES = [
   { slug: "/",           label: "Homepage" },
@@ -216,7 +217,7 @@ export default function AdminSocialPage() {
                       }}>
                         {current.og_image_url && (
                           <div style={{ height: 200, background: "#131313", overflow: "hidden" }}>
-                            <img src={current.og_image_url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                            <Image src={current.og_image_url} alt="" fill sizes="400px" style={{ objectFit: "cover" }} unoptimized />
                           </div>
                         )}
                         <div style={{ padding: "12px 16px" }}>

@@ -6,6 +6,7 @@
 
 import { useState, useEffect } from "react";
 import { createClient } from "../../lib/supabase-browser";
+import Image from "next/image";
 
 interface SessionInfo {
   id: string;
@@ -195,11 +196,14 @@ export default function ShareSessionModal({ session, onClose }: Props) {
               </div>
             ) : (
               // Server-generated share card image
-              <img
+              <Image
                 src={cardImageUrl}
                 alt="Your session share card"
+                width={400}
+                height={400}
                 className="w-full rounded-[14px]"
-                style={{ aspectRatio: "1/1", objectFit: "cover" }}
+                style={{ objectFit: "cover" }}
+                unoptimized
                 onError={() => setImageError(true)}
               />
             )}

@@ -5,6 +5,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { createClient } from "../../lib/supabase-browser";
 import type { User } from "@supabase/supabase-js";
@@ -143,7 +144,7 @@ export default function BrandCrewsPage() {
                     style={{ background: GRADIENT, fontWeight: 500 }}
                   >
                     {crew.logo_url ? (
-                      <img src={crew.logo_url} alt={crew.name} className="w-full h-full object-cover" />
+                      <Image src={crew.logo_url} alt={crew.name} width={64} height={64} className="w-full h-full object-cover" unoptimized />
                     ) : (
                       crew.name[0]?.toUpperCase()
                     )}

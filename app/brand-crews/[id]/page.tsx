@@ -6,6 +6,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { createClient } from "../../../lib/supabase-browser";
 import type { User } from "@supabase/supabase-js";
 import Navbar from "../../components/Navbar";
@@ -170,7 +171,7 @@ export default function BrandCrewDetailPage() {
               style={{ background: GRADIENT, fontWeight: 500 }}
             >
               {crew.logo_url ? (
-                <img src={crew.logo_url} alt={crew.name} className="w-full h-full object-cover" />
+                <Image src={crew.logo_url} alt={crew.name} width={80} height={80} className="w-full h-full object-cover" unoptimized />
               ) : (
                 crew.name[0]?.toUpperCase()
               )}
@@ -292,7 +293,7 @@ export default function BrandCrewDetailPage() {
                       style={{ background: m.avatar_url ? "transparent" : GRADIENT, fontWeight: 500 }}
                     >
                       {m.avatar_url ? (
-                        <img src={m.avatar_url} alt={m.display_name} className="w-full h-full object-cover" />
+                        <Image src={m.avatar_url} alt={m.display_name} width={40} height={40} className="w-full h-full object-cover" unoptimized />
                       ) : (
                         m.display_name[0]?.toUpperCase() ?? "?"
                       )}

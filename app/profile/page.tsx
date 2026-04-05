@@ -7,6 +7,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { createClient } from "../../lib/supabase-browser";
 import type { User } from "@supabase/supabase-js";
 import Navbar from "../components/Navbar";
@@ -315,8 +316,7 @@ export default function ProfilePage() {
                     style={{ backgroundColor: "#1a1a1a" }}
                   >
                     {avatarUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={avatarUrl} alt={displayName} className="w-full h-full object-cover" />
+                      <Image src={avatarUrl} alt={displayName} width={112} height={112} className="w-full h-full object-cover" unoptimized />
                     ) : (
                       <span className="text-4xl text-white" style={{ fontFamily: "var(--font-plus-jakarta)", fontWeight: 800 }}>
                         {avatarInitial}

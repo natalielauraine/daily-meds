@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import AdminShell from "../AdminShell";
+import Image from "next/image";
 import { createClient } from "../../../lib/supabase-browser";
 
 type Episode = {
@@ -513,7 +514,7 @@ export default function AdminPodcastsPage() {
                 {/* Cover thumbnail */}
                 <div style={{ width: 56, height: 56, borderRadius: 8, overflow: "hidden", flexShrink: 0, background: C.surface }}>
                   {ep.cover_image_url ? (
-                    <img src={ep.cover_image_url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                    <Image src={ep.cover_image_url} alt="" fill sizes="80px" style={{ objectFit: "cover" }} unoptimized />
                   ) : (
                     <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
                       <svg width="20" height="20" viewBox="0 0 24 24" fill={C.muted} opacity={0.4}>

@@ -19,6 +19,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { createClient } from "../../../lib/supabase-browser";
 import type { User } from "@supabase/supabase-js";
 import { formatActivity, timeAgo, type Crew, type CrewMember, type CrewActivity } from "../../../lib/crews";
@@ -890,7 +891,7 @@ export default function CrewDetailPage() {
                         style={{ background: member.avatar_url ? "transparent" : GRADIENT }}
                       >
                         {member.avatar_url ? (
-                          <img src={member.avatar_url} alt={member.display_name} className="w-full h-full object-cover" />
+                          <Image src={member.avatar_url} alt={member.display_name} width={40} height={40} className="w-full h-full object-cover" unoptimized />
                         ) : (
                           member.display_name[0]?.toUpperCase() ?? "?"
                         )}

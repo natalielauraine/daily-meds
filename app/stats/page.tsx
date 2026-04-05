@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { createClient } from "../../lib/supabase-browser";
 import type { User } from "@supabase/supabase-js";
 import Navbar from "../components/Navbar";
@@ -234,12 +235,12 @@ export default function StatsPage() {
         style={{ minHeight: 500 }}
       >
         {/* Background image */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        <Image
           src="https://images.unsplash.com/photo-1493612276216-ee3925520721?q=80&w=2000&auto=format&fit=crop"
           alt=""
-          className="absolute inset-0 w-full h-full object-cover"
-          style={{ opacity: 0.35 }}
+          fill
+          sizes="100vw"
+          style={{ objectFit: "cover", opacity: 0.35 }}
         />
         {/* Gradient overlay */}
         <div
@@ -301,8 +302,7 @@ export default function StatsPage() {
                       style={{ backgroundColor: "#0e0e0e" }}
                     >
                       {avatarUrl ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={avatarUrl} alt={displayName} className="w-full h-full object-cover" />
+                        <Image src={avatarUrl} alt={displayName} width={128} height={128} className="w-full h-full object-cover" unoptimized />
                       ) : (
                         <span className="text-4xl font-black text-white" style={{ fontFamily: "var(--font-lexend)" }}>
                           {avatarInitial}
@@ -535,11 +535,12 @@ export default function StatsPage() {
                   onMouseLeave={(e) => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)")}
                 >
                   <div className="relative h-48 overflow-hidden">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
+                    <Image
                       src={show.img}
                       alt={show.title}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      fill
+                      sizes="(max-width:768px) 100vw, 400px"
+                      className="object-cover transition-transform duration-500 group-hover:scale-110"
                     />
                     <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.75), transparent)" }} />
                     <div className="absolute bottom-4 left-4">

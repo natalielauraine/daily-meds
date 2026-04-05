@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import Logo from "../components/Logo";
 
 const UPCOMING = [
@@ -156,10 +157,12 @@ export default function LiveLandingPage() {
                 className="relative overflow-hidden rounded-xl mb-6"
                 style={{ aspectRatio: "3/4" }}
               >
-                <img
+                <Image
                   src={event.img}
                   alt={event.title}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  fill
+                  sizes="(max-width:768px) 100vw, 400px"
+                  className="object-cover transition-transform duration-700 group-hover:scale-110"
                 />
                 <div className="absolute inset-0" style={{ background: "rgba(0,0,0,0.3)" }} />
                 <div className="absolute inset-0 group-hover:opacity-0 transition-opacity duration-300" style={{ background: "rgba(0,0,0,0.2)" }} />
@@ -324,10 +327,12 @@ export default function LiveLandingPage() {
           {PODCASTS.map((pod) => (
             <Link href="/signup" key={pod.title} className="group cursor-pointer space-y-4">
               <div className="aspect-video overflow-hidden rounded-xl">
-                <img
+                <Image
                   src={pod.img}
                   alt={pod.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  fill
+                  sizes="(max-width:768px) 100vw, 400px"
+                  className="object-cover group-hover:scale-105 transition-transform duration-500"
                 />
               </div>
               <span className="text-xs font-bold uppercase tracking-widest" style={{ color: "#aaee20", fontFamily: "var(--font-lexend)" }}>

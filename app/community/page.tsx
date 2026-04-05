@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { createClient } from "../../lib/supabase-browser";
 import type { User } from "@supabase/supabase-js";
 import Navbar from "../components/Navbar";
@@ -98,7 +99,7 @@ function Avatar({ url, name, size = 14 }: { url: string | null; name: string; si
       className="rounded-full shrink-0 flex items-center justify-center text-sm text-white overflow-hidden"
       style={{ width: sz, height: sz, background: url ? "transparent" : PURPLE, fontWeight: 700 }}
     >
-      {url ? <img src={url} alt={name} className="w-full h-full object-cover" /> : name[0]?.toUpperCase()}
+      {url ? <Image src={url} alt={name} width={size * 4} height={size * 4} className="w-full h-full object-cover" unoptimized /> : name[0]?.toUpperCase()}
     </div>
   );
 }

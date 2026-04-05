@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import Logo from "../components/Logo";
 
 // ── DESIGN TOKENS ─────────────────────────────────────────────────────────────
@@ -200,12 +201,12 @@ export default function AffiliatePage() {
 
       {/* ── INTRO GLASS ─────────────────────────────────────────────────────── */}
       <section className="relative py-32 overflow-hidden">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        <Image
           src="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=1400&h=800&fit=crop"
           alt="DJ booth dark club"
-          className="absolute inset-0 w-full h-full object-cover"
-          style={{ opacity: 0.6 }}
+          fill
+          sizes="100vw"
+          style={{ objectFit: "cover", opacity: 0.6 }}
         />
         <div
           className="absolute inset-0"

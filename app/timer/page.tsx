@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { createClient } from "../../lib/supabase-browser";
 import type { User } from "@supabase/supabase-js";
 import Logo from "../components/Logo";
@@ -96,11 +97,12 @@ export default function TimerPage() {
 
       {/* ── FIXED BACKGROUND ──────────────────────────────────────────── */}
       <div className="fixed inset-0 z-0 overflow-hidden">
-        <img
+        <Image
           src="https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?w=1600&h=900&fit=crop&q=60"
           alt=""
-          className="w-full h-full object-cover"
-          style={{ filter: "grayscale(60%) brightness(0.35)" }}
+          fill
+          sizes="100vw"
+          style={{ objectFit: "cover", filter: "grayscale(60%) brightness(0.35)" }}
         />
         <div className="absolute inset-0" style={{ background: "rgba(0,23,22,0.6)", backdropFilter: "blur(24px)" }} />
       </div>

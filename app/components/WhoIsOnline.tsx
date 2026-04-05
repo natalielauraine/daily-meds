@@ -7,6 +7,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePresence } from "../../lib/presence-context";
 
 // The six emojis users can send to someone who is meditating
@@ -99,10 +100,13 @@ export default function WhoIsOnline() {
                 style={{ background: "linear-gradient(135deg, #ff41b3, #adf225)", fontWeight: 500 }}
               >
                 {u.avatar_url ? (
-                  <img
+                  <Image
                     src={u.avatar_url}
                     alt={u.display_name}
+                    width={40}
+                    height={40}
                     className="w-full h-full rounded-full object-cover"
+                    unoptimized
                   />
                 ) : (
                   u.avatar_initial

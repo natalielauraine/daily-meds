@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useParams } from "next/navigation";
 import { createClient } from "../../../lib/supabase-browser";
 
@@ -302,11 +303,15 @@ export default function EpisodePage() {
               }} />
               <div style={{ position: "relative", width: "100%", maxWidth: 480, borderRadius: 8, overflow: "hidden", boxShadow: "0 24px 80px rgba(0,0,0,0.6)" }}>
                 {ep.cover_image_url ? (
-                  <img
-                    src={ep.cover_image_url}
-                    alt={ep.title}
-                    style={{ width: "100%", aspectRatio: "1", objectFit: "cover", filter: "grayscale(100%)", transition: "filter 0.7s", display: "block" }}
-                  />
+                  <div style={{ position: "relative", width: "100%", aspectRatio: "1" }}>
+                    <Image
+                      src={ep.cover_image_url}
+                      alt={ep.title}
+                      fill
+                      sizes="(max-width:768px) 100vw, 480px"
+                      style={{ objectFit: "cover", filter: "grayscale(100%)", transition: "filter 0.7s" }}
+                    />
+                  </div>
                 ) : (
                   <div style={{ width: "100%", aspectRatio: "1", background: "linear-gradient(135deg, #1a0a14, #0a140a)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                     <svg width="80" height="80" viewBox="0 0 24 24" fill="#ff6a9e" opacity={0.2}>
@@ -343,11 +348,15 @@ export default function EpisodePage() {
             {/* Photo */}
             <div style={{ position: "relative" }}>
               {ep.guest_photo_url ? (
-                <img
-                  src={ep.guest_photo_url}
-                  alt={ep.guest_name}
-                  style={{ width: "100%", aspectRatio: "4/5", objectFit: "cover", borderRadius: 8, filter: "brightness(0.75)", border: "1px solid rgba(255,255,255,0.05)" }}
-                />
+                <div style={{ position: "relative", width: "100%", aspectRatio: "4/5", borderRadius: 8, overflow: "hidden", border: "1px solid rgba(255,255,255,0.05)" }}>
+                  <Image
+                    src={ep.guest_photo_url}
+                    alt={ep.guest_name}
+                    fill
+                    sizes="(max-width:768px) 100vw, 400px"
+                    style={{ objectFit: "cover", filter: "brightness(0.75)" }}
+                  />
+                </div>
               ) : (
                 <div style={{ width: "100%", aspectRatio: "4/5", borderRadius: 8, background: "#131313", border: "1px solid rgba(255,255,255,0.05)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                   <svg width="60" height="60" viewBox="0 0 24 24" fill="#ababab" opacity={0.2}>
@@ -452,11 +461,14 @@ export default function EpisodePage() {
                     }}
                   >
                     {h.image_url && (
-                      <img className="hi-img" src={h.image_url} alt={h.title} style={{
-                        position: "absolute", inset: 0, width: "100%", height: "100%",
-                        objectFit: "cover", filter: "grayscale(100%)", opacity: 0.6,
-                        transition: "filter 0.7s, transform 0.7s, opacity 0.7s",
-                      }} />
+                      <Image
+                        className="hi-img"
+                        src={h.image_url}
+                        alt={h.title}
+                        fill
+                        sizes="(max-width:768px) 100vw, 400px"
+                        style={{ objectFit: "cover", filter: "grayscale(100%)", opacity: 0.6, transition: "filter 0.7s, transform 0.7s, opacity 0.7s" }}
+                      />
                     )}
                     <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, transparent 40%, rgba(0,0,0,0.85) 100%)" }} />
                     {/* Play button */}

@@ -14,6 +14,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { createClient } from "../../../lib/supabase-browser";
 import type { User } from "@supabase/supabase-js";
 import {
@@ -1037,7 +1038,7 @@ function ParticipantAvatars({
             style={{ background: p.avatar_url ? "transparent" : gradient, fontWeight: 500 }}
           >
             {p.avatar_url ? (
-              <img src={p.avatar_url} alt={p.display_name} className="w-full h-full object-cover" />
+              <Image src={p.avatar_url} alt={p.display_name} width={40} height={40} className="w-full h-full object-cover" unoptimized />
             ) : (
               p.display_name[0]?.toUpperCase() ?? "?"
             )}

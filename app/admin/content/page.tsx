@@ -5,6 +5,7 @@
 //           bulk upload, session preview modal, draft/published status.
 
 import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 import AdminShell from "../AdminShell";
 import { createClient } from "../../../lib/supabase-browser";
 import Banner from "../../components/ui/Banner";
@@ -652,10 +653,11 @@ export default function AdminContentPage() {
                         return (
                           <div>
                             <p className="text-[10px] text-white/30 mb-2 uppercase tracking-widest">YouTube preview</p>
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img
+                            <Image
                               src={`https://img.youtube.com/vi/${ytId}/mqdefault.jpg`}
                               alt="YouTube thumbnail"
+                              width={320}
+                              height={180}
                               className="w-full rounded-lg"
                             />
                             <p className="text-[10px] text-white/25 mt-1">ID: {ytId}</p>

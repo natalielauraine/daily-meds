@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { createClient } from "../../lib/supabase-browser";
 
 const C = {
@@ -198,7 +199,7 @@ export default function PodcastsPage() {
                   {/* Cover */}
                   <div style={{ position: "relative", aspectRatio: "1", minHeight: 320, overflow: "hidden" }}>
                     {latest.cover_image_url ? (
-                      <img src={latest.cover_image_url} alt={latest.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      <Image src={latest.cover_image_url} alt={latest.title} fill sizes="(max-width:768px) 100vw, 600px" style={{ objectFit: "cover" }} />
                     ) : (
                       <div style={{ width: "100%", height: "100%", background: `linear-gradient(135deg, #1a0a14, #0d1a0a)`, display: "flex", alignItems: "center", justifyContent: "center" }}>
                         <svg width="48" height="48" viewBox="0 0 24 24" fill={C.primary} opacity={0.4}>
@@ -278,7 +279,7 @@ export default function PodcastsPage() {
                         {/* Cover */}
                         <div style={{ position: "relative", aspectRatio: "16/9", overflow: "hidden" }}>
                           {ep.cover_image_url ? (
-                            <img src={ep.cover_image_url} alt={ep.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                            <Image src={ep.cover_image_url} alt={ep.title} fill sizes="(max-width:768px) 100vw, 400px" style={{ objectFit: "cover" }} />
                           ) : (
                             <div style={{ width: "100%", height: "100%", background: `linear-gradient(135deg, #1a0a14, #0d1a0a)`, display: "flex", alignItems: "center", justifyContent: "center" }}>
                               <svg width="32" height="32" viewBox="0 0 24 24" fill={C.primary} opacity={0.4}>
