@@ -24,14 +24,11 @@ const TRENDING = [
 ];
 
 const GALLERY_ITEMS: GalleryItem[] = [
-  { common: "Hungover", binomial: "Guided Release · 20 min", photo: { url: "https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?w=900&auto=format&fit=crop&q=80", text: "Hungover session", by: "The Daily Meds", pos: "50% 30%" } },
-  { common: "Anxious", binomial: "Breathwork · 18 min", photo: { url: "https://images.unsplash.com/photo-1474223960279-c596b5ac7c0c?w=900&auto=format&fit=crop&q=80", text: "Anxious session", by: "The Daily Meds", pos: "50% 20%" } },
-  { common: "Guilty", binomial: "Guided Meditation · 15 min", photo: { url: "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=900&auto=format&fit=crop&q=80", text: "Guilty session", by: "The Daily Meds", pos: "50% 30%" } },
-  { common: "Daily Ritual", binomial: "Morning Reset · 10 min", photo: { url: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=900&auto=format&fit=crop&q=80", text: "Daily Ritual session", by: "The Daily Meds" } },
-  { common: "Snuggle Down", binomial: "Sleep Audio · 45 min", photo: { url: "https://images.unsplash.com/photo-1531353826977-0941b4779a1c?w=900&auto=format&fit=crop&q=80", text: "Snuggle Down session", by: "The Daily Meds" } },
-  { common: "Heartbroken", binomial: "Emotional Release · 22 min", photo: { url: "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=900&auto=format&fit=crop&q=80", text: "Heartbroken session", by: "The Daily Meds", pos: "50% 20%" } },
-  { common: "Can't Switch Off", binomial: "Sleep Audio · 30 min", photo: { url: "https://images.unsplash.com/photo-1455642305367-68834a1da7ab?w=900&auto=format&fit=crop&q=80", text: "Can't Switch Off session", by: "The Daily Meds" } },
-  { common: "Overwhelmed", binomial: "Breathwork · 12 min", photo: { url: "https://images.unsplash.com/photo-1542596768-5d1d21f1cf98?w=900&auto=format&fit=crop&q=80", text: "Overwhelmed session", by: "The Daily Meds", pos: "50% 25%" } },
+  { common: "Exhausted", binomial: "Guided Release · 20 min", photo: { url: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/Exhausted.png", text: "Exhausted session", by: "The Daily Meds" } },
+  { common: "Hacked", binomial: "Breathwork · 18 min", photo: { url: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/Hacked.png", text: "Hacked session", by: "The Daily Meds" } },
+  { common: "High AF", binomial: "Guided Meditation · 15 min", photo: { url: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/High%20AF.png", text: "High AF session", by: "The Daily Meds" } },
+  { common: "Smoking", binomial: "Morning Reset · 10 min", photo: { url: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/Smoking.png", text: "Smoking session", by: "The Daily Meds" } },
+  { common: "Working Late", binomial: "Sleep Audio · 45 min", photo: { url: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/Working%20Latehausted.png", text: "Working Late session", by: "The Daily Meds" } },
 ];
 
 const FACE_REALITY = [
