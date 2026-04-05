@@ -40,22 +40,39 @@ function CallbackHandler() {
   useEffect(() => {
     const supabase = createClient();
     const code = searchParams.get("code");
+    const tokenHash = searchParams.get("token_hash");
+    const type = searchParams.get("type");
     const next = searchParams.get("next") ?? "/home";
 
-    if (!code) {
-      router.replace("/login?error=auth");
+    // Password reset emails use token_hash + type=recovery
+    if (tokenHash && type) {
+      supabase.auth.verifyOtp({ token_hash: tokenHash, type: type as "recovery" | "email" }).then(({ error }) => {
+        if (error) {
+          console.error("Token verify error:", error.message);
+          router.replace("/login?error=auth");
+          return;
+        }
+        router.refresh();
+        router.replace(type === "recovery" ? "/reset-password" : next);
+      });
       return;
     }
 
-    supabase.auth.exchangeCodeForSession(code).then(({ error }) => {
-      if (error) {
-        console.error("Auth callback error:", error.message);
-        router.replace("/login?error=auth");
-        return;
-      }
-      router.refresh();
-      router.replace(next);
-    });
+    // Google / GitHub OAuth uses a code
+    if (code) {
+      supabase.auth.exchangeCodeForSession(code).then(({ error }) => {
+        if (error) {
+          console.error("Auth callback error:", error.message);
+          router.replace("/login?error=auth");
+          return;
+        }
+        router.refresh();
+        router.replace(next);
+      });
+      return;
+    }
+
+    router.replace("/login?error=auth");
   }, []);
 
   return <Spinner />;
