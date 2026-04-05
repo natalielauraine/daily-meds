@@ -769,7 +769,7 @@ export default function EpisodePage() {
           display: "flex", justifyContent: "space-between", alignItems: "center",
           fontFamily: "var(--font-manrope)", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.15em", opacity: 0.4,
         }}>
-          <span>© 2025 The Daily Meds</span>
+          <span>© {new Date().getFullYear()} The Daily Meds</span>
           <span>Made with love in Ibiza by Natalie Lauraine</span>
         </div>
       </footer>
