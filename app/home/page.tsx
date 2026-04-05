@@ -75,11 +75,28 @@ export default function LoggedInHome() {
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      if (!data.user) { router.push("/login"); return; }
-      setUser(data.user);
-      setLoading(false);
+    // getSession() reads from cookies immediately — no network call.
+    // This is the correct pattern after an OAuth redirect where the session
+    // cookie is fresh and getUser()'s network call can race against hydration.
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        setUser(session.user);
+        setLoading(false);
+        return;
+      }
+      // No session in cookies — send to login
+      router.push("/login");
     });
+
+    // Also listen for auth state changes in case PKCE finishes after render
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        setUser(session.user);
+        setLoading(false);
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   // Fake play progress
