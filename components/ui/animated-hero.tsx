@@ -43,7 +43,7 @@ function Hero() {
               className="text-5xl md:text-7xl max-w-2xl tracking-tighter text-center"
               style={{ fontFamily: "var(--font-lexend)", fontWeight: 900, color: "#ffffff", lineHeight: 1.05 }}
             >
-              <span className="uppercase">THIS IS SOMETHING</span>
+              <span className="uppercase">THE NETFLIX OF MEDITATION, FOR LIFE&apos;S MOST AWKWARD MOMENTS.</span>
               <span className="relative flex w-full justify-center overflow-hidden text-center md:pb-4 md:pt-1" style={{ height: "1.2em" }}>
                 &nbsp;
                 {titles.map((title, index) => (
