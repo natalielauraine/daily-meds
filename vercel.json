@@ -15,6 +15,10 @@
     {
       "path": "/api/email/trial-day5",
       "schedule": "0 9 * * *"
+    },
+    {
+      "path": "/api/email/monthly-recap",
+      "schedule": "0 9 1 * *"
     }
   ]
 }
