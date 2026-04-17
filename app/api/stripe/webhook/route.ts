@@ -27,6 +27,7 @@ import SubscriptionCancelledEmail from "../../../../emails/SubscriptionCancelled
 import TrialEndingEmail from "../../../../emails/TrialEndingEmail";
 import TrialWelcomeEmail from "../../../../emails/TrialWelcomeEmail";
 import AudioWelcomeEmail from "../../../../emails/AudioWelcomeEmail";
+import PaymentFailedEmail from "../../../../emails/PaymentFailedEmail";
 
 export const dynamic = "force-dynamic";
 
@@ -403,6 +404,29 @@ export async function POST(req: NextRequest) {
           .from("users")
           .update({ subscription_status: "payment_failed" })
           .eq("stripe_customer_id", customerId);
+
+        // Send payment failed email
+        try {
+          const { data: userData } = await supabase
+            .from("users")
+            .select("email, name")
+            .eq("stripe_customer_id", customerId)
+            .single();
+
+          if (userData?.email) {
+            const firstName = (userData.name || userData.email.split("@")[0]).split(" ")[0];
+            const html = await render(PaymentFailedEmail({ firstName }));
+
+            await resend.emails.send({
+              from:    `${FROM_NAME} <${FROM_EMAIL}>`,
+              to:      userData.email,
+              subject: "Your card said 'no'. (We've been there.)",
+              html,
+            });
+          }
+        } catch (emailErr) {
+          console.error("Payment failed email error:", emailErr);
+        }
 
         break;
       }
