@@ -134,6 +134,8 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       const userId = userIdRef.current;
       if (userId && session) {
         const supabase = createClient();
+
+        // Mark progress as completed (powers Continue Watching)
         supabase.from("user_progress").upsert(
           {
             user_id: userId,
@@ -145,6 +147,14 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
           },
           { onConflict: "user_id,session_id" }
         );
+
+        // Record the completed session (powers monthly recap stats)
+        supabase.from("user_sessions").insert({
+          user_id:          userId,
+          session_id:       session.id,
+          duration_minutes: Math.round((audio.duration || 0) / 60),
+          completed_at:     new Date().toISOString(),
+        });
       }
     };
 

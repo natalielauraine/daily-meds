@@ -8,6 +8,7 @@
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
+import { createClient } from "../../../lib/supabase-browser";
 
 // ── TYPES ─────────────────────────────────────────────────────────────────────
 
@@ -53,6 +54,31 @@ export default function LiveRoomPage() {
   const [secondsLeft, setSecondsLeft] = useState(24 * 60 + 12); // 24m 12s mock countdown
 
   const chatEndRef = useRef<HTMLDivElement>(null);
+
+  // Record attendance when user joins a live session
+  async function handleJoin() {
+    setJoined(true);
+    try {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      // Find the live session by room name to get its ID
+      const { data: session } = await supabase
+        .from("live_sessions")
+        .select("id")
+        .eq("daily_room_name", roomName)
+        .single();
+
+      await supabase.from("live_attendances").insert({
+        user_id:     user.id,
+        session_id:  session?.id ?? null,
+        attended_at: new Date().toISOString(),
+      });
+    } catch {
+      // Attendance tracking is non-critical — silently ignore errors
+    }
+  }
 
   // Countdown timer
   useEffect(() => {
@@ -227,7 +253,7 @@ export default function LiveRoomPage() {
                     </p>
                   ) : (
                     <button
-                      onClick={() => setJoined(true)}
+                      onClick={handleJoin}
                       className="px-8 py-3 rounded-full text-sm font-bold text-white transition-opacity hover:opacity-80"
                       style={{ background: "linear-gradient(135deg, #ff41b3, #ec723d)", fontFamily: "var(--font-plus-jakarta)" }}
                     >
