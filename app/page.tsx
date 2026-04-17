@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Logo from "./components/Logo";
 import LandingEmailForm from "./components/LandingEmailForm";
 import LandingFAQ from "./components/LandingFAQ";
@@ -78,6 +79,25 @@ const NAV_LINKS = [
 
 export default function Home() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [trialLoading, setTrialLoading] = useState(false);
+  const router = useRouter();
+
+  async function handleTrial() {
+    setTrialLoading(true);
+    try {
+      const res = await fetch("/api/stripe/create-checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ planId: "trial" }),
+      });
+      const data = await res.json();
+      if (data.url) router.push(data.url);
+    } catch {
+      router.push("/pricing");
+    } finally {
+      setTrialLoading(false);
+    }
+  }
 
   return (
     <div style={{ backgroundColor: "#010101", color: "#ffffff", fontFamily: "var(--font-manrope)" }}>
@@ -167,6 +187,57 @@ export default function Home() {
         />
         <div className="relative z-10">
           <AnimatedHero />
+        </div>
+      </section>
+
+      {/* ── £1 TRIAL BANNER ────────────────────────────────────────────── */}
+      <section className="px-4 sm:px-6 lg:px-12 pb-4" style={{ backgroundColor: "#010101" }}>
+        <div
+          className="relative rounded-2xl overflow-hidden"
+          style={{
+            background: "linear-gradient(135deg, #1a0010 0%, #1f1f1f 50%, #0d0010 100%)",
+            border: "1.5px solid rgba(255,65,179,0.3)",
+            boxShadow: "0 0 60px rgba(255,65,179,0.08)",
+          }}
+        >
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{ background: "radial-gradient(ellipse at 15% 50%, rgba(255,65,179,0.1) 0%, transparent 60%)" }}
+          />
+          <div className="relative flex flex-col sm:flex-row items-center justify-between gap-6 p-7 sm:p-8">
+            <div className="text-center sm:text-left">
+              <span
+                className="inline-block text-[10px] px-3 py-1 rounded-full uppercase tracking-widest mb-3"
+                style={{ background: "linear-gradient(90deg, #ff41b3, #ec723d)", color: "#fff", fontFamily: "var(--font-lexend)", fontWeight: 700 }}
+              >
+                Try everything free for 7 days
+              </span>
+              <h2
+                className="uppercase mb-1"
+                style={{ fontFamily: "var(--font-lexend)", fontWeight: 900, fontSize: "clamp(1.2rem, 3vw, 1.6rem)", color: "#E2E2E2" }}
+              >
+                Start your £1 trial
+              </h2>
+              <p className="text-sm" style={{ color: "rgba(255,255,255,0.4)", lineHeight: 1.6 }}>
+                Full Premium access for 7 days. Then £19.99/mo. Cancel before day 7 and pay nothing more.
+              </p>
+            </div>
+            <button
+              onClick={handleTrial}
+              disabled={trialLoading}
+              className="shrink-0 px-8 py-3.5 rounded-full text-sm transition-all duration-200 hover:scale-105 disabled:opacity-60 disabled:scale-100 whitespace-nowrap"
+              style={{
+                fontFamily: "var(--font-lexend)",
+                fontWeight: 700,
+                background: "linear-gradient(90deg, #ff41b3, #ec723d)",
+                color: "#fff",
+                boxShadow: "0 0 28px rgba(255,65,179,0.4)",
+                cursor: trialLoading ? "wait" : "pointer",
+              }}
+            >
+              {trialLoading ? "Redirecting…" : "Start for £1"}
+            </button>
+          </div>
         </div>
       </section>
 
@@ -318,14 +389,54 @@ export default function Home() {
       </section>
 
       {/* ── BOTTOM CTA ─────────────────────────────────────────────────── */}
-      <section className="py-24" style={{ backgroundColor: "#010101" }}>
-        <div className="max-w-xl mx-auto px-6 text-center flex flex-col gap-6 items-center">
-          <p className="font-bold uppercase tracking-widest text-white text-sm">
-            Ready to dive in? Enter your email to start your meditations.
+      <section className="py-24 px-6" style={{ backgroundColor: "#010101" }}>
+        <div className="max-w-2xl mx-auto text-center flex flex-col items-center gap-6">
+          <span
+            className="text-[10px] px-3 py-1 rounded-full uppercase tracking-widest"
+            style={{ background: "rgba(255,65,179,0.1)", border: "0.5px solid rgba(255,65,179,0.25)", color: "#ff41b3", fontFamily: "var(--font-lexend)", fontWeight: 700 }}
+          >
+            Limited time offer
+          </span>
+          <h2
+            className="uppercase"
+            style={{ fontFamily: "var(--font-lexend)", fontWeight: 900, fontSize: "clamp(1.8rem, 5vw, 3rem)", color: "#E2E2E2", lineHeight: 1.1 }}
+          >
+            Your toolkit for
+            <br />
+            <span style={{ background: "linear-gradient(90deg, #ff41b3, #ec723d)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+              real life.
+            </span>
+          </h2>
+          <p style={{ color: "rgba(255,255,255,0.4)", lineHeight: 1.7, maxWidth: "480px" }}>
+            Full Premium access — live sessions, the entire library, group rooms — for 7 days. Then £19.99/mo. Cancel before day 7 and pay nothing more.
           </p>
-          <div className="w-full">
-            <LandingEmailForm />
+          <div className="flex flex-col sm:flex-row gap-3 items-center">
+            <button
+              onClick={handleTrial}
+              disabled={trialLoading}
+              className="px-10 py-4 rounded-full text-sm transition-all duration-200 hover:scale-105 disabled:opacity-60"
+              style={{
+                fontFamily: "var(--font-lexend)",
+                fontWeight: 900,
+                background: "linear-gradient(90deg, #ff41b3, #ec723d)",
+                color: "#fff",
+                boxShadow: "0 0 40px rgba(255,65,179,0.4)",
+                cursor: trialLoading ? "wait" : "pointer",
+              }}
+            >
+              {trialLoading ? "Redirecting…" : "Start for £1"}
+            </button>
+            <Link
+              href="/free"
+              className="text-sm transition-colors hover:text-white"
+              style={{ color: "rgba(255,255,255,0.35)", fontFamily: "var(--font-lexend)" }}
+            >
+              Or try free sessions →
+            </Link>
           </div>
+          <p className="text-xs" style={{ color: "rgba(255,255,255,0.2)" }}>
+            No commitment. Cancel any time before day 7.
+          </p>
         </div>
       </section>
 
