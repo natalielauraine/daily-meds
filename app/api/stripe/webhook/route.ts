@@ -71,7 +71,14 @@ export async function POST(req: NextRequest) {
   try {
     event = stripe.webhooks.constructEvent(rawBody, signature, webhookSecret);
   } catch (err) {
-    console.error("Webhook signature failed:", err);
+    // Log full details so we can diagnose via Vercel logs
+    console.error("Webhook signature failed:", {
+      error:          err instanceof Error ? err.message : String(err),
+      signatureHeader: signature?.slice(0, 60),
+      secretPrefix:   webhookSecret.slice(0, 12),
+      bodyLength:     rawBody.length,
+      bodyPreview:    rawBody.slice(0, 80),
+    });
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
 
