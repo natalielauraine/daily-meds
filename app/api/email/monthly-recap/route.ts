@@ -1,12 +1,11 @@
-// Monthly Recap cron — runs on the 1st of each month at 9am UTC.
-// Sends each active Monthly subscriber their 30-day stats + lifetime upsell.
+// Monthly Recap cron — runs daily at 9am UTC.
+// Finds users who subscribed exactly 30 days ago and are on a monthly plan,
+// pulls their personal 30-day stats, and sends the recap + lifetime upsell.
 //
-// Stats pulled from Supabase:
-//   - sessions completed in the last 30 days  (user_sessions table)
-//   - total minutes gathered                  (sum of session duration_minutes)
-//   - live sessions attended                  (live_attendances table)
+// This means each user receives their recap on their own 30-day anniversary
+// rather than everyone getting it on the 1st of the month.
 //
-// vercel.json schedule: "0 9 1 * *"
+// vercel.json schedule: "0 9 * * *"
 // Protected by CRON_SECRET.
 
 import { NextRequest, NextResponse } from "next/server";
@@ -29,24 +28,31 @@ export async function POST(req: NextRequest) {
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
 
-  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+  // Target users who joined 29–30 days ago (window handles cron drift)
+  const windowStart = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+  const windowEnd   = new Date(Date.now() - 29 * 24 * 60 * 60 * 1000);
 
-  // Only Monthly subscribers get the upsell (not annual/lifetime — they're already committed)
+  // Their 30-day stats window is from their join date until now
+  const thirtyDaysAgo = windowStart.toISOString();
+
+  // Only Monthly subscribers get the upsell (annual/lifetime are already committed)
   const { data: members, error } = await supabase
     .from("users")
-    .select("id, email, name")
+    .select("id, email, name, created_at")
     .eq("subscription_status", "monthly")
+    .gte("created_at", windowStart.toISOString())
+    .lt("created_at", windowEnd.toISOString())
     .not("email", "is", null);
 
   if (error || !members || members.length === 0) {
-    return NextResponse.json({ sent: 0 });
+    return NextResponse.json({ sent: 0, reason: error?.message ?? "no users in window" });
   }
 
   let sent = 0;
 
   for (const member of members) {
     try {
-      // Sessions completed in the last 30 days
+      // Sessions completed in their first 30 days
       const { data: sessions } = await supabase
         .from("user_sessions")
         .select("duration_minutes")
@@ -56,7 +62,7 @@ export async function POST(req: NextRequest) {
       const sessionsCount = sessions?.length ?? 0;
       const totalMinutes  = sessions?.reduce((sum, s) => sum + (s.duration_minutes ?? 0), 0) ?? 0;
 
-      // Live sessions attended in the last 30 days
+      // Live sessions attended in their first 30 days
       const { count: liveAttendances } = await supabase
         .from("live_attendances")
         .select("id", { count: "exact", head: true })
