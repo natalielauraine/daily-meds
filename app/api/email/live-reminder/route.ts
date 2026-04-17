@@ -48,11 +48,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ sent: 0, sessions: 0 });
   }
 
-  // Fetch only Premium members (access_level 2) — live sessions are not included in Audio or Free plans
+  // Fetch Premium + Founding Members (access_level 2 or 3) — live sessions not included in Audio or Free
   const { data: members } = await supabase
     .from("users")
     .select("email, name")
-    .eq("access_level", 2)
+    .gte("access_level", 2)
     .not("email", "is", null);
 
   if (!members || members.length === 0) {

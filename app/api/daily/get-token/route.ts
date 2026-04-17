@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
 
   // Live sessions require Premium (access_level 2).
   // Audio-only (level 1) and Free (level 0) users are redirected to upgrade.
-  if (accessLevel < 2) {
+  if (accessLevel < 2) { // 2 = Premium, 3 = Founding Member — both get live access
     return NextResponse.json(
       {
         error:   "upgrade_required",

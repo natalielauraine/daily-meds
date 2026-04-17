@@ -95,9 +95,46 @@ export async function POST(req: NextRequest) {
         let accessLevel = 2;
 
         if (session.mode === "payment") {
-          // One-time payment = lifetime
-          tier        = "lifetime";
-          accessLevel = 2;
+          const upgradeType = session.metadata?.upgrade_type;
+
+          if (upgradeType === "lifetime_founding_member") {
+            // Founding Member upgrade — cancel any active subscription so they
+            // aren't double-charged, then grant lifetime access at level 3
+            tier        = "lifetime";
+            accessLevel = 3;
+
+            const customerId = session.customer as string;
+            if (customerId) {
+              try {
+                const subscriptions = await stripe.subscriptions.list({
+                  customer: customerId,
+                  status:   "active",
+                  limit:    5,
+                });
+                for (const sub of subscriptions.data) {
+                  // Cancel at period end — they keep access until their billing date
+                  await stripe.subscriptions.update(sub.id, {
+                    cancel_at_period_end: true,
+                  });
+                }
+                // Also cancel any trialing subscriptions immediately
+                const trialing = await stripe.subscriptions.list({
+                  customer: customerId,
+                  status:   "trialing",
+                  limit:    5,
+                });
+                for (const sub of trialing.data) {
+                  await stripe.subscriptions.cancel(sub.id);
+                }
+              } catch (cancelErr) {
+                console.error("Failed to cancel old subscription after lifetime upgrade:", cancelErr);
+              }
+            }
+          } else {
+            // Regular one-time payment = lifetime
+            tier        = "lifetime";
+            accessLevel = accessLevelMeta ? parseInt(accessLevelMeta, 10) : 2;
+          }
         } else if (session.subscription) {
           const sub     = await stripe.subscriptions.retrieve(session.subscription as string);
           const priceId = sub.items.data[0]?.price.id ?? "";

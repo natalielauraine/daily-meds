@@ -35,11 +35,11 @@ export async function POST(req: NextRequest) {
     // no body — use default
   }
 
-  // Send only to access_level 2 (Premium / Annual / Lifetime / Trial)
+  // Send to access_level 2+ (Premium / Annual / Lifetime / Trial / Founding Member)
   const { data: members, error } = await supabase
     .from("users")
     .select("email, name")
-    .eq("access_level", 2)
+    .gte("access_level", 2)
     .not("email", "is", null);
 
   if (error || !members || members.length === 0) {
