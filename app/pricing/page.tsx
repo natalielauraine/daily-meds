@@ -228,8 +228,9 @@ export default function PricingPage() {
   // Called when the user clicks a paid plan CTA.
   // Posts to the checkout API, then redirects to Stripe's hosted payment page.
   async function handleCheckout(planId: string) {
+    // Trial doesn't need a priceId — the server uses MONTHLY price internally
     const priceId = PRICE_IDS[planId];
-    if (!priceId) {
+    if (!priceId && planId !== "trial") {
       alert("This plan is not available yet. Please try again later.");
       return;
     }
@@ -239,7 +240,7 @@ export default function PricingPage() {
       const res = await fetch("/api/stripe/create-checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ priceId, planId }),
+        body: JSON.stringify({ priceId: priceId || undefined, planId }),
       });
 
       const data = await res.json();
@@ -408,6 +409,66 @@ export default function PricingPage() {
                 className="w-full h-auto"
                 unoptimized
               />
+            </div>
+          </div>
+        </section>
+
+        {/* ── £1 TRIAL BANNER ── */}
+        <section className="px-4 sm:px-6 lg:px-8 pb-10">
+          <div className="max-w-3xl mx-auto">
+            <div
+              className="relative rounded-2xl overflow-hidden"
+              style={{
+                background: "linear-gradient(135deg, #1a0010 0%, #1f1f1f 50%, #0d0010 100%)",
+                border: "1.5px solid rgba(255,65,179,0.35)",
+                boxShadow: "0 0 60px rgba(255,65,179,0.1)",
+              }}
+            >
+              {/* Glow */}
+              <div
+                className="absolute inset-0 pointer-events-none"
+                style={{ background: "radial-gradient(ellipse at 20% 50%, rgba(255,65,179,0.1) 0%, transparent 60%)" }}
+              />
+              <div className="relative flex flex-col sm:flex-row items-center justify-between gap-6 p-7 sm:p-8">
+                <div className="text-center sm:text-left">
+                  {/* Badge */}
+                  <span
+                    className="inline-block text-[10px] px-3 py-1 rounded-full uppercase tracking-widest mb-3"
+                    style={{ background: "linear-gradient(90deg, #ff41b3, #ec723d)", color: "#fff", fontFamily: "var(--font-space-grotesk)", fontWeight: 700 }}
+                  >
+                    Try everything free for 7 days
+                  </span>
+                  <h2
+                    className="uppercase mb-1"
+                    style={{ fontFamily: "var(--font-plus-jakarta)", fontWeight: 800, fontSize: "clamp(1.3rem, 3vw, 1.75rem)", color: "#E2E2E2", letterSpacing: "-0.01em" }}
+                  >
+                    Start your £1 trial
+                  </h2>
+                  <p
+                    className="text-sm max-w-md"
+                    style={{ fontFamily: "var(--font-inter)", color: "rgba(255,255,255,0.4)", lineHeight: 1.6 }}
+                  >
+                    Full Premium access — live sessions, the entire library, group rooms — for 7 days.
+                    Then £19.99/mo. Cancel before day 7 and pay nothing more.
+                  </p>
+                </div>
+                <button
+                  onClick={() => handleCheckout("trial")}
+                  disabled={loadingPlan === "trial"}
+                  className="shrink-0 px-8 py-3.5 rounded-full text-sm transition-all duration-200 hover:scale-105 disabled:opacity-60 disabled:scale-100"
+                  style={{
+                    fontFamily: "var(--font-space-grotesk)",
+                    fontWeight: 700,
+                    background: "linear-gradient(90deg, #ff41b3, #ec723d)",
+                    color: "#fff",
+                    boxShadow: "0 0 28px rgba(255,65,179,0.4)",
+                    cursor: loadingPlan === "trial" ? "wait" : "pointer",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {loadingPlan === "trial" ? "Redirecting…" : "Start for £1"}
+                </button>
+              </div>
             </div>
           </div>
         </section>
