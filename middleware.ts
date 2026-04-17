@@ -84,9 +84,11 @@ export async function middleware(request: NextRequest) {
 }
 
 // Tell Next.js which paths to run middleware on.
-// Exclude static files, images, and the API routes that don't need a session.
+// Exclude static files, images, and ALL API routes — API routes handle their own auth.
+// Running Supabase's getUser() on API requests (especially Stripe webhooks) can
+// interfere with raw body reading and cause 307 redirects from Vercel.
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|api/|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };
