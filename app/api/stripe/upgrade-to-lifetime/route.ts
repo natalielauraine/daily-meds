@@ -52,9 +52,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Already a Lifetime member" }, { status: 400 });
   }
 
-  const foundingPriceId = process.env.NEXT_PUBLIC_STRIPE_FOUNDING_PRICE_ID;
+  const foundingPriceId = process.env.NEXT_PUBLIC_STRIPE_LIFETIME_PRICE_ID;
   if (!foundingPriceId) {
-    return NextResponse.json({ error: "Founding Member price ID not configured" }, { status: 500 });
+    return NextResponse.json({ error: "Lifetime price ID not configured" }, { status: 500 });
   }
 
   const stripe = new Stripe(secretKey, { apiVersion: "2026-02-25.clover" });
