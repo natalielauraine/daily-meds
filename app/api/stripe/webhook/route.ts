@@ -25,6 +25,7 @@ import { resend, FROM_EMAIL, FROM_NAME } from "../../../../lib/resend";
 import PaymentConfirmationEmail from "../../../../emails/PaymentConfirmationEmail";
 import SubscriptionCancelledEmail from "../../../../emails/SubscriptionCancelledEmail";
 import TrialEndingEmail from "../../../../emails/TrialEndingEmail";
+import TrialWelcomeEmail from "../../../../emails/TrialWelcomeEmail";
 
 export const dynamic = "force-dynamic";
 
@@ -118,7 +119,60 @@ export async function POST(req: NextRequest) {
           })
           .eq("id", userId);
 
-        // Send payment confirmation email (skip for trial — the £1 is a setup fee, not a plan purchase)
+        // ── TRIAL WELCOME EMAIL ───────────────────────────────────────────────
+        if (tier === "trial") {
+          try {
+            const { data: userData } = await supabase
+              .from("users")
+              .select("email, name")
+              .eq("id", userId)
+              .single();
+
+            if (userData?.email) {
+              // Fetch the next upcoming live session to include in the welcome email
+              const { data: nextSession } = await supabase
+                .from("live_sessions")
+                .select("title, scheduled_at")
+                .eq("is_live", false)
+                .gt("scheduled_at", new Date().toISOString())
+                .order("scheduled_at", { ascending: true })
+                .limit(1)
+                .single();
+
+              const nextLiveTime = nextSession?.scheduled_at
+                ? new Date(nextSession.scheduled_at).toLocaleString("en-GB", {
+                    weekday: "long",
+                    day: "numeric",
+                    month: "long",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    timeZoneName: "short",
+                  })
+                : "soon — check the app for the latest schedule";
+
+              // trial ends 7 days from now
+              const trialEndDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+                .toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+
+              const firstName = (userData.name || userData.email.split("@")[0]).split(" ")[0];
+
+              const html = await render(
+                TrialWelcomeEmail({ firstName, nextLiveTime, trialEndDate })
+              );
+
+              await resend.emails.send({
+                from:    `${FROM_NAME} <${FROM_EMAIL}>`,
+                to:      userData.email,
+                subject: "Let the journey begin: This will be the best £1 you've ever spent.",
+                html,
+              });
+            }
+          } catch (emailErr) {
+            console.error("Trial welcome email failed:", emailErr);
+          }
+        }
+
+        // Send payment confirmation email (skip for trial — handled above)
         if (tier !== "trial") {
           try {
             const { data: userData } = await supabase
