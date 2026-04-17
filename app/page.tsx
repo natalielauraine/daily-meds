@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 import Logo from "./components/Logo";
 import LandingEmailForm from "./components/LandingEmailForm";
@@ -16,11 +17,11 @@ const ReferralTracker = dynamic(() => import("./components/ReferralTracker"), { 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://thedailymeds.com";
 
 const TRENDING = [
-  { title: "Hungover", badge: "Essential", gradient: "linear-gradient(160deg, #2a0800 0%, #ec723d 100%)", href: "/free" },
-  { title: "Anxious", badge: "High Intensity", gradient: "linear-gradient(160deg, #2a0018 0%, #ff41b3 100%)", href: "/free" },
-  { title: "Guilty", badge: "Deep Dive", gradient: "linear-gradient(160deg, #1a1500 0%, #f4e71d 100%)", href: "/free" },
-  { title: "Daily Ritual", badge: "Morning", gradient: "linear-gradient(160deg, #0a1800 0%, #aaee20 100%)", href: "/free" },
-  { title: "Snuggle Down", badge: "Sleep", gradient: "linear-gradient(160deg, #00050f 0%, #3b82f6 100%)", href: "/free" },
+  { title: "Hungover", badge: "Essential", gradient: "linear-gradient(160deg, #2a0800 0%, #ec723d 100%)", href: "/free", image: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/Exhausted.png" },
+  { title: "Anxious", badge: "High Intensity", gradient: "linear-gradient(160deg, #2a0018 0%, #ff41b3 100%)", href: "/free", image: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/Hacked.png" },
+  { title: "Guilty", badge: "Deep Dive", gradient: "linear-gradient(160deg, #1a1500 0%, #f4e71d 100%)", href: "/free", image: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/High%20AF.png" },
+  { title: "Daily Ritual", badge: "Morning", gradient: "linear-gradient(160deg, #0a1800 0%, #aaee20 100%)", href: "/free", image: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/Smoking.png" },
+  { title: "Snuggle Down", badge: "Sleep", gradient: "linear-gradient(160deg, #00050f 0%, #3b82f6 100%)", href: "/free", image: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/Working%20Latehausted.png" },
 ];
 
 const GALLERY_ITEMS: GalleryItem[] = [
@@ -58,6 +59,11 @@ const REASONS = [
     icon: <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>,
     title: "Feel Your Feelings",
     body: "We don't hide from the dark stuff. We sit with it until it turns into light.",
+  },
+  {
+    icon: <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/>,
+    title: "Earn With Us",
+    body: "Earn 20% commission every month when you sign up a friend. Share the calm, get rewarded.",
   },
 ];
 
@@ -102,8 +108,8 @@ export default function Home() {
           <div className="flex items-center gap-3">
             <Link
               href="/signup"
-              className="px-6 py-2 rounded-full text-sm font-bold uppercase transition-transform hover:scale-105"
-              style={{ backgroundColor: "#aaee20", color: "#1a2600", fontFamily: "var(--font-lexend)" }}
+              className="px-4 py-2 rounded-full text-xs font-bold uppercase transition-transform hover:scale-105 whitespace-nowrap"
+              style={{ background: "linear-gradient(90deg, #ff41b3 0%, #ec723d 100%)", color: "#ffffff", fontFamily: "var(--font-lexend)" }}
             >
               Sign In
             </Link>
@@ -188,7 +194,17 @@ export default function Home() {
                   className="relative overflow-hidden rounded-xl"
                   style={{ aspectRatio: "2/3", border: "0.5px solid rgba(255,255,255,0.08)" }}
                 >
-                  <div className="absolute inset-0 transition-transform duration-500 group-hover:scale-105" style={{ background: item.gradient }} />
+                  {item.image ? (
+                    <Image
+                      src={item.image}
+                      alt={item.title}
+                      fill
+                      unoptimized
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 transition-transform duration-500 group-hover:scale-105" style={{ background: item.gradient }} />
+                  )}
                   {/* Hover overlay */}
                   <div
                     className="absolute inset-0 flex flex-col justify-end p-5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
@@ -234,34 +250,23 @@ export default function Home() {
 
       {/* ── FACE REALITY ───────────────────────────────────────────────── */}
       <section className="py-12" style={{ backgroundColor: "#010101" }}>
-        <div className="px-6 md:px-12">
+        <div className="px-6 md:px-12 max-w-3xl">
           <h2
-            className="text-2xl uppercase tracking-widest mb-8"
+            className="text-2xl uppercase tracking-widest mb-6"
             style={{ fontFamily: "var(--font-lexend)", fontWeight: 900, color: "#ff6a9e" }}
           >
             Face Reality
           </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {FACE_REALITY.map((item) => (
-              <Link key={item.title} href="/signup" className="group cursor-pointer">
-                <div
-                  className="relative overflow-hidden rounded-xl"
-                  style={{ aspectRatio: "16/9", border: "0.5px solid rgba(255,255,255,0.07)" }}
-                >
-                  <div className="absolute inset-0 transition-transform duration-500 group-hover:scale-105" style={{ background: item.gradient }} />
-                  <div className="absolute inset-0 transition-colors" style={{ background: "rgba(0,0,0,0.35)" }} />
-                  <div className="absolute bottom-4 left-4">
-                    <h3
-                      className="text-lg uppercase italic group-hover:text-[#aaee20] transition-colors"
-                      style={{ fontFamily: "var(--font-lexend)", fontWeight: 900 }}
-                    >
-                      {item.title}
-                    </h3>
-                  </div>
-                </div>
-              </Link>
+          <p className="text-base leading-relaxed" style={{ color: "rgba(255,255,255,0.55)" }}>
+            {FACE_REALITY.map((item, i) => (
+              <span key={item.title}>
+                <Link href="/signup" className="hover:text-white transition-colors" style={{ color: "rgba(255,255,255,0.55)" }}>
+                  {item.title}
+                </Link>
+                {i < FACE_REALITY.length - 1 && <span style={{ color: "rgba(255,255,255,0.2)" }}> · </span>}
+              </span>
             ))}
-          </div>
+          </p>
         </div>
       </section>
 
@@ -352,12 +357,7 @@ export default function Home() {
             ))}
           </div>
           <div className="flex flex-col md:flex-row justify-between items-center pt-4 gap-4">
-            <p
-              className="text-[10px] uppercase tracking-widest font-black italic"
-              style={{ color: "#aaee20", fontFamily: "var(--font-lexend)" }}
-            >
-              The Daily Meds
-            </p>
+            <Logo href="/" size="sm" />
             <p className="text-[10px]">© {new Date().getFullYear()} The Daily Meds. All Rights Reserved.</p>
           </div>
         </div>

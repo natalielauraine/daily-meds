@@ -5,23 +5,27 @@ import { useState } from "react";
 const FAQS = [
   {
     q: "How is this different to Calm, Headspace or Insight Timer?",
-    a: "Daily Meds is built for real life — not perfect mornings. We cover the stuff other apps won't touch: hangovers, heartbreak, anxiety spirals, comedowns. No toxic positivity, just honest meditations that meet you where you are.",
+    a: "Daily Meds is built for real life, not perfect mornings. We cover the stuff other apps won't touch: hangovers, heartbreak, anxiety spirals, comedowns. No toxic positivity, just honest meditations that meet you where you are.",
   },
   {
     q: "How much does it cost?",
-    a: "Start completely free. Full access is £9.99/month. Cancel anytime, no questions asked.",
+    a: "We have a plan for everyone. Start completely free with 10 sessions, no card needed. Audio only is £9.99 a month, giving you full access to the entire library. Audio plus live events is £19.99 a month. The annual plan is £199.99 for the full year. And our Founder Membership is a one-time payment of £299.99 for lifetime access to everything, including all future content. Cancel anytime on monthly plans.",
   },
   {
     q: "How many meditations are on here?",
-    a: "We have a growing library of 100+ sessions across moods, lengths and styles — and we're adding new ones every week.",
+    a: "We have a growing library of 100+ sessions across moods, lengths and styles and we are adding new ones every week. We add new meditations every week and in phase two we will also be adding our children's section.",
   },
   {
-    q: "Is it real or AI voices?",
-    a: "Real. Every session is recorded by Natalie and a curated team of guides. No robots, no generated voices.",
+    q: "Is it AI or human voices?",
+    a: "All human, apart from the website. Every session is recorded by Natalie and a curated team of guides. No meditations are done with AI. Everything is recorded in person at Metrica Studios in Ibiza so we release new meditations every week as any normal human would. We can't go faster and we wouldn't want to.",
   },
   {
-    q: "Can the whole family watch?",
-    a: "Yes. The content is designed for adults but there's nothing inappropriate. Younger teens upwards would find it useful.",
+    q: "Is it suitable for all ages?",
+    a: "There is nothing explicit and these meditations are designed for teenagers and adults alike. Start with our free section or sign up today.",
+  },
+  {
+    q: "Can I download sessions to listen offline?",
+    a: "Offline downloads are available on Annual and Lifetime plans. Monthly subscribers can stream anywhere with internet.",
   },
 ];
 
@@ -42,7 +46,7 @@ export default function LandingFAQ() {
           >
             <span
               className="font-bold uppercase tracking-wide text-sm text-white pr-4"
-              style={{ fontFamily: "var(--font-plus-jakarta)" }}
+              style={{ fontFamily: "var(--font-lexend)" }}
             >
               {faq.q}
             </span>

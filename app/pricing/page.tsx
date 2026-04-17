@@ -5,6 +5,7 @@
 // Matches the Stitch "Subscription Plans" design with the neon brand palette.
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Navbar from "../components/Navbar";
@@ -44,9 +45,32 @@ const PLANS = [
     ],
   },
   {
+    id: "audio",
+    name: "Audio Only",
+    tagline: "Full library, anytime",
+    monthlyPrice: "£9.99",
+    annualPrice: "£9.99",
+    priceNote: "per month",
+    cta: "Start listening",
+    ctaHref: "/signup?plan=audio",
+    featured: false,
+    features: [
+      "Everything in Free",
+      "Full library (200+ sessions)",
+      "New drops every week",
+      "Breathing timer",
+      "Cancel any time",
+    ],
+    locked: [
+      "Live sessions with Natalie",
+      "Offline downloads",
+      "Group meditation rooms",
+    ],
+  },
+  {
     id: "monthly",
     name: "The Seeker",
-    tagline: "Full access, month by month",
+    tagline: "Audio plus live events",
     monthlyPrice: "£19.99",
     annualPrice: "£19.99",
     priceNote: "per month",
@@ -54,22 +78,19 @@ const PLANS = [
     ctaHref: "/signup?plan=monthly",
     featured: false,
     features: [
-      "Everything in Free",
-      "Full library (200+ sessions)",
-      "New drops every week",
+      "Everything in Audio",
       "Live sessions with Natalie",
-      "Breathing timer",
+      "Group meditation rooms",
       "Cancel any time",
     ],
     locked: [
       "Offline downloads",
-      "Group meditation rooms",
     ],
   },
   {
     id: "annual",
     name: "The Regular",
-    tagline: "Best value — save over 15%",
+    tagline: "Best value, save over 15%",
     monthlyPrice: "£16.66",
     annualPrice: "£199.99",
     monthlyPriceNote: "per month, billed annually",
@@ -80,30 +101,9 @@ const PLANS = [
     features: [
       "Everything in Monthly",
       "Offline downloads",
-      "Group meditation rooms",
       "Priority support",
       "Early access to new content",
-      "Save £39.89 vs monthly",
-    ],
-    locked: [],
-  },
-  {
-    id: "lifetime",
-    name: "The Master",
-    tagline: "Pay once. Never again.",
-    monthlyPrice: "£299.99",
-    annualPrice: "£299.99",
-    priceNote: "one-time payment",
-    cta: "Get lifetime access",
-    ctaHref: "/signup?plan=lifetime",
-    featured: false,
-    features: [
-      "Everything in Annual",
-      "All future series included",
-      "Lifetime updates",
-      "Exclusive sessions",
-      "Never pay again",
-      "Personal welcome message",
+      "Save vs monthly",
     ],
     locked: [],
   },
@@ -114,15 +114,19 @@ const PLANS = [
 const FAQS = [
   {
     q: "Can I cancel my subscription at any time?",
-    a: "Yes — cancel any time from your account settings. You'll keep access until the end of your current billing period.",
+    a: "Yes, cancel any time from your account settings. You will keep access until the end of your current billing period.",
   },
   {
     q: "What's included in the free plan?",
     a: "10 handpicked sessions, full access to the breathing timer, and community browsing. No credit card required.",
   },
   {
-    q: "Is the lifetime plan really one payment?",
-    a: "Yes. £299.99 once — no monthly fees, no renewals, no surprises. Every future session and series is included.",
+    q: "What are the different plans?",
+    a: "Free plan gives you 10 sessions at no cost. Audio Only is £9.99 a month for full library access. Audio plus live events is £19.99 a month. The annual plan is £199.99 for the full year. The Founder Membership is a one-time payment of £299.99 for lifetime access to everything.",
+  },
+  {
+    q: "Is the founder membership really one payment?",
+    a: "Yes. £299.99 once, no monthly fees, no renewals, no surprises. Every future session and series is included.",
   },
   {
     q: "Can I download sessions to listen offline?",
@@ -130,11 +134,11 @@ const FAQS = [
   },
   {
     q: "What are group meditation rooms?",
-    a: "Rooms let you meditate live with friends — shared timer, ambient audio, and optional emoji reactions.",
+    a: "Rooms let you meditate live with friends, with a shared timer, ambient audio, and optional emoji reactions.",
   },
   {
     q: "Is my payment secure?",
-    a: "Yes — all payments are handled by Stripe. We never store your card details.",
+    a: "Yes, all payments are handled by Stripe. We never store your card details.",
   },
 ];
 
@@ -372,6 +376,40 @@ export default function PricingPage() {
           </div>
         </section>
 
+        {/* ── COMPARISON TABLE ── */}
+        <section className="px-4 sm:px-6 lg:px-8 py-16">
+          <div className="max-w-5xl mx-auto">
+            <p
+              className="text-xs uppercase tracking-widest mb-2 text-center"
+              style={{ fontFamily: "var(--font-space-grotesk)", fontWeight: 500, color: "rgba(255,255,255,0.3)" }}
+            >
+              How we compare
+            </p>
+            <h2
+              className="text-center uppercase mb-10"
+              style={{
+                fontFamily: "var(--font-plus-jakarta)",
+                fontWeight: 800,
+                fontSize: "clamp(1.2rem, 3vw, 1.75rem)",
+                letterSpacing: "-0.01em",
+                color: "#E2E2E2",
+              }}
+            >
+              Why Daily Meds is different
+            </h2>
+            <div className="rounded-2xl overflow-hidden" style={{ border: "0.5px solid rgba(255,255,255,0.08)" }}>
+              <Image
+                src="https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/Pricing%20Differennciator.png"
+                alt="Daily Meds vs Calm vs Insight Timer vs Headspace comparison"
+                width={2106}
+                height={1226}
+                className="w-full h-auto"
+                unoptimized
+              />
+            </div>
+          </div>
+        </section>
+
         {/* ── PRICING GRID ── */}
         <section className="px-4 sm:px-6 lg:px-8 pb-20">
           <div className="max-w-7xl mx-auto">
@@ -568,6 +606,89 @@ export default function PricingPage() {
               <span>Instant access after payment</span>
               <span>·</span>
               <span>All prices in GBP</span>
+            </div>
+          </div>
+        </section>
+
+        {/* ── FOUNDER OFFER ── */}
+        <section className="px-4 sm:px-6 lg:px-8 pb-20">
+          <div className="max-w-2xl mx-auto">
+            <div
+              className="relative rounded-2xl p-8 sm:p-10 overflow-hidden"
+              style={{
+                background: "linear-gradient(135deg, #1a0010 0%, #1f1f1f 60%, #0a1500 100%)",
+                border: "1.5px solid rgba(255,65,179,0.3)",
+                boxShadow: "0 0 60px rgba(255,65,179,0.08)",
+              }}
+            >
+              {/* Glow */}
+              <div
+                className="absolute top-0 right-0 w-64 h-64 pointer-events-none"
+                style={{ background: "radial-gradient(circle, rgba(255,65,179,0.1) 0%, transparent 70%)" }}
+              />
+              <div className="relative">
+                <span
+                  className="inline-block text-[10px] px-3 py-1 rounded-full uppercase tracking-widest mb-5"
+                  style={{ background: "linear-gradient(90deg, #ff41b3, #ec723d)", color: "#fff", fontFamily: "var(--font-space-grotesk)", fontWeight: 700 }}
+                >
+                  Limited Time Only
+                </span>
+                <h3
+                  className="uppercase mb-2"
+                  style={{ fontFamily: "var(--font-plus-jakarta)", fontWeight: 800, fontSize: "1.75rem", color: "#E2E2E2" }}
+                >
+                  Founder Membership
+                </h3>
+                <p
+                  className="text-sm mb-6 max-w-md"
+                  style={{ fontFamily: "var(--font-inter)", color: "rgba(255,255,255,0.45)", lineHeight: 1.7 }}
+                >
+                  Pay once. Never again. Get lifetime access to everything The Daily Meds will ever make, including all future series and content. Only available for a limited time at the founding price.
+                </p>
+
+                <div className="flex flex-col sm:flex-row items-start sm:items-end gap-6 mb-8">
+                  <div>
+                    <div className="flex items-end gap-2">
+                      <span style={{ fontFamily: "var(--font-plus-jakarta)", fontWeight: 800, fontSize: "3rem", color: "#E2E2E2", lineHeight: 1 }}>£299.99</span>
+                      <span className="mb-1 text-sm" style={{ color: "rgba(255,255,255,0.3)" }}>one-time</span>
+                    </div>
+                    <p className="text-xs mt-1" style={{ color: "#adf225" }}>Never pay again</p>
+                  </div>
+
+                  <ul className="flex flex-col gap-2 text-sm" style={{ color: "rgba(255,255,255,0.6)" }}>
+                    {[
+                      "Full library, forever",
+                      "All future series included",
+                      "Live sessions with Natalie",
+                      "Offline downloads",
+                      "Group meditation rooms",
+                      "Personal welcome message",
+                    ].map((f) => (
+                      <li key={f} className="flex items-center gap-2">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                          <circle cx="12" cy="12" r="10" fill="rgba(173,242,37,0.15)" />
+                          <path d="M7 12l3.5 3.5L17 9" stroke="#adf225" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                        {f}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <button
+                  onClick={() => handleCheckout("lifetime")}
+                  className="px-8 py-3.5 rounded-full text-sm transition-all duration-200 hover:scale-105"
+                  style={{
+                    fontFamily: "var(--font-space-grotesk)",
+                    fontWeight: 700,
+                    background: "linear-gradient(90deg, #ff41b3, #ec723d)",
+                    color: "#fff",
+                    boxShadow: "0 0 30px rgba(255,65,179,0.4)",
+                  }}
+                >
+                  Claim founder membership
+                </button>
+              </div>
             </div>
           </div>
         </section>

@@ -8,7 +8,7 @@ import Link from "next/link";
 function Hero() {
   const [titleNumber, setTitleNumber] = useState(0);
   const titles = useMemo(
-    () => ["DIFFERENT", "NEEDED", "REAL, RARE", "& RAW"],
+    () => ["HUMAN", "DIFFERENT", "REAL", "RAW"],
     []
   );
 
@@ -44,24 +44,11 @@ function Hero() {
       <div className="container mx-auto px-6" style={{ position: "relative", zIndex: 2 }}>
         <div className="flex gap-8 py-20 lg:py-40 items-center justify-center flex-col">
 
-          {/* Badge */}
-          <Link
-            href="/free"
-            className="flex items-center gap-2 px-4 py-1.5 rounded-full text-xs uppercase tracking-widest font-bold transition-opacity hover:opacity-70"
-            style={{
-              border: "1px solid rgba(255,255,255,0.12)",
-              color: "rgba(255,255,255,0.5)",
-              fontFamily: "var(--font-lexend)",
-            }}
-          >
-            Listen for free <MoveRight className="w-3 h-3" />
-          </Link>
-
           {/* Headline */}
           <div className="flex gap-4 flex-col items-center">
             <h1
               className="text-5xl md:text-7xl max-w-2xl tracking-tighter text-center"
-              style={{ fontFamily: "var(--font-lexend)", fontWeight: 900, color: "#ffffff", lineHeight: 1.05 }}
+              style={{ fontFamily: "var(--font-nyata), var(--font-lexend)", fontWeight: 900, color: "#ffffff", lineHeight: 1.05 }}
             >
               <span className="uppercase">THIS IS SOMETHING</span>
               <span className="relative flex w-full justify-center overflow-hidden text-center md:pb-4 md:pt-1" style={{ height: "1.2em" }}>
@@ -75,7 +62,7 @@ function Hero() {
                       WebkitBackgroundClip: "text",
                       WebkitTextFillColor: "transparent",
                       backgroundClip: "text",
-                      fontFamily: "var(--font-lexend)",
+                      fontFamily: "var(--font-nyata), var(--font-lexend)",
                     }}
                     initial={{ opacity: 0, y: -100 }}
                     transition={{ type: "spring", stiffness: 50 }}
@@ -97,21 +84,17 @@ function Hero() {
             >
               The Netflix of meditation, for life&apos;s most awkward moments.
             </p>
+
+            <p
+              className="text-sm md:text-base tracking-tight text-center"
+              style={{ color: "rgba(255,255,255,0.55)", fontFamily: "var(--font-manrope)" }}
+            >
+              Just £9.99 a month. Cancel anytime.
+            </p>
           </div>
 
-          {/* CTAs */}
+          {/* CTA */}
           <div className="flex flex-row gap-3 flex-wrap justify-center">
-            <Link
-              href="/free"
-              className="flex items-center gap-2 px-6 py-3 rounded-full text-sm font-bold uppercase tracking-wide transition-all hover:opacity-80"
-              style={{
-                border: "1px solid rgba(255,255,255,0.2)",
-                color: "#ffffff",
-                fontFamily: "var(--font-lexend)",
-              }}
-            >
-              Browse free sessions <MoveRight className="w-4 h-4" />
-            </Link>
             <Link
               href="/signup"
               className="flex items-center gap-2 px-6 py-3 rounded-full text-sm font-bold uppercase tracking-wide transition-all hover:scale-105"
