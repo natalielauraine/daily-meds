@@ -26,6 +26,8 @@ export default function AdminLivePage() {
   const [sessions, setSessions] = useState<LiveSession[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [goingLiveId, setGoingLiveId] = useState<string | null>(null);
+  const [notifying, setNotifying] = useState(false);
+  const [notifySuccess, setNotifySuccess] = useState("");
   const [error, setError] = useState("");
 
   // New session form state
@@ -100,6 +102,31 @@ export default function AdminLivePage() {
     }
   }
 
+  // Notify members — sends the "Going Live" email blast to all Premium members
+  async function handleNotify(liveUrl: string) {
+    setNotifying(true);
+    setError("");
+    setNotifySuccess("");
+    try {
+      const res = await fetch("/api/admin/send-going-live", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ liveUrl }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error ?? "Failed to send notifications.");
+      } else {
+        setNotifySuccess(`Notified ${data.sent} member${data.sent === 1 ? "" : "s"}.`);
+        setTimeout(() => setNotifySuccess(""), 4000);
+      }
+    } catch {
+      setError("Network error — could not send notifications.");
+    } finally {
+      setNotifying(false);
+    }
+  }
+
   // End live — marks session as no longer live
   async function handleEnd(sessionId: string) {
     await endLiveSession(sessionId);
@@ -136,8 +163,9 @@ export default function AdminLivePage() {
           </button>
         </div>
 
-        {/* Error message */}
+        {/* Banners */}
         {error && <Banner type="error" message={error} />}
+        {notifySuccess && <Banner type="success" message={notifySuccess} />}
 
         {/* Daily.co config warning if keys not set */}
         {!process.env.NEXT_PUBLIC_DAILY_DOMAIN && (
@@ -268,7 +296,9 @@ export default function AdminLivePage() {
                   onEnd={() => handleEnd(session.id)}
                   onDelete={() => handleDelete(session.id)}
                   onGoLive={() => {}}
+                  onNotify={() => handleNotify(session.dailyRoomUrl ?? `${process.env.NEXT_PUBLIC_APP_URL}/live`)}
                   goingLive={false}
+                  notifying={notifying}
                 />
               ))}
             </div>
@@ -297,7 +327,9 @@ export default function AdminLivePage() {
                   onGoLive={() => handleGoLive(session.id, session.title)}
                   onEnd={() => {}}
                   onDelete={() => handleDelete(session.id)}
+                  onNotify={() => {}}
                   goingLive={goingLiveId === session.id}
+                  notifying={false}
                 />
               ))}
             </div>
@@ -317,12 +349,14 @@ type AdminCardProps = {
   session: LiveSession;
   isLive: boolean;
   goingLive: boolean;
+  notifying: boolean;
   onGoLive: () => void;
   onEnd: () => void;
   onDelete: () => void;
+  onNotify: () => void;
 };
 
-function AdminSessionCard({ session, isLive, goingLive, onGoLive, onEnd, onDelete }: AdminCardProps) {
+function AdminSessionCard({ session, isLive, goingLive, notifying, onGoLive, onEnd, onDelete, onNotify }: AdminCardProps) {
   return (
     <div
       className="p-4 rounded-[10px]"
@@ -377,13 +411,24 @@ function AdminSessionCard({ session, isLive, goingLive, onGoLive, onEnd, onDelet
         {/* Actions */}
         <div className="flex items-center gap-1 shrink-0">
           {isLive ? (
-            <button
-              onClick={onEnd}
-              className="px-3 py-1.5 rounded-lg text-xs text-white transition-opacity hover:opacity-80"
-              style={{ backgroundColor: "rgba(244,63,94,0.8)", fontWeight: 500 }}
-            >
-              End
-            </button>
+            <div className="flex items-center gap-1.5">
+              <button
+                onClick={onNotify}
+                disabled={notifying}
+                title="Send 'Going Live' email to all Premium members"
+                className="px-3 py-1.5 rounded-lg text-xs text-white transition-opacity hover:opacity-80 disabled:opacity-50"
+                style={{ background: "linear-gradient(90deg, #ff41b3, #ec723d)", fontWeight: 500 }}
+              >
+                {notifying ? "Sending…" : "Notify Members"}
+              </button>
+              <button
+                onClick={onEnd}
+                className="px-3 py-1.5 rounded-lg text-xs text-white transition-opacity hover:opacity-80"
+                style={{ backgroundColor: "rgba(244,63,94,0.8)", fontWeight: 500 }}
+              >
+                End
+              </button>
+            </div>
           ) : (
             <button
               onClick={onGoLive}
