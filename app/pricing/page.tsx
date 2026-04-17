@@ -11,8 +11,10 @@ import { useRouter } from "next/navigation";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
-// Maps each plan ID to its Stripe price ID from env vars
+// Maps each plan ID to its Stripe price ID from env vars.
+// 'trial' and 'lifetime' don't need a priceId here — the checkout route handles them directly.
 const PRICE_IDS: Record<string, string> = {
+  audio:    process.env.NEXT_PUBLIC_STRIPE_AUDIO_PRICE_ID    ?? "",
   monthly:  process.env.NEXT_PUBLIC_STRIPE_MONTHLY_PRICE_ID  ?? "",
   annual:   process.env.NEXT_PUBLIC_STRIPE_ANNUAL_PRICE_ID   ?? "",
   lifetime: process.env.NEXT_PUBLIC_STRIPE_LIFETIME_PRICE_ID ?? "",

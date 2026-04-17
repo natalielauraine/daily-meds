@@ -1,11 +1,21 @@
 // Stripe webhook handler — listens for payment events from Stripe.
 // Stripe calls this endpoint automatically when payments happen.
-// We use it to update the user's subscription_status in Supabase.
+// We use it to update the user's subscription_status and access_level in Supabase.
+//
+// access_level values:
+//   0 = Free
+//   1 = Audio-Only (£9.99/mo) — full library, no live sessions
+//   2 = Premium (£19.99/mo, annual, lifetime, or trial) — full access including live sessions
+//
+// IMPORTANT: Run this in Supabase SQL editor before deploying:
+//   alter table users add column if not exists access_level integer not null default 0;
 //
 // Events we handle:
-//   checkout.session.completed      → payment succeeded, activate subscription
-//   customer.subscription.deleted   → subscription cancelled, downgrade to free
-//   invoice.payment_failed          → payment failed, flag the account
+//   checkout.session.completed          → payment/trial started, activate subscription
+//   invoice.payment_succeeded           → trial → paid conversion and renewals
+//   customer.subscription.trial_will_end → trial ending in 3 days, send reminder
+//   customer.subscription.deleted       → subscription cancelled, downgrade to free
+//   invoice.payment_failed              → payment failed, flag the account
 
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
@@ -14,16 +24,25 @@ import { render } from "@react-email/components";
 import { resend, FROM_EMAIL, FROM_NAME } from "../../../../lib/resend";
 import PaymentConfirmationEmail from "../../../../emails/PaymentConfirmationEmail";
 import SubscriptionCancelledEmail from "../../../../emails/SubscriptionCancelledEmail";
+import TrialEndingEmail from "../../../../emails/TrialEndingEmail";
 
-// Tell Next.js not to cache this route — it must run fresh on every request
 export const dynamic = "force-dynamic";
 
-// Map Stripe price IDs to subscription tier names
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+
+// Maps a Stripe price ID to a human-readable tier name stored in Supabase
 function getTierFromPriceId(priceId: string): string {
-  if (priceId === process.env.NEXT_PUBLIC_STRIPE_MONTHLY_PRICE_ID)  return "monthly";
-  if (priceId === process.env.NEXT_PUBLIC_STRIPE_ANNUAL_PRICE_ID)   return "annual";
+  if (priceId === process.env.NEXT_PUBLIC_STRIPE_AUDIO_PRICE_ID)   return "audio";
+  if (priceId === process.env.NEXT_PUBLIC_STRIPE_MONTHLY_PRICE_ID) return "monthly";
+  if (priceId === process.env.NEXT_PUBLIC_STRIPE_ANNUAL_PRICE_ID)  return "annual";
   if (priceId === process.env.NEXT_PUBLIC_STRIPE_LIFETIME_PRICE_ID) return "lifetime";
   return "monthly";
+}
+
+// Maps a Stripe price ID to an access level integer (1 = audio, 2 = premium)
+function getAccessLevelFromPriceId(priceId: string): number {
+  if (priceId === process.env.NEXT_PUBLIC_STRIPE_AUDIO_PRICE_ID) return 1;
+  return 2; // monthly, annual, lifetime, trial — all premium
 }
 
 export async function POST(req: NextRequest) {
@@ -38,8 +57,7 @@ export async function POST(req: NextRequest) {
 
   const stripe = new Stripe(stripeSecret, { apiVersion: "2026-02-25.clover" });
 
-  // Read the raw body for signature verification
-  const rawBody = await req.text();
+  const rawBody  = await req.text();
   const signature = req.headers.get("stripe-signature");
 
   if (!signature) {
@@ -54,78 +72,89 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
 
-  // Use the service role key so we can write to Supabase from a server context
   const supabase = createClient(supabaseUrl, serviceKey);
 
   try {
     switch (event.type) {
 
-      // ── PAYMENT SUCCEEDED ────────────────────────────────────────────────────
+      // ── CHECKOUT COMPLETED ────────────────────────────────────────────────────
+      // Fires when a user completes the Stripe Checkout flow.
+      // For trial checkouts: subscription is 'trialing', we set status to 'trial'.
+      // For direct purchases: we set the actual tier immediately.
       case "checkout.session.completed": {
         const session = event.data.object as Stripe.Checkout.Session;
         const userId  = session.client_reference_id;
         if (!userId) break;
 
-        // Work out which plan was purchased
-        let tier = "monthly";
+        // access_level is passed as metadata from create-checkout
+        const accessLevelMeta = session.metadata?.access_level;
+        let tier        = "monthly";
+        let accessLevel = 2;
+
         if (session.mode === "payment") {
           // One-time payment = lifetime
-          tier = "lifetime";
+          tier        = "lifetime";
+          accessLevel = 2;
         } else if (session.subscription) {
-          // Subscription — fetch the subscription to get the price ID
-          const sub = await stripe.subscriptions.retrieve(session.subscription as string);
-          const priceId = sub.items.data[0]?.price.id;
-          if (priceId) tier = getTierFromPriceId(priceId);
+          const sub     = await stripe.subscriptions.retrieve(session.subscription as string);
+          const priceId = sub.items.data[0]?.price.id ?? "";
+
+          if (sub.status === "trialing") {
+            // Trial started — give premium access immediately
+            tier        = "trial";
+            accessLevel = 2;
+          } else {
+            tier        = getTierFromPriceId(priceId);
+            accessLevel = accessLevelMeta ? parseInt(accessLevelMeta, 10) : getAccessLevelFromPriceId(priceId);
+          }
         }
 
-        // Update the user's subscription status in Supabase
         await supabase
           .from("users")
           .update({
             subscription_status: tier,
-            stripe_customer_id: session.customer as string,
+            access_level:        accessLevel,
+            stripe_customer_id:  session.customer as string,
           })
           .eq("id", userId);
 
-        // Send payment confirmation email
-        try {
-          const { data: userData } = await supabase
-            .from("users")
-            .select("email, name")
-            .eq("id", userId)
-            .single();
+        // Send payment confirmation email (skip for trial — the £1 is a setup fee, not a plan purchase)
+        if (tier !== "trial") {
+          try {
+            const { data: userData } = await supabase
+              .from("users")
+              .select("email, name")
+              .eq("id", userId)
+              .single();
 
-          if (userData?.email) {
-            const planName = tier.charAt(0).toUpperCase() + tier.slice(1); // "monthly" → "Monthly"
-            const amountPaid = session.amount_total ? `£${(session.amount_total / 100).toFixed(2)}` : "";
-            const period = tier === "lifetime" ? " one-time" : tier === "annual" ? "/year" : "/month";
+            if (userData?.email) {
+              const planName  = tier.charAt(0).toUpperCase() + tier.slice(1);
+              const amountPaid = session.amount_total ? `£${(session.amount_total / 100).toFixed(2)}` : "";
+              const period     = tier === "lifetime" ? " one-time" : tier === "annual" ? "/year" : "/month";
 
-            const html = await render(
-              PaymentConfirmationEmail({
-                name: userData.name || userData.email.split("@")[0],
-                planName,
-                amount: amountPaid,
-                period,
-                nextBillingDate: undefined,
-              })
-            );
+              const html = await render(
+                PaymentConfirmationEmail({
+                  name: userData.name || userData.email.split("@")[0],
+                  planName,
+                  amount: amountPaid,
+                  period,
+                  nextBillingDate: undefined,
+                })
+              );
 
-            await resend.emails.send({
-              from: `${FROM_NAME} <${FROM_EMAIL}>`,
-              to: userData.email,
-              subject: `You're in. Daily Meds ${planName} confirmed.`,
-              html,
-            });
+              await resend.emails.send({
+                from:    `${FROM_NAME} <${FROM_EMAIL}>`,
+                to:      userData.email,
+                subject: `You're in. Daily Meds ${planName} confirmed.`,
+                html,
+              });
+            }
+          } catch (emailErr) {
+            console.error("Payment confirmation email failed:", emailErr);
           }
-        } catch (emailErr) {
-          // Log but don't fail the webhook — payment already processed
-          console.error("Payment confirmation email failed:", emailErr);
         }
 
-        // ── AFFILIATE EARNINGS ─────────────────────────────────────────────────
-        // Check if this user was referred by an affiliate.
-        // The referral_code is stored in the users table when they signed up via ?ref=.
-        // If they were referred, credit the affiliate 20% of the payment amount.
+        // ── AFFILIATE CREDIT ──────────────────────────────────────────────────
         const { data: referredUser } = await supabase
           .from("users")
           .select("referred_by")
@@ -140,18 +169,92 @@ export async function POST(req: NextRequest) {
             .single();
 
           if (affiliate) {
-            // Work out 20% of the payment amount (Stripe amount is in pence)
             const amountPaid = (session.amount_total ?? 0) / 100;
             const commission = parseFloat((amountPaid * 0.2).toFixed(2));
-
             await supabase
               .from("affiliates")
               .update({
-                signups: affiliate.signups + 1,
+                signups:  affiliate.signups + 1,
                 earnings: parseFloat((affiliate.earnings + commission).toFixed(2)),
               })
               .eq("id", affiliate.id);
           }
+        }
+
+        break;
+      }
+
+      // ── INVOICE PAID (renewals + trial → paid conversion) ────────────────────
+      // Fires for every successful invoice, including when a trial converts to a
+      // paid subscription. We use this to promote 'trial' → actual tier in the DB.
+      case "invoice.payment_succeeded": {
+        const invoice        = event.data.object as Stripe.Invoice;
+        const customerId     = invoice.customer as string;
+        const subscriptionId = invoice.subscription as string;
+
+        // Ignore one-time payments (lifetime) — they have no subscription
+        if (!subscriptionId) break;
+
+        const sub     = await stripe.subscriptions.retrieve(subscriptionId);
+        const priceId = sub.items.data[0]?.price.id ?? "";
+
+        // If the subscription is still trialing, the £1 invoice just fired — leave status as 'trial'
+        if (sub.status === "trialing") break;
+
+        // Trial just ended and converted to paid — promote to the real tier
+        const tier        = getTierFromPriceId(priceId);
+        const accessLevel = getAccessLevelFromPriceId(priceId);
+
+        await supabase
+          .from("users")
+          .update({ subscription_status: tier, access_level: accessLevel })
+          .eq("stripe_customer_id", customerId);
+
+        break;
+      }
+
+      // ── TRIAL ENDING SOON ─────────────────────────────────────────────────────
+      // Stripe fires this 3 days before a trial ends (configurable in Stripe dashboard:
+      // Billing → Subscriptions → Manage trial settings).
+      // We use it to send the trial reminder email.
+      case "customer.subscription.trial_will_end": {
+        const sub        = event.data.object as Stripe.Subscription;
+        const customerId = sub.customer as string;
+
+        try {
+          const { data: userData } = await supabase
+            .from("users")
+            .select("email, name")
+            .eq("stripe_customer_id", customerId)
+            .single();
+
+          if (userData?.email) {
+            // trial_end is a Unix timestamp
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const trialEnd = (sub as any).trial_end as number | null;
+            const trialEndDate = trialEnd
+              ? new Date(trialEnd * 1000).toLocaleDateString("en-GB", {
+                  weekday: "long", day: "numeric", month: "long", year: "numeric",
+                })
+              : "soon";
+
+            const html = await render(
+              TrialEndingEmail({
+                name:         userData.name || userData.email.split("@")[0],
+                trialEndDate,
+                amount:       "£19.99",
+              })
+            );
+
+            await resend.emails.send({
+              from:    `${FROM_NAME} <${FROM_EMAIL}>`,
+              to:      userData.email,
+              subject: "Your Daily Meds trial ends in 3 days.",
+              html,
+            });
+          }
+        } catch (emailErr) {
+          console.error("Trial ending email failed:", emailErr);
         }
 
         break;
@@ -162,13 +265,11 @@ export async function POST(req: NextRequest) {
         const sub        = event.data.object as Stripe.Subscription;
         const customerId = sub.customer as string;
 
-        // Find the user by their Stripe customer ID and downgrade to free
         await supabase
           .from("users")
-          .update({ subscription_status: "free" })
+          .update({ subscription_status: "free", access_level: 0 })
           .eq("stripe_customer_id", customerId);
 
-        // Send cancellation email
         try {
           const { data: userData } = await supabase
             .from("users")
@@ -177,10 +278,9 @@ export async function POST(req: NextRequest) {
             .single();
 
           if (userData?.email) {
-            // Access ends at the subscription's current period end
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const periodEnd = (sub as any).current_period_end as number | undefined;
-            const accessUntil = periodEnd
+            const periodEnd    = (sub as any).current_period_end as number | undefined;
+            const accessUntil  = periodEnd
               ? new Date(periodEnd * 1000).toLocaleDateString("en-GB", {
                   day: "numeric", month: "long", year: "numeric",
                 })
@@ -188,14 +288,14 @@ export async function POST(req: NextRequest) {
 
             const html = await render(
               SubscriptionCancelledEmail({
-                name: userData.name || userData.email.split("@")[0],
+                name:         userData.name || userData.email.split("@")[0],
                 accessUntil,
               })
             );
 
             await resend.emails.send({
-              from: `${FROM_NAME} <${FROM_EMAIL}>`,
-              to: userData.email,
+              from:    `${FROM_NAME} <${FROM_EMAIL}>`,
+              to:      userData.email,
               subject: "Your Daily Meds subscription has ended.",
               html,
             });
@@ -212,7 +312,7 @@ export async function POST(req: NextRequest) {
         const invoice    = event.data.object as Stripe.Invoice;
         const customerId = invoice.customer as string;
 
-        // Flag the account — keep access for now but mark as payment_failed
+        // Flag the account — access_level stays as-is; Stripe will retry
         await supabase
           .from("users")
           .update({ subscription_status: "payment_failed" })
@@ -222,7 +322,6 @@ export async function POST(req: NextRequest) {
       }
 
       default:
-        // Ignore all other event types
         break;
     }
   } catch (err) {

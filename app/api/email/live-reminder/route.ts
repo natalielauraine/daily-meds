@@ -48,11 +48,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ sent: 0, sessions: 0 });
   }
 
-  // Fetch all active members to notify
+  // Fetch only Premium members (access_level 2) — live sessions are not included in Audio or Free plans
   const { data: members } = await supabase
     .from("users")
     .select("email, name")
-    .in("subscription_status", ["monthly", "annual", "lifetime"])
+    .eq("access_level", 2)
     .not("email", "is", null);
 
   if (!members || members.length === 0) {
