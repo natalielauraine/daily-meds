@@ -26,6 +26,7 @@ import PaymentConfirmationEmail from "../../../../emails/PaymentConfirmationEmai
 import SubscriptionCancelledEmail from "../../../../emails/SubscriptionCancelledEmail";
 import TrialEndingEmail from "../../../../emails/TrialEndingEmail";
 import TrialWelcomeEmail from "../../../../emails/TrialWelcomeEmail";
+import AudioWelcomeEmail from "../../../../emails/AudioWelcomeEmail";
 
 export const dynamic = "force-dynamic";
 
@@ -172,8 +173,33 @@ export async function POST(req: NextRequest) {
           }
         }
 
-        // Send payment confirmation email (skip for trial — handled above)
-        if (tier !== "trial") {
+        // ── AUDIO WELCOME EMAIL ───────────────────────────────────────────────
+        if (tier === "audio") {
+          try {
+            const { data: userData } = await supabase
+              .from("users")
+              .select("email, name")
+              .eq("id", userId)
+              .single();
+
+            if (userData?.email) {
+              const firstName = (userData.name || userData.email.split("@")[0]).split(" ")[0];
+              const html = await render(AudioWelcomeEmail({ firstName }));
+
+              await resend.emails.send({
+                from:    `${FROM_NAME} <${FROM_EMAIL}>`,
+                to:      userData.email,
+                subject: "Whatever you're feeling, we have a med for that.",
+                html,
+              });
+            }
+          } catch (emailErr) {
+            console.error("Audio welcome email failed:", emailErr);
+          }
+        }
+
+        // Send payment confirmation email (skip for trial and audio — handled above)
+        if (tier !== "trial" && tier !== "audio") {
           try {
             const { data: userData } = await supabase
               .from("users")
