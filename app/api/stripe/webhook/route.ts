@@ -373,17 +373,18 @@ export async function POST(req: NextRequest) {
                 })
               : "the end of your billing period";
 
+            const firstName = (userData.name || userData.email.split("@")[0]).split(" ")[0];
             const html = await render(
               SubscriptionCancelledEmail({
-                name:         userData.name || userData.email.split("@")[0],
-                accessUntil,
+                firstName,
+                periodEndDate: accessUntil,
               })
             );
 
             await resend.emails.send({
               from:    `${FROM_NAME} <${FROM_EMAIL}>`,
               to:      userData.email,
-              subject: "Your Daily Meds subscription has ended.",
+              subject: "No hard feelings. We're still here if you need us.",
               html,
             });
           }

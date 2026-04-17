@@ -5,62 +5,114 @@ import { Text, Link, Section, Hr } from "@react-email/components";
 import EmailLayout, { emailStyles } from "./_components/EmailLayout";
 
 type SubscriptionCancelledEmailProps = {
-  name: string;
-  accessUntil: string;  // e.g. "22 April 2026" — when premium access ends
+  firstName: string;      // e.g. "Natalie"
+  periodEndDate: string;  // e.g. "22 April 2026" — last day of paid access
 };
 
 export default function SubscriptionCancelledEmail({
-  name,
-  accessUntil,
+  firstName,
+  periodEndDate,
 }: SubscriptionCancelledEmailProps) {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://thedailymeds.com";
-  const firstName = name.split(" ")[0] || name;
 
   return (
-    <EmailLayout preview="Your Daily Meds subscription has ended. Your free access remains.">
+    <EmailLayout preview="No hard feelings. Your free sessions are still yours.">
 
-      <Text style={emailStyles.h1}>Subscription ended</Text>
-
-      <Text style={emailStyles.body}>
-        Hey {firstName}, your Daily Meds subscription has been cancelled as requested.
+      {/* Eyebrow */}
+      <Text style={{ ...emailStyles.small, letterSpacing: "2px", textTransform: "uppercase", marginBottom: "8px" }}>
+        Subscription Confirmed Cancelled
       </Text>
 
-      {/* Access end date */}
-      <div style={emailStyles.infoBox}>
-        <Text style={emailStyles.infoLabel}>Premium access until</Text>
-        <Text style={emailStyles.infoValue}>{accessUntil}</Text>
+      {/* Headline */}
+      <Text style={{ ...emailStyles.h1, fontSize: "22px", fontWeight: "700", lineHeight: "1.25", marginBottom: "24px" }}>
+        No hard feelings.
+        <br />
+        <span style={{ color: "rgba(255,255,255,0.4)", fontSize: "18px", fontWeight: "500" }}>
+          We&apos;re still here if you need us.
+        </span>
+      </Text>
+
+      {/* Greeting + opening */}
+      <Text style={emailStyles.body}>
+        Hi {firstName},
+      </Text>
+      <Text style={emailStyles.body}>
+        This email is just to confirm that your subscription has been cancelled. You&apos;ll
+        still have full access to the library until{" "}
+        <strong style={{ color: "#ffffff" }}>{periodEndDate}</strong>.
+      </Text>
+
+      {/* Real talk */}
+      <div style={{
+        backgroundColor: "rgba(255,255,255,0.03)",
+        border: "0.5px solid rgba(255,255,255,0.08)",
+        borderLeft: "3px solid rgba(255,255,255,0.15)",
+        borderRadius: "0 8px 8px 0",
+        padding: "16px 18px",
+        margin: "4px 0 24px",
+      }}>
+        <Text style={{ ...emailStyles.body, margin: "0", color: "rgba(255,255,255,0.65)" }}>
+          Life changes, priorities shift, and sometimes you just need one less monthly bill.
+          We get it.
+        </Text>
       </div>
 
+      {/* Safety net */}
+      <div style={{
+        backgroundColor: "rgba(255,65,179,0.05)",
+        border: "0.5px solid rgba(255,65,179,0.15)",
+        borderRadius: "8px",
+        padding: "18px",
+        margin: "0 0 24px",
+      }}>
+        <Text style={{ ...emailStyles.infoLabel, marginBottom: "10px" }}>
+          What you keep — forever
+        </Text>
+        <Text style={{ ...emailStyles.body, margin: "0", color: "rgba(255,255,255,0.7)", lineHeight: "1.7" }}>
+          Even though your paid plan is ending, your account isn&apos;t going anywhere. You still
+          have access to our{" "}
+          <strong style={{ color: "#ffffff" }}>free sessions</strong> at all times. Whether
+          it&apos;s a rough morning or you just need to &apos;Snuggle Down&apos;, those sessions
+          are yours forever.
+        </Text>
+      </div>
+
+      {/* Door's open */}
       <Text style={emailStyles.body}>
-        After that date, your account moves to the free plan. You&apos;ll keep access to all free sessions and the breathing timer — they&apos;re always yours.
+        When things get heavy again — whether it&apos;s a comedown, a breakup, or just the Tuesday
+        blues — we&apos;ll be right here. You can jump back in whenever you&apos;re ready.
+        No awkwardness.
       </Text>
 
-      <Text style={emailStyles.body}>
-        No hard feelings. If life gets calmer (or messier again) you can come back any time.
-      </Text>
-
-      {/* Re-subscribe CTA */}
-      <Section style={{ textAlign: "center", margin: "28px 0 24px" }}>
-        <Link href={`${appUrl}/pricing`} style={emailStyles.button}>
-          Resubscribe any time
+      {/* CTA */}
+      <Section style={{ textAlign: "center", margin: "28px 0 32px" }}>
+        <Link
+          href={`${appUrl}/free`}
+          style={{
+            background: "linear-gradient(90deg, #ff41b3, #ec723d)",
+            color: "#ffffff",
+            borderRadius: "8px",
+            padding: "15px 36px",
+            fontSize: "13px",
+            fontWeight: "700",
+            textDecoration: "none",
+            display: "inline-block",
+            textAlign: "center" as const,
+            letterSpacing: "1.5px",
+            textTransform: "uppercase" as const,
+          }}
+        >
+          Browse the free sessions
         </Link>
       </Section>
 
       <Hr style={emailStyles.hr} />
 
-      {/* Keep in touch */}
-      <Text style={emailStyles.small}>
-        Still want free sessions?{" "}
-        <Link href={`${appUrl}/free`} style={{ color: "#A78BFA" }}>
-          Browse the free library
-        </Link>
-        {" "}— no subscription needed.
-      </Text>
-
-      <Hr style={emailStyles.hr} />
-
-      <Text style={emailStyles.small}>
-        If you cancelled by mistake or have a question, just reply to this email.
+      {/* Sign-off */}
+      <Text style={{ ...emailStyles.small, color: "rgba(255,255,255,0.45)", lineHeight: "1.8" }}>
+        With gratitude for the time you spent with us,
+        <br />
+        <span style={{ color: "rgba(255,255,255,0.65)", fontWeight: "600" }}>The Daily Meds Team</span>
       </Text>
 
     </EmailLayout>
@@ -68,6 +120,6 @@ export default function SubscriptionCancelledEmail({
 }
 
 SubscriptionCancelledEmail.defaultProps = {
-  name: "Natalie",
-  accessUntil: "22 April 2026",
+  firstName:     "Natalie",
+  periodEndDate: "22 April 2026",
 };
