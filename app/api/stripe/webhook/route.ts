@@ -111,12 +111,18 @@ export async function POST(req: NextRequest) {
           }
         }
 
+        // For trials, store when the trial ends so the day-5 cron can target them
+        const trialEndsAt = tier === "trial"
+          ? new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
+          : null;
+
         await supabase
           .from("users")
           .update({
             subscription_status: tier,
             access_level:        accessLevel,
             stripe_customer_id:  session.customer as string,
+            ...(trialEndsAt ? { trial_ends_at: trialEndsAt } : {}),
           })
           .eq("id", userId);
 
