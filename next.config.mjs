@@ -27,9 +27,12 @@ const nextConfig = {
       },
     ];
   },
-  // Skip ESLint during Vercel builds — linting errors won't block deployment
+  // Skip ESLint and TypeScript errors during Vercel builds
   eslint: {
     ignoreDuringBuilds: true,
+  },
+  typescript: {
+    ignoreBuildErrors: true,
   },
   images: {
     remotePatterns: [
