@@ -2,6 +2,7 @@ import { S3Client, PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 const accountId = process.env.CLOUDFLARE_ACCOUNT_ID!;
+const PUBLIC_R2_URL = "https://pub-09df2e878efe41019b9524fea54e7197.r2.dev";
 
 export const r2 = new S3Client({
   region: "auto",
@@ -24,7 +25,13 @@ export async function createPresignedUploadUrl(
     Key:         key,
     ContentType: contentType,
   });
-  return getSignedUrl(r2, command, { expiresIn });
+
+  // Generate presigned URL and replace private endpoint with public r2.dev domain
+  const presignedUrl = await getSignedUrl(r2, command, { expiresIn });
+  return presignedUrl.replace(
+    /https:\/\/[a-z0-9]+\.r2\.cloudflarestorage\.com/,
+    PUBLIC_R2_URL
+  );
 }
 
 export async function deleteR2Object(key: string): Promise<void> {
