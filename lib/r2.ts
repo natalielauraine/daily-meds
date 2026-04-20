@@ -29,7 +29,7 @@ export async function createPresignedUploadUrl(
   // Generate presigned URL and replace private endpoint with public r2.dev domain
   const presignedUrl = await getSignedUrl(r2, command, { expiresIn });
   return presignedUrl.replace(
-    /https:\/\/[a-z0-9]+\.r2\.cloudflarestorage\.com/,
+    /https:\/\/[^.]+\.[a-z0-9]+\.r2\.cloudflarestorage\.com/,
     PUBLIC_R2_URL
   );
 }
