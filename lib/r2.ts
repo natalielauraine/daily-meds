@@ -26,12 +26,13 @@ export async function createPresignedUploadUrl(
     ContentType: contentType,
   });
 
-  // Generate presigned URL and replace private endpoint with public r2.dev domain
+  // Generate presigned URL then rebuild it with public domain
+  // (can't use public domain directly since SDK needs private endpoint for auth)
   const presignedUrl = await getSignedUrl(r2, command, { expiresIn });
-  return presignedUrl.replace(
-    /https:\/\/[^.]+\.[a-z0-9]+\.r2\.cloudflarestorage\.com/,
-    PUBLIC_R2_URL
-  );
+
+  // Extract the query params and path
+  const url = new URL(presignedUrl);
+  return new URL(url.pathname + url.search, PUBLIC_R2_URL).toString();
 }
 
 export async function deleteR2Object(key: string): Promise<void> {
