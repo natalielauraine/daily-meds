@@ -181,6 +181,11 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       return;
     }
 
+    // Update last_active_at so the inactivity nudge cron knows this user is active
+    if (userIdRef.current) {
+      fetch("/api/user/ping", { method: "POST" }).catch(() => {});
+    }
+
     // Store the resume position — we seek to it once loadedmetadata fires
     pendingSeekRef.current = startAt || 0;
 

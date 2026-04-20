@@ -1,7 +1,7 @@
 "use client";
 
-// Pricing page — four subscription tiers with monthly/annual billing toggle.
-// Layout: cinematic hero → billing toggle → 4-col plan grid → tagline band → FAQ.
+// Pricing page — four subscription tiers: Free, Audio (£9.99/mo), Full Access (£19.99/mo), Founder Lifetime (£299.99).
+// Layout: cinematic hero → comparison table → £1 trial banner → 3-col plan grid → founder section → tagline band → FAQ.
 // Matches the Stitch "Subscription Plans" design with the neon brand palette.
 
 import { useState } from "react";
@@ -16,7 +16,6 @@ import Footer from "../components/Footer";
 const PRICE_IDS: Record<string, string> = {
   audio:    process.env.NEXT_PUBLIC_STRIPE_AUDIO_PRICE_ID    ?? "",
   monthly:  process.env.NEXT_PUBLIC_STRIPE_MONTHLY_PRICE_ID  ?? "",
-  annual:   process.env.NEXT_PUBLIC_STRIPE_ANNUAL_PRICE_ID   ?? "",
   lifetime: process.env.NEXT_PUBLIC_STRIPE_LIFETIME_PRICE_ID ?? "",
 };
 
@@ -27,11 +26,9 @@ const PLANS = [
     id: "free",
     name: "The Observer",
     tagline: "Dip your toes in",
-    monthlyPrice: "Free",
-    annualPrice: "Free",
+    price: "Free",
     priceNote: "Forever free",
     cta: "Start for free",
-    ctaHref: "/signup",
     featured: false,
     features: [
       "10 free sessions",
@@ -48,13 +45,11 @@ const PLANS = [
   },
   {
     id: "audio",
-    name: "Audio Only",
-    tagline: "Full library, anytime",
-    monthlyPrice: "£9.99",
-    annualPrice: "£9.99",
-    priceNote: "per month",
+    name: "The Listener",
+    tagline: "Full audio library, anytime",
+    price: "£9.99",
+    priceNote: "per month · audio only",
     cta: "Start listening",
-    ctaHref: "/signup?plan=audio",
     featured: false,
     features: [
       "Everything in Free",
@@ -72,15 +67,13 @@ const PLANS = [
   {
     id: "monthly",
     name: "The Seeker",
-    tagline: "Audio plus live events",
-    monthlyPrice: "£19.99",
-    annualPrice: "£19.99",
+    tagline: "Audio plus live sessions",
+    price: "£19.99",
     priceNote: "per month",
-    cta: "Start monthly",
-    ctaHref: "/signup?plan=monthly",
-    featured: false,
+    cta: "Get full access",
+    featured: true,
     features: [
-      "Everything in Audio",
+      "Everything in The Listener",
       "Live sessions with Natalie",
       "Group meditation rooms",
       "Cancel any time",
@@ -88,26 +81,6 @@ const PLANS = [
     locked: [
       "Offline downloads",
     ],
-  },
-  {
-    id: "annual",
-    name: "The Regular",
-    tagline: "Best value, save over 15%",
-    monthlyPrice: "£16.66",
-    annualPrice: "£199.99",
-    monthlyPriceNote: "per month, billed annually",
-    annualPriceNote: "per year",
-    cta: "Go annual",
-    ctaHref: "/signup?plan=annual",
-    featured: true,
-    features: [
-      "Everything in Monthly",
-      "Offline downloads",
-      "Priority support",
-      "Early access to new content",
-      "Save vs monthly",
-    ],
-    locked: [],
   },
 ];
 
@@ -124,7 +97,7 @@ const FAQS = [
   },
   {
     q: "What are the different plans?",
-    a: "Free plan gives you 10 sessions at no cost. Audio Only is £9.99 a month for full library access. Audio plus live events is £19.99 a month. The annual plan is £199.99 for the full year. The Founder Membership is a one-time payment of £299.99 for lifetime access to everything.",
+    a: "Free gives you 10 sessions at no cost. The Listener is £9.99/month — full audio library, no live sessions. The Seeker is £19.99/month — audio plus live sessions with Natalie. The Master is £299.99 one-time for lifetime access to everything, including all future content.",
   },
   {
     q: "Is the founder membership really one payment?",
@@ -132,7 +105,7 @@ const FAQS = [
   },
   {
     q: "Can I download sessions to listen offline?",
-    a: "Offline downloads are available on Annual and Lifetime plans. Monthly subscribers can stream anywhere with internet.",
+    a: "Offline downloads are available on the Lifetime plan. Monthly subscribers can stream anywhere with internet.",
   },
   {
     q: "What are group meditation rooms?",
@@ -221,7 +194,6 @@ function FaqItem({ q, a }: { q: string; a: string }) {
 // ── PAGE ──────────────────────────────────────────────────────────────────────
 
 export default function PricingPage() {
-  const [billing, setBilling] = useState<"monthly" | "annual">("annual");
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
   const router = useRouter();
 
@@ -330,52 +302,6 @@ export default function PricingPage() {
               If you pressed play, something&apos;s on your mind. Every plan includes access to Natalie&apos;s audio library.
             </p>
 
-            {/* Monthly / Annual toggle */}
-            <div
-              className="inline-flex items-center gap-1 p-1 rounded-full"
-              style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.08)" }}
-            >
-              <button
-                onClick={() => setBilling("monthly")}
-                className="px-5 py-2 rounded-full text-xs transition-all duration-200"
-                style={{
-                  fontFamily: "var(--font-space-grotesk)",
-                  fontWeight: 700,
-                  background: billing === "monthly" ? "#ff41b3" : "transparent",
-                  color: billing === "monthly" ? "white" : "rgba(255,255,255,0.45)",
-                  boxShadow: billing === "monthly" ? "0 0 12px rgba(255,65,179,0.4)" : "none",
-                }}
-              >
-                Monthly
-              </button>
-              <button
-                onClick={() => setBilling("annual")}
-                className="px-5 py-2 rounded-full text-xs transition-all duration-200 flex items-center gap-2"
-                style={{
-                  fontFamily: "var(--font-space-grotesk)",
-                  fontWeight: 700,
-                  background: billing === "annual" ? "#ff41b3" : "transparent",
-                  color: billing === "annual" ? "white" : "rgba(255,255,255,0.45)",
-                  boxShadow: billing === "annual" ? "0 0 12px rgba(255,65,179,0.4)" : "none",
-                }}
-              >
-                Annual
-                {billing !== "annual" && (
-                  <span
-                    className="text-[9px] px-1.5 py-0.5 rounded uppercase"
-                    style={{
-                      background: "rgba(173,242,37,0.15)",
-                      color: "#adf225",
-                      fontFamily: "var(--font-space-grotesk)",
-                      fontWeight: 700,
-                      letterSpacing: "0.05em",
-                    }}
-                  >
-                    Save 15%
-                  </span>
-                )}
-              </button>
-            </div>
           </div>
         </section>
 
@@ -448,8 +374,8 @@ export default function PricingPage() {
                     className="text-sm max-w-md"
                     style={{ fontFamily: "var(--font-inter)", color: "rgba(255,255,255,0.4)", lineHeight: 1.6 }}
                   >
-                    Full Premium access — live sessions, the entire library, group rooms — for 7 days.
-                    Then £19.99/mo. Cancel before day 7 and pay nothing more.
+                    Full audio library access — 200+ sessions, new drops every week — for 7 days.
+                    Then £9.99/mo. Cancel before day 7 and pay nothing more.
                   </p>
                 </div>
                 <button
@@ -480,14 +406,8 @@ export default function PricingPage() {
               {PLANS.map((plan) => {
                 const isFeatured = plan.featured;
 
-                // Work out which price to show based on the billing toggle
-                const displayPrice = billing === "annual" ? plan.annualPrice : plan.monthlyPrice;
-                const displayNote =
-                  plan.id === "annual"
-                    ? billing === "annual"
-                      ? plan.annualPriceNote
-                      : plan.monthlyPriceNote
-                    : plan.priceNote;
+                const displayPrice = plan.price;
+                const displayNote = plan.priceNote;
 
                 return (
                   <div
@@ -577,15 +497,6 @@ export default function PricingPage() {
                             </span>
                           )}
                         </div>
-                        {/* Savings label on annual for the featured card */}
-                        {plan.id === "annual" && billing === "annual" && (
-                          <p
-                            className="text-[11px] mt-1.5"
-                            style={{ fontFamily: "var(--font-space-grotesk)", color: "#adf225" }}
-                          >
-                            Save £39.89 vs monthly
-                          </p>
-                        )}
                       </div>
 
                       {/* CTA button — free plan links to signup, paid plans go to Stripe */}
@@ -673,6 +584,26 @@ export default function PricingPage() {
           </div>
         </section>
 
+        {/* ── AFFILIATE NOTE ── */}
+        <section className="px-4 sm:px-6 lg:px-8 pb-10">
+          <div className="max-w-3xl mx-auto text-center">
+            <p
+              className="text-sm leading-relaxed"
+              style={{ fontFamily: "var(--font-inter)", color: "rgba(255,255,255,0.4)" }}
+            >
+              Every member automatically becomes an affiliate and earns 10% on every person they refer. Artists and creators with larger audiences can{" "}
+              <Link
+                href="/affiliate"
+                className="underline underline-offset-4 transition-colors hover:text-white"
+                style={{ color: "rgba(255,255,255,0.6)" }}
+              >
+                apply for our Artist Partner Programme
+              </Link>{" "}
+              and earn 20%.
+            </p>
+          </div>
+        </section>
+
         {/* ── FOUNDER OFFER ── */}
         <section className="px-4 sm:px-6 lg:px-8 pb-20">
           <div className="max-w-2xl mx-auto">
@@ -697,11 +628,17 @@ export default function PricingPage() {
                   Limited Time Only
                 </span>
                 <h3
-                  className="uppercase mb-2"
+                  className="uppercase mb-1"
                   style={{ fontFamily: "var(--font-plus-jakarta)", fontWeight: 800, fontSize: "1.75rem", color: "#E2E2E2" }}
                 >
                   Founder Membership
                 </h3>
+                <p
+                  className="text-xs uppercase tracking-widest mb-4"
+                  style={{ fontFamily: "var(--font-space-grotesk)", fontWeight: 500, color: "rgba(255,255,255,0.3)" }}
+                >
+                  The Master
+                </p>
                 <p
                   className="text-sm mb-6 max-w-md"
                   style={{ fontFamily: "var(--font-inter)", color: "rgba(255,255,255,0.45)", lineHeight: 1.7 }}

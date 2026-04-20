@@ -9,7 +9,7 @@ const FAQS = [
   },
   {
     q: "How much does it cost?",
-    a: "We have a plan for everyone. Start completely free with 10 sessions, no card needed. Audio only is £9.99 a month, giving you full access to the entire library. Audio plus live events is £19.99 a month. The annual plan is £199.99 for the full year. And our Founder Membership is a one-time payment of £299.99 for lifetime access to everything, including all future content. Cancel anytime on monthly plans.",
+    a: "We have a plan for everyone. Start completely free with 10 sessions, no card needed. The Listener is £9.99 a month — full audio library, no live sessions. The Seeker is £19.99 a month — audio plus live sessions with Natalie. The Master is a one-time payment of £299.99 for lifetime access to everything, including all future content. Cancel anytime on monthly plans.",
   },
   {
     q: "How many meditations are on here?",
@@ -25,7 +25,7 @@ const FAQS = [
   },
   {
     q: "Can I download sessions to listen offline?",
-    a: "Offline downloads are available on Annual and Lifetime plans. Monthly subscribers can stream anywhere with internet.",
+    a: "Offline downloads are available on the Lifetime plan. Monthly subscribers can stream anywhere with internet.",
   },
 ];
 

@@ -36,7 +36,10 @@ export default function LoginPage() {
       return;
     }
 
-    // Login successful — send to the ?next= redirect path, or welcome page if none
+    // Login successful — update last_active_at (fire and forget)
+    fetch("/api/user/ping", { method: "POST" }).catch(() => {});
+
+    // Send to the ?next= redirect path, or welcome page if none
     const params = new URLSearchParams(window.location.search);
     const next = params.get("next") || "/welcome";
     router.push(next);
@@ -199,7 +202,7 @@ export default function LoginPage() {
 
             {/* Error message */}
             {error && (
-              <p className="text-xs text-red-400 text-center">{error}</p>
+              <p className="text-xs text-pink-500 text-center">{error}</p>
             )}
 
             {/* Submit button */}

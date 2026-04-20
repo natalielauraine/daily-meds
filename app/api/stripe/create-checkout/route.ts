@@ -4,11 +4,10 @@
 // On cancel, Stripe redirects back to /pricing.
 //
 // Plan IDs and what they create:
-//   audio    → subscription at £9.99/mo  (access_level: 1)
-//   monthly  → subscription at £19.99/mo (access_level: 2)
-//   annual   → subscription at £199.99/yr (access_level: 2)
+//   audio    → subscription at £9.99/mo  (access_level: 1) — audio only, no live sessions
+//   monthly  → subscription at £19.99/mo (access_level: 2) — audio + live sessions
 //   lifetime → one-time payment at £299.99 (access_level: 2)
-//   trial    → £1 setup fee + 7-day trial → £19.99/mo Premium (access_level: 2)
+//   trial    → £1 setup fee + 7-day trial → £9.99/mo audio (access_level: 1)
 
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
@@ -19,9 +18,8 @@ import { cookies } from "next/headers";
 const ACCESS_LEVELS: Record<string, string> = {
   audio:    "1",
   monthly:  "2",
-  annual:   "2",
   lifetime: "2",
-  trial:    "2",
+  trial:    "1",
 };
 
 export async function POST(req: NextRequest) {
@@ -74,26 +72,26 @@ export async function POST(req: NextRequest) {
       metadata:                { access_level: accessLevel },
     };
 
-    // ── £1 TRIAL → £19.99/mo PREMIUM ──────────────────────────────────────────
-    // Charges £1 upfront as a setup fee, starts a 7-day trial on the Premium monthly
-    // price. After 7 days Stripe automatically charges £19.99/mo.
+    // ── £1 TRIAL → £9.99/mo AUDIO ─────────────────────────────────────────────
+    // Charges £1 upfront as a setup fee, starts a 7-day trial on the audio monthly
+    // price. After 7 days Stripe automatically charges £9.99/mo.
     if (isTrial) {
-      const premiumMonthlyPriceId = process.env.NEXT_PUBLIC_STRIPE_MONTHLY_PRICE_ID;
-      if (!premiumMonthlyPriceId) {
-        return NextResponse.json({ error: "Premium monthly price ID not configured" }, { status: 500 });
+      const audioPriceId = process.env.NEXT_PUBLIC_STRIPE_AUDIO_PRICE_ID;
+      if (!audioPriceId) {
+        return NextResponse.json({ error: "Audio price ID not configured" }, { status: 500 });
       }
 
       const session = await stripe.checkout.sessions.create({
         ...sharedOptions,
         mode: "subscription",
-        line_items: [{ price: premiumMonthlyPriceId, quantity: 1 }],
+        line_items: [{ price: audioPriceId, quantity: 1 }],
         // The £1 is billed immediately as a one-off setup fee
         add_invoice_items: [
           {
             price_data: {
               currency:     "gbp",
               unit_amount:  100, // £1 in pence
-              product_data: { name: "7-Day All-Access Trial" },
+              product_data: { name: "7-Day Audio Library Trial" },
             },
           },
         ],
@@ -128,7 +126,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ url: session.url });
     }
 
-    // ── STANDARD SUBSCRIPTIONS (audio, monthly, annual) ───────────────────────
+    // ── STANDARD SUBSCRIPTIONS (audio, monthly) ───────────────────────────────
     if (!priceId) {
       return NextResponse.json({ error: "priceId is required for subscription plans" }, { status: 400 });
     }

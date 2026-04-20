@@ -279,6 +279,7 @@ export async function POST(req: NextRequest) {
         }
 
         // ── AFFILIATE CREDIT ──────────────────────────────────────────────────
+        // Standard affiliates earn 10%, Artist Partners earn 20%.
         const { data: referredUser } = await supabase
           .from("users")
           .select("referred_by")
@@ -288,13 +289,14 @@ export async function POST(req: NextRequest) {
         if (referredUser?.referred_by) {
           const { data: affiliate } = await supabase
             .from("affiliates")
-            .select("id, signups, earnings")
+            .select("id, signups, earnings, affiliate_type")
             .eq("referral_code", referredUser.referred_by)
             .single();
 
           if (affiliate) {
-            const amountPaid = (session.amount_total ?? 0) / 100;
-            const commission = parseFloat((amountPaid * 0.2).toFixed(2));
+            const amountPaid      = (session.amount_total ?? 0) / 100;
+            const commissionRate  = affiliate.affiliate_type === "artist" ? 0.2 : 0.1;
+            const commission      = parseFloat((amountPaid * commissionRate).toFixed(2));
             await supabase
               .from("affiliates")
               .update({

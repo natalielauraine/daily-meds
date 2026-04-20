@@ -2,6 +2,7 @@ import Link from "next/link";
 import Logo from "../components/Logo";
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
+import { createClient } from "../../lib/supabase-server";
 
 export const metadata: Metadata = {
   title: "Testimonials — Daily Meds",
@@ -139,7 +140,37 @@ const COL_3 = [
   },
 ];
 
-export default function TestimonialsPage() {
+export default async function TestimonialsPage() {
+  // Fetch approved reviews from Supabase
+  const supabase = createClient();
+  const { data: reviews } = await supabase
+    .from("reviews")
+    .select("review_text, reviewer_name, session_tag")
+    .eq("status", "approved")
+    .order("created_at", { ascending: false });
+
+  // Map DB rows into the card shape the component expects
+  type Card = { quote: string; name: string; role: string; avatar: string };
+  const mapped: Card[] = (reviews ?? []).map((r) => ({
+    quote: r.review_text,
+    name: r.reviewer_name,
+    role: r.session_tag || "Daily Meds listener",
+    avatar: "",
+  }));
+
+  // Split into 3 columns round-robin so they fill evenly
+  let col1: Card[], col2: Card[], col3: Card[];
+  if (mapped.length > 0) {
+    col1 = mapped.filter((_, i) => i % 3 === 0);
+    col2 = mapped.filter((_, i) => i % 3 === 1);
+    col3 = mapped.filter((_, i) => i % 3 === 2);
+  } else {
+    // Fall back to hardcoded cards if no approved reviews yet
+    col1 = COL_1;
+    col2 = COL_2;
+    col3 = COL_3;
+  }
+
   return (
     <div style={{ backgroundColor: "#010101", color: "#ffffff", fontFamily: "var(--font-manrope)", minHeight: "100vh", overflowX: "hidden" }}>
 
@@ -194,30 +225,24 @@ export default function TestimonialsPage() {
 
       {/* STATS */}
       <section className="py-12 px-6">
-        <div className="max-w-3xl mx-auto grid grid-cols-3 gap-6 text-center">
-          {[
-            { value: "50K+", label: "Members" },
-            { value: "4.9★", label: "Average rating" },
-            { value: "2M+", label: "Sessions completed" },
-          ].map(({ value, label }) => (
-            <div key={label} className="flex flex-col gap-1">
-              <span
-                className="text-3xl font-bold"
-                style={{ fontFamily: "var(--font-nyata), var(--font-lexend)", color: "#ff41b3" }}
-              >
-                {value}
-              </span>
-              <span className="text-sm" style={{ color: "rgba(255,255,255,0.4)", fontFamily: "var(--font-lexend)" }}>
-                {label}
-              </span>
-            </div>
-          ))}
+        <div className="max-w-3xl mx-auto flex justify-center text-center">
+          <div className="flex flex-col gap-1">
+            <span
+              className="text-3xl font-bold"
+              style={{ fontFamily: "var(--font-nyata), var(--font-lexend)", color: "#ff41b3" }}
+            >
+              9,000+
+            </span>
+            <span className="text-sm" style={{ color: "rgba(255,255,255,0.4)", fontFamily: "var(--font-lexend)" }}>
+              five-star reviews on Insight Timer
+            </span>
+          </div>
         </div>
       </section>
 
       {/* TESTIMONIALS COLUMNS */}
       <section className="py-8 pb-24">
-        <TestimonialsV2 columns={[COL_1, COL_2, COL_3]} />
+        <TestimonialsV2 columns={[col1, col2, col3]} />
       </section>
 
       {/* CTA */}

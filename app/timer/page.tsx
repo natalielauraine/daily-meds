@@ -396,7 +396,7 @@ export default function TimerPage() {
                 Want the full experience?
               </h3>
               <p className="text-sm mb-8 leading-relaxed" style={{ color: "rgba(255,255,255,0.5)" }}>
-                Get access to 100+ meditations, live sessions, group breathwork and more. Just £9.99/month.
+                Get access to 200+ meditations and the full audio library. Just £9.99/month.
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <Link

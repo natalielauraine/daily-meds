@@ -26,7 +26,10 @@
       "WebSearch",
       "WebFetch(domain:github.com)",
       "Bash(gcloud --version)",
-      "Bash(npx --version)"
+      "Bash(npx --version)",
+      "Bash(sudo chown *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)"
     ]
   }
 }

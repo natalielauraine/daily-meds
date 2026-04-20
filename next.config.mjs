@@ -1,5 +1,32 @@
+import withPWAInit from "@ducanh2912/next-pwa";
+
+const withPWA = withPWAInit({
+  dest: "public",
+  // Don't precache everything — just cache visited pages/assets on the fly
+  cacheOnFrontEndNav: true,
+  aggressiveFrontEndNavCaching: true,
+  reloadOnOnline: true,
+  // Disable the service worker in development so hot reload isn't affected
+  disable: process.env.NODE_ENV === "development",
+  workboxOptions: {
+    disableDevLogs: true,
+  },
+  fallbacks: {
+    document: "/offline",
+  },
+});
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  async redirects() {
+    return [
+      {
+        source: "/privacy-policy",
+        destination: "/privacy",
+        permanent: true,
+      },
+    ];
+  },
   // Skip ESLint during Vercel builds — linting errors won't block deployment
   eslint: {
     ignoreDuringBuilds: true,
@@ -18,4 +45,4 @@ const nextConfig = {
   },
 };
 
-export default nextConfig;
+export default withPWA(nextConfig);

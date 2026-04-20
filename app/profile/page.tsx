@@ -183,6 +183,7 @@ export default function ProfilePage() {
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | undefined>();
   const [passwordMsg, setPasswordMsg] = useState("");
+  const [upgradingToLifetime, setUpgradingToLifetime] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -251,13 +252,34 @@ export default function ProfilePage() {
     router.push("/");
   }
 
+  async function handleUpgradeToLifetime() {
+    setUpgradingToLifetime(true);
+    try {
+      const res = await fetch("/api/stripe/upgrade-to-lifetime", { method: "POST" });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        console.error("Lifetime upgrade error:", data.error);
+        setUpgradingToLifetime(false);
+      }
+    } catch {
+      setUpgradingToLifetime(false);
+    }
+  }
+
   const PLAN_LABELS: Record<string, { label: string; color: string }> = {
-    free:     { label: "Free Plan",     color: "rgba(255,255,255,0.4)" },
+    free:     { label: "Free Plan",            color: "rgba(255,255,255,0.4)" },
+    trial:    { label: "Trial · 7 days",        color: "#ff41b3" },
+    audio:    { label: "Audio · £9.99/mo",      color: "#ff41b3" },
     monthly:  { label: "Monthly · £19.99/mo",   color: "#ff41b3" },
-    annual:   { label: "Annual · £199.99/yr",    color: "#ec723d" },
-    lifetime: { label: "Lifetime Access",        color: "#adf225" },
+    annual:   { label: "Annual · £199.99/yr",   color: "#ec723d" },
+    lifetime: { label: "Lifetime Member",       color: "#adf225" },
   };
   const plan = PLAN_LABELS[subscriptionStatus] ?? PLAN_LABELS.free;
+
+  // Show founding member upsell for any paid plan that isn't lifetime
+  const showFoundingMemberUpsell = subscriptionStatus !== "free" && subscriptionStatus !== "lifetime";
 
   return (
     <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#131313" }}>
@@ -455,6 +477,36 @@ export default function ProfilePage() {
                     </Link>
                   )}
                 </div>
+                {showFoundingMemberUpsell && (
+                  <div
+                    className="mx-4 my-4 rounded-2xl overflow-hidden"
+                    style={{ background: "linear-gradient(135deg, rgba(255,65,179,0.12), rgba(236,114,61,0.12))", border: "0.5px solid rgba(255,65,179,0.25)" }}
+                  >
+                    <div className="px-5 py-4">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex flex-col gap-1">
+                          <p className="text-xs uppercase tracking-widest font-bold" style={{ color: "#ec723d", fontFamily: "var(--font-space-grotesk)" }}>
+                            Founding Member
+                          </p>
+                          <p className="text-sm font-bold text-white" style={{ fontFamily: "var(--font-plus-jakarta)" }}>
+                            Own it forever · £297 once
+                          </p>
+                          <p className="text-xs mt-0.5" style={{ color: "rgba(255,255,255,0.45)", fontFamily: "var(--font-manrope)" }}>
+                            Lifetime access, no recurring charges, locked-in price.
+                          </p>
+                        </div>
+                        <button
+                          onClick={handleUpgradeToLifetime}
+                          disabled={upgradingToLifetime}
+                          className="shrink-0 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest transition-all hover:scale-105 disabled:opacity-60 disabled:cursor-not-allowed"
+                          style={{ background: "linear-gradient(135deg, #ff41b3, #ec723d)", color: "#fff", fontFamily: "var(--font-lexend)" }}
+                        >
+                          {upgradingToLifetime ? "…" : "Upgrade"}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
                 <SettingRow label="Billing details" value="Manage payment method" href="/pricing" />
                 <SettingRow label="Billing history" value="View past invoices" href="/pricing" />
                 {subscriptionStatus !== "free" && (

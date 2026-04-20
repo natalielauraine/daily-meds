@@ -38,6 +38,9 @@ export default function SignupPage() {
       localStorage.removeItem("referral_code");
     }
 
+    // Auto-enroll as standard affiliate (fire and forget — may silently fail for unconfirmed emails)
+    fetch("/api/affiliate/auto-enroll", { method: "POST" }).catch(() => {});
+
     setSuccess(true);
     setLoading(false);
   }
@@ -165,7 +168,7 @@ export default function SignupPage() {
               onBlur={(e) => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)")}
             />
 
-            {error && <p className="text-xs text-red-400 text-center">{error}</p>}
+            {error && <p className="text-xs text-pink-500 text-center">{error}</p>}
 
             <button
               type="submit"

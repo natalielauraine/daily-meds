@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { createClient } from "../lib/supabase-browser";
 import Logo from "./components/Logo";
 import LandingEmailForm from "./components/LandingEmailForm";
 import LandingFAQ from "./components/LandingFAQ";
@@ -80,7 +81,15 @@ const NAV_LINKS = [
 export default function Home() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [trialLoading, setTrialLoading] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data }) => {
+      setIsLoggedIn(!!data.user);
+    });
+  }, []);
 
   async function handleTrial() {
     setTrialLoading(true);
@@ -131,7 +140,7 @@ export default function Home() {
               className="px-4 py-2 rounded-full text-xs font-bold uppercase transition-transform hover:scale-105 whitespace-nowrap"
               style={{ background: "linear-gradient(90deg, #ff41b3 0%, #ec723d 100%)", color: "#ffffff", fontFamily: "var(--font-lexend)" }}
             >
-              Sign In
+              Sign Up
             </Link>
             {/* Mobile hamburger */}
             <button
@@ -219,7 +228,7 @@ export default function Home() {
                 Start your £1 trial
               </h2>
               <p className="text-sm" style={{ color: "rgba(255,255,255,0.4)", lineHeight: 1.6 }}>
-                Full Premium access for 7 days. Then £19.99/mo. Cancel before day 7 and pay nothing more.
+                Full audio library access for 7 days. Then £9.99/mo. Cancel before day 7 and pay nothing more.
               </p>
             </div>
             <button
@@ -257,7 +266,7 @@ export default function Home() {
             {TRENDING.map((item) => (
               <Link
                 key={item.title}
-                href="/signup"
+                href={isLoggedIn ? item.href : "/signup"}
                 className="group shrink-0"
                 style={{ minWidth: "260px", scrollSnapAlign: "start" }}
               >
@@ -331,7 +340,7 @@ export default function Home() {
           <p className="text-base leading-relaxed" style={{ color: "rgba(255,255,255,0.55)" }}>
             {FACE_REALITY.map((item, i) => (
               <span key={item.title}>
-                <Link href="/signup" className="hover:text-white transition-colors" style={{ color: "rgba(255,255,255,0.55)" }}>
+                <Link href={isLoggedIn ? "/library" : "/signup"} className="hover:text-white transition-colors" style={{ color: "rgba(255,255,255,0.55)" }}>
                   {item.title}
                 </Link>
                 {i < FACE_REALITY.length - 1 && <span style={{ color: "rgba(255,255,255,0.2)" }}> · </span>}
@@ -408,7 +417,7 @@ export default function Home() {
             </span>
           </h2>
           <p style={{ color: "rgba(255,255,255,0.4)", lineHeight: 1.7, maxWidth: "480px" }}>
-            Full Premium access — live sessions, the entire library, group rooms — for 7 days. Then £19.99/mo. Cancel before day 7 and pay nothing more.
+            Full audio library access — 200+ sessions, new drops every week — for 7 days. Then £9.99/mo. Cancel before day 7 and pay nothing more.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 items-center">
             <button
@@ -446,17 +455,24 @@ export default function Home() {
         style={{ borderTop: "0.5px solid rgba(255,255,255,0.06)", color: "#adaaaa" }}
       >
         <div className="max-w-[1200px] mx-auto flex flex-col gap-8">
-          <p className="text-sm">Questions? Contact us.</p>
+          <p className="text-sm">
+            Questions?{" "}
+            <a
+              href="mailto:joy@thedailymeds.com"
+              className="underline underline-offset-4 hover:text-[#aaee20] transition-colors"
+            >
+              Contact us
+            </a>
+          </p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
             {[
-              { label: "FAQ", href: "/free" },
-              { label: "Help Center", href: "/about" },
+              { label: "FAQ", href: "/pricing" },
               { label: "Account", href: "/profile" },
               { label: "Media Center", href: "/about" },
               { label: "Partnerships", href: "/partnerships" },
               { label: "Affiliate", href: "/affiliate" },
-              { label: "Terms of Use", href: "/about" },
-              { label: "Privacy", href: "/about" },
+              { label: "Terms of Use", href: "/terms" },
+              { label: "Privacy", href: "/privacy" },
             ].map((link) => (
               <Link
                 key={link.label}

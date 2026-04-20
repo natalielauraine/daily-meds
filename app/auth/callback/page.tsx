@@ -66,6 +66,10 @@ function CallbackHandler() {
           router.replace("/login?error=auth");
           return;
         }
+        // Update last_active_at (fire and forget)
+        fetch("/api/user/ping", { method: "POST" }).catch(() => {});
+        // Auto-enroll as standard affiliate (fire and forget)
+        fetch("/api/affiliate/auto-enroll", { method: "POST" }).catch(() => {});
         router.refresh();
         router.replace(next);
       });
