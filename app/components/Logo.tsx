@@ -20,7 +20,7 @@ export default function Logo({ href = "/", size = "md" }: LogoProps) {
 
   const content = (
     <span
-      className={`font-black uppercase tracking-tight ${textSize}`}
+      className={`font-black uppercase tracking-tight whitespace-nowrap ${textSize}`}
       style={{
         fontFamily: "var(--font-nyata), var(--font-lexend), sans-serif",
         background: "linear-gradient(90deg, #ff41b3 0%, #ec723d 100%)",

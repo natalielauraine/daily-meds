@@ -126,25 +126,18 @@ export default function AboutPage() {
               Why I built this
             </h2>
 
-            {/* Replace these paragraphs with Natalie's real words */}
             <div className="flex flex-col gap-5 text-white/55 leading-relaxed text-sm sm:text-base">
               <p>
-                [Natalie — replace this with your real story. Where were you when the idea hit you?
-                What were you going through? What made you realise that normal meditation apps
-                weren&apos;t built for the moments you actually needed them?]
+                I built The Daily Meds with AI after years of it living in my head as one of those ideas filed under &ldquo;one day.&rdquo; I&apos;d been pushing too hard for too long, pulled in too many directions, and finally just sat down and did it. I wasn&apos;t in crisis. I was just done waiting. Most meditation apps have that generic wellness edge — zen, spiritual, or worse, corporate — like they were made by someone who has never actually had a problem and just wants to make everything feel calm. But the world right now is genuinely chaotic, and we need something more honest and more grounded to cope with the lives we are actually living.
               </p>
               <p>
-                [What happened? A bad weekend, a breakup, a comedown, a Sunday spiral?
-                Be specific. The more real this is, the more people will feel it.]
+                I&apos;d been hosting meditations on Insight Timer since 2019. I love that platform, but it gives creators no direct access to their own audience, and you can&apos;t promote anything else you do through it. I could see from messages that people were using my meditations after nights out, during comedowns, in the middle of anxiety spirals, before big decisions, and after losses. People aren&apos;t meditating in quiet rooms with candles. Most of us never have. We meditate in bed with our hearts racing, in a festival toilet when we&apos;ve done too much and need five minutes to come back to ourselves, or in the back of a taxi trying to hold it together. Nobody had made anything for that. I wanted to fill that gap and meet people exactly where they are.
               </p>
               <p>
-                [What did you try that didn&apos;t work? Generic calm apps, breathing exercises
-                that felt patronising, meditation teachers who seemed like they&apos;d never had
-                a rough night in their life?]
+                I tried everything that existed. The gentle voices telling me to imagine a peaceful meadow when what I needed was someone to just help me breathe. The clinical apps that felt like homework. The spiritual ones that required beliefs I didn&apos;t hold. None of it was built for real life. Especially not the messy parts.
               </p>
               <p>
-                [What made you decide to build something yourself instead of just finding
-                the right app? What was the moment you thought — I&apos;m just going to make this.]
+                So in November 2025, with no technical background, I built the first version myself on Lovable. Ten days. I figured if I could feel my way through the hard nights and life&apos;s most awkward moments, I could figure out vibe coding. Then I switched to Claude Code for phase two, tackled Next.js, and built the whole thing again from scratch. If you&apos;re reading this, it means we went live. That one felt good.
               </p>
             </div>
 
@@ -154,8 +147,7 @@ export default function AboutPage() {
               style={{ borderColor: "rgba(255,65,179,0.4)" }}
             >
               <p className="text-white/70 text-base sm:text-lg leading-relaxed italic" style={{ fontWeight: 400 }}>
-                &ldquo;[Your most honest, personal quote about why you built Daily Meds.
-                Something you&apos;d actually say to a friend, not a press release.]&rdquo;
+                &ldquo;I didn&apos;t build this because I had everything figured out. I built it because I needed it and it didn&apos;t exist.&rdquo;
               </p>
               <p className="text-xs text-white/30 mt-3">— Natalie Lauraine, founder</p>
             </div>
@@ -285,31 +277,33 @@ export default function AboutPage() {
                 Natalie Lauraine
               </h2>
 
-              {/* Replace with real background */}
               <div className="flex flex-col gap-4 text-sm text-white/45 leading-relaxed">
                 <p>
-                  [Natalie — add your real background here. Where are you from? What did you
-                  do before this? What qualifications, training, or life experience makes
-                  you the right person to build this?]
+                  I&apos;m Natalie Lauraine, originally from Plymouth, Devon, UK — born in a place literally called The Sound, which feels about right. I grew up in rave and club culture and have spent the last decade living and working in Ibiza at the intersection of music, wellness, and the kind of nights that teach you things therapy doesn&apos;t.
                 </p>
                 <p>
-                  [Meditation teacher training? Therapy? Personal experience with anxiety,
-                  substance use, burnout? A background in audio or sound? Whatever is real
-                  and relevant — put it here.]
+                  I&apos;m a certified Alchemy Rewire™ Navigator — a breathwork and nervous system regulation method — and I&apos;ve been creating meditation and audio wellness content since 2019, with over 9,000 reviews on Insight Timer. Along the way I developed my own niche: Audio Hugs™, spatial audio live transmissions recorded in Dolby Atmos.
                 </p>
                 <p>
-                  [You don&apos;t need to have letters after your name. Real experience counts.
-                  People trust people who have been through it, not just studied it.]
+                  I&apos;m not a clinician. I&apos;m someone who has been in the rooms, at the festivals, through the comedowns, and out the other side. I stopped taking drugs in 2011, alcohol in 2014, spent three years celibate, and came off social media entirely from 2018 to 2022. I&apos;ve rebuilt my whole life from the inside out. I know those dark emotions well. That&apos;s what this is built on.
                 </p>
               </div>
 
-              {/* Credential pills — replace with real ones */}
               <div className="flex flex-wrap gap-2 mt-6">
                 {[
-                  "[Credential or training]",
-                  "[Years of experience]",
-                  "[Location]",
-                  "[Something personal]",
+                  "Alchemy Rewire™ Navigator",
+                  "Audio Hugs™ — Spatial Audio in Dolby Atmos",
+                  "9,000+ Insight Timer reviews — 7 years of meditation audio",
+                  "The Science of Wellbeing, Yale University",
+                  "Sustainable Business Management, Cambridge University",
+                  "Sound Healing Practitioner",
+                  "Advanced Radio Production",
+                  "Mental Health and Suicide Prevention",
+                  "Sobriety and Accountability Coach — Music Industry",
+                  "Voice Artist",
+                  "Former nightclub operator, London West End",
+                  "Former sales manager, brokerage floors",
+                  "Model, event producer, serial founder",
                 ].map((item) => (
                   <span
                     key={item}
@@ -354,7 +348,7 @@ export default function AboutPage() {
               Join Daily Meds
             </Link>
             <Link
-              href="/"
+              href="/library"
               className="px-8 py-3.5 rounded-[10px] text-sm text-white/60 transition-colors hover:text-white"
               style={{ border: "0.5px solid rgba(255,255,255,0.15)" }}
             >

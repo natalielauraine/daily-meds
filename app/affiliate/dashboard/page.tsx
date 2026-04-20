@@ -13,6 +13,7 @@ interface AffiliateRecord {
   id: string;
   referral_code: string;
   status: "pending" | "approved" | "rejected";
+  affiliate_type: "standard" | "artist";
   clicks: number;
   signups: number;
   earnings: number;
@@ -165,11 +166,6 @@ export default function AffiliateDashboardPage() {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://thedailymeds.com";
   const referralLink = affiliate ? `${appUrl}?ref=${affiliate.referral_code}` : "";
 
-  // Tier progress: 100 signups = Senior → Master (25% commission)
-  const MASTER_TIER_TARGET = 100;
-  const tierProgress = affiliate ? Math.min((affiliate.signups / MASTER_TIER_TARGET) * 100, 100) : 0;
-  const remainingForMaster = affiliate ? Math.max(MASTER_TIER_TARGET - affiliate.signups, 0) : MASTER_TIER_TARGET;
-
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data: { user } }) => {
       if (!user) { router.push("/login"); return; }
@@ -180,7 +176,28 @@ export default function AffiliateDashboardPage() {
         .eq("user_id", user.id)
         .single();
 
-      setAffiliate(data ?? null);
+      if (data) {
+        setAffiliate(data);
+        setLoading(false);
+        return;
+      }
+
+      // No record yet — auto-enroll as standard affiliate
+      try {
+        const res = await fetch("/api/affiliate/auto-enroll", { method: "POST" });
+        if (res.ok) {
+          // Re-fetch to get full record from DB
+          const { data: enrolled } = await supabase
+            .from("affiliates")
+            .select("*")
+            .eq("user_id", user.id)
+            .single();
+          setAffiliate(enrolled ?? null);
+        }
+      } catch {
+        // Silent fail — user sees "no account" state
+      }
+
       setLoading(false);
     });
   }, []);
@@ -225,18 +242,18 @@ export default function AffiliateDashboardPage() {
             </svg>
           </div>
           <h1 className="text-xl text-white mb-2" style={{ fontFamily: "var(--font-plus-jakarta)", fontWeight: 800 }}>
-            No affiliate account yet
+            Setting up your affiliate account…
           </h1>
           <p className="text-sm mb-6 leading-relaxed" style={{ color: "rgba(255,255,255,0.4)" }}>
-            Apply to the Daily Meds affiliate programme and start earning 20% on every referral.
+            Every Daily Meds member is automatically enrolled as an affiliate. If this persists, please contact support.
           </p>
-          <Link
-            href="/affiliate"
-            className="inline-flex px-6 py-3 rounded-xl text-sm text-white font-bold transition-opacity hover:opacity-80"
-            style={{ background: "linear-gradient(135deg, #ff41b3, #ec723d)" }}
+          <a
+            href="mailto:hello@thedailymeds.com"
+            className="text-sm transition-colors hover:text-white"
+            style={{ color: "rgba(255,255,255,0.4)" }}
           >
-            Apply now
-          </Link>
+            Contact support →
+          </a>
         </div>
       </div>
     );
@@ -259,20 +276,48 @@ export default function AffiliateDashboardPage() {
 
         {/* ── HEADER ── */}
         <header className="mb-10 mt-8">
-          <h1
-            className="text-5xl md:text-7xl font-black uppercase leading-none mb-4"
-            style={{
-              fontFamily: "var(--font-plus-jakarta)",
-              letterSpacing: "-0.02em",
-              background: "linear-gradient(135deg, #ff41b3, #ec723d)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              textShadow: "none",
-              filter: "drop-shadow(0 0 20px rgba(255,65,179,0.4))",
-            }}
-          >
-            Partner Pulse
-          </h1>
+          <div className="flex items-start justify-between flex-wrap gap-4 mb-4">
+            <h1
+              className="text-5xl md:text-7xl font-black uppercase leading-none"
+              style={{
+                fontFamily: "var(--font-plus-jakarta)",
+                letterSpacing: "-0.02em",
+                background: "linear-gradient(135deg, #ff41b3, #ec723d)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                textShadow: "none",
+                filter: "drop-shadow(0 0 20px rgba(255,65,179,0.4))",
+              }}
+            >
+              Partner Pulse
+            </h1>
+            {/* Tier badge */}
+            {affiliate.affiliate_type === "artist" ? (
+              <span
+                className="px-4 py-2 rounded-full text-sm font-bold shrink-0 self-center"
+                style={{
+                  background: "linear-gradient(135deg, rgba(255,65,179,0.2), rgba(236,114,61,0.2))",
+                  color: "#ff41b3",
+                  border: "1px solid rgba(255,65,179,0.4)",
+                  fontFamily: "var(--font-space-grotesk)",
+                }}
+              >
+                Artist Partner · 20%
+              </span>
+            ) : (
+              <span
+                className="px-4 py-2 rounded-full text-sm font-bold shrink-0 self-center"
+                style={{
+                  background: "rgba(236,114,61,0.12)",
+                  color: "#ec723d",
+                  border: "1px solid rgba(236,114,61,0.3)",
+                  fontFamily: "var(--font-space-grotesk)",
+                }}
+              >
+                Standard Affiliate · 10%
+              </span>
+            )}
+          </div>
           <p
             className="text-sm uppercase tracking-[0.2em] font-bold italic"
             style={{ color: "#ec723d", fontFamily: "var(--font-space-grotesk)" }}
@@ -427,69 +472,76 @@ export default function AffiliateDashboardPage() {
             </p>
           </GlassPanel>
 
-          {/* Master Journey tier */}
-          <GlassPanel className="p-8">
-            <div className="flex items-end justify-between mb-6">
-              <h2
-                className="text-xl font-black uppercase tracking-tight"
-                style={{ fontFamily: "var(--font-plus-jakarta)", color: "white" }}
-              >
-                Master Journey
-              </h2>
-              <span
-                className="text-xs font-bold uppercase tracking-widest"
-                style={{ color: "#ff41b3", fontFamily: "var(--font-space-grotesk)" }}
-              >
-                {Math.round(tierProgress)}% Complete
-              </span>
-            </div>
+          {/* Tier info + artist upsell */}
+          <GlassPanel className="p-8 flex flex-col">
+            <h2
+              className="text-xl font-black uppercase tracking-tight mb-2"
+              style={{ fontFamily: "var(--font-plus-jakarta)", color: "white" }}
+            >
+              Your Tier
+            </h2>
 
-            <div className="flex items-center justify-between mb-2">
-              <span
-                className="text-xs font-bold py-1 px-3 rounded-full uppercase"
-                style={{ background: "rgba(255,65,179,0.15)", color: "#ff41b3", border: "1px solid rgba(255,65,179,0.3)" }}
-              >
-                {affiliate.signups >= 50 ? "Senior Tier" : "Starter Tier"}
-              </span>
-              <span
-                className="text-xs font-bold uppercase tracking-widest"
-                style={{ color: "white", fontFamily: "var(--font-space-grotesk)" }}
-              >
-                Master Tier
-              </span>
-            </div>
-
-            {/* Progress bar */}
-            <div className="h-4 rounded-full overflow-hidden mb-4" style={{ backgroundColor: "rgba(255,255,255,0.06)" }}>
-              <div
-                className="h-full rounded-full relative"
-                style={{
-                  width: `${tierProgress}%`,
-                  background: "linear-gradient(90deg, #ff41b3, #ec723d, #f4e71d)",
-                  transition: "width 0.8s ease",
-                }}
-              >
-                <div className="absolute inset-0 bg-white/20 animate-pulse rounded-full" />
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <div
-                className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
-                style={{ background: "rgba(244,231,29,0.15)", border: "1px solid rgba(244,231,29,0.3)" }}
-              >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="#f4e71d">
-                  <path d="M12 1l3.09 6.26L22 8.27l-5 4.87 1.18 6.88L12 16.77l-6.18 3.25L7 13.14 2 8.27l6.91-1.01L12 1z"/>
-                </svg>
-              </div>
-              <p className="text-sm" style={{ color: "rgba(224,250,250,0.6)" }}>
-                {remainingForMaster > 0 ? (
-                  <>Only <strong className="text-white">{remainingForMaster}</strong> more referrals to unlock <strong style={{ color: "#f4e71d" }}>25% Commission</strong> on all future sales.</>
-                ) : (
-                  <>You've reached <strong style={{ color: "#f4e71d" }}>Master Tier</strong> — earning 25% on every sale!</>
-                )}
-              </p>
-            </div>
+            {affiliate.affiliate_type === "artist" ? (
+              <>
+                <span
+                  className="self-start text-xs font-bold py-1.5 px-4 rounded-full uppercase mb-4"
+                  style={{ background: "linear-gradient(135deg, rgba(255,65,179,0.2), rgba(236,114,61,0.2))", color: "#ff41b3", border: "1px solid rgba(255,65,179,0.4)" }}
+                >
+                  Artist Partner · 20%
+                </span>
+                <p className="text-sm mb-4" style={{ color: "rgba(224,250,250,0.55)", lineHeight: 1.6 }}>
+                  You earn <strong className="text-white">20%</strong> on every subscriber you refer, every month they stay.
+                </p>
+                <div className="mt-auto flex items-center gap-2 text-sm" style={{ color: "rgba(224,250,250,0.35)" }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="#ff41b3"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                  Artist Partner Programme · approved
+                </div>
+              </>
+            ) : affiliate.status === "pending" ? (
+              <>
+                <span
+                  className="self-start text-xs font-bold py-1.5 px-4 rounded-full uppercase mb-4"
+                  style={{ background: "rgba(244,231,29,0.12)", color: "#f4e71d", border: "1px solid rgba(244,231,29,0.3)" }}
+                >
+                  Artist Application · Pending
+                </span>
+                <p className="text-sm mb-4" style={{ color: "rgba(224,250,250,0.55)", lineHeight: 1.6 }}>
+                  Your artist application is under review. You&apos;re earning <strong className="text-white">10%</strong> in the meantime — we&apos;ll be in touch within 48 hours.
+                </p>
+              </>
+            ) : (
+              <>
+                <span
+                  className="self-start text-xs font-bold py-1.5 px-4 rounded-full uppercase mb-4"
+                  style={{ background: "rgba(236,114,61,0.12)", color: "#ec723d", border: "1px solid rgba(236,114,61,0.3)" }}
+                >
+                  Standard Affiliate · 10%
+                </span>
+                <p className="text-sm mb-6" style={{ color: "rgba(224,250,250,0.55)", lineHeight: 1.6 }}>
+                  You earn <strong className="text-white">10%</strong> on every subscriber you refer, every month they stay. No cap, no limits.
+                </p>
+                {/* Artist upsell */}
+                <div
+                  className="mt-auto p-5 rounded-xl"
+                  style={{ background: "rgba(255,65,179,0.07)", border: "1px solid rgba(255,65,179,0.18)" }}
+                >
+                  <p className="text-sm font-bold text-white mb-1">
+                    Artist or creator with a larger audience?
+                  </p>
+                  <p className="text-xs mb-3" style={{ color: "rgba(224,250,250,0.45)", lineHeight: 1.5 }}>
+                    Apply for our Artist Partner Programme and earn 20% on every referral.
+                  </p>
+                  <Link
+                    href="/affiliate"
+                    className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest transition-opacity hover:opacity-80"
+                    style={{ color: "#ff41b3", fontFamily: "var(--font-space-grotesk)" }}
+                  >
+                    Apply now
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
+                  </Link>
+                </div>
+              </>
+            )}
           </GlassPanel>
         </div>
 

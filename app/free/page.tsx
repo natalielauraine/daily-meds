@@ -1,24 +1,24 @@
 import Link from "next/link";
 import Logo from "../components/Logo";
 import dynamic from "next/dynamic";
-
-const CardCarousel = dynamic(
-  () => import("../../components/ui/card-carousel").then((m) => m.CardCarousel),
-  { ssr: false }
-);
+import { createClient } from "../../lib/supabase-server";
+import { LibraryCard, LibrarySession } from "../components/LibraryCard";
 
 const StoriesSection = dynamic(() => import("./StoriesSection"), { ssr: false });
 
-const ALWAYS_FREE_IMAGES = [
-  { src: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=500&h=750&fit=crop&q=80", alt: "Morning Ritual" },
-  { src: "https://images.unsplash.com/photo-1474223960279-c596b5ac7c0c?w=500&h=750&fit=crop&q=80", alt: "Anxious session" },
-  { src: "https://images.unsplash.com/photo-1455642305367-68834a1da7ab?w=500&h=750&fit=crop&q=80", alt: "Sleep audio" },
-  { src: "https://images.unsplash.com/photo-1531353826977-0941b4779a1c?w=500&h=750&fit=crop&q=80", alt: "Snuggle Down" },
-  { src: "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=500&h=750&fit=crop&q=80", alt: "Healing session" },
-  { src: "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=500&h=750&fit=crop&q=80", alt: "Heartbreak session" },
-];
+export default async function FreePage() {
+  const supabase = createClient();
+  const [{ data: { user } }, { data: freeSessions }] = await Promise.all([
+    supabase.auth.getUser(),
+    supabase
+      .from("sessions")
+      .select("id, title, description, duration, type, mood_category, media_type, is_free, gradient")
+      .eq("is_free", true)
+      .order("created_at", { ascending: false }),
+  ]);
+  const isLoggedIn = !!user;
+  const sessions = (freeSessions ?? []) as LibrarySession[];
 
-export default function FreePage() {
   return (
     <div style={{ backgroundColor: "#010101", color: "#ffffff", fontFamily: "var(--font-manrope)", minHeight: "100vh" }}>
 
@@ -50,7 +50,7 @@ export default function FreePage() {
           ))}
         </nav>
         <Link
-          href="/signup"
+          href={isLoggedIn ? "/library" : "/signup"}
           className="px-5 py-2 rounded-full text-sm font-bold uppercase transition-transform hover:scale-105"
           style={{ backgroundColor: "#ff41b3", color: "#fff", fontFamily: "var(--font-lexend)" }}
         >
@@ -85,7 +85,7 @@ export default function FreePage() {
             Add your email to unlock any session. No subscription required — just real support, right now.
           </p>
           <Link
-            href="/signup"
+            href={isLoggedIn ? "/library" : "/signup"}
             className="mt-2 px-10 py-4 rounded-full text-base font-black uppercase tracking-wide transition-all hover:scale-105"
             style={{ backgroundColor: "#aaee20", color: "#1a2600", fontFamily: "var(--font-lexend)" }}
           >
@@ -120,18 +120,31 @@ export default function FreePage() {
             </svg>
             <p className="text-sm" style={{ color: "rgba(255,255,255,0.65)" }}>
               <span style={{ color: "#aaee20", fontWeight: 700 }}>Free to play</span> — just add your email to unlock any session below.{" "}
-              <Link href="/signup" className="underline hover:text-white transition-colors" style={{ color: "#aaee20" }}>
-                Sign up here →
+              <Link href={isLoggedIn ? "/library" : "/signup"} className="underline hover:text-white transition-colors" style={{ color: "#aaee20" }}>
+                {isLoggedIn ? "Go to library →" : "Sign up here →"}
               </Link>
             </p>
           </div>
 
-          <CardCarousel
-            images={ALWAYS_FREE_IMAGES}
-            autoplayDelay={2000}
-            showPagination={true}
-            showNavigation={true}
-          />
+          {sessions.length === 0 ? (
+            <div
+              className="py-16 text-center rounded-xl"
+              style={{ border: "0.5px solid rgba(170,238,32,0.15)", backgroundColor: "rgba(170,238,32,0.04)" }}
+            >
+              <p
+                className="text-sm uppercase tracking-widest"
+                style={{ color: "rgba(255,255,255,0.35)", fontFamily: "var(--font-lexend)" }}
+              >
+                Free sessions coming soon
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+              {sessions.map((session) => (
+                <LibraryCard key={session.id} session={session} isPaidMember={true} />
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -175,12 +188,12 @@ export default function FreePage() {
             Want the full library?
           </h2>
           <p className="text-lg leading-relaxed" style={{ color: "#adaaaa" }}>
-            Unlock 100+ sessions, live events, group meditations, mood-based playlists and more — for just{" "}
+            Unlock 200+ sessions and the full audio library — for just{" "}
             <strong style={{ color: "#ffffff" }}>£9.99/month</strong>. Cancel anytime.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md justify-center">
             <Link
-              href="/signup"
+              href={isLoggedIn ? "/library" : "/signup"}
               className="flex-1 text-center px-8 py-4 rounded-full font-black uppercase tracking-wide text-sm transition-all hover:scale-105"
               style={{ backgroundColor: "#ff41b3", color: "#fff", fontFamily: "var(--font-lexend)", boxShadow: "0 0 24px rgba(255,65,179,0.35)" }}
             >

@@ -44,7 +44,7 @@ type Session = {
   duration: string;
   type: string;
   mood_category: string;
-  media_type: "audio" | "video";
+  media_type: "audio" | "video" | "image";
   audio_url: string;
   vimeo_id: string;
   youtube_url: string;
@@ -72,7 +72,7 @@ const EMPTY_FORM = {
   duration: "10 min",
   type: "Guided Meditation",
   mood_category: "Anxious",
-  media_type: "audio" as "audio" | "video",
+  media_type: "audio" as "audio" | "video" | "image",
   audio_url: "",
   vimeo_id: "",
   youtube_url: "",
@@ -141,12 +141,13 @@ export default function AdminContentPage() {
   const [error, setError]         = useState("");
   const [success, setSuccess]     = useState("");
 
-  // ── Audio file upload ──────────────────────────────
+  // ── Audio / image file upload ──────────────────────
   const [audioUploading, setAudioUploading]       = useState(false);
   const [audioProgress, setAudioProgress]         = useState(0);
   const [uploadedFile, setUploadedFile]           = useState<{ name: string; size: number } | null>(null);
   const [audioDragOver, setAudioDragOver]         = useState(false);
   const audioInputRef                             = useRef<HTMLInputElement>(null);
+  const imageInputRef                             = useRef<HTMLInputElement>(null);
 
   // ── Bulk upload ────────────────────────────────────
   const [bulkFiles, setBulkFiles]               = useState<BulkFile[]>([]);
@@ -210,53 +211,106 @@ export default function AdminContentPage() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  // Upload a single audio file to the Supabase audio-files bucket
   async function uploadAudioFile(file: File) {
     setAudioUploading(true);
     setAudioProgress(0);
     setError("");
 
-    const filePath = `audio/${Date.now()}-${file.name.replace(/\s+/g, "-")}`;
+    const presignRes = await fetch("/api/r2/presign", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ filename: file.name, contentType: file.type, folder: "audio" }),
+    });
 
-    // Animate progress while upload runs (Supabase client doesn't expose real progress)
-    const interval = setInterval(() => {
-      setAudioProgress((prev) => Math.min(prev + 8, 85));
-    }, 200);
-
-    const { error: uploadErr } = await supabase.storage
-      .from("audio-files")
-      .upload(filePath, file, { cacheControl: "3600", upsert: false });
-
-    clearInterval(interval);
-
-    if (uploadErr) {
+    if (!presignRes.ok) {
       setAudioUploading(false);
-      setAudioProgress(0);
-      setError("Upload failed: " + uploadErr.message);
+      setError("Could not get upload URL.");
       return;
     }
 
-    setAudioProgress(100);
+    const { uploadUrl, publicUrl } = await presignRes.json();
 
-    // Get the public URL and store it in the form
-    const { data: urlData } = supabase.storage.from("audio-files").getPublicUrl(filePath);
-    setForm((prev) => ({ ...prev, audio_url: urlData.publicUrl }));
+    try {
+      await new Promise<void>((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.upload.addEventListener("progress", (e) => {
+          if (e.lengthComputable) setAudioProgress(Math.round((e.loaded / e.total) * 100));
+        });
+        xhr.addEventListener("load", () => (xhr.status < 300 ? resolve() : reject(new Error(`${xhr.status}`))));
+        xhr.addEventListener("error", () => reject(new Error("Network error")));
+        xhr.open("PUT", uploadUrl);
+        xhr.setRequestHeader("Content-Type", file.type);
+        xhr.send(file);
+      });
+    } catch (err: unknown) {
+      setAudioUploading(false);
+      setAudioProgress(0);
+      setError("Upload failed: " + (err instanceof Error ? err.message : "unknown error"));
+      return;
+    }
+
+    setForm((prev) => ({ ...prev, audio_url: publicUrl }));
     setUploadedFile({ name: file.name, size: file.size });
     setAudioUploading(false);
   }
 
-  // Validate and kick off audio upload
   async function handleAudioFile(file: File) {
-    if (!file.name.match(/\.(mp3|m4a)$/i)) {
-      setError("Only mp3 and m4a files are accepted.");
+    if (!file.name.match(/\.(mp3|m4a|wav)$/i)) {
+      setError("Only mp3, m4a and wav files are accepted.");
       return;
     }
     await uploadAudioFile(file);
   }
 
-  // Add files to the bulk queue and auto-detect their durations
+  async function handleImageFile(file: File) {
+    if (!file.type.match(/^image\/(jpeg|png|webp)$/)) {
+      setError("Only jpg, png and webp images are accepted.");
+      return;
+    }
+    setAudioUploading(true);
+    setAudioProgress(0);
+    setError("");
+
+    const presignRes = await fetch("/api/r2/presign", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ filename: file.name, contentType: file.type, folder: "images" }),
+    });
+
+    if (!presignRes.ok) {
+      setAudioUploading(false);
+      setError("Could not get upload URL.");
+      return;
+    }
+
+    const { uploadUrl, publicUrl } = await presignRes.json();
+
+    try {
+      await new Promise<void>((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.upload.addEventListener("progress", (e) => {
+          if (e.lengthComputable) setAudioProgress(Math.round((e.loaded / e.total) * 100));
+        });
+        xhr.addEventListener("load", () => (xhr.status < 300 ? resolve() : reject(new Error(`${xhr.status}`))));
+        xhr.addEventListener("error", () => reject(new Error("Network error")));
+        xhr.open("PUT", uploadUrl);
+        xhr.setRequestHeader("Content-Type", file.type);
+        xhr.send(file);
+      });
+    } catch (err: unknown) {
+      setAudioUploading(false);
+      setAudioProgress(0);
+      setError("Upload failed: " + (err instanceof Error ? err.message : "unknown error"));
+      return;
+    }
+
+    setForm((prev) => ({ ...prev, audio_url: publicUrl }));
+    setUploadedFile({ name: file.name, size: file.size });
+    setAudioUploading(false);
+  }
+
   async function addBulkFiles(files: File[]) {
-    const audioOnly = files.filter((f) => f.name.match(/\.(mp3|m4a)$/i)).slice(0, 20);
+    const audioOnly = files.filter((f) => f.name.match(/\.(mp3|m4a|wav)$/i)).slice(0, 20);
     const newItems: BulkFile[] = await Promise.all(
       audioOnly.map(async (file) => ({
         id:            `${Date.now()}-${Math.random()}`,
@@ -286,7 +340,20 @@ export default function AdminContentPage() {
         f.id === item.id ? { ...f, status: "uploading" } : f
       ));
 
-      const filePath = `audio/${Date.now()}-${item.file.name.replace(/\s+/g, "-")}`;
+      const presignRes = await fetch("/api/r2/presign", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ filename: item.file.name, contentType: item.file.type, folder: "audio" }),
+      });
+
+      if (!presignRes.ok) {
+        setBulkFiles((prev) => prev.map((f) =>
+          f.id === item.id ? { ...f, status: "error", progress: 0 } : f
+        ));
+        continue;
+      }
+
+      const { uploadUrl, publicUrl } = await presignRes.json();
 
       const interval = setInterval(() => {
         setBulkFiles((prev) => prev.map((f) =>
@@ -294,13 +361,15 @@ export default function AdminContentPage() {
         ));
       }, 200);
 
-      const { error: uploadErr } = await supabase.storage
-        .from("audio-files")
-        .upload(filePath, item.file, { cacheControl: "3600", upsert: false });
+      const uploadRes = await fetch(uploadUrl, {
+        method: "PUT",
+        body: item.file,
+        headers: { "Content-Type": item.file.type },
+      });
 
       clearInterval(interval);
 
-      if (uploadErr) {
+      if (!uploadRes.ok) {
         setBulkFiles((prev) => prev.map((f) =>
           f.id === item.id ? { ...f, status: "error", progress: 0 } : f
         ));
@@ -311,8 +380,6 @@ export default function AdminContentPage() {
         f.id === item.id ? { ...f, progress: 100 } : f
       ));
 
-      const { data: urlData } = supabase.storage.from("audio-files").getPublicUrl(filePath);
-
       await supabase.from("sessions").insert({
         title:         item.title,
         description:   "",
@@ -320,7 +387,7 @@ export default function AdminContentPage() {
         type:          "Guided Meditation",
         mood_category: item.mood_category,
         media_type:    "audio",
-        audio_url:     urlData.publicUrl,
+        audio_url:     publicUrl,
         is_free:       item.is_free,
         gradient:      MOOD_GRADIENTS[item.mood_category] || GRADIENTS[0].value,
         status:        "published",
@@ -504,24 +571,29 @@ export default function AdminContentPage() {
               </FormField>
 
               <FormField label="Duration">
-                <select
-                  value={form.duration}
-                  onChange={(e) => setForm({ ...form, duration: e.target.value })}
-                  className={fieldClass} style={fieldStyle}
-                >
-                  {["5 min","8 min","10 min","12 min","15 min","18 min","20 min","22 min","25 min","30 min","45 min"].map((d) => (
-                    <option key={d} value={d}>{d}</option>
-                  ))}
-                </select>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="number"
+                    min={1}
+                    max={120}
+                    value={form.duration.replace(/[^0-9]/g, "")}
+                    onChange={(e) => setForm({ ...form, duration: e.target.value ? `${e.target.value} min` : "" })}
+                    placeholder="e.g. 9"
+                    className={fieldClass}
+                    style={{ ...fieldStyle, width: "80px" }}
+                  />
+                  <span className="text-sm text-white/40">min</span>
+                </div>
               </FormField>
 
               <FormField label="Media type">
                 <select
                   value={form.media_type}
-                  onChange={(e) => setForm({ ...form, media_type: e.target.value as "audio" | "video" })}
+                  onChange={(e) => setForm({ ...form, media_type: e.target.value as "audio" | "video" | "image", audio_url: "" })}
                   className={fieldClass} style={fieldStyle}
                 >
-                  <option value="audio">Audio (Supabase Storage)</option>
+                  <option value="audio">Audio (Cloudflare R2)</option>
+                  <option value="image">Image (Cloudflare R2)</option>
                   <option value="video">Video (Vimeo / YouTube)</option>
                 </select>
               </FormField>
@@ -529,7 +601,7 @@ export default function AdminContentPage() {
               {/* ── AUDIO UPLOAD ── */}
               {form.media_type === "audio" && (
                 <div className="sm:col-span-2">
-                  <p className="text-xs text-white/40 mb-2">Audio file <span className="text-white/20">(mp3 or m4a)</span></p>
+                  <p className="text-xs text-white/40 mb-2">Audio file <span className="text-white/20">(mp3, m4a or wav)</span></p>
 
                   {uploadedFile ? (
                     // Uploaded file row
@@ -593,13 +665,13 @@ export default function AdminContentPage() {
                         <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
                       </svg>
                       <p className="text-xs text-white/35">
-                        Drop an mp3 or m4a here, or{" "}
+                        Drop an mp3, m4a or wav here, or{" "}
                         <span style={{ color: "#ff41b3" }}>browse files</span>
                       </p>
                       <input
                         ref={audioInputRef}
                         type="file"
-                        accept=".mp3,.m4a"
+                        accept=".mp3,.m4a,.wav"
                         className="hidden"
                         onChange={(e) => { const f = e.target.files?.[0]; if (f) handleAudioFile(f); }}
                       />
@@ -667,6 +739,84 @@ export default function AdminContentPage() {
                     </div>
                   )}
                 </>
+              )}
+
+              {/* ── IMAGE UPLOAD ── */}
+              {form.media_type === "image" && (
+                <div className="sm:col-span-2">
+                  <p className="text-xs text-white/40 mb-2">Image file <span className="text-white/20">(jpg, png or webp)</span></p>
+
+                  {uploadedFile ? (
+                    <div
+                      className="flex items-center gap-3 p-3 rounded-lg"
+                      style={{ backgroundColor: "rgba(255,65,179,0.08)", border: "0.5px solid rgba(255,65,179,0.25)" }}
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="#ff41b3">
+                        <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+                      </svg>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs text-white truncate" style={{ fontWeight: 500 }}>{uploadedFile.name}</p>
+                        <p className="text-[10px] text-white/35">{formatBytes(uploadedFile.size)} · Uploaded ✓</p>
+                      </div>
+                      <button
+                        onClick={() => { setUploadedFile(null); setForm((prev) => ({ ...prev, audio_url: "" })); }}
+                        className="text-white/25 hover:text-white/60 transition-colors"
+                      >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                        </svg>
+                      </button>
+                    </div>
+
+                  ) : audioUploading ? (
+                    <div
+                      className="p-4 rounded-lg"
+                      style={{ backgroundColor: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)" }}
+                    >
+                      <p className="text-xs text-white/40 mb-2">Uploading…</p>
+                      <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: "rgba(255,255,255,0.1)" }}>
+                        <div
+                          className="h-full rounded-full transition-all duration-300"
+                          style={{ width: `${audioProgress}%`, backgroundColor: "#ff41b3" }}
+                        />
+                      </div>
+                      <p className="text-[10px] text-white/25 mt-1">{audioProgress}%</p>
+                    </div>
+
+                  ) : (
+                    <div
+                      onDragOver={(e) => { e.preventDefault(); setAudioDragOver(true); }}
+                      onDragLeave={() => setAudioDragOver(false)}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        setAudioDragOver(false);
+                        const file = e.dataTransfer.files[0];
+                        if (file) handleImageFile(file);
+                      }}
+                      onClick={() => imageInputRef.current?.click()}
+                      className="flex flex-col items-center gap-2 py-8 rounded-lg cursor-pointer transition-colors"
+                      style={{
+                        border: `1px dashed ${audioDragOver ? "rgba(255,65,179,0.6)" : "rgba(255,255,255,0.12)"}`,
+                        backgroundColor: audioDragOver ? "rgba(255,65,179,0.06)" : "rgba(255,255,255,0.02)",
+                      }}
+                    >
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="rgba(255,255,255,0.25)">
+                        <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+                      </svg>
+                      <p className="text-xs text-white/35">
+                        Drop a jpg, png or webp here, or{" "}
+                        <span style={{ color: "#ff41b3" }}>browse files</span>
+                      </p>
+                      <input
+                        ref={imageInputRef}
+                        type="file"
+                        accept=".jpg,.jpeg,.png,.webp"
+                        className="hidden"
+                        onChange={(e) => { const f = e.target.files?.[0]; if (f) handleImageFile(f); }}
+                      />
+                    </div>
+                  )}
+                </div>
               )}
 
               {/* Gradient picker */}
@@ -768,11 +918,11 @@ export default function AdminContentPage() {
               Drop multiple files here, or{" "}
               <span style={{ color: "#ff41b3" }}>browse</span>
             </p>
-            <p className="text-xs text-white/20">mp3 · m4a · up to 20 files at once</p>
+            <p className="text-xs text-white/20">mp3 · m4a · wav · up to 20 files at once</p>
             <input
               ref={bulkInputRef}
               type="file"
-              accept=".mp3,.m4a"
+              accept=".mp3,.m4a,.wav"
               multiple
               className="hidden"
               onChange={(e) => { if (e.target.files) addBulkFiles(Array.from(e.target.files)); }}

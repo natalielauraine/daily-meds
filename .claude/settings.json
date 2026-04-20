@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(sed -i '' 's/© 2024 The Daily Meds\\\\. All Rights Reserved\\\\./© {new Date\\(\\).getFullYear\\(\\)} The Daily Meds. All Rights Reserved./g' \"/Users/natalielauraine/Desktop/ç Daily Meds/app/page.tsx\")",
+      "Bash(sed -i '' 's/© 2024 The Daily Meds. Immersive Mindfulness\\\\./© {new Date\\(\\).getFullYear\\(\\)} The Daily Meds. Immersive Mindfulness./g' \"/Users/natalielauraine/Desktop/ç Daily Meds/app/home/page.tsx\")",
+      "Bash(sed -i '' 's/© 2024 The Daily Meds$/© {new Date\\(\\).getFullYear\\(\\)} The Daily Meds/g' \"/Users/natalielauraine/Desktop/ç Daily Meds/app/brand/[slug]/page.tsx\")",
+      "Bash(sed -i '' 's/© 2024 The Daily Meds Cinematic Meditation/© {new Date\\(\\).getFullYear\\(\\)} The Daily Meds Cinematic Meditation/g' \"/Users/natalielauraine/Desktop/ç Daily Meds/app/affiliate/dashboard/page.tsx\")",
+      "Bash(sed -i '' 's/© 2024 The Daily Meds — Admin Portal/© {new Date\\(\\).getFullYear\\(\\)} The Daily Meds — Admin Portal/g' \"/Users/natalielauraine/Desktop/ç Daily Meds/app/affiliate/dashboard/overview/page.tsx\")",
+      "Bash(curl -I http://localhost:3000/api/og?title=Test)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" \"http://localhost:3000/api/og\")",
+      "Bash(ls \"/Users/natalielauraine/Desktop/ç Daily Meds/\"*.mjs)",
+      "Bash(npx vercel:*)",
+      "Bash(kill %1)",
+      "Bash(node_modules/.bin/next build:*)",
+      "Bash(echo \"EXIT: $?\")",
+      "Bash(cat next.config.js)",
+      "Bash(cat next.config.ts)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code} → %{redirect_url}\" -X POST https://thedailymeds.com/api/stripe/webhook)",
+      "Bash(node scripts/generate-icons.mjs)",
+      "Bash(openssl rand:*)",
+      "Read(//Users/natalielauraine/**)"
+    ],
+    "additionalDirectories": [
+      "/Users/natalielauraine/Downloads"
+    ]
+  }
+}

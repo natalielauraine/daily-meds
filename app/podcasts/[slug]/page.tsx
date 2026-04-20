@@ -720,7 +720,7 @@ export default function EpisodePage() {
                   onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "#ffb598"; (e.currentTarget as HTMLElement).style.color = "#3f1200"; }}
                   onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; (e.currentTarget as HTMLElement).style.color = "#ffb598"; }}
                 >
-                  Founder Membership (£249.99)
+                  Founder Membership (£299.99)
                 </Link>
               </div>
             </div>

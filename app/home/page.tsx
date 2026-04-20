@@ -392,11 +392,15 @@ export default function LoggedInHome() {
           © {new Date().getFullYear()} The Daily Meds. Immersive Mindfulness.
         </p>
         <div className="flex gap-8">
-          {["Instagram", "Twitter", "YouTube"].map((s) => (
-            <a key={s} href="#" className="text-[10px] uppercase tracking-widest transition-colors hover:text-white" style={{ color: "#adaaaa" }}>
-              {s}
-            </a>
-          ))}
+          <a
+            href="https://www.instagram.com/thedailymeds_/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[10px] uppercase tracking-widest transition-colors hover:text-white"
+            style={{ color: "#adaaaa" }}
+          >
+            Instagram
+          </a>
         </div>
         <p className="text-lg font-black uppercase italic tracking-tight" style={{ color: LIME, fontFamily: "var(--font-lexend)" }}>
           The Daily Meds

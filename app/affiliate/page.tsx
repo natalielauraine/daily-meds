@@ -84,9 +84,9 @@ const COMMISSION_POINTS = [
 ];
 
 const STEPS = [
-  { num: "1", label: "Apply Below",    body: "Apply below and get your personal affiliate link.", color: C.primaryCont },
-  { num: "2", label: "Share Your Link", body: "Share it anywhere your audience hangs out.",        color: C.secondary   },
-  { num: "3", label: "Earn Every Month", body: "Earn every month, automatically.",                 color: C.tertiary    },
+  { num: "1", label: "Apply Below",     body: "Tell us about your audience and apply below. We review every application personally.", color: C.primaryCont },
+  { num: "2", label: "Share Your Link", body: "Once approved, share your link anywhere your audience hangs out.",                      color: C.secondary   },
+  { num: "3", label: "Earn Every Month", body: "Earn 20% every month, automatically, for every subscriber you refer.",                color: C.tertiary    },
 ];
 
 // ── PAGE ──────────────────────────────────────────────────────────────────────
@@ -179,17 +179,23 @@ export default function AffiliatePage() {
             className="text-5xl md:text-8xl leading-tight mb-8"
             style={{ ...HEADLINE, color: "#ffffff" }}
           >
-            Become a{" "}
+            Artist{" "}
             <span style={{ color: C.primaryCont, textShadow: "0 0 12px rgba(255,65,142,0.4)" }}>
-              Daily Meds
+              Partner
             </span>{" "}
-            Affiliate
+            Programme
           </h1>
           <p
-            className="text-xl md:text-2xl max-w-3xl mx-auto mb-12"
+            className="text-xl md:text-2xl max-w-3xl mx-auto mb-6"
             style={{ color: C.onSurfaceVar }}
           >
-            Earn monthly income while supporting your community&apos;s mental health
+            For artists, creators, and people with larger audiences
+          </p>
+          <p
+            className="text-lg max-w-2xl mx-auto mb-12"
+            style={{ color: "rgba(171,171,171,0.7)" }}
+          >
+            Every Daily Meds member automatically earns 10% on referrals. Apply here to unlock 20% — reserved for artists, creators, and community leaders.
           </p>
           <a href="#apply" className="flex justify-center">
             <svg className="animate-bounce" width="48" height="48" viewBox="0 0 24 24" fill={C.primary}>
@@ -251,9 +257,9 @@ export default function AffiliatePage() {
       <section id="benefits" className="py-32" style={{ backgroundColor: C.surfaceDim }}>
         <div className="container mx-auto px-6">
           <div className="text-center mb-24">
-            <h2 className="text-4xl md:text-6xl mb-4 text-white" style={HEADLINE}>Why Join?</h2>
+            <h2 className="text-4xl md:text-6xl mb-4 text-white" style={HEADLINE}>Why Apply?</h2>
             <p className="max-w-xl mx-auto" style={{ color: C.onSurfaceVar }}>
-              If you pressed play, something&apos;s on your mind. We make sharing that feeling rewarding.
+              Your audience already trusts you. We make that trust rewarding — 20% recurring commission for every subscriber you bring in.
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -325,7 +331,8 @@ export default function AffiliatePage() {
       {/* ── WHO IT'S FOR ─────────────────────────────────────────────────────── */}
       <section className="py-20" style={{ backgroundColor: "#0a0a0a" }}>
         <div className="container mx-auto px-6 text-center">
-          <h2 className="text-4xl md:text-5xl mb-10 text-white" style={HEADLINE}>Who It&apos;s For</h2>
+          <h2 className="text-4xl md:text-5xl mb-4 text-white" style={HEADLINE}>Who It&apos;s For</h2>
+          <p className="mb-10 text-sm" style={{ color: "rgba(171,171,171,0.6)" }}>Artists, creators, and community leaders with established audiences — apply for 20%.</p>
           <div className="flex flex-wrap justify-center gap-3 max-w-3xl mx-auto">
             {[
               "DJs", "Producers", "Promoters", "Wellness practitioners",
@@ -353,7 +360,7 @@ export default function AffiliatePage() {
       <section className="py-32" style={{ backgroundColor: C.surfaceDim }}>
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto">
-            <h2 className="text-4xl text-center mb-20 text-white" style={HEADLINE}>How to Get Started</h2>
+            <h2 className="text-4xl text-center mb-20 text-white" style={HEADLINE}>How It Works</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
               {STEPS.map((step) => (
                 <div key={step.num} className="text-center">
@@ -401,7 +408,7 @@ export default function AffiliatePage() {
                 </div>
                 <h3 className="mb-3 text-white text-3xl" style={HEADLINE}>Application Received</h3>
                 <p className="text-sm mb-8 max-w-sm mx-auto leading-relaxed" style={{ color: C.onSurfaceVar }}>
-                  We review every application personally. You&apos;ll hear back within 48 hours. If approved, your dashboard will be waiting.
+                  We review every artist application personally. You&apos;ll hear back within 48 hours. In the meantime, you&apos;re already earning 10% as a standard affiliate — check your dashboard below.
                 </p>
                 <Link
                   href="/affiliate/dashboard"
@@ -413,9 +420,12 @@ export default function AffiliatePage() {
               </div>
             ) : (
               <>
-                <h2 className="text-3xl md:text-5xl mb-4 text-white" style={HEADLINE}>Ready to Join?</h2>
+                <div className="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest mb-4" style={{ background: "linear-gradient(90deg, #ff418e, #ef7f4e)", color: "#fff" }}>
+                  Artist Partner Programme
+                </div>
+                <h2 className="text-3xl md:text-5xl mb-4 text-white" style={HEADLINE}>Apply for 20% Commission</h2>
                 <p className="mb-12" style={{ color: C.onSurfaceVar }}>
-                  Submit your application below and let&apos;s start supporting your community together.
+                  Tell us about your audience. We review every application personally and respond within 48 hours.
                 </p>
 
                 {error && (

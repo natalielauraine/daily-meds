@@ -4,10 +4,34 @@
 // Cinematic portrait hero, mission statement, audio player UI, closing quote.
 // Public page — no auth required.
 
+import { useState, useRef } from "react";
 import Link from "next/link";
 import Logo from "../components/Logo";
 
+function formatTime(secs: number): string {
+  if (!isFinite(secs) || isNaN(secs)) return "0:00";
+  const m = Math.floor(secs / 60);
+  const s = Math.floor(secs % 60);
+  return `${m}:${s.toString().padStart(2, "0")}`;
+}
+
 export default function FounderPage() {
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const [playing, setPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+
+  function togglePlay() {
+    const audio = audioRef.current;
+    if (!audio) return;
+    if (playing) {
+      audio.pause();
+      setPlaying(false);
+    } else {
+      audio.play().then(() => setPlaying(true)).catch(() => {});
+    }
+  }
+
   return (
     <div
       style={{
@@ -49,12 +73,12 @@ export default function FounderPage() {
           overflow: "hidden",
         }}
       >
-        {/* Portrait background — replace src with Natalie's real photo */}
+        {/* Portrait background */}
         <div
           style={{
             position: "absolute",
             inset: 0,
-            backgroundImage: "url('https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=1200&h=1600&fit=crop&crop=face')",
+            backgroundImage: "url('/natalie-lauraine.png')",
             backgroundSize: "cover",
             backgroundPosition: "center top",
             maskImage: "linear-gradient(to bottom, black 60%, transparent 100%)",
@@ -156,6 +180,17 @@ export default function FounderPage() {
       </section>
 
       {/* ── AUDIO PLAYER ───────────────────────────────────────────────────── */}
+      {/* Hidden audio element — will work as soon as the file is placed at /audio/founder-message.mp3 */}
+      <audio
+        ref={audioRef}
+        src="/audio/founder-message.mp3"
+        preload="metadata"
+        onLoadedMetadata={(e) => setDuration(e.currentTarget.duration)}
+        onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)}
+        onEnded={() => setPlaying(false)}
+        onError={() => {}}
+      />
+
       <section
         style={{
           maxWidth: 896,
@@ -163,6 +198,13 @@ export default function FounderPage() {
           padding: "0 1.5rem 8rem",
         }}
       >
+        {/* Label */}
+        <p
+          className="text-xs uppercase tracking-[0.3em] mb-5"
+          style={{ color: "rgba(255,255,255,0.35)", fontFamily: "var(--font-lexend)" }}
+        >
+          A message from Natalie
+        </p>
         <div
           style={{
             background: "rgba(25,25,25,0.6)",
@@ -193,6 +235,7 @@ export default function FounderPage() {
           <div className="relative flex flex-col md:flex-row items-center gap-8">
             {/* Play button */}
             <button
+              onClick={togglePlay}
               style={{
                 width: 88,
                 height: 88,
@@ -210,10 +253,17 @@ export default function FounderPage() {
               }}
               onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.07)")}
               onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+              aria-label={playing ? "Pause" : "Play"}
             >
-              <svg width="36" height="36" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M8 5v14l11-7z"/>
-              </svg>
+              {playing ? (
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+                </svg>
+              ) : (
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M8 5v14l11-7z"/>
+                </svg>
+              )}
             </button>
 
             {/* Player info */}
@@ -251,10 +301,11 @@ export default function FounderPage() {
                       top: 0,
                       left: 0,
                       height: "100%",
-                      width: "33%",
+                      width: duration > 0 ? `${(currentTime / duration) * 100}%` : "0%",
                       background: "linear-gradient(to right, #ff41b3, #ef7f4e)",
                       borderRadius: 9999,
                       boxShadow: "0 0 10px rgba(255,65,142,0.5)",
+                      transition: "width 0.5s linear",
                     }}
                   />
                 </div>
@@ -262,8 +313,8 @@ export default function FounderPage() {
                   className="flex justify-between text-[10px] uppercase tracking-widest"
                   style={{ color: "rgba(255,255,255,0.4)", fontFamily: "var(--font-lexend)" }}
                 >
-                  <span>02:54</span>
-                  <span>08:42</span>
+                  <span>{formatTime(currentTime)}</span>
+                  <span>{duration > 0 ? formatTime(duration) : "08:42"}</span>
                 </div>
               </div>
 
@@ -271,11 +322,14 @@ export default function FounderPage() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-6" style={{ color: "rgba(255,255,255,0.4)" }}>
                   {[
-                    { label: "−10s", icon: "M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8zm-1.1 11H10v-5.45l-1.67.48-.28-1.07L10.5 9h.4V16zm3.23 0h-1.05l.01-.82c-.44.63-1.01.94-1.72.94-.52 0-.93-.14-1.22-.43-.29-.28-.43-.67-.43-1.15 0-.51.19-.9.57-1.19.38-.28.93-.43 1.64-.43h1.1v-.51c0-.59-.3-.89-.91-.89-.51 0-.97.2-1.37.61l-.58-.73c.54-.55 1.2-.83 1.99-.83 1.27 0 1.9.63 1.9 1.9V16h-.93z" },
-                    { label: "+10s", icon: "M18 13c0 3.31-2.69 6-6 6s-6-2.69-6-6 2.69-6 6-6v4l5-5-5-5v4c-4.42 0-8 3.58-8 8s3.58 8 8 8 8-3.58 8-8h-2zm-5.1 3H11.9v-5.45l-1.67.48-.28-1.07L12.4 9h.4l.1 7zm3.23 0h-1.05l.01-.82c-.44.63-1.01.94-1.72.94-.52 0-.93-.14-1.22-.43-.29-.28-.43-.67-.43-1.15 0-.51.19-.9.57-1.19.38-.28.93-.43 1.64-.43h1.1v-.51c0-.59-.3-.89-.91-.89-.51 0-.97.2-1.37.61l-.58-.73c.54-.55 1.2-.83 1.99-.83 1.27 0 1.9.63 1.9 1.9V16h-.93z" },
+                    { label: "−10s", delta: -10, icon: "M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8zm-1.1 11H10v-5.45l-1.67.48-.28-1.07L10.5 9h.4V16zm3.23 0h-1.05l.01-.82c-.44.63-1.01.94-1.72.94-.52 0-.93-.14-1.22-.43-.29-.28-.43-.67-.43-1.15 0-.51.19-.9.57-1.19.38-.28.93-.43 1.64-.43h1.1v-.51c0-.59-.3-.89-.91-.89-.51 0-.97.2-1.37.61l-.58-.73c.54-.55 1.2-.83 1.99-.83 1.27 0 1.9.63 1.9 1.9V16h-.93z" },
+                    { label: "+10s", delta: 10, icon: "M18 13c0 3.31-2.69 6-6 6s-6-2.69-6-6 2.69-6 6-6v4l5-5-5-5v4c-4.42 0-8 3.58-8 8s3.58 8 8 8 8-3.58 8-8h-2zm-5.1 3H11.9v-5.45l-1.67.48-.28-1.07L12.4 9h.4l.1 7zm3.23 0h-1.05l.01-.82c-.44.63-1.01.94-1.72.94-.52 0-.93-.14-1.22-.43-.29-.28-.43-.67-.43-1.15 0-.51.19-.9.57-1.19.38-.28.93-.43 1.64-.43h1.1v-.51c0-.59-.3-.89-.91-.89-.51 0-.97.2-1.37.61l-.58-.73c.54-.55 1.2-.83 1.99-.83 1.27 0 1.9.63 1.9 1.9V16h-.93z" },
                   ].map((ctrl) => (
                     <button
                       key={ctrl.label}
+                      onClick={() => {
+                        if (audioRef.current) audioRef.current.currentTime = Math.max(0, (audioRef.current.currentTime ?? 0) + ctrl.delta);
+                      }}
                       style={{ background: "none", border: "none", cursor: "pointer", color: "inherit", padding: 0, transition: "color 0.2s" }}
                       onMouseEnter={(e) => (e.currentTarget.style.color = "#ff41b3")}
                       onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.4)")}

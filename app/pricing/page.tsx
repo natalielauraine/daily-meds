@@ -1,19 +1,21 @@
 "use client";
 
-// Pricing page — four subscription tiers with monthly/annual billing toggle.
-// Layout: cinematic hero → billing toggle → 4-col plan grid → tagline band → FAQ.
+// Pricing page — four subscription tiers: Free, Audio (£9.99/mo), Full Access (£19.99/mo), Founder Lifetime (£299.99).
+// Layout: cinematic hero → comparison table → £1 trial banner → 3-col plan grid → founder section → tagline band → FAQ.
 // Matches the Stitch "Subscription Plans" design with the neon brand palette.
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
-// Maps each plan ID to its Stripe price ID from env vars
+// Maps each plan ID to its Stripe price ID from env vars.
+// 'trial' and 'lifetime' don't need a priceId here — the checkout route handles them directly.
 const PRICE_IDS: Record<string, string> = {
+  audio:    process.env.NEXT_PUBLIC_STRIPE_AUDIO_PRICE_ID    ?? "",
   monthly:  process.env.NEXT_PUBLIC_STRIPE_MONTHLY_PRICE_ID  ?? "",
-  annual:   process.env.NEXT_PUBLIC_STRIPE_ANNUAL_PRICE_ID   ?? "",
   lifetime: process.env.NEXT_PUBLIC_STRIPE_LIFETIME_PRICE_ID ?? "",
 };
 
@@ -24,11 +26,9 @@ const PLANS = [
     id: "free",
     name: "The Observer",
     tagline: "Dip your toes in",
-    monthlyPrice: "Free",
-    annualPrice: "Free",
+    price: "Free",
     priceNote: "Forever free",
     cta: "Start for free",
-    ctaHref: "/signup",
     featured: false,
     features: [
       "10 free sessions",
@@ -44,68 +44,43 @@ const PLANS = [
     ],
   },
   {
-    id: "monthly",
-    name: "The Seeker",
-    tagline: "Full access, month by month",
-    monthlyPrice: "£19.99",
-    annualPrice: "£19.99",
-    priceNote: "per month",
-    cta: "Start monthly",
-    ctaHref: "/signup?plan=monthly",
+    id: "audio",
+    name: "The Listener",
+    tagline: "Full audio library, anytime",
+    price: "£9.99",
+    priceNote: "per month · audio only",
+    cta: "Start listening",
     featured: false,
     features: [
       "Everything in Free",
       "Full library (200+ sessions)",
       "New drops every week",
-      "Live sessions with Natalie",
       "Breathing timer",
       "Cancel any time",
     ],
     locked: [
+      "Live sessions with Natalie",
       "Offline downloads",
       "Group meditation rooms",
     ],
   },
   {
-    id: "annual",
-    name: "The Regular",
-    tagline: "Best value — save over 15%",
-    monthlyPrice: "£16.66",
-    annualPrice: "£199.99",
-    monthlyPriceNote: "per month, billed annually",
-    annualPriceNote: "per year",
-    cta: "Go annual",
-    ctaHref: "/signup?plan=annual",
+    id: "monthly",
+    name: "The Seeker",
+    tagline: "Audio plus live sessions",
+    price: "£19.99",
+    priceNote: "per month",
+    cta: "Get full access",
     featured: true,
     features: [
-      "Everything in Monthly",
-      "Offline downloads",
+      "Everything in The Listener",
+      "Live sessions with Natalie",
       "Group meditation rooms",
-      "Priority support",
-      "Early access to new content",
-      "Save £39.89 vs monthly",
+      "Cancel any time",
     ],
-    locked: [],
-  },
-  {
-    id: "lifetime",
-    name: "The Master",
-    tagline: "Pay once. Never again.",
-    monthlyPrice: "£299.99",
-    annualPrice: "£299.99",
-    priceNote: "one-time payment",
-    cta: "Get lifetime access",
-    ctaHref: "/signup?plan=lifetime",
-    featured: false,
-    features: [
-      "Everything in Annual",
-      "All future series included",
-      "Lifetime updates",
-      "Exclusive sessions",
-      "Never pay again",
-      "Personal welcome message",
+    locked: [
+      "Offline downloads",
     ],
-    locked: [],
   },
 ];
 
@@ -114,27 +89,31 @@ const PLANS = [
 const FAQS = [
   {
     q: "Can I cancel my subscription at any time?",
-    a: "Yes — cancel any time from your account settings. You'll keep access until the end of your current billing period.",
+    a: "Yes, cancel any time from your account settings. You will keep access until the end of your current billing period.",
   },
   {
     q: "What's included in the free plan?",
     a: "10 handpicked sessions, full access to the breathing timer, and community browsing. No credit card required.",
   },
   {
-    q: "Is the lifetime plan really one payment?",
-    a: "Yes. £299.99 once — no monthly fees, no renewals, no surprises. Every future session and series is included.",
+    q: "What are the different plans?",
+    a: "Free gives you 10 sessions at no cost. The Listener is £9.99/month — full audio library, no live sessions. The Seeker is £19.99/month — audio plus live sessions with Natalie. The Master is £299.99 one-time for lifetime access to everything, including all future content.",
+  },
+  {
+    q: "Is the founder membership really one payment?",
+    a: "Yes. £299.99 once, no monthly fees, no renewals, no surprises. Every future session and series is included.",
   },
   {
     q: "Can I download sessions to listen offline?",
-    a: "Offline downloads are available on Annual and Lifetime plans. Monthly subscribers can stream anywhere with internet.",
+    a: "Offline downloads are available on the Lifetime plan. Monthly subscribers can stream anywhere with internet.",
   },
   {
     q: "What are group meditation rooms?",
-    a: "Rooms let you meditate live with friends — shared timer, ambient audio, and optional emoji reactions.",
+    a: "Rooms let you meditate live with friends, with a shared timer, ambient audio, and optional emoji reactions.",
   },
   {
     q: "Is my payment secure?",
-    a: "Yes — all payments are handled by Stripe. We never store your card details.",
+    a: "Yes, all payments are handled by Stripe. We never store your card details.",
   },
 ];
 
@@ -215,15 +194,15 @@ function FaqItem({ q, a }: { q: string; a: string }) {
 // ── PAGE ──────────────────────────────────────────────────────────────────────
 
 export default function PricingPage() {
-  const [billing, setBilling] = useState<"monthly" | "annual">("annual");
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
   const router = useRouter();
 
   // Called when the user clicks a paid plan CTA.
   // Posts to the checkout API, then redirects to Stripe's hosted payment page.
   async function handleCheckout(planId: string) {
+    // Trial doesn't need a priceId — the server uses MONTHLY price internally
     const priceId = PRICE_IDS[planId];
-    if (!priceId) {
+    if (!priceId && planId !== "trial") {
       alert("This plan is not available yet. Please try again later.");
       return;
     }
@@ -233,7 +212,7 @@ export default function PricingPage() {
       const res = await fetch("/api/stripe/create-checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ priceId, planId }),
+        body: JSON.stringify({ priceId: priceId || undefined, planId }),
       });
 
       const data = await res.json();
@@ -323,51 +302,99 @@ export default function PricingPage() {
               If you pressed play, something&apos;s on your mind. Every plan includes access to Natalie&apos;s audio library.
             </p>
 
-            {/* Monthly / Annual toggle */}
-            <div
-              className="inline-flex items-center gap-1 p-1 rounded-full"
-              style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.08)" }}
+          </div>
+        </section>
+
+        {/* ── COMPARISON TABLE ── */}
+        <section className="px-4 sm:px-6 lg:px-8 py-16">
+          <div className="max-w-5xl mx-auto">
+            <p
+              className="text-xs uppercase tracking-widest mb-2 text-center"
+              style={{ fontFamily: "var(--font-space-grotesk)", fontWeight: 500, color: "rgba(255,255,255,0.3)" }}
             >
-              <button
-                onClick={() => setBilling("monthly")}
-                className="px-5 py-2 rounded-full text-xs transition-all duration-200"
-                style={{
-                  fontFamily: "var(--font-space-grotesk)",
-                  fontWeight: 700,
-                  background: billing === "monthly" ? "#ff41b3" : "transparent",
-                  color: billing === "monthly" ? "white" : "rgba(255,255,255,0.45)",
-                  boxShadow: billing === "monthly" ? "0 0 12px rgba(255,65,179,0.4)" : "none",
-                }}
-              >
-                Monthly
-              </button>
-              <button
-                onClick={() => setBilling("annual")}
-                className="px-5 py-2 rounded-full text-xs transition-all duration-200 flex items-center gap-2"
-                style={{
-                  fontFamily: "var(--font-space-grotesk)",
-                  fontWeight: 700,
-                  background: billing === "annual" ? "#ff41b3" : "transparent",
-                  color: billing === "annual" ? "white" : "rgba(255,255,255,0.45)",
-                  boxShadow: billing === "annual" ? "0 0 12px rgba(255,65,179,0.4)" : "none",
-                }}
-              >
-                Annual
-                {billing !== "annual" && (
+              How we compare
+            </p>
+            <h2
+              className="text-center uppercase mb-10"
+              style={{
+                fontFamily: "var(--font-plus-jakarta)",
+                fontWeight: 800,
+                fontSize: "clamp(1.2rem, 3vw, 1.75rem)",
+                letterSpacing: "-0.01em",
+                color: "#E2E2E2",
+              }}
+            >
+              Why Daily Meds is different
+            </h2>
+            <div className="rounded-2xl overflow-hidden" style={{ border: "0.5px solid rgba(255,255,255,0.08)" }}>
+              <Image
+                src="https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/Pricing%20Differennciator.png"
+                alt="Daily Meds vs Calm vs Insight Timer vs Headspace comparison"
+                width={2106}
+                height={1226}
+                className="w-full h-auto"
+                unoptimized
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* ── £1 TRIAL BANNER ── */}
+        <section className="px-4 sm:px-6 lg:px-8 pb-10">
+          <div className="max-w-3xl mx-auto">
+            <div
+              className="relative rounded-2xl overflow-hidden"
+              style={{
+                background: "linear-gradient(135deg, #1a0010 0%, #1f1f1f 50%, #0d0010 100%)",
+                border: "1.5px solid rgba(255,65,179,0.35)",
+                boxShadow: "0 0 60px rgba(255,65,179,0.1)",
+              }}
+            >
+              {/* Glow */}
+              <div
+                className="absolute inset-0 pointer-events-none"
+                style={{ background: "radial-gradient(ellipse at 20% 50%, rgba(255,65,179,0.1) 0%, transparent 60%)" }}
+              />
+              <div className="relative flex flex-col sm:flex-row items-center justify-between gap-6 p-7 sm:p-8">
+                <div className="text-center sm:text-left">
+                  {/* Badge */}
                   <span
-                    className="text-[9px] px-1.5 py-0.5 rounded uppercase"
-                    style={{
-                      background: "rgba(173,242,37,0.15)",
-                      color: "#adf225",
-                      fontFamily: "var(--font-space-grotesk)",
-                      fontWeight: 700,
-                      letterSpacing: "0.05em",
-                    }}
+                    className="inline-block text-[10px] px-3 py-1 rounded-full uppercase tracking-widest mb-3"
+                    style={{ background: "linear-gradient(90deg, #ff41b3, #ec723d)", color: "#fff", fontFamily: "var(--font-space-grotesk)", fontWeight: 700 }}
                   >
-                    Save 15%
+                    Try everything free for 7 days
                   </span>
-                )}
-              </button>
+                  <h2
+                    className="uppercase mb-1"
+                    style={{ fontFamily: "var(--font-plus-jakarta)", fontWeight: 800, fontSize: "clamp(1.3rem, 3vw, 1.75rem)", color: "#E2E2E2", letterSpacing: "-0.01em" }}
+                  >
+                    Start your £1 trial
+                  </h2>
+                  <p
+                    className="text-sm max-w-md"
+                    style={{ fontFamily: "var(--font-inter)", color: "rgba(255,255,255,0.4)", lineHeight: 1.6 }}
+                  >
+                    Full audio library access — 200+ sessions, new drops every week — for 7 days.
+                    Then £9.99/mo. Cancel before day 7 and pay nothing more.
+                  </p>
+                </div>
+                <button
+                  onClick={() => handleCheckout("trial")}
+                  disabled={loadingPlan === "trial"}
+                  className="shrink-0 px-8 py-3.5 rounded-full text-sm transition-all duration-200 hover:scale-105 disabled:opacity-60 disabled:scale-100"
+                  style={{
+                    fontFamily: "var(--font-space-grotesk)",
+                    fontWeight: 700,
+                    background: "linear-gradient(90deg, #ff41b3, #ec723d)",
+                    color: "#fff",
+                    boxShadow: "0 0 28px rgba(255,65,179,0.4)",
+                    cursor: loadingPlan === "trial" ? "wait" : "pointer",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {loadingPlan === "trial" ? "Redirecting…" : "Start for £1"}
+                </button>
+              </div>
             </div>
           </div>
         </section>
@@ -379,14 +406,8 @@ export default function PricingPage() {
               {PLANS.map((plan) => {
                 const isFeatured = plan.featured;
 
-                // Work out which price to show based on the billing toggle
-                const displayPrice = billing === "annual" ? plan.annualPrice : plan.monthlyPrice;
-                const displayNote =
-                  plan.id === "annual"
-                    ? billing === "annual"
-                      ? plan.annualPriceNote
-                      : plan.monthlyPriceNote
-                    : plan.priceNote;
+                const displayPrice = plan.price;
+                const displayNote = plan.priceNote;
 
                 return (
                   <div
@@ -476,15 +497,6 @@ export default function PricingPage() {
                             </span>
                           )}
                         </div>
-                        {/* Savings label on annual for the featured card */}
-                        {plan.id === "annual" && billing === "annual" && (
-                          <p
-                            className="text-[11px] mt-1.5"
-                            style={{ fontFamily: "var(--font-space-grotesk)", color: "#adf225" }}
-                          >
-                            Save £39.89 vs monthly
-                          </p>
-                        )}
                       </div>
 
                       {/* CTA button — free plan links to signup, paid plans go to Stripe */}
@@ -568,6 +580,115 @@ export default function PricingPage() {
               <span>Instant access after payment</span>
               <span>·</span>
               <span>All prices in GBP</span>
+            </div>
+          </div>
+        </section>
+
+        {/* ── AFFILIATE NOTE ── */}
+        <section className="px-4 sm:px-6 lg:px-8 pb-10">
+          <div className="max-w-3xl mx-auto text-center">
+            <p
+              className="text-sm leading-relaxed"
+              style={{ fontFamily: "var(--font-inter)", color: "rgba(255,255,255,0.4)" }}
+            >
+              Every member automatically becomes an affiliate and earns 10% on every person they refer. Artists and creators with larger audiences can{" "}
+              <Link
+                href="/affiliate"
+                className="underline underline-offset-4 transition-colors hover:text-white"
+                style={{ color: "rgba(255,255,255,0.6)" }}
+              >
+                apply for our Artist Partner Programme
+              </Link>{" "}
+              and earn 20%.
+            </p>
+          </div>
+        </section>
+
+        {/* ── FOUNDER OFFER ── */}
+        <section className="px-4 sm:px-6 lg:px-8 pb-20">
+          <div className="max-w-2xl mx-auto">
+            <div
+              className="relative rounded-2xl p-8 sm:p-10 overflow-hidden"
+              style={{
+                background: "linear-gradient(135deg, #1a0010 0%, #1f1f1f 60%, #0a1500 100%)",
+                border: "1.5px solid rgba(255,65,179,0.3)",
+                boxShadow: "0 0 60px rgba(255,65,179,0.08)",
+              }}
+            >
+              {/* Glow */}
+              <div
+                className="absolute top-0 right-0 w-64 h-64 pointer-events-none"
+                style={{ background: "radial-gradient(circle, rgba(255,65,179,0.1) 0%, transparent 70%)" }}
+              />
+              <div className="relative">
+                <span
+                  className="inline-block text-[10px] px-3 py-1 rounded-full uppercase tracking-widest mb-5"
+                  style={{ background: "linear-gradient(90deg, #ff41b3, #ec723d)", color: "#fff", fontFamily: "var(--font-space-grotesk)", fontWeight: 700 }}
+                >
+                  Limited Time Only
+                </span>
+                <h3
+                  className="uppercase mb-1"
+                  style={{ fontFamily: "var(--font-plus-jakarta)", fontWeight: 800, fontSize: "1.75rem", color: "#E2E2E2" }}
+                >
+                  Founder Membership
+                </h3>
+                <p
+                  className="text-xs uppercase tracking-widest mb-4"
+                  style={{ fontFamily: "var(--font-space-grotesk)", fontWeight: 500, color: "rgba(255,255,255,0.3)" }}
+                >
+                  The Master
+                </p>
+                <p
+                  className="text-sm mb-6 max-w-md"
+                  style={{ fontFamily: "var(--font-inter)", color: "rgba(255,255,255,0.45)", lineHeight: 1.7 }}
+                >
+                  Pay once. Never again. Get lifetime access to everything The Daily Meds will ever make, including all future series and content. Only available for a limited time at the founding price.
+                </p>
+
+                <div className="flex flex-col sm:flex-row items-start sm:items-end gap-6 mb-8">
+                  <div>
+                    <div className="flex items-end gap-2">
+                      <span style={{ fontFamily: "var(--font-plus-jakarta)", fontWeight: 800, fontSize: "3rem", color: "#E2E2E2", lineHeight: 1 }}>£299.99</span>
+                      <span className="mb-1 text-sm" style={{ color: "rgba(255,255,255,0.3)" }}>one-time</span>
+                    </div>
+                    <p className="text-xs mt-1" style={{ color: "#adf225" }}>Never pay again</p>
+                  </div>
+
+                  <ul className="flex flex-col gap-2 text-sm" style={{ color: "rgba(255,255,255,0.6)" }}>
+                    {[
+                      "Full library, forever",
+                      "All future series included",
+                      "Live sessions with Natalie",
+                      "Offline downloads",
+                      "Group meditation rooms",
+                      "Personal welcome message",
+                    ].map((f) => (
+                      <li key={f} className="flex items-center gap-2">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                          <circle cx="12" cy="12" r="10" fill="rgba(173,242,37,0.15)" />
+                          <path d="M7 12l3.5 3.5L17 9" stroke="#adf225" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                        {f}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <button
+                  onClick={() => handleCheckout("lifetime")}
+                  className="px-8 py-3.5 rounded-full text-sm transition-all duration-200 hover:scale-105"
+                  style={{
+                    fontFamily: "var(--font-space-grotesk)",
+                    fontWeight: 700,
+                    background: "linear-gradient(90deg, #ff41b3, #ec723d)",
+                    color: "#fff",
+                    boxShadow: "0 0 30px rgba(255,65,179,0.4)",
+                  }}
+                >
+                  Claim founder membership
+                </button>
+              </div>
             </div>
           </div>
         </section>

@@ -1,12 +1,8 @@
 import Link from "next/link";
 import Image from "next/image";
 import Logo from "../components/Logo";
+import { createClient } from "../../lib/supabase-server";
 
-const UPCOMING = [
-  { date: "Oct 12", time: "8:00 PM EST", title: "Full Moon Lunar Release", desc: "Meditation & Sound Bath with Natalie" },
-  { date: "Oct 15", time: "10:00 AM EST", title: "Vagus Nerve Reset", desc: "Alchemy Rewire Workshop" },
-  { date: "Oct 19", time: "7:00 PM EST", title: "The Science of Sleep", desc: "Live Podcast Guest: Dr. Aris" },
-];
 
 const PODCASTS = [
   {
@@ -59,7 +55,11 @@ const EVENT_TYPES = [
   },
 ];
 
-export default function LiveLandingPage() {
+export default async function LiveLandingPage() {
+  const supabase = createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  const isLoggedIn = !!user;
+
   return (
     <div style={{ backgroundColor: "#0e0e0e", color: "#ffffff", fontFamily: "var(--font-manrope)" }}>
 
@@ -152,7 +152,7 @@ export default function LiveLandingPage() {
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {EVENT_TYPES.map((event) => (
-            <Link href="/signup" key={event.title} className="group cursor-pointer">
+            <Link href={isLoggedIn ? "/live" : "/signup"} key={event.title} className="group cursor-pointer">
               <div
                 className="relative overflow-hidden rounded-xl mb-6"
                 style={{ aspectRatio: "3/4" }}
@@ -325,7 +325,7 @@ export default function LiveLandingPage() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {PODCASTS.map((pod) => (
-            <Link href="/signup" key={pod.title} className="group cursor-pointer space-y-4">
+            <Link href={isLoggedIn ? "/library" : "/signup"} key={pod.title} className="group cursor-pointer space-y-4">
               <div className="aspect-video overflow-hidden rounded-xl">
                 <Image
                   src={pod.img}
@@ -347,49 +347,27 @@ export default function LiveLandingPage() {
       </section>
 
       {/* ── UPCOMING SESSIONS ──────────────────────────────────────────── */}
-      <section className="py-24 px-6 md:px-12 lg:px-24 max-w-[1000px] mx-auto">
-        <h2 className="text-3xl uppercase tracking-tight mb-12 text-center" style={{ fontFamily: "var(--font-lexend)", fontWeight: 700 }}>
+      <section className="py-24 px-6 md:px-12 lg:px-24 max-w-[1000px] mx-auto text-center">
+        <h2 className="text-3xl uppercase tracking-tight mb-12" style={{ fontFamily: "var(--font-lexend)", fontWeight: 700 }}>
           Upcoming Sessions
         </h2>
-        <div>
-          {UPCOMING.map((session, i) => (
-            <div
-              key={i}
-              className="flex flex-col md:flex-row items-center justify-between py-8 px-6 rounded-lg hover:bg-white/[0.03] transition-all cursor-pointer"
-              style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}
+        <div
+          className="py-16 px-8 rounded-2xl"
+          style={{ border: "1px solid rgba(170,238,32,0.15)", backgroundColor: "rgba(170,238,32,0.04)" }}
+        >
+          <p className="text-lg mb-3" style={{ color: "rgba(255,255,255,0.7)", fontFamily: "var(--font-lexend)", fontWeight: 600 }}>
+            Live sessions coming soon.
+          </p>
+          <p className="text-sm" style={{ color: "rgba(255,255,255,0.4)", fontFamily: "var(--font-lexend)" }}>
+            <a
+              href="mailto:joy@thedailymeds.com"
+              className="underline underline-offset-4 transition-colors hover:text-[#aaee20]"
+              style={{ color: "rgba(255,255,255,0.4)", textDecorationColor: "#aaee20" }}
             >
-              <div className="flex flex-col md:flex-row items-center gap-8 text-center md:text-left">
-                <div className="flex flex-col">
-                  <span className="text-2xl font-black uppercase" style={{ color: "#aaee20", fontFamily: "var(--font-lexend)" }}>{session.date}</span>
-                  <span className="text-xs uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.4)" }}>{session.time}</span>
-                </div>
-                <div className="hidden md:block h-8 w-px" style={{ background: "rgba(255,255,255,0.15)" }} />
-                <div>
-                  <h4 className="text-xl uppercase font-bold mb-1" style={{ fontFamily: "var(--font-lexend)" }}>{session.title}</h4>
-                  <p className="text-sm" style={{ color: "rgba(255,255,255,0.45)" }}>{session.desc}</p>
-                </div>
-              </div>
-              <Link
-                href="/signup"
-                className="mt-6 md:mt-0 flex items-center gap-2 text-xs font-bold uppercase tracking-widest px-6 py-3 rounded-full transition-all hover:bg-[#aaee20] hover:text-[#324b00]"
-                style={{ border: "1px solid rgba(170,238,32,0.4)", color: "#ffffff", fontFamily: "var(--font-lexend)" }}
-              >
-                Reminder
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
-                </svg>
-              </Link>
-            </div>
-          ))}
-        </div>
-        <div className="mt-12 flex justify-center">
-          <Link
-            href="/signup"
-            className="font-bold uppercase text-sm tracking-widest hover:text-white transition-colors underline underline-offset-8"
-            style={{ color: "rgba(255,255,255,0.45)", fontFamily: "var(--font-lexend)", textDecorationColor: "#aaee20" }}
-          >
-            See Full Calendar
-          </Link>
+              Join the waitlist
+            </a>{" "}
+            to be notified when we go live.
+          </p>
         </div>
       </section>
 
