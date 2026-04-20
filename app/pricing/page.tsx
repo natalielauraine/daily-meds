@@ -16,6 +16,7 @@ import Footer from "../components/Footer";
 const PRICE_IDS: Record<string, string> = {
   audio:    process.env.NEXT_PUBLIC_STRIPE_AUDIO_PRICE_ID    ?? "",
   monthly:  process.env.NEXT_PUBLIC_STRIPE_MONTHLY_PRICE_ID  ?? "",
+  annual:   process.env.NEXT_PUBLIC_STRIPE_ANNUAL_PRICE_ID   ?? "",
   lifetime: process.env.NEXT_PUBLIC_STRIPE_LIFETIME_PRICE_ID ?? "",
 };
 
@@ -82,6 +83,25 @@ const PLANS = [
       "Offline downloads",
     ],
   },
+  {
+    id: "annual",
+    name: "The Dedicated",
+    tagline: "Best value — save over 15%",
+    price: "£199",
+    priceNote: "per year",
+    cta: "Go annual",
+    featured: false,
+    features: [
+      "Everything in The Seeker",
+      "Live sessions with Natalie",
+      "Group meditation rooms",
+      "Save vs monthly",
+      "Cancel any time",
+    ],
+    locked: [
+      "Offline downloads",
+    ],
+  },
 ];
 
 // ── FAQ DATA ──────────────────────────────────────────────────────────────────
@@ -97,7 +117,7 @@ const FAQS = [
   },
   {
     q: "What are the different plans?",
-    a: "Free gives you 10 sessions at no cost. The Listener is £9.99/month — full audio library, no live sessions. The Seeker is £19.99/month — audio plus live sessions with Natalie. The Master is £299.99 one-time for lifetime access to everything, including all future content.",
+    a: "Free gives you 10 sessions at no cost. The Listener is £9.99/month — full audio library, no live sessions. The Seeker is £19.99/month — audio plus live sessions with Natalie. The Dedicated is £199/year — everything in The Seeker, billed annually. The Master is £299.99 one-time for lifetime access to everything, including all future content.",
   },
   {
     q: "Is the founder membership really one payment?",

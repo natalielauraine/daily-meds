@@ -18,6 +18,7 @@ import { cookies } from "next/headers";
 const ACCESS_LEVELS: Record<string, string> = {
   audio:    "1",
   monthly:  "2",
+  annual:   "2",
   lifetime: "2",
   trial:    "1",
 };
