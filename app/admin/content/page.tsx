@@ -576,7 +576,7 @@ export default function AdminContentPage() {
                     type="number"
                     min={1}
                     max={120}
-                    value={parseInt(form.duration) || ""}
+                    value={form.duration.replace(/[^0-9]/g, "")}
                     onChange={(e) => setForm({ ...form, duration: e.target.value ? `${e.target.value} min` : "" })}
                     placeholder="e.g. 9"
                     className={fieldClass}
