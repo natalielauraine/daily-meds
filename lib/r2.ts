@@ -32,5 +32,5 @@ export async function deleteR2Object(key: string): Promise<void> {
 }
 
 export function r2PublicUrl(key: string): string {
-  return `https://${accountId}.r2.cloudflarestorage.com/${BUCKET}/${key}`;
+  return `https://pub-09df2e878efe41019b9524fea54e7197.r2.dev/${key}`;
 }
