@@ -78,21 +78,29 @@ export function PresenceProvider({ children }: { children: React.ReactNode }) {
       if (!data.user) return;
       setUser(data.user);
 
-      // Check if user has opted in to presence
-      const { data: cs } = await supabase
-        .from("community_settings")
-        .select("show_presence")
-        .eq("user_id", data.user.id)
-        .maybeSingle();
-      setCanTrack(cs?.show_presence ?? false);
+      // Check if user has opted in to presence (show_in_feed column)
+      try {
+        const { data: cs } = await supabase
+          .from("community_settings")
+          .select("show_in_feed")
+          .eq("user_id", data.user.id)
+          .maybeSingle();
+        setCanTrack(cs?.show_in_feed ?? false);
+      } catch {
+        // Table or column doesn't exist yet
+      }
 
       // Count unseen emoji reactions sent to this user
-      const { count } = await supabase
-        .from("emoji_reactions")
-        .select("*", { count: "exact", head: true })
-        .eq("to_user_id", data.user.id)
-        .eq("seen", false);
-      setUnseenCount(count ?? 0);
+      try {
+        const { count } = await supabase
+          .from("emoji_reactions")
+          .select("*", { count: "exact", head: true })
+          .eq("to_user_id", data.user.id)
+          .eq("seen", false);
+        setUnseenCount(count ?? 0);
+      } catch {
+        // Table doesn't exist yet
+      }
     });
 
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {

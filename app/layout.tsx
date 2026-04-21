@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Lexend, Manrope } from "next/font/google";
+import { Lexend, Manrope, Epilogue } from "next/font/google";
 import "./globals.css";
 import { PlayerProvider } from "../lib/player-context";
 import { LanguageProvider } from "../lib/language-context";
@@ -8,7 +8,6 @@ import MiniPlayer from "./components/MiniPlayer";
 import PlayerSpacer from "./components/PlayerSpacer";
 import EmojiReactionToast from "./components/EmojiReactionToast";
 
-// Lexend — DESIGN.md headline font. All uppercase editorial titles.
 const lexend = Lexend({
   subsets: ["latin"],
   weight: ["400", "700", "800", "900"],
@@ -16,10 +15,18 @@ const lexend = Lexend({
   display: "swap",
 });
 
+// Epilogue — the new Velvet Hour headline font
+const epilogue = Epilogue({
+  subsets: ["latin"],
+  weight: ["700", "800", "900"],
+  variable: "--font-epilogue",
+  display: "swap",
+});
+
 // Manrope — DESIGN.md body font. Descriptions, labels, metadata.
 const manrope = Manrope({
   subsets: ["latin"],
-  weight: ["300", "400", "600", "700", "800"],
+  weight: ["300", "400", "500", "600", "700", "800"],
   variable: "--font-manrope",
   display: "swap",
 });
@@ -114,9 +121,18 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${lexend.variable} ${manrope.variable}`}
+      className={`${lexend.variable} ${manrope.variable} ${epilogue.variable} dark`}
     >
-      <body className="bg-site-bg text-text-primary antialiased font-sans">
+      <head>
+        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+        <style dangerouslySetInnerHTML={{ __html: `
+          .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+          .hide-scrollbar::-webkit-scrollbar { display: none; }
+          .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+          .text-glow-primary { text-shadow: 0 0 12px rgba(255, 65, 142, 0.4); }
+        `}} />
+      </head>
+      <body className="bg-background text-on-background antialiased font-body">
         {/* LanguageProvider manages the active language and RTL direction */}
         <LanguageProvider>
           {/* PresenceProvider tracks who is meditating and handles emoji reactions */}

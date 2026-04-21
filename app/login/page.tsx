@@ -46,9 +46,9 @@ export default function LoginPage() {
     // Login successful — update last_active_at (fire and forget)
     fetch("/api/user/ping", { method: "POST" }).catch(() => {});
 
-    // Send to the ?next= redirect path, or welcome page if none
+    // Send to the ?next= redirect path, or home page if none
     const params = new URLSearchParams(window.location.search);
-    const next = params.get("next") || "/welcome";
+    const next = params.get("next") || "/home";
     router.push(next);
     router.refresh();
   }

@@ -26,13 +26,11 @@ export async function createPresignedUploadUrl(
     ContentType: contentType,
   });
 
-  // Generate presigned URL then rebuild it with public domain
-  // (can't use public domain directly since SDK needs private endpoint for auth)
   const presignedUrl = await getSignedUrl(r2, command, { expiresIn });
 
-  // Extract the query params and path
-  const url = new URL(presignedUrl);
-  return new URL(url.pathname + url.search, PUBLIC_R2_URL).toString();
+  // Use the actual S3 presigned URL. Do NOT replace with the public dev URL.
+  // The public URL only supports GET requests, not S3 signature-v4 PUT requests.
+  return presignedUrl;
 }
 
 export async function deleteR2Object(key: string): Promise<void> {

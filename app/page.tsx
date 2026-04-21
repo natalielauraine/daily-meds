@@ -94,7 +94,11 @@ export default function Home() {
 
     const supabase = createClient();
     supabase.auth.getUser().then(({ data }) => {
-      setIsLoggedIn(!!data.user);
+      if (data.user) {
+        router.replace("/home");
+      } else {
+        setIsLoggedIn(false);
+      }
     });
   }, [router]);
 

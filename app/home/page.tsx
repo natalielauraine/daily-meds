@@ -1,63 +1,76 @@
 "use client";
 
-// /home — the logged-in homepage.
-// Shown after login/signup. Redirects to /login if not authenticated.
-
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import dynamic from "next/dynamic";
-import Logo from "../components/Logo";
 import { createClient } from "../../lib/supabase-browser";
 import type { User } from "@supabase/supabase-js";
-
-const CardCarousel = dynamic(
-  () => import("@/components/ui/card-carousel-wrapper"),
-  { ssr: false }
-);
-
-const PINK_ORANGE = "linear-gradient(135deg, #ff41b3 0%, #ec723d 100%)";
-const LIME = "#aaee20";
+import Navbar from "../components/Navbar";
 
 // ── DATA ─────────────────────────────────────────────────────────────────────
 
-const TRENDING = [
-  { title: "Hungover", duration: "20 min", tag: "Essential", gradient: "linear-gradient(160deg, #2a0800 0%, #ec723d 100%)", locked: true },
-  { title: "Anxious", duration: "18 min", tag: "High Intensity", gradient: "linear-gradient(160deg, #2a0018 0%, #ff41b3 100%)", locked: true },
-  { title: "Guilty", duration: "15 min", tag: "Deep Dive", gradient: "linear-gradient(160deg, #1a1000 0%, #f4b21d 100%)", locked: true },
-  { title: "Daily Ritual", duration: "10 min", tag: "Morning", gradient: "linear-gradient(160deg, #001800 0%, #aaee20 100%)", locked: true },
-  { title: "Snuggle Down", duration: "45 min", tag: "Sleep", gradient: "linear-gradient(160deg, #00050f 0%, #3b82f6 100%)", locked: true },
-  { title: "Heartbroken", duration: "22 min", tag: "Emotional", gradient: "linear-gradient(160deg, #200010 0%, #ff41b3 100%)", locked: true },
+const TRENDING_NOW = [
+  { 
+    title: "Shadow Work", 
+    duration: "12 min", 
+    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDkdN3RtOiHB1BxqUv8fNGfHz0aQZpd_k9IRhgyG8bgKylf32d0vJletgLN9U7xdxj-_PzToX2P3-3OtAOnOK9ZjUkmk9L2bA772y-CRvHwXjSLzdE70e7Jw7zUkOMf82j-7TVfehHRM-u1zFpkRILX8MZ_ZVFdHOix7xoAy7LAvZH7x8tqiT_0HQkqVOzqrdVQqdXlQaCCHOSbxsOImxh-XPCl943O6FoAHjqqQoMT9oRpwuU19rqFxDnlu2X03ZW-TrARAznq2w" 
+  },
+  { 
+    title: "Digital Detox", 
+    duration: "18 min", 
+    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDXhC0O4LuG0dclLgQaXaiOmtVWOiuMwvjV0QZECyVFgXz_xW6IABi7uaivdibl1m7SgYAiMynAu0s7hKJbLlXGSzKE35qG06_G9OdDuaukiiWW1ylEe6dYHqaePcOoVi8IcqPUr8XSnNRtNnfYH4fmhahMGRUqglqZtunson4ovD8S_2X4tXsDZSXE4lk9S702IFfpICDN_XC1BgwzXl-1ZvL-eCPNtXQl7da2SOmXzrOmQV9vS2AmfRLgrlAeee2-0Z373KAr2A" 
+  },
+  { 
+    title: "Electric Pulse", 
+    duration: "08 min", 
+    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBHxdZ5VzNAibfYpGF1VO6U1g0DQSKdE99IRwdJA5V7FLkvjPxXCxPR3wXSh7JuveH5peyG2tP_kZCg4GwINED3YZMhWs8wUJahKQgvURW0oW7Rb6hOGW8CQ6Iw6ucDbsV6Au0-bkcewsBrz8bYrusKbCeO79GlIRFOJCXQK9d0Dzt0Ai-5XI49W4RFa9rmc76QpVNFe5a6bBLaLiiQj4n-Baguu7YQqDFJrATuVc9l7TtJvL2HRGHfyLtLjDMA0O7eSN_QFD1a_g" 
+  },
+  { 
+    title: "Core Resonance", 
+    duration: "22 min", 
+    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBrZvXNMCDH348UxyEayCTvJ8FC6rDWLN4H0C0DSdvNN4kDgUUQjZsn-DNvK3tUD1yw4ukEbZVeAoRm8cLp8_9hhagPDuRBxdqzoUzAm7YRLXhpz7Cp5AVX1Ct-EZtpKEecyZ7MXsyl1Pzm-G05Lwde59XPHsfUzxnUoyKnQgbAL161fG3CwywTSYuN4vsAGh4tt031eqIRY2_FWtOe0LdxQZY9EW3s97E50K6VkcvPJrFR506QO1IG3IfQWChyyie5-vHCxwlb5g" 
+  },
 ];
 
-const TRENDING_IMAGES = [
-  { src: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/Exhausted.png", alt: "Exhausted" },
-  { src: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/Hacked.png", alt: "Hacked" },
-  { src: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/High%20AF.png", alt: "High AF" },
-  { src: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/Smoking.png", alt: "Smoking" },
-  { src: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/Working%20Latehausted.png", alt: "Working Late" },
+const DROPPING_SOON = [
+  {
+    title: "Guilty",
+    time: "Coming Friday",
+    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCMXiw-cheL9Dqx57KZrX1vk7u_ojbaq0per-l7HITRt5yzpJkOe2z_Xm_IQYzZBffU7djNZSeJuPQGlcivQymSxF4njvVtBFQJvdNfG-P56BluUDMfhp1l1rSkf3synvb2VCsow_aAd0rdr_H0ViNf3hKBnlzSJ1hAg1rT0LRGyUVogm__sM8A24J154eRyAKg3_NDKC8XYmeQl8bxUKpSPmaH2FBOZC6sXQ4Bev-gLf3h0SFAPOm190f1Wqy1w59oGNyf9R_Cow"
+  },
+  {
+    title: "No Money",
+    time: "In 4 Days",
+    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBIBM1cZOIjZfjsa8-dN-Qd-rZhMV7FJmJXuBoyVbZh3crb_Ez-TlMvrHIhf4M4brMATcTtF8p9Pj4GXKJDeWg9QQsVzhj_Y3z7EyZ8pjjFtf78EQ1P1DOKHfbT2W0F1Ob3crhnXiUJS2epFtDMxHMXgGg-JSMf5txJJ1biwjnsNUdRH5HKrIxHCeAr5-mQWD1zO4AI94rZPCM2QMPtL6K7ykcquu_2gjy0Up4NS6D6DfCLR-7iwWhIQ5KuTKhcwGZm31r7rNb3QA"
+  },
+  {
+    title: "Stressed",
+    time: "Next Week",
+    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCQzLBO_U9T5OVrHcEVwZt84ErowclO4VvsQyjwsTPwvPXWvCgDX_UhG9BK2OoM6JcdHOmcB0YLWhZJQmuW9axaCRxHTsKzqReZUpXDlPpTih1UV5T84xrOPpWpFIaXs7_qlQelXuHHfE4h7gNiyk4r-08YBjgixIa5RU0BqS2kLPqzmDpoyum4Fpw9dHcCorUDV3iJ_LPyhKNsKnKRm6hxZkKkP_WK3p6B9zlp3XYXzbpYLwUuLSWzYWY51cxCwjZLvlCaorHwbA"
+  },
+  {
+    title: "Sober",
+    time: "Stay Tuned",
+    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDKNpEY7Uchqb23uvgbJUy3QL_QADC2CCZbhcSlLVJndLxUIWxjpncvhEC3xL-6oJ_DAAEvEspDnRqX4SRX0hFplY1Np2iF2DvYlAIB6X_Sv7hLsTW7mhk-_EO4YUF5ANg55cAgumiC3LMSsYMJKHiX8rwXAs1rHHyU4pryuOI54A5vS_AyVCIU-U4Jl9HOIV9YCY9U41XDWNbI6h7n99Gp-TycSN_5R6EIRTK4NuIP7MCvnCVkUhHwU-sC0B2krRzp0x4ES0zasw"
+  }
 ];
 
-const FREE_SESSIONS = [
-  { title: "Snuggle Down", duration: "10 min", gradient: "linear-gradient(160deg, #00050f 0%, #3b82f6 100%)" },
-  { title: "Hungover", duration: "8 min", gradient: "linear-gradient(160deg, #2a0800 0%, #ec723d 100%)" },
-  { title: "Anxious", duration: "12 min", gradient: "linear-gradient(160deg, #2a0018 0%, #ff41b3 100%)" },
-  { title: "Just Breathe", duration: "6 min", gradient: "linear-gradient(160deg, #001800 0%, #aaee20 100%)" },
-];
-
-const MOODS = [
-  { emoji: "🌙", label: "Rest & Sleep" },
-  { emoji: "🌿", label: "Calm & Ground" },
-  { emoji: "🔥", label: "Energy & Activation" },
-  { emoji: "🚨", label: "Emergency Crisis" },
-  { emoji: "💛", label: "Emotional Support" },
-  { emoji: "🌊", label: "Release & Let Go" },
-  { emoji: "🧠", label: "Focus & Clarity" },
-  { emoji: "💫", label: "Connection & Expansion" },
-  { emoji: "🌅", label: "Morning Rituals" },
-  { emoji: "🤍", label: "Audio Hugs" },
-  { emoji: "🌀", label: "Breathwork Journeys" },
-  { emoji: "🌍", label: "Transmissions" },
+const RAISING_VIBES = [
+  {
+    title: "Electric Breath",
+    subtitle: "15 Min Upcycle",
+    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCaxicWg70H9NKSbHQa9IIobvbBiT00tHZy8H2j46n9ywkKd1zvtAPbT7xJbf8mdImdUrBUtiMmnzPO4t9SKnMV_9vZU8aT7iTaVsANCy6vWMJZhDjBm0udAZ9_-t35YxGqMgUpd9KjVCDhPS2EDIaw3mfErlIA53p5dY_X557mSwghUcycRT5-IAgnzrduDOqiQw_X_7WWfb5OsuxjjxgNfh9OgCr43LRVUaCklOziq6r6HFiRvCcd5lbaGnyI1YTyc8P2x5poEg"
+  },
+  {
+    title: "Sonic Lift",
+    subtitle: "High BPM Focus",
+    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDD9O9CA9gvFLweCP9z8VXKLVV_NgLCRwHjn8usvSxfFQR_Q4ABfN6KK6lOF0NoEE8K_WvMApXqrjf_h34hPXRKlj5MaPlVUun7xxflR2YBqD_g-QF4UGEPf89gGuWqdahyO57rkFSCgXNfKZyIJgzdAwrkZS4WXm4uk-lPurYfvA75MQ1s7sNCymIJL0BlKTEGscuGxJLoPlAYahsM-I6VDqrWW2w3fy5M_iWuGQoikdSkfe0_8-NvZFMbotnEAEWhiJyNCjCe-w"
+  },
+  {
+    title: "Clear Sky",
+    subtitle: "Mental Clarity",
+    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDjPXB1GsmMXNqAy2UHk1HHOus8wkEoBhjcD7oBhH6GCfUQmxQ7C3U_geqdeltbj8JdlVUjXgU-6CvWASRk2F071PO3hqsNIRofVMwAW8dOXtNNKIcKazEosx8IakVy3yy1URIdNCJZKohFH8yFytuIlVnlNWQqCzx75d-jQMbawoSdpqlppuujkNilUWM2MPEsgHoaO2TqtzSG2vTD1VYYSSuafdQZoK6zlBp7t5eIA9RFR7LDleETDO4hil7clfqrTSZl26AqjA"
+  }
 ];
 
 // ── COMPONENT ────────────────────────────────────────────────────────────────
@@ -65,370 +78,191 @@ const MOODS = [
 export default function LoggedInHome() {
   const router = useRouter();
   const supabase = createClient();
-
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [playing, setPlaying] = useState(false);
-  const [progress, setProgress] = useState(33);
-  const [search, setSearch] = useState("");
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [sessions, setSessions] = useState<any[]>([]);
 
   useEffect(() => {
-    // getSession() reads from cookies immediately — no network call.
-    // This is the correct pattern after an OAuth redirect where the session
-    // cookie is fresh and getUser()'s network call can race against hydration.
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
         setUser(session.user);
-        setLoading(false);
-        return;
+      } else {
+        router.push("/login");
       }
-      // No session in cookies — send to login
-      router.push("/login");
     });
 
-    // Also listen for auth state changes in case PKCE finishes after render
+    supabase.from('sessions')
+      .select('*')
+      .limit(6)
+      .order('created_at', { ascending: false })
+      .then(({ data }) => {
+        if (data) setSessions(data);
+      });
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.user) {
         setUser(session.user);
-        setLoading(false);
       }
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [router]);
 
-  // Fake play progress
-  useEffect(() => {
-    if (playing) {
-      intervalRef.current = setInterval(() => {
-        setProgress((p) => Math.min(p + 0.2, 100));
-      }, 200);
-    } else {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-    }
-    return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
-  }, [playing]);
-
-  function handleSearch(e: React.FormEvent) {
-    e.preventDefault();
-    if (search.trim()) router.push(`/library?q=${encodeURIComponent(search.trim())}`);
-    else router.push("/library");
-  }
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "#0e0e0e" }}>
-        <div className="w-6 h-6 rounded-full border-2 border-white/20 border-t-[#aaee20] animate-spin" />
-      </div>
-    );
-  }
-
-  const displayName = user?.user_metadata?.full_name?.split(" ")[0] || user?.email?.split("@")[0] || "Home";
+  const firstName = user?.user_metadata?.full_name?.split(" ")[0] || "there";
 
   return (
-    <div style={{ backgroundColor: "#0e0e0e", color: "#ffffff", fontFamily: "var(--font-manrope)", paddingBottom: "80px" }} className="font-body">
+    <>
+      <Navbar />
 
-      {/* ── HEADER ───────────────────────────────────────────────────────── */}
-      <header
-        className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-10 h-16"
-        style={{ backgroundColor: "rgba(14,14,14,0.85)", backdropFilter: "blur(20px)", borderBottom: "0.5px solid rgba(255,255,255,0.05)" }}
-      >
-        {/* Logo */}
-        <Logo href="/home" size="sm" />
-
-        {/* Nav */}
-        <nav className="hidden md:flex items-center gap-7">
-          {[
-            { label: "Home", href: "/home", active: true },
-            { label: "Library", href: "/library" },
-            { label: "Live", href: "/live" },
-            { label: "Breath", href: "/timer" },
-            { label: "Group Meds", href: "/rooms" },
-          ].map((item) => (
-            <Link
-              key={item.label}
-              href={item.href}
-              className="text-xs font-bold uppercase tracking-widest transition-colors"
-              style={{
-                color: item.active ? LIME : "rgba(255,255,255,0.45)",
-                fontFamily: "var(--font-lexend)",
-                borderBottom: item.active ? `1.5px solid ${LIME}` : "none",
-                paddingBottom: item.active ? "2px" : "0",
-              }}
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-
-        {/* Right */}
-        <div className="flex items-center gap-3">
-          <Link href="/library">
-            <button className="w-8 h-8 rounded-full flex items-center justify-center transition-colors hover:bg-white/10" style={{ color: LIME }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-              </svg>
-            </button>
-          </Link>
-          <Link href="/profile">
-            <div
-              className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white"
-              style={{ background: PINK_ORANGE }}
-            >
-              {displayName[0]?.toUpperCase()}
-            </div>
-          </Link>
-        </div>
-      </header>
-
-      {/* ── HERO ─────────────────────────────────────────────────────────── */}
-      <section
-        className="relative flex items-end pt-16 pb-16 px-6 md:px-12 overflow-hidden"
-        style={{ minHeight: "520px", background: "linear-gradient(160deg, #080808 0%, #0e0e0e 60%, #0a0500 100%)" }}
-      >
-        {/* Glow orbs */}
-        <div className="absolute top-0 right-0 w-96 h-96 rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, rgba(170,238,32,0.08) 0%, transparent 70%)", filter: "blur(60px)" }} />
-        <div className="absolute bottom-0 left-1/3 w-80 h-80 rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, rgba(255,65,179,0.07) 0%, transparent 70%)", filter: "blur(50px)" }} />
-        {/* Vignette */}
-        <div className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(to bottom, transparent 50%, #0e0e0e 100%)" }} />
-
-        <div className="relative z-10 max-w-2xl">
-          <h1
-            className="uppercase leading-none tracking-tighter mb-4"
-            style={{ fontFamily: "var(--font-lexend)", fontWeight: 900, fontSize: "clamp(3rem, 8vw, 6rem)", textShadow: `0 0 40px rgba(170,238,32,0.3)` }}
-          >
-            Welcome Home
+      <main className="pt-28 pb-32 px-6 max-w-7xl mx-auto space-y-16">
+        
+        {/* Welcome Header */}
+        <section className="space-y-4">
+          <h1 className="font-headline text-5xl md:text-7xl font-black text-on-background tracking-tighter uppercase leading-tight">
+            Welcome home, <span className="text-primary text-glow-primary">{firstName}</span>
           </h1>
-          <p className="text-lg mb-8" style={{ color: "#adaaaa", maxWidth: "480px" }}>
-            Feeling anxious? Listen to this frequency-tuned guidance designed to anchor your nervous system.
+          <p className="font-body text-xl text-on-surface-variant max-w-2xl">
+            How are you feeling today?&nbsp;
           </p>
+        </section>
 
-          {/* Glass audio player */}
-          <div
-            className="rounded-xl p-5 max-w-sm"
-            style={{ background: "rgba(14,14,14,0.7)", backdropFilter: "blur(20px)", border: "0.5px solid rgba(255,255,255,0.08)" }}
-          >
-            <div className="flex items-center gap-4 mb-4">
-              <button
-                onClick={() => setPlaying(!playing)}
-                className="w-14 h-14 rounded-full flex items-center justify-center shrink-0 transition-transform hover:scale-105 active:scale-95"
-                style={{ background: LIME }}
-              >
-                {playing ? (
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="#1a2600"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
-                ) : (
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="#1a2600"><path d="M8 5v14l11-7z"/></svg>
-                )}
-              </button>
-              <div className="flex-1 min-w-0">
-                <p className="text-[10px] font-bold uppercase tracking-widest mb-0.5" style={{ color: LIME }}>Live Transmission</p>
-                <p className="text-sm font-bold truncate">Anxiety Anchor Phase 01</p>
+        {/* Feeling Chips Row */}
+        <section className="space-y-4">
+          <div className="flex flex-wrap gap-3">
+            {["Anxious", "Flat", "Wired", "Sad", "Scattered"].map(mood => (
+              <Link key={mood} href={`/library?mood=${mood}`} className="px-8 py-3 rounded-full bg-surface-container-high hover:bg-primary-container hover:text-on-primary-container transition-all duration-300 font-headline font-bold uppercase tracking-wider text-sm">
+                {mood}
+              </Link>
+            ))}
+            <Link href="/library?mood=Overwhelmed" className="px-8 py-3 rounded-full bg-primary-container text-on-primary-container shadow-[0_0_20px_rgba(255,65,142,0.4)] font-headline font-bold uppercase tracking-wider text-sm transition-all">
+              Overwhelmed
+            </Link>
+          </div>
+        </section>
+
+        {/* Trending Right Now */}
+        <section className="space-y-6">
+          <div className="flex justify-between items-end">
+            <h2 className="font-headline text-2xl font-bold uppercase tracking-tight">Trending Right Now</h2>
+            <Link className="text-primary font-label text-xs font-bold uppercase tracking-widest hover:underline" href="/library">See All</Link>
+          </div>
+          <div className="flex gap-6 overflow-x-auto hide-scrollbar -mx-6 px-6 pb-4">
+            {sessions.map((item, i) => (
+              <div key={i} className="min-w-[280px] md:min-w-[320px] group cursor-pointer" onClick={() => router.push(`/session/${item.id}`)}>
+                <div className="relative aspect-[3/4] rounded-xl overflow-hidden mb-4" style={{ background: item.gradient || "#2A2A2A" }}>
+                  {item.image_url && <img className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src={item.image_url} alt={item.title} />}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60"></div>
+                  
+                  {/* Replaced empty image block with a subtle logo center focus if no image is present */}
+                  {!item.image_url && (
+                    <div className="absolute inset-0 flex items-center justify-center opacity-20">
+                      <svg width="40" height="40" viewBox="0 0 48 48" fill="none">
+                        <path d="M24 4C24 4 16 12 16 20C16 24.4 19.6 28 24 28C28.4 28 32 24.4 32 20C32 12 24 4 24 4Z" fill="white" opacity="0.95"/>
+                        <circle cx="24" cy="28" r="2" fill="white" opacity="0.9"/>
+                      </svg>
+                    </div>
+                  )}
+
+                  <div className="absolute bottom-4 left-4 right-4 flex justify-between items-center z-10">
+                    <span className="bg-black/40 backdrop-blur-md px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-tighter">{item.duration}</span>
+                    <span className="material-symbols-outlined text-white" style={{ fontVariationSettings: "'FILL' 1" }}>play_circle</span>
+                  </div>
+                </div>
+                <h3 className="font-headline font-bold uppercase text-lg group-hover:text-primary transition-colors">{item.title}</h3>
+              </div>
+            ))}
+            {/* Hint Card */}
+            <div className="min-w-[280px] md:min-w-[320px] opacity-40 group cursor-pointer">
+              <div className="relative aspect-[3/4] rounded-xl overflow-hidden mb-4">
+                <img className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDuWXeOg1DRLC_SEcgMWHtNaj6Fmm8oM5oRWWBpvYzRbsWev6ulR9bnRZT0lrq3SqSelJUKJ20L5BZGQGdbA8cggqt9_30Tp29wG1oB8dhGONiTjSqhGx6MH6iL7p6GaBMHWigbLPOVDsSivJgLW6bvUEiyovzzU3JcYTx0ntIJkGeV3recaqZcEsdIznkO3lK-144JumsLsGJmhdTBhJI9s3dB9zGldC6e8MkNQCj-wPj65dERX62gxb7pGvXjkPnRCJH6jtcssg" alt="Hint" />
               </div>
             </div>
-            {/* Progress bar */}
-            <div
-              className="relative h-1 rounded-full overflow-hidden cursor-pointer"
-              style={{ backgroundColor: "rgba(255,255,255,0.1)" }}
-              onClick={(e) => {
-                const rect = e.currentTarget.getBoundingClientRect();
-                setProgress(((e.clientX - rect.left) / rect.width) * 100);
-              }}
-            >
-              <div className="h-full rounded-full transition-all" style={{ width: `${progress}%`, backgroundColor: LIME }} />
-            </div>
-            <div className="flex justify-between mt-2 text-[10px]" style={{ color: "rgba(255,255,255,0.35)" }}>
-              <span>{Math.floor((progress / 100) * 24)}:{String(Math.floor(((progress / 100) * 24 * 60) % 60)).padStart(2, "0")}</span>
-              <span>24:00</span>
+          </div>
+        </section>
+
+        {/* Dropping Soon (The Teaser Reel) */}
+        <section className="space-y-6">
+          <div className="flex justify-between items-end">
+            <h2 className="font-headline text-2xl font-bold uppercase tracking-tight">Dropping Soon</h2>
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+              <span className="font-label text-[10px] font-extrabold uppercase text-primary tracking-[0.2em]">New Drops Weekly</span>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* ── TRENDING MEDS ────────────────────────────────────────────────── */}
-      <section className="py-12" style={{ backgroundColor: "#000000" }}>
-        <div className="px-6 md:px-12 mb-8 flex items-end justify-between">
-          <div>
-            <h2 className="text-2xl uppercase tracking-tighter font-black" style={{ fontFamily: "var(--font-lexend)" }}>
-              Trending Meds
-            </h2>
-            <p className="text-[10px] uppercase tracking-widest mt-1" style={{ color: "#adaaaa" }}>Premium Frequency Experiences</p>
-          </div>
-          <Link href="/library" className="text-xs font-bold uppercase tracking-widest hover:opacity-70 transition-opacity" style={{ color: LIME }}>
-            See All
-          </Link>
-        </div>
-        <CardCarousel
-          images={TRENDING_IMAGES}
-          autoplayDelay={2000}
-          showPagination={true}
-          showNavigation={true}
-        />
-      </section>
-
-      {/* ── SEARCH ───────────────────────────────────────────────────────── */}
-      <section className="py-16 px-6 md:px-12 flex flex-col items-center text-center" style={{ backgroundColor: "#0e0e0e" }}>
-        <h2
-          className="text-3xl md:text-4xl uppercase font-black tracking-tighter mb-8"
-          style={{ fontFamily: "var(--font-lexend)" }}
-        >
-          What are you looking for?
-        </h2>
-        <form onSubmit={handleSearch} className="w-full max-w-2xl relative">
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Deep sleep, focus, or emotional relief..."
-            className="w-full bg-transparent text-xl py-4 pr-12 focus:outline-none placeholder-white/20"
-            style={{
-              borderBottom: `1.5px solid rgba(255,255,255,0.15)`,
-              color: "#ffffff",
-              fontFamily: "var(--font-manrope)",
-              transition: "border-color 0.2s",
-            }}
-            onFocus={(e) => (e.target.style.borderBottomColor = LIME)}
-            onBlur={(e) => (e.target.style.borderBottomColor = "rgba(255,255,255,0.15)")}
-          />
-          <button type="submit" className="absolute right-0 bottom-3" style={{ color: LIME }}>
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-            </svg>
-          </button>
-        </form>
-      </section>
-
-      {/* ── ALWAYS FREE ──────────────────────────────────────────────────── */}
-      <section className="py-12" style={{ backgroundColor: "#141313" }}>
-        <div className="px-6 md:px-12 mb-6 flex items-end justify-between">
-          <div>
-            <h2 className="text-2xl uppercase tracking-tighter font-black" style={{ fontFamily: "var(--font-lexend)" }}>
-              Always Free
-            </h2>
-            <p className="text-[10px] uppercase tracking-widest mt-1" style={{ color: "#adaaaa" }}>Cinematic Basics for Everyone</p>
-          </div>
-          <Link href="/free" className="text-xs font-bold uppercase tracking-widest hover:opacity-70 transition-opacity" style={{ color: LIME }}>
-            See All
-          </Link>
-        </div>
-        <div className="flex gap-5 px-6 md:px-12 pb-2" style={{ overflowX: "auto", scrollSnapType: "x mandatory" }}>
-          {FREE_SESSIONS.map((item) => (
-            <Link
-              key={item.title}
-              href="/library"
-              className="group shrink-0"
-              style={{ minWidth: "min(340px, 85vw)", scrollSnapAlign: "start" }}
-            >
-              <div className="relative rounded-xl overflow-hidden" style={{ aspectRatio: "16/9", border: "0.5px solid rgba(255,255,255,0.07)" }}>
-                <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-105" style={{ background: item.gradient }} />
-                <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 60%)" }} />
-                <div className="absolute bottom-5 left-5">
-                  <div className="flex items-center gap-2 mb-1.5">
-                    <span
-                      className="text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest"
-                      style={{ backgroundColor: LIME, color: "#1a2600" }}
-                    >
-                      Free
-                    </span>
-                    <span className="text-[10px] uppercase" style={{ color: "rgba(255,255,255,0.5)" }}>{item.duration}</span>
+          <div className="flex gap-6 overflow-x-auto hide-scrollbar -mx-6 px-6 pb-4">
+            {DROPPING_SOON.map((item, i) => (
+              <div key={i} className="min-w-[280px] md:min-w-[320px] group relative cursor-not-allowed">
+                <div className="relative aspect-video rounded-xl overflow-hidden mb-4 grayscale hover:grayscale-0 transition-all duration-700">
+                  <img className="w-full h-full object-cover" src={item.image} alt={item.title} />
+                  <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center backdrop-blur-[2px]">
+                    <span className="bg-primary/20 text-primary border border-primary/30 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest backdrop-blur-md">{item.title}</span>
+                    <span className="mt-4 text-[10px] text-zinc-400 font-bold uppercase tracking-[0.3em]">{item.time}</span>
                   </div>
-                  <h3
-                    className="text-xl uppercase font-black tracking-tighter"
-                    style={{ fontFamily: "var(--font-lexend)" }}
-                  >
-                    {item.title}
-                  </h3>
                 </div>
               </div>
-            </Link>
-          ))}
-        </div>
-      </section>
+            ))}
+          </div>
+        </section>
 
-      {/* ── CHOOSE YOUR STATE ────────────────────────────────────────────── */}
-      <section className="py-16 px-6 md:px-12" style={{ backgroundColor: "#0e0e0e" }}>
-        <h2
-          className="text-2xl md:text-3xl uppercase font-black tracking-tighter mb-10 text-center"
-          style={{ fontFamily: "var(--font-lexend)" }}
-        >
-          Choose your state…
-        </h2>
-        <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 max-w-5xl mx-auto">
-          {MOODS.map((mood) => (
-            <Link
-              key={mood.label}
-              href={`/library?mood=${encodeURIComponent(mood.label)}`}
-              className="flex flex-col items-center justify-center gap-3 p-5 rounded-2xl transition-all hover:scale-105 active:scale-95 group"
-              style={{ backgroundColor: "#1a1919", border: "0.5px solid rgba(255,255,255,0.05)" }}
-            >
-              <span className="text-3xl">{mood.emoji}</span>
-              <span
-                className="text-[9px] font-bold uppercase tracking-widest text-center leading-tight group-hover:text-white transition-colors"
-                style={{ color: "#adaaaa" }}
-              >
-                {mood.label}
-              </span>
-            </Link>
-          ))}
-          <Link
-            href="/library"
-            className="flex flex-col items-center justify-center gap-3 p-5 rounded-2xl transition-all hover:scale-105"
-            style={{ backgroundColor: "#1a1919", border: "0.5px solid rgba(255,255,255,0.05)" }}
-          >
-            <span className="text-3xl">···</span>
-            <span className="text-[9px] font-bold uppercase tracking-widest text-center" style={{ color: LIME }}>
-              Explore All
-            </span>
-          </Link>
-        </div>
-      </section>
+        {/* Raising Your Vibe */}
+        <section className="space-y-6">
+          <h2 className="font-headline text-2xl font-bold uppercase tracking-tight">Raising Your Vibe</h2>
+          <div className="flex gap-6 overflow-x-auto hide-scrollbar -mx-6 px-6 pb-4">
+            {RAISING_VIBES.map((item, i) => (
+              <div key={i} className="min-w-[280px] md:min-w-[350px] group cursor-pointer">
+                <div className="relative aspect-square rounded-2xl overflow-hidden mb-4">
+                  <img className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" src={item.image} alt={item.title} />
+                  <div className="absolute inset-0 bg-gradient-to-tr from-secondary/40 via-transparent to-transparent"></div>
+                  <div className="absolute bottom-6 left-6">
+                    <span className="text-secondary font-headline text-3xl font-black uppercase tracking-tighter leading-none block mb-2">{item.title}</span>
+                    <span className="text-white/80 font-label text-xs font-bold uppercase tracking-widest">{item.subtitle}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
 
-      {/* ── FOOTER ───────────────────────────────────────────────────────── */}
-      <footer
-        className="py-10 px-6 md:px-12 flex flex-col md:flex-row items-center justify-between gap-4"
-        style={{ backgroundColor: "#010101", borderTop: "0.5px solid rgba(255,255,255,0.05)" }}
-      >
-        <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: LIME }}>
-          © {new Date().getFullYear()} The Daily Meds. Immersive Mindfulness.
-        </p>
-        <div className="flex gap-8">
-          <a
-            href="https://www.instagram.com/thedailymeds_/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-[10px] uppercase tracking-widest transition-colors hover:text-white"
-            style={{ color: "#adaaaa" }}
-          >
-            Instagram
-          </a>
-        </div>
-        <p className="text-lg font-black uppercase italic tracking-tight" style={{ color: LIME, fontFamily: "var(--font-lexend)" }}>
-          The Daily Meds
-        </p>
-      </footer>
+      </main>
 
-      {/* ── MOBILE BOTTOM NAV ────────────────────────────────────────────── */}
-      <nav
-        className="fixed bottom-0 left-0 right-0 z-50 flex md:hidden items-center justify-around px-2 py-3"
-        style={{ backgroundColor: "rgba(14,14,14,0.96)", backdropFilter: "blur(16px)", borderTop: "0.5px solid rgba(255,255,255,0.06)" }}
-      >
-        {[
-          { label: "Home", href: "/home", active: true, icon: <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/> },
-          { label: "Library", href: "/library", icon: <path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-8 12.5v-9l6 4.5-6 4.5z"/> },
-          { label: "Live", href: "/live", icon: <path d="M8 5v14l11-7z"/> },
-          { label: "Breathe", href: "/timer", icon: <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15H9V8h2v9zm4 0h-2V8h2v9z"/> },
-          { label: "Groups", href: "/rooms", icon: <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/> },
-        ].map((item) => (
-          <Link key={item.label} href={item.href} className="flex flex-col items-center gap-0.5">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill={item.active ? LIME : "rgba(255,255,255,0.35)"}>
-              {item.icon}
-            </svg>
-            <span className="text-[9px]" style={{ color: item.active ? LIME : "rgba(255,255,255,0.35)" }}>
-              {item.label}
-            </span>
-          </Link>
-        ))}
+      {/* BottomNavBar Shell */}
+      <nav className="md:hidden fixed bottom-0 left-0 w-full z-50 bg-[#0e0e0e]/90 backdrop-blur-3xl flex justify-around items-center px-4 pt-3 pb-6 shadow-[0_-10px_40px_rgba(0,0,0,0.5)] rounded-t-[2rem]">
+        <button className="flex flex-col items-center justify-center text-[#FF418E] drop-shadow-[0_0_8px_rgba(255,65,142,0.5)]">
+          <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>play_circle</span>
+          <span className="font-label text-[10px] font-bold tracking-wider uppercase mt-1">Listen</span>
+        </button>
+        <button className="flex flex-col items-center justify-center text-zinc-500 hover:text-zinc-200">
+          <span className="material-symbols-outlined">search</span>
+          <span className="font-label text-[10px] font-bold tracking-wider uppercase mt-1">Explore</span>
+        </button>
+        <button className="flex flex-col items-center justify-center text-zinc-500 hover:text-zinc-200">
+          <span className="material-symbols-outlined">subscriptions</span>
+          <span className="font-label text-[10px] font-bold tracking-wider uppercase mt-1">Library</span>
+        </button>
+        <Link href="/profile" className="flex flex-col items-center justify-center text-zinc-500 hover:text-zinc-200">
+          <span className="material-symbols-outlined">person</span>
+          <span className="font-label text-[10px] font-bold tracking-wider uppercase mt-1">Profile</span>
+        </Link>
       </nav>
-    </div>
+
+      {/* Global Music Player Overlay (Persistent Cinematic Element) */}
+      <div className="fixed bottom-10 left-1/2 -translate-x-1/2 w-[calc(100%-3rem)] max-w-xl z-40 md:bottom-8">
+        <div className="bg-surface-container/60 backdrop-blur-3xl border border-white/5 p-4 rounded-2xl flex items-center gap-4 shadow-2xl">
+          <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0">
+            <img className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBZgOEfqJg8ic8jgLOxBxDNY9KoBb1ISPVH9_ZfN30O-gZgEtn9eYGH1e2CJ5kUayGkXFS931TDOe9O_ozf9RQpJaTydARwyCMKQHKi2xvq6JOObUUtYn8DG-IwrgeMS77TgiNLuJWrEWC6CxOp7BQ-jSLr2QH_da_CbO8utlx_Wn2N1d5c_lCqi4qLs4lMKHUKa3LDxkloWhlfq1Qwds6vE48IKelkZaolmyWbUQhgBi7oYbkNk39aoDDBm0AfQmShDiKfBG9Ow" alt="Thumbnail" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <h4 className="font-headline text-sm font-bold uppercase truncate">Shadow Work</h4>
+            <p className="font-label text-[10px] text-zinc-400 uppercase tracking-widest">04:12 / 12:00</p>
+          </div>
+          <div className="flex items-center gap-4">
+            <button className="material-symbols-outlined text-zinc-400 hover:text-white">skip_previous</button>
+            <button className="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center">
+              <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>pause</span>
+            </button>
+            <button className="material-symbols-outlined text-zinc-400 hover:text-white">skip_next</button>
+          </div>
+        </div>
+      </div>
+    </>
   );
 }
