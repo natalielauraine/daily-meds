@@ -118,10 +118,14 @@ export async function POST(req: NextRequest) {
 
             userId = authUser.user.id;
 
+            const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://www.thedailymeds.com";
             // 3. Generate a secure magic link for password setup
             const { data: linkData, error: linkErr } = await supabase.auth.admin.generateLink({
               type: "recovery",
               email,
+              options: {
+                redirectTo: `${appUrl}/reset-password`,
+              },
             });
 
             if (linkData?.properties?.action_link) {
