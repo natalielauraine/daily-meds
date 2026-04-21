@@ -74,30 +74,25 @@ export async function POST(req: NextRequest) {
     };
 
     // ── £1 TRIAL → £9.99/mo AUDIO ─────────────────────────────────────────────
-    // Charges £1 upfront as a setup fee, starts a 7-day trial on the audio monthly
-    // price. After 7 days Stripe automatically charges £9.99/mo.
+    // Charges £1 upfront as a setup fee, starts a 14-day trial on the audio monthly
+    // price. After 14 days Stripe automatically charges £9.99/mo.
     if (isTrial) {
       const audioPriceId = process.env.NEXT_PUBLIC_STRIPE_AUDIO_PRICE_ID;
-      if (!audioPriceId) {
-        return NextResponse.json({ error: "Audio price ID not configured" }, { status: 500 });
+      const trialSetupPriceId = process.env.NEXT_PUBLIC_STRIPE_TRIAL_SETUP_PRICE_ID;
+      
+      if (!audioPriceId || !trialSetupPriceId) {
+        return NextResponse.json({ error: "Audio or Trial price ID not configured" }, { status: 500 });
       }
 
       const session = await stripe.checkout.sessions.create({
         ...sharedOptions,
         mode: "subscription",
-        line_items: [{ price: audioPriceId, quantity: 1 }],
-        // The £1 is billed immediately as a one-off setup fee
-        add_invoice_items: [
-          {
-            price_data: {
-              currency:     "gbp",
-              unit_amount:  100, // £1 in pence
-              product_data: { name: "7-Day Audio Library Trial" },
-            },
-          },
+        line_items: [
+          { price: trialSetupPriceId, quantity: 1 },
+          { price: audioPriceId, quantity: 1 }
         ],
         subscription_data: {
-          trial_period_days: 7,
+          trial_period_days: 14,
           // Cancel if no payment method when trial ends, rather than creating an unpaid invoice
           trial_settings: {
             end_behavior: { missing_payment_method: "cancel" },

@@ -17,6 +17,7 @@
  *   │ Plan        │ Name          │ Price      │ Type              │ access_level │
  *   ├─────────────┼───────────────┼────────────┼───────────────────┼──────────────┤
  *   │ Free        │ The Observer  │ £0         │ No Stripe product │ 0            │
+ *   │ Trial       │ Trial Setup   │ £1.00      │ One-time fee      │ 2 (then 1)   │
  *   │ Audio-Only  │ The Listener  │ £9.99/mo   │ Recurring monthly │ 1            │
  *   │ Full Access │ The Seeker    │ £19.99/mo  │ Recurring monthly │ 2            │
  *   │ Annual      │ The Dedicated │ £199.00/yr │ Recurring yearly  │ 2            │
@@ -26,7 +27,7 @@
  * Notes:
  *   - The Free plan (The Observer) needs no Stripe product. Users default to
  *     access_level=0 and subscription_status='free' in Supabase on signup.
- *   - The £1 trial is NOT a separate product — it's a £1 setup fee + 7-day
+ *   - The £1 trial uses a specific one-time Trial Setup Fee price + 14-day
  *     trial on the Audio subscription, handled in the checkout API route.
  *   - Each product gets metadata `dailymeds_plan_id` for idempotent lookups.
  */
@@ -75,6 +76,15 @@ const modeLabel = isTestMode ? "TEST MODE" : "LIVE MODE";
 // ── Plan Definitions ─────────────────────────────────────────────────────────
 
 const PLANS = [
+  {
+    planId: "trial_setup",
+    productName: "Daily Meds — Trial Setup Fee",
+    productDescription: "One-time £1 setup fee for the 14-day Audio Library trial. Converts to The Listener afterwards unless cancelled.",
+    priceAmount: 100,       // £1.00 in pence
+    currency: "gbp",
+    recurring: null,        // one-time payment
+    envVar: "NEXT_PUBLIC_STRIPE_TRIAL_SETUP_PRICE_ID",
+  },
   {
     planId: "audio",
     productName: "Daily Meds — The Listener (Audio Only)",
@@ -309,9 +319,9 @@ async function main() {
   console.log(`  ═══════════════════════════════════════════════════`);
 
   console.log(`\n  TRIAL NOTE:`);
-  console.log(`  The £1 trial is NOT a separate product.`);
-  console.log(`  It uses the Audio price (${results["NEXT_PUBLIC_STRIPE_AUDIO_PRICE_ID"]})`);
-  console.log(`  with a £1 setup fee + 7-day trial period.`);
+  console.log(`  The £1 trial uses its own explicit one-time Setup product.`);
+  console.log(`  It checks out with the Audio price (${results["NEXT_PUBLIC_STRIPE_AUDIO_PRICE_ID"]})`);
+  console.log(`  plus the £1 setup fee (${results["NEXT_PUBLIC_STRIPE_TRIAL_SETUP_PRICE_ID"]}) + 14-day trial period.`);
   console.log(`  This is handled in /api/stripe/create-checkout.\n`);
 }
 

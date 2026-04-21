@@ -28,6 +28,7 @@ import TrialEndingEmail from "../../../../emails/TrialEndingEmail";
 import TrialWelcomeEmail from "../../../../emails/TrialWelcomeEmail";
 import AudioWelcomeEmail from "../../../../emails/AudioWelcomeEmail";
 import PaymentFailedEmail from "../../../../emails/PaymentFailedEmail";
+import GuestWelcomeEmail from "../../../../emails/GuestWelcomeEmail";
 
 export const dynamic = "force-dynamic";
 
@@ -82,11 +83,68 @@ export async function POST(req: NextRequest) {
 
       // ── CHECKOUT COMPLETED ────────────────────────────────────────────────────
       // Fires when a user completes the Stripe Checkout flow.
-      // For trial checkouts: subscription is 'trialing', we set status to 'trial'.
-      // For direct purchases: we set the actual tier immediately.
       case "checkout.session.completed": {
         const session = event.data.object as Stripe.Checkout.Session;
-        const userId  = session.client_reference_id;
+        let userId  = session.client_reference_id;
+
+        // Auto-provision guest accounts! If no ID exists, create one via the admin API
+        if (!userId) {
+          const email = session.customer_details?.email || session.customer_email;
+          if (!email) {
+            console.error("Anonymous checkout failed: No email provided by Stripe");
+            break; 
+          }
+
+          // 1. Check if user already exists
+          const { data: existingUser } = await supabase
+            .from("users")
+            .select("id")
+            .eq("email", email)
+            .single();
+
+          if (existingUser?.id) {
+            userId = existingUser.id;
+          } else {
+            // 2. User doesn't exist — create them!
+            const { data: authUser, error: createErr } = await supabase.auth.admin.createUser({
+              email,
+              email_confirm: true,
+            });
+
+            if (createErr || !authUser.user) {
+              console.error("Failed to provision guest account:", createErr);
+              break;
+            }
+
+            userId = authUser.user.id;
+
+            // 3. Generate a secure magic link for password setup
+            const { data: linkData, error: linkErr } = await supabase.auth.admin.generateLink({
+              type: "recovery",
+              email,
+            });
+
+            if (linkData?.properties?.action_link) {
+              const firstName = email.split("@")[0].split(".")[0];
+              const html = await render(
+                GuestWelcomeEmail({ 
+                  firstName: firstName.charAt(0).toUpperCase() + firstName.slice(1), 
+                  magicLink: linkData.properties.action_link 
+                })
+              );
+
+              await resend.emails.send({
+                from:    `${FROM_NAME} <${FROM_EMAIL}>`,
+                to:      email,
+                subject: "Your Daily Meds Account is Ready",
+                html,
+              });
+            } else {
+              console.error("Failed to generate magic link:", linkErr);
+            }
+          }
+        }
+        
         if (!userId) break;
 
         // access_level is passed as metadata from create-checkout
@@ -149,9 +207,9 @@ export async function POST(req: NextRequest) {
           }
         }
 
-        // For trials, store when the trial ends so the day-5 cron can target them
+        // For trials, store when the trial ends so the day-13 cron can target them
         const trialEndsAt = tier === "trial"
-          ? new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
+          ? new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()
           : null;
 
         await supabase
@@ -195,8 +253,8 @@ export async function POST(req: NextRequest) {
                   })
                 : "soon — check the app for the latest schedule";
 
-              // trial ends 7 days from now
-              const trialEndDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+              // trial ends 14 days from now
+              const trialEndDate = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000)
                 .toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
 
               const firstName = (userData.name || userData.email.split("@")[0]).split(" ")[0];

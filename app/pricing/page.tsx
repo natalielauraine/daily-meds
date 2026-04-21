@@ -4,12 +4,13 @@
 // Layout: cinematic hero → comparison table → £1 trial banner → 3-col plan grid → founder section → tagline band → FAQ.
 // Matches the Stitch "Subscription Plans" design with the neon brand palette.
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import { createClient } from "../../lib/supabase-browser";
 
 // Maps each plan ID to its Stripe price ID from env vars.
 // 'trial' and 'lifetime' don't need a priceId here — the checkout route handles them directly.
@@ -215,7 +216,30 @@ function FaqItem({ q, a }: { q: string; a: string }) {
 
 export default function PricingPage() {
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+  const [showTrial, setShowTrial] = useState<boolean>(true); // default to showing it
   const router = useRouter();
+
+  // Check user state on mount to see if we should hide the trial banner
+  useEffect(() => {
+    async function checkState() {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return; // not logged in, keep showing trial
+
+      const { data: profile } = await supabase
+        .from("users")
+        .select("subscription_status, trial_ends_at")
+        .eq("id", user.id)
+        .single();
+        
+      if (profile) {
+        if (profile.subscription_status !== "free" || profile.trial_ends_at) {
+          setShowTrial(false);
+        }
+      }
+    }
+    checkState();
+  }, []);
 
   // Called when the user clicks a paid plan CTA.
   // Posts to the checkout API, then redirects to Stripe's hosted payment page.
@@ -360,6 +384,7 @@ export default function PricingPage() {
         </section>
 
         {/* ── £1 TRIAL BANNER ── */}
+        {showTrial && (
         <section className="px-4 sm:px-6 lg:px-8 pb-10">
           <div className="max-w-3xl mx-auto">
             <div
@@ -382,7 +407,7 @@ export default function PricingPage() {
                     className="inline-block text-[10px] px-3 py-1 rounded-full uppercase tracking-widest mb-3"
                     style={{ background: "linear-gradient(90deg, #ff41b3, #ec723d)", color: "#fff", fontFamily: "var(--font-space-grotesk)", fontWeight: 700 }}
                   >
-                    Try everything free for 7 days
+                    Try everything for 14 days
                   </span>
                   <h2
                     className="uppercase mb-1"
@@ -394,8 +419,8 @@ export default function PricingPage() {
                     className="text-sm max-w-md"
                     style={{ fontFamily: "var(--font-inter)", color: "rgba(255,255,255,0.4)", lineHeight: 1.6 }}
                   >
-                    Full audio library access — 200+ sessions, new drops every week — for 7 days.
-                    Then £9.99/mo. Cancel before day 7 and pay nothing more.
+                    Full audio library access — 200+ sessions, new drops every week — for 14 days.
+                    Then £9.99/mo. Cancel before day 14 and pay nothing more.
                   </p>
                 </div>
                 <button
@@ -418,6 +443,7 @@ export default function PricingPage() {
             </div>
           </div>
         </section>
+        )}
 
         {/* ── PRICING GRID ── */}
         <section className="px-4 sm:px-6 lg:px-8 pb-20">
