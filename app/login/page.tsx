@@ -4,7 +4,7 @@
 // Shows a centered dark card with the Daily Meds logo at the top.
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "../../lib/supabase-browser";
 
@@ -21,6 +21,13 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    // If the landing page bounced us here because of an expired OTP token hash from Supabase
+    if (window.location.search.includes("error=expired")) {
+      setError("Your secure link has expired or was already used. Please request a new one by clicking 'Forgot password?' or log in manually.");
+    }
+  }, []);
 
   // Handle email + password login
   async function handleEmailLogin(e: React.FormEvent) {

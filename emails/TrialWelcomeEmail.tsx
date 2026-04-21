@@ -160,7 +160,7 @@ export default function TrialWelcomeEmail({
         marginBottom: "24px",
       }}>
         <Text style={{ ...emailStyles.small, color: "rgba(255,255,255,0.4)", margin: "0", lineHeight: "1.7" }}>
-          <strong style={{ color: "rgba(255,255,255,0.55)" }}>Note:</strong> Your trial runs for 7 days.
+          <strong style={{ color: "rgba(255,255,255,0.55)" }}>Note:</strong> Your trial runs for 14 days.
           On <strong style={{ color: "rgba(255,255,255,0.55)" }}>{trialEndDate}</strong>, your subscription
           will continue at <strong style={{ color: "rgba(255,255,255,0.55)" }}>£19.99/mo</strong>.
           You can manage or change your plan at any time in your{" "}

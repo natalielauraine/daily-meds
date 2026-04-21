@@ -85,11 +85,18 @@ export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
+    // If the user's magic link was already consumed or expired, Supabase traps them here
+    // with a gnarly hash error. We gracefully intercept it and route to a clean login UI.
+    if (window.location.hash.includes("error_code=otp_expired")) {
+      router.replace("/login?error=expired");
+      return;
+    }
+
     const supabase = createClient();
     supabase.auth.getUser().then(({ data }) => {
       setIsLoggedIn(!!data.user);
     });
-  }, []);
+  }, [router]);
 
   async function handleTrial() {
     setTrialLoading(true);
@@ -219,7 +226,7 @@ export default function Home() {
                 className="inline-block text-[10px] px-3 py-1 rounded-full uppercase tracking-widest mb-3"
                 style={{ background: "linear-gradient(90deg, #ff41b3, #ec723d)", color: "#fff", fontFamily: "var(--font-lexend)", fontWeight: 700 }}
               >
-                Try everything free for 7 days
+                Try everything free for 14 days
               </span>
               <h2
                 className="uppercase mb-1"
@@ -228,7 +235,7 @@ export default function Home() {
                 Start your £1 trial
               </h2>
               <p className="text-sm" style={{ color: "rgba(255,255,255,0.4)", lineHeight: 1.6 }}>
-                Full audio library access for 7 days. Then £9.99/mo. Cancel before day 7 and pay nothing more.
+                Full audio library access for 14 days. Then £9.99/mo. Cancel before day 14 and pay nothing more.
               </p>
             </div>
             <button
@@ -417,7 +424,7 @@ export default function Home() {
             </span>
           </h2>
           <p style={{ color: "rgba(255,255,255,0.4)", lineHeight: 1.7, maxWidth: "480px" }}>
-            Full audio library access — 200+ sessions, new drops every week — for 7 days. Then £9.99/mo. Cancel before day 7 and pay nothing more.
+            Full audio library access — 200+ sessions, new drops every week — for 14 days. Then £9.99/mo. Cancel before day 7 and pay nothing more.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 items-center">
             <button
