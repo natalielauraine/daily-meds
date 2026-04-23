@@ -86,11 +86,22 @@ export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
+    // If the user's magic link was already consumed or expired, Supabase traps them here
+    // with a gnarly hash error. We gracefully intercept it and route to a clean login UI.
+    if (window.location.hash.includes("error_code=otp_expired")) {
+      router.replace("/login?error=expired");
+      return;
+    }
+
     const supabase = createClient();
     supabase.auth.getUser().then(({ data }) => {
-      setIsLoggedIn(!!data.user);
+      if (data.user) {
+        router.replace("/home");
+      } else {
+        setIsLoggedIn(false);
+      }
     });
-  }, []);
+  }, [router]);
 
   async function handleTrial() {
     setTrialLoading(true);
@@ -223,7 +234,7 @@ export default function Home() {
                 Start a 14 day trial £1
               </h2>
               <p className="text-sm" style={{ color: "rgba(255,255,255,0.4)", lineHeight: 1.6 }}>
-                Full audio library access for 7 days. Then £9.99/mo. Cancel before day 7 and pay nothing more.
+                Full audio library access for 14 days. Then £9.99/mo. Cancel before day 14 and pay nothing more.
               </p>
             </div>
             <button
@@ -437,7 +448,7 @@ export default function Home() {
             </span>
           </h2>
           <p style={{ color: "rgba(255,255,255,0.4)", lineHeight: 1.7, maxWidth: "480px" }}>
-            Full audio library access — 200+ sessions, new drops every week — for 7 days. Then £9.99/mo. Cancel before day 7 and pay nothing more.
+            Full audio library access — 200+ sessions, new drops every week — for 14 days. Then £9.99/mo. Cancel before day 7 and pay nothing more.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 items-center">
             <button

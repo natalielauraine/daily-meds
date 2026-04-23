@@ -2,10 +2,16 @@
 // Fetches the session from Supabase, falls back to MOCK_SESSIONS if not found.
 // Exports generateMetadata so search engines get a unique title and OG image per session.
 // The interactive player lives in SessionPageClient.tsx.
+//
+// SECURITY: For premium sessions, the audioUrl is stripped server-side when the
+// user is not authorised to play. This prevents the URL from appearing in the
+// page source / JS bundle.
 
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { createClient } from "@supabase/supabase-js";
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
 import { MOCK_SESSIONS, SessionData } from "../../../lib/sessions-data";
 import SessionPageClient from "./SessionPageClient";
 
@@ -78,6 +84,41 @@ async function fetchSessionFromSupabase(id: string): Promise<SessionData | null>
   }
 }
 
+// Check if the current user has a paid subscription.
+// Returns true if the user is logged in and has subscription_status !== 'free'.
+async function checkUserCanPlay(): Promise<boolean> {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!supabaseUrl || !supabaseAnon || !serviceKey) return false;
+
+  try {
+    const cookieStore = cookies();
+    const supabaseAuth = createServerClient(supabaseUrl, supabaseAnon, {
+      cookies: {
+        getAll() { return cookieStore.getAll(); },
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        setAll(_cookies) { /* read-only in server component */ },
+      },
+    });
+
+    const { data: { user } } = await supabaseAuth.auth.getUser();
+    if (!user) return false;
+
+    // Use service role to read subscription status (anon key may not have access)
+    const supabaseAdmin = createClient(supabaseUrl, serviceKey);
+    const { data: profile } = await supabaseAdmin
+      .from("users")
+      .select("subscription_status")
+      .eq("id", user.id)
+      .single();
+
+    return !!profile && profile.subscription_status !== "free";
+  } catch {
+    return false;
+  }
+}
+
 // Next.js calls this to generate the <title> and <meta> tags for each session URL.
 export async function generateMetadata(
   { params }: { params: { id: string } }
@@ -119,12 +160,24 @@ export async function generateMetadata(
 
 // Fetch the session server-side and pass it down to the client component.
 // SessionPageClient is wrapped in Suspense because it uses useSearchParams().
+//
+// SECURITY: If the session is premium and the user isn't a paid subscriber,
+// we strip the audioUrl before sending it to the client. This prevents the
+// actual audio file URL from appearing anywhere in the page source.
 export default async function SessionPage({ params }: { params: { id: string } }) {
   // Try Supabase first, fall back to mock data
-  const session =
+  let session =
     (await fetchSessionFromSupabase(params.id)) ??
     MOCK_SESSIONS.find((s) => s.id === params.id) ??
     null;
+
+  // Strip audio URL for premium sessions when user can't play
+  if (session && !session.isFree) {
+    const canPlay = await checkUserCanPlay();
+    if (!canPlay) {
+      session = { ...session, audioUrl: "", vimeoId: "" };
+    }
+  }
 
   return (
     <Suspense fallback={null}>
@@ -132,3 +185,6 @@ export default async function SessionPage({ params }: { params: { id: string } }
     </Suspense>
   );
 }
+
+
+

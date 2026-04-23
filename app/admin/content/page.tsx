@@ -216,41 +216,36 @@ export default function AdminContentPage() {
     setAudioProgress(0);
     setError("");
 
-    const presignRes = await fetch("/api/r2/presign", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ filename: file.name, contentType: file.type, folder: "audio" }),
-    });
-
-    if (!presignRes.ok) {
-      setAudioUploading(false);
-      setError("Could not get upload URL.");
-      return;
-    }
-
-    const { uploadUrl, publicUrl } = await presignRes.json();
-
     try {
-      await new Promise<void>((resolve, reject) => {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("folder", "audio");
+
+      // Use XHR for progress tracking, uploading to our own server proxy
+      const publicUrl = await new Promise<string>((resolve, reject) => {
         const xhr = new XMLHttpRequest();
         xhr.upload.addEventListener("progress", (e) => {
           if (e.lengthComputable) setAudioProgress(Math.round((e.loaded / e.total) * 100));
         });
-        xhr.addEventListener("load", () => (xhr.status < 300 ? resolve() : reject(new Error(`${xhr.status}`))));
+        xhr.addEventListener("load", () => {
+          if (xhr.status < 300) {
+            const data = JSON.parse(xhr.responseText);
+            resolve(data.publicUrl);
+          } else {
+            reject(new Error(`Server error ${xhr.status}`));
+          }
+        });
         xhr.addEventListener("error", () => reject(new Error("Network error")));
-        xhr.open("PUT", uploadUrl);
-        xhr.setRequestHeader("Content-Type", file.type);
-        xhr.send(file);
+        xhr.open("POST", "/api/r2/upload");
+        xhr.send(formData);
       });
+
+      setForm((prev) => ({ ...prev, audio_url: publicUrl }));
+      setUploadedFile({ name: file.name, size: file.size });
     } catch (err: unknown) {
-      setAudioUploading(false);
       setAudioProgress(0);
       setError("Upload failed: " + (err instanceof Error ? err.message : "unknown error"));
-      return;
     }
-
-    setForm((prev) => ({ ...prev, audio_url: publicUrl }));
-    setUploadedFile({ name: file.name, size: file.size });
     setAudioUploading(false);
   }
 
@@ -271,41 +266,35 @@ export default function AdminContentPage() {
     setAudioProgress(0);
     setError("");
 
-    const presignRes = await fetch("/api/r2/presign", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ filename: file.name, contentType: file.type, folder: "images" }),
-    });
-
-    if (!presignRes.ok) {
-      setAudioUploading(false);
-      setError("Could not get upload URL.");
-      return;
-    }
-
-    const { uploadUrl, publicUrl } = await presignRes.json();
-
     try {
-      await new Promise<void>((resolve, reject) => {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("folder", "images");
+
+      const publicUrl = await new Promise<string>((resolve, reject) => {
         const xhr = new XMLHttpRequest();
         xhr.upload.addEventListener("progress", (e) => {
           if (e.lengthComputable) setAudioProgress(Math.round((e.loaded / e.total) * 100));
         });
-        xhr.addEventListener("load", () => (xhr.status < 300 ? resolve() : reject(new Error(`${xhr.status}`))));
+        xhr.addEventListener("load", () => {
+          if (xhr.status < 300) {
+            const data = JSON.parse(xhr.responseText);
+            resolve(data.publicUrl);
+          } else {
+            reject(new Error(`Server error ${xhr.status}`));
+          }
+        });
         xhr.addEventListener("error", () => reject(new Error("Network error")));
-        xhr.open("PUT", uploadUrl);
-        xhr.setRequestHeader("Content-Type", file.type);
-        xhr.send(file);
+        xhr.open("POST", "/api/r2/upload");
+        xhr.send(formData);
       });
+
+      setForm((prev) => ({ ...prev, audio_url: publicUrl }));
+      setUploadedFile({ name: file.name, size: file.size });
     } catch (err: unknown) {
-      setAudioUploading(false);
       setAudioProgress(0);
       setError("Upload failed: " + (err instanceof Error ? err.message : "unknown error"));
-      return;
     }
-
-    setForm((prev) => ({ ...prev, audio_url: publicUrl }));
-    setUploadedFile({ name: file.name, size: file.size });
     setAudioUploading(false);
   }
 
@@ -340,20 +329,9 @@ export default function AdminContentPage() {
         f.id === item.id ? { ...f, status: "uploading" } : f
       ));
 
-      const presignRes = await fetch("/api/r2/presign", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ filename: item.file.name, contentType: item.file.type, folder: "audio" }),
-      });
-
-      if (!presignRes.ok) {
-        setBulkFiles((prev) => prev.map((f) =>
-          f.id === item.id ? { ...f, status: "error", progress: 0 } : f
-        ));
-        continue;
-      }
-
-      const { uploadUrl, publicUrl } = await presignRes.json();
+      const formData = new FormData();
+      formData.append("file", item.file);
+      formData.append("folder", "audio");
 
       const interval = setInterval(() => {
         setBulkFiles((prev) => prev.map((f) =>
@@ -361,15 +339,24 @@ export default function AdminContentPage() {
         ));
       }, 200);
 
-      const uploadRes = await fetch(uploadUrl, {
-        method: "PUT",
-        body: item.file,
-        headers: { "Content-Type": item.file.type },
-      });
+      let publicUrl: string;
+      try {
+        const uploadRes = await fetch("/api/r2/upload", {
+          method: "POST",
+          body: formData,
+        });
+        clearInterval(interval);
 
-      clearInterval(interval);
-
-      if (!uploadRes.ok) {
+        if (!uploadRes.ok) {
+          setBulkFiles((prev) => prev.map((f) =>
+            f.id === item.id ? { ...f, status: "error", progress: 0 } : f
+          ));
+          continue;
+        }
+        const data = await uploadRes.json();
+        publicUrl = data.publicUrl;
+      } catch {
+        clearInterval(interval);
         setBulkFiles((prev) => prev.map((f) =>
           f.id === item.id ? { ...f, status: "error", progress: 0 } : f
         ));
@@ -380,10 +367,10 @@ export default function AdminContentPage() {
         f.id === item.id ? { ...f, progress: 100 } : f
       ));
 
-      await supabase.from("sessions").insert({
+      const { error: insertErr } = await supabase.from("sessions").insert({
         title:         item.title,
         description:   "",
-        duration:      item.duration,
+        duration:      parseInt(item.duration) || 10,
         type:          "Guided Meditation",
         mood_category: item.mood_category,
         media_type:    "audio",
@@ -392,6 +379,14 @@ export default function AdminContentPage() {
         gradient:      MOOD_GRADIENTS[item.mood_category] || GRADIENTS[0].value,
         status:        "published",
       });
+
+      if (insertErr) {
+        console.error("Session insert error:", insertErr.message, insertErr.details, insertErr.hint);
+        setBulkFiles((prev) => prev.map((f) =>
+          f.id === item.id ? { ...f, status: "error", progress: 0 } : f
+        ));
+        continue;
+      }
 
       setBulkFiles((prev) => prev.map((f) =>
         f.id === item.id ? { ...f, status: "done" } : f
@@ -414,7 +409,7 @@ export default function AdminContentPage() {
     const payload = {
       title:         form.title.trim(),
       description:   form.description.trim(),
-      duration:      form.duration,
+      duration:      parseInt(form.duration) || 10,
       type:          form.type,
       mood_category: form.mood_category,
       media_type:    form.media_type,

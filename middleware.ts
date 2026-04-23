@@ -71,10 +71,14 @@ export async function middleware(request: NextRequest) {
     return redirectResponse;
   }
 
-  // Only Natalie can access /admin routes
-  const adminEmail = process.env.ADMIN_EMAIL;
+  // Only allowed admins can access /admin routes
+  const adminEmails = (process.env.ADMIN_EMAIL || "")
+    .split(",")
+    .map(e => e.trim().toLowerCase())
+    .filter(Boolean);
+    
   const isAdminPath = request.nextUrl.pathname.startsWith("/admin");
-  if (isAdminPath && user && adminEmail && user.email !== adminEmail) {
+  if (isAdminPath && user && adminEmails.length > 0 && !adminEmails.includes(user.email?.toLowerCase() || "")) {
     return NextResponse.redirect(new URL("/", request.url));
   }
 

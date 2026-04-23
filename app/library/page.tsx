@@ -179,6 +179,18 @@ export default function LibraryPage() {
   const [activeDuration, setActiveDuration] = useState("all");
   const [activeType, setActiveType] = useState("all");
 
+  // On mount, check if there's a ?mood= query param from the homepage feeling chips
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const qMood = params.get("mood");
+    if (qMood) {
+      // Find a matching mood from the categories to handle exact casing, or just set it
+      const match = MOOD_CATEGORIES.find(m => m.toLowerCase() === qMood.toLowerCase());
+      if (match) setActiveMood(match);
+      else setActiveMood(qMood);
+    }
+  }, []);
+
   // Load sessions and subscription status in parallel on mount
   useEffect(() => {
     async function loadData() {

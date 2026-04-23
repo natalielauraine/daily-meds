@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://thedailymeds.com";
 
-  // Find users whose last session was 3–7 days ago (don't spam people who've been
+  // Find users whose last session was 3–14 days ago (don't spam people who've been
   // away for weeks — they've made their choice)
   const threeDaysAgo = new Date();
   threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);

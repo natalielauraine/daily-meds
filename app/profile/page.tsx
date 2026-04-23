@@ -270,7 +270,7 @@ export default function ProfilePage() {
 
   const PLAN_LABELS: Record<string, { label: string; color: string }> = {
     free:     { label: "Free Plan",            color: "rgba(255,255,255,0.4)" },
-    trial:    { label: "Trial · 7 days",        color: "#ff41b3" },
+    trial:    { label: "Trial · 14 days",        color: "#ff41b3" },
     audio:    { label: "Audio · £9.99/mo",      color: "#ff41b3" },
     monthly:  { label: "Monthly · £19.99/mo",   color: "#ff41b3" },
     annual:   { label: "Annual · £199.99/yr",   color: "#ec723d" },

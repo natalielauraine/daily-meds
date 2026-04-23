@@ -44,7 +44,14 @@ const nextConfig = {
       { protocol: "https", hostname: "lh3.googleusercontent.com" },
       // YouTube thumbnails (admin content page)
       { protocol: "https", hostname: "img.youtube.com" },
+      // R2 public domain (audio/image covers)
+      { protocol: "https", hostname: "pub-09df2e878efe41019b9524fea54e7197.r2.dev" },
     ],
+  },
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "100mb",
+    },
   },
 };
 
