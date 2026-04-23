@@ -34,7 +34,7 @@ export default function BetaPage() {
         backgroundColor: "#0a0f14",
         backgroundImage: "url('https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/Stressed.png')",
         backgroundSize: "cover",
-        backgroundPosition: "center",
+        backgroundPosition: "top center",
         fontFamily: "var(--font-manrope)",
       }}
     >
