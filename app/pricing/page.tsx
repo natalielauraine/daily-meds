@@ -357,18 +357,11 @@ export default function PricingPage() {
               />
               <div className="relative flex flex-col sm:flex-row items-center justify-between gap-6 p-7 sm:p-8">
                 <div className="text-center sm:text-left">
-                  {/* Badge */}
-                  <span
-                    className="inline-block text-[10px] px-3 py-1 rounded-full uppercase tracking-widest mb-3"
-                    style={{ background: "linear-gradient(90deg, #ff41b3, #ec723d)", color: "#fff", fontFamily: "var(--font-space-grotesk)", fontWeight: 700 }}
-                  >
-                    Try everything free for 7 days
-                  </span>
                   <h2
                     className="uppercase mb-1"
                     style={{ fontFamily: "var(--font-plus-jakarta)", fontWeight: 800, fontSize: "clamp(1.3rem, 3vw, 1.75rem)", color: "#E2E2E2", letterSpacing: "-0.01em" }}
                   >
-                    Start your £1 trial
+                    Start a 14 day trial £1
                   </h2>
                   <p
                     className="text-sm max-w-md"
@@ -392,7 +385,7 @@ export default function PricingPage() {
                     whiteSpace: "nowrap",
                   }}
                 >
-                  {loadingPlan === "trial" ? "Redirecting…" : "Start for £1"}
+                  {loadingPlan === "trial" ? "Redirecting…" : "Start a 14 day trial £1"}
                 </button>
               </div>
             </div>

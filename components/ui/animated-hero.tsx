@@ -89,7 +89,7 @@ function Hero() {
               className="text-sm md:text-base tracking-tight text-center"
               style={{ color: "rgba(255,255,255,0.55)", fontFamily: "var(--font-manrope)" }}
             >
-              Just £9.99 a month. Cancel anytime.
+              Starting from £9.99 a month. Cancel anytime.
             </p>
           </div>
 
@@ -104,7 +104,7 @@ function Hero() {
                 fontFamily: "var(--font-lexend)",
               }}
             >
-              Start free today <MoveRight className="w-4 h-4" />
+              Start Your Trial Today <MoveRight className="w-4 h-4" />
             </Link>
           </div>
 

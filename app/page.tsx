@@ -20,18 +20,24 @@ const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://thedailymeds.com";
 
 const TRENDING = [
   { title: "Hungover", badge: "Essential", gradient: "linear-gradient(160deg, #2a0800 0%, #ec723d 100%)", href: "/free", image: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/Exhausted.png" },
-  { title: "Anxious", badge: "High Intensity", gradient: "linear-gradient(160deg, #2a0018 0%, #ff41b3 100%)", href: "/free", image: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/Hacked.png" },
-  { title: "Guilty", badge: "Deep Dive", gradient: "linear-gradient(160deg, #1a1500 0%, #f4e71d 100%)", href: "/free", image: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/High%20AF.png" },
-  { title: "Daily Ritual", badge: "Morning", gradient: "linear-gradient(160deg, #0a1800 0%, #aaee20 100%)", href: "/free", image: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/Smoking.png" },
-  { title: "Snuggle Down", badge: "Sleep", gradient: "linear-gradient(160deg, #00050f 0%, #3b82f6 100%)", href: "/free", image: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/Working%20Latehausted.png" },
+  { title: "Digital Overwhelm", badge: "High Intensity", gradient: "linear-gradient(160deg, #2a0018 0%, #ff41b3 100%)", href: "/free", image: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/Hacked.png" },
+  { title: "High AF", badge: "Deep Dive", gradient: "linear-gradient(160deg, #1a1500 0%, #f4e71d 100%)", href: "/free", image: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/High%20AF.png" },
+  { title: "Working Late", badge: "Sleep", gradient: "linear-gradient(160deg, #00050f 0%, #3b82f6 100%)", href: "/free", image: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/Working%20Latehausted.png" },
 ];
 
 const GALLERY_ITEMS: GalleryItem[] = [
   { common: "Exhausted", binomial: "Guided Release · 20 min", photo: { url: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/Exhausted.png", text: "Exhausted session", by: "The Daily Meds" } },
-  { common: "Hacked", binomial: "Breathwork · 18 min", photo: { url: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/Hacked.png", text: "Hacked session", by: "The Daily Meds" } },
+  { common: "Digital Overwhelm", binomial: "Breathwork · 18 min", photo: { url: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/Hacked.png", text: "Digital Overwhelm session", by: "The Daily Meds" } },
   { common: "High AF", binomial: "Guided Meditation · 15 min", photo: { url: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/High%20AF.png", text: "High AF session", by: "The Daily Meds" } },
-  { common: "Smoking", binomial: "Morning Reset · 10 min", photo: { url: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/Smoking.png", text: "Smoking session", by: "The Daily Meds" } },
-  { common: "Working Late", binomial: "Sleep Audio · 45 min", photo: { url: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/Working%20Latehausted.png", text: "Working Late session", by: "The Daily Meds" } },
+  { common: "Stressed", binomial: "Morning Reset · 10 min", photo: { url: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/Smoking.png", text: "Stressed session", by: "The Daily Meds" } },
+  { common: "Overtime Again", binomial: "Sleep Audio · 45 min", photo: { url: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/Working%20Latehausted.png", text: "Overtime Again session", by: "The Daily Meds" } },
+];
+
+const NEXT_RELEASE = [
+  { title: "Guilty",    color: "#ff6a00", bg: "linear-gradient(160deg, #1a0800 0%, #3d1500 100%)" },
+  { title: "No Money",  color: "#e8dcc8", bg: "linear-gradient(160deg, #0f0c08 0%, #2a2010 100%)" },
+  { title: "Sober",     color: "#aaee20", bg: "linear-gradient(160deg, #081500 0%, #152800 100%)" },
+  { title: "Stressed",  color: "#d4a3ff", bg: "linear-gradient(160deg, #100a1a 0%, #1e0f30 100%)" },
 ];
 
 const FACE_REALITY = [
@@ -46,11 +52,6 @@ const REASONS = [
     icon: <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>,
     title: "Meditate with Friends",
     body: "Join live sessions and feel the collective energy of a community breathing as one.",
-  },
-  {
-    icon: <path d="M21 3H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h5v2h8v-2h5c1.1 0 1.99-.9 1.99-2L23 5c0-1.1-.9-2-2-2zm0 14H3V5h18v12z"/>,
-    title: "Screen Share to your TV",
-    body: "Turn your living room into a sanctuary. Support for AirPlay and Chromecast built-in.",
   },
   {
     icon: <path d="M4 6h18V4H4c-1.1 0-2 .9-2 2v11H0v3h14v-3H4V6zm19 2h-6c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h6c.55 0 1-.45 1-1V9c0-.55-.45-1-1-1zm-1 9h-4v-7h4v7z"/>,
@@ -215,17 +216,11 @@ export default function Home() {
           />
           <div className="relative flex flex-col sm:flex-row items-center justify-between gap-6 p-7 sm:p-8">
             <div className="text-center sm:text-left">
-              <span
-                className="inline-block text-[10px] px-3 py-1 rounded-full uppercase tracking-widest mb-3"
-                style={{ background: "linear-gradient(90deg, #ff41b3, #ec723d)", color: "#fff", fontFamily: "var(--font-lexend)", fontWeight: 700 }}
-              >
-                Try everything free for 7 days
-              </span>
               <h2
                 className="uppercase mb-1"
                 style={{ fontFamily: "var(--font-lexend)", fontWeight: 900, fontSize: "clamp(1.2rem, 3vw, 1.6rem)", color: "#E2E2E2" }}
               >
-                Start your £1 trial
+                Start a 14 day trial £1
               </h2>
               <p className="text-sm" style={{ color: "rgba(255,255,255,0.4)", lineHeight: 1.6 }}>
                 Full audio library access for 7 days. Then £9.99/mo. Cancel before day 7 and pay nothing more.
@@ -244,7 +239,7 @@ export default function Home() {
                 cursor: trialLoading ? "wait" : "pointer",
               }}
             >
-              {trialLoading ? "Redirecting…" : "Start for £1"}
+              {trialLoading ? "Redirecting…" : "Start a 14 day trial £1"}
             </button>
           </div>
         </div>
@@ -323,9 +318,34 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── CIRCULAR GALLERY ──────────────────────────────────────────── */}
-      <section style={{ backgroundColor: "#010101", height: "600px", overflow: "hidden" }}>
-        <CircularGallery items={GALLERY_ITEMS} radius={500} autoRotateSpeed={0.03} />
+      {/* ── NEXT RELEASE ──────────────────────────────────────────────── */}
+      <section className="py-12" style={{ backgroundColor: "#010101" }}>
+        <div className="px-6 md:px-12">
+          <h2
+            className="text-2xl uppercase tracking-widest mb-8"
+            style={{ fontFamily: "var(--font-lexend)", fontWeight: 900, color: "#ffffff" }}
+          >
+            Next Release
+          </h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {NEXT_RELEASE.map((item) => (
+              <div
+                key={item.title}
+                className="relative overflow-hidden rounded-xl"
+                style={{ aspectRatio: "16/9", background: item.bg, border: "0.5px solid rgba(255,255,255,0.08)" }}
+              >
+                <div className="absolute inset-0 flex items-end p-4">
+                  <span
+                    className="text-2xl md:text-3xl uppercase font-black leading-none"
+                    style={{ fontFamily: "var(--font-lexend)", color: item.color, textShadow: "0 2px 12px rgba(0,0,0,0.8)" }}
+                  >
+                    {item.title}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </section>
 
       {/* ── FACE REALITY ───────────────────────────────────────────────── */}
@@ -433,7 +453,7 @@ export default function Home() {
                 cursor: trialLoading ? "wait" : "pointer",
               }}
             >
-              {trialLoading ? "Redirecting…" : "Start for £1"}
+              {trialLoading ? "Redirecting…" : "Start a 14 day trial £1"}
             </button>
             <Link
               href="/free"
