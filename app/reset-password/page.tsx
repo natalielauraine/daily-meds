@@ -20,11 +20,10 @@ export default function ResetPasswordPage() {
   // auth callback. We just need to confirm a valid session exists before
   // allowing the form to be shown.
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session) {
+    supabase.auth.getUser().then(({ data, error }) => {
+      if (data.user && !error) {
         setSessionReady(true);
       } else {
-        // No session — the link may be expired or already used
         setError("This link has expired or has already been used. Please request a new one.");
       }
     });

@@ -46,14 +46,15 @@ function CallbackHandler() {
 
     // Password reset emails use token_hash + type=recovery
     if (tokenHash && type) {
-      supabase.auth.verifyOtp({ token_hash: tokenHash, type: type as "recovery" | "email" }).then(({ error }) => {
+      supabase.auth.verifyOtp({ token_hash: tokenHash, type: type as "recovery" | "email" }).then(({ data, error }) => {
         if (error) {
           console.error("Token verify error:", error.message);
-          router.replace("/login?error=auth");
+          router.replace("/login?error=expired");
           return;
         }
-        router.refresh();
-        router.replace(type === "recovery" ? "/reset-password" : next);
+        // Session is now set — go straight to the reset page
+        const destination = type === "recovery" ? "/reset-password" : next;
+        router.replace(destination);
       });
       return;
     }
