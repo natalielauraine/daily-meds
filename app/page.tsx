@@ -34,10 +34,10 @@ const GALLERY_ITEMS: GalleryItem[] = [
 ];
 
 const NEXT_RELEASE = [
-  { title: "Guilty",    color: "#ff6a00", bg: "linear-gradient(160deg, #1a0800 0%, #3d1500 100%)" },
-  { title: "No Money",  color: "#e8dcc8", bg: "linear-gradient(160deg, #0f0c08 0%, #2a2010 100%)" },
-  { title: "Sober",     color: "#aaee20", bg: "linear-gradient(160deg, #081500 0%, #152800 100%)" },
-  { title: "Stressed",  color: "#d4a3ff", bg: "linear-gradient(160deg, #100a1a 0%, #1e0f30 100%)" },
+  { title: "Guilty",    color: "#ff6a00", image: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/Guilty.png",     fallback: "linear-gradient(160deg, #1a0800 0%, #3d1500 100%)" },
+  { title: "No Money",  color: "#e8dcc8", image: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/No%20Money.png", fallback: "linear-gradient(160deg, #0f0c08 0%, #2a2010 100%)" },
+  { title: "Sober",     color: "#aaee20", image: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/Sober.png",      fallback: "linear-gradient(160deg, #081500 0%, #152800 100%)" },
+  { title: "Stressed",  color: "#d4a3ff", image: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/Smoking.png",    fallback: "linear-gradient(160deg, #100a1a 0%, #1e0f30 100%)" },
 ];
 
 const FACE_REALITY = [
@@ -343,8 +343,17 @@ export default function Home() {
               <div
                 key={item.title}
                 className="relative overflow-hidden rounded-xl"
-                style={{ aspectRatio: "16/9", background: item.bg, border: "0.5px solid rgba(255,255,255,0.08)" }}
+                style={{ aspectRatio: "16/9", background: item.fallback, border: "0.5px solid rgba(255,255,255,0.08)" }}
               >
+                <Image
+                  src={item.image}
+                  alt={item.title}
+                  fill
+                  unoptimized
+                  className="object-cover"
+                  onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                />
+                <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%)" }} />
                 <div className="absolute inset-0 flex items-end p-4">
                   <span
                     className="text-2xl md:text-3xl uppercase font-black leading-none"
