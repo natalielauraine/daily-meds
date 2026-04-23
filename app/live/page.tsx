@@ -4,54 +4,16 @@ import Logo from "../components/Logo";
 import { createClient } from "../../lib/supabase-server";
 
 
-const PODCASTS = [
-  {
-    tag: "Expert Interview",
-    title: "Sound Healing with Robert",
-    img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=340&fit=crop&q=80",
-  },
-  {
-    tag: "Wellness Expert",
-    title: "The Physics of Frequency",
-    img: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=600&h=340&fit=crop&q=80",
-  },
-  {
-    tag: "Community Story",
-    title: "Breath as a Bridge",
-    img: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=340&fit=crop&q=80",
-  },
-];
-
 const EVENT_TYPES = [
   {
     title: "Live Audio Hugs",
     desc: "Live meditations with founder Natalie",
-    img: "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=500&h=700&fit=crop&q=80",
-    icon: (
-      <svg width="40" height="40" viewBox="0 0 24 24" fill="#aaee20">
-        <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
-      </svg>
-    ),
+    img: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/audio%20hug%20thum.png",
   },
   {
     title: "Live Alchemy Rewire",
     desc: "Breathwork with Natalie & Friends",
-    img: "https://images.unsplash.com/photo-1474223960279-c596b5ac7c0c?w=500&h=700&fit=crop&q=80",
-    icon: (
-      <svg width="40" height="40" viewBox="0 0 24 24" fill="#ff41b3">
-        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/>
-      </svg>
-    ),
-  },
-  {
-    title: "Live Podcasts",
-    desc: "Expert network interviews with Natalie",
-    img: "https://images.unsplash.com/photo-1478737270197-578ade936942?w=500&h=700&fit=crop&q=80",
-    icon: (
-      <svg width="40" height="40" viewBox="0 0 24 24" fill="#ec723d">
-        <path d="M12 15c1.66 0 2.99-1.34 2.99-3L15 6c0-1.66-1.34-3-3-3S9 4.34 9 6v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 15 6.7 12H5c0 3.42 2.72 6.23 6 6.72V22h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/>
-      </svg>
-    ),
+    img: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/alchemy%20rewire%20thum.png",
   },
 ];
 
@@ -150,26 +112,21 @@ export default async function LiveLandingPage() {
         >
           Live Event Types
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl">
           {EVENT_TYPES.map((event) => (
             <Link href={isLoggedIn ? "/live" : "/signup"} key={event.title} className="group cursor-pointer">
               <div
                 className="relative overflow-hidden rounded-xl mb-6"
-                style={{ aspectRatio: "3/4" }}
+                style={{ aspectRatio: "16/9" }}
               >
                 <Image
                   src={event.img}
                   alt={event.title}
                   fill
-                  sizes="(max-width:768px) 100vw, 400px"
-                  className="object-cover transition-transform duration-700 group-hover:scale-110"
+                  unoptimized
+                  sizes="(max-width:768px) 100vw, 500px"
+                  className="object-cover transition-transform duration-700 group-hover:scale-105"
                 />
-                <div className="absolute inset-0" style={{ background: "rgba(0,0,0,0.3)" }} />
-                <div className="absolute inset-0 group-hover:opacity-0 transition-opacity duration-300" style={{ background: "rgba(0,0,0,0.2)" }} />
-                {/* Icon overlay */}
-                <div className="absolute top-4 left-4 w-12 h-12 rounded-full flex items-center justify-center" style={{ background: "rgba(0,0,0,0.5)", backdropFilter: "blur(8px)" }}>
-                  {event.icon}
-                </div>
               </div>
               <h3
                 className="text-xl uppercase mb-2 group-hover:text-[#aaee20] transition-colors"
@@ -313,38 +270,6 @@ export default async function LiveLandingPage() {
         </div>
       </section>
 
-      {/* ── PREVIOUS PODCASTS ──────────────────────────────────────────── */}
-      <section className="py-24 px-6 md:px-12 lg:px-24 max-w-[1440px] mx-auto">
-        <div className="flex items-end justify-between mb-12">
-          <h2 className="text-3xl uppercase tracking-tight" style={{ fontFamily: "var(--font-lexend)", fontWeight: 700 }}>
-            Watch Previous Podcasts
-          </h2>
-          <Link href="/signup" className="text-sm font-bold uppercase tracking-widest hover:underline" style={{ color: "#aaee20", fontFamily: "var(--font-lexend)" }}>
-            View All
-          </Link>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {PODCASTS.map((pod) => (
-            <Link href={isLoggedIn ? "/library" : "/signup"} key={pod.title} className="group cursor-pointer space-y-4">
-              <div className="aspect-video overflow-hidden rounded-xl">
-                <Image
-                  src={pod.img}
-                  alt={pod.title}
-                  fill
-                  sizes="(max-width:768px) 100vw, 400px"
-                  className="object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-              </div>
-              <span className="text-xs font-bold uppercase tracking-widest" style={{ color: "#aaee20", fontFamily: "var(--font-lexend)" }}>
-                {pod.tag}
-              </span>
-              <h3 className="text-lg uppercase font-bold group-hover:text-[#aaee20] transition-colors" style={{ fontFamily: "var(--font-lexend)" }}>
-                {pod.title}
-              </h3>
-            </Link>
-          ))}
-        </div>
-      </section>
 
       {/* ── UPCOMING SESSIONS ──────────────────────────────────────────── */}
       <section className="py-24 px-6 md:px-12 lg:px-24 max-w-[1000px] mx-auto text-center">
