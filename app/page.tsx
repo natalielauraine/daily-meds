@@ -362,12 +362,6 @@ export default function Home() {
       {/* ── FACE REALITY ───────────────────────────────────────────────── */}
       <section className="py-12" style={{ backgroundColor: "#010101" }}>
         <div className="px-6 md:px-12 max-w-3xl">
-          <h2
-            className="text-2xl uppercase tracking-widest mb-6"
-            style={{ fontFamily: "var(--font-lexend)", fontWeight: 900, color: "#ff6a9e" }}
-          >
-            Face Reality
-          </h2>
           <p className="text-base leading-relaxed" style={{ color: "rgba(255,255,255,0.55)" }}>
             {FACE_REALITY.map((item, i) => (
               <span key={item.title}>
