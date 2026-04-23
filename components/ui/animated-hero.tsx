@@ -96,7 +96,7 @@ function Hero() {
           {/* CTA */}
           <div className="flex flex-row gap-3 flex-wrap justify-center">
             <Link
-              href="/signup"
+              href="/beta"
               className="flex items-center gap-2 px-6 py-3 rounded-full text-sm font-bold uppercase tracking-wide transition-all hover:scale-105"
               style={{
                 background: "linear-gradient(90deg, #ff41b3 0%, #ec723d 100%)",
@@ -104,7 +104,7 @@ function Hero() {
                 fontFamily: "var(--font-lexend)",
               }}
             >
-              Start Your Trial Today <MoveRight className="w-4 h-4" />
+              Join Our Beta Test <MoveRight className="w-4 h-4" />
             </Link>
           </div>
 

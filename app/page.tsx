@@ -152,7 +152,7 @@ export default function Home() {
               className="px-4 py-2 rounded-full text-xs font-bold uppercase transition-transform hover:scale-105 whitespace-nowrap"
               style={{ background: "linear-gradient(90deg, #ff41b3 0%, #ec723d 100%)", color: "#ffffff", fontFamily: "var(--font-lexend)" }}
             >
-              Sign Up For Beta
+              Join Our Beta
             </Link>
             {/* Mobile hamburger */}
             <button
@@ -231,27 +231,25 @@ export default function Home() {
                 className="uppercase mb-1"
                 style={{ fontFamily: "var(--font-lexend)", fontWeight: 900, fontSize: "clamp(1.2rem, 3vw, 1.6rem)", color: "#E2E2E2" }}
               >
-                Start a 14 day trial £1
+                Join Our Beta Test
               </h2>
               <p className="text-sm" style={{ color: "rgba(255,255,255,0.4)", lineHeight: 1.6 }}>
-                Full audio library access for 14 days. Then £9.99/mo. Cancel before day 14 and pay nothing more.
+                Be the first to experience a new way of sitting with your emotions. No spiritual fluff.
               </p>
             </div>
-            <button
-              onClick={handleTrial}
-              disabled={trialLoading}
-              className="shrink-0 px-8 py-3.5 rounded-full text-sm transition-all duration-200 hover:scale-105 disabled:opacity-60 disabled:scale-100 whitespace-nowrap"
+            <Link
+              href="/beta"
+              className="shrink-0 px-8 py-3.5 rounded-full text-sm transition-all duration-200 hover:scale-105 whitespace-nowrap"
               style={{
                 fontFamily: "var(--font-lexend)",
                 fontWeight: 700,
                 background: "linear-gradient(90deg, #ff41b3, #ec723d)",
                 color: "#fff",
                 boxShadow: "0 0 28px rgba(255,65,179,0.4)",
-                cursor: trialLoading ? "wait" : "pointer",
               }}
             >
-              {trialLoading ? "Redirecting…" : "Start a 14 day trial £1"}
-            </button>
+              Join Our Beta Test
+            </Link>
           </div>
         </div>
       </section>
@@ -445,21 +443,19 @@ export default function Home() {
             Full audio library access — 200+ sessions, new drops every week — for 14 days. Then £9.99/mo. Cancel before day 7 and pay nothing more.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 items-center">
-            <button
-              onClick={handleTrial}
-              disabled={trialLoading}
-              className="px-10 py-4 rounded-full text-sm transition-all duration-200 hover:scale-105 disabled:opacity-60"
+            <Link
+              href="/beta"
+              className="px-10 py-4 rounded-full text-sm transition-all duration-200 hover:scale-105"
               style={{
                 fontFamily: "var(--font-lexend)",
                 fontWeight: 900,
                 background: "linear-gradient(90deg, #ff41b3, #ec723d)",
                 color: "#fff",
                 boxShadow: "0 0 40px rgba(255,65,179,0.4)",
-                cursor: trialLoading ? "wait" : "pointer",
               }}
             >
-              {trialLoading ? "Redirecting…" : "Start a 14 day trial £1"}
-            </button>
+              Join Our Beta Test
+            </Link>
             <Link
               href="/free"
               className="text-sm transition-colors hover:text-white"
