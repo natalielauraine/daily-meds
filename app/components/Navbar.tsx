@@ -73,7 +73,6 @@ export default function Navbar() {
           <div className="hidden md:flex items-center gap-5">
             {[
               { href: "/", label: "Home" },
-              { href: "/library", label: t("nav", "library") || "Library" },
               { href: "/live", label: t("nav", "live") || "Live" },
               { href: "/timer", label: "Breathe" },
               { href: "/pricing", label: "Pricing" },
@@ -232,7 +231,6 @@ export default function Navbar() {
         >
           {[
             { href: "/", label: "Home" },
-            { href: "/library", label: "Library" },
             { href: "/live", label: "Live" },
             { href: "/free", label: "Free Sessions" },
             { href: "/pricing", label: "Pricing" },
