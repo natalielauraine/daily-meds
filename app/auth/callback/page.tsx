@@ -44,9 +44,17 @@ function CallbackHandler() {
     const type = searchParams.get("type");
     const next = searchParams.get("next") ?? "/home";
 
+    // Supabase sends ?error=... when the token has already expired or been used
+    const errorParam = searchParams.get("error_description") || searchParams.get("error");
+    if (errorParam) {
+      console.error("Auth callback error from Supabase:", errorParam);
+      router.replace("/login?error=expired");
+      return;
+    }
+
     // Password reset emails use token_hash + type=recovery
     if (tokenHash && type) {
-      supabase.auth.verifyOtp({ token_hash: tokenHash, type: type as "recovery" | "email" }).then(({ data, error }) => {
+      supabase.auth.verifyOtp({ token_hash: tokenHash, type: type as "recovery" | "email" }).then(({ error }) => {
         if (error) {
           console.error("Token verify error:", error.message);
           router.replace("/login?error=expired");
@@ -67,9 +75,7 @@ function CallbackHandler() {
           router.replace("/login?error=auth");
           return;
         }
-        // Update last_active_at (fire and forget)
         fetch("/api/user/ping", { method: "POST" }).catch(() => {});
-        // Auto-enroll as standard affiliate (fire and forget)
         fetch("/api/affiliate/auto-enroll", { method: "POST" }).catch(() => {});
         router.refresh();
         router.replace(next);
