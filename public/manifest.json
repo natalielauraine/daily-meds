@@ -3,13 +3,30 @@
   "short_name": "Daily Meds",
   "description": "Audio for Emotional Emergencies. Guided meditation and breathwork for life's most awkward moments.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#131313",
   "theme_color": "#131313",
   "orientation": "portrait-primary",
   "categories": ["health", "lifestyle", "music"],
   "lang": "en-GB",
+  "prefer_related_applications": false,
   "icons": [
+    {
+      "src": "/icons/favicon-16.png",
+      "sizes": "16x16",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/favicon-32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
     {
       "src": "/icons/icon-192.png",
       "sizes": "192x192",
@@ -53,9 +70,9 @@
   ],
   "screenshots": [
     {
-      "src": "/screenshots/home.jpg",
+      "src": "/screenshots/home.png",
       "sizes": "1080x1920",
-      "type": "image/jpeg",
+      "type": "image/png",
       "form_factor": "narrow",
       "label": "Daily Meds home screen"
     }

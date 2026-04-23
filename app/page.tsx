@@ -264,15 +264,15 @@ export default function Home() {
             Trending Meds
           </h2>
           <div
-            className="flex gap-4 pb-6"
-            style={{ overflowX: "auto", scrollSnapType: "x mandatory" }}
+            className="flex gap-4 pb-6 hide-scrollbar"
+            style={{ overflowX: "auto", scrollSnapType: "x mandatory", WebkitOverflowScrolling: "touch" }}
           >
             {TRENDING.map((item) => (
               <Link
                 key={item.title}
                 href={isLoggedIn ? item.href : "/signup"}
                 className="group shrink-0"
-                style={{ minWidth: "260px", scrollSnapAlign: "start" }}
+                style={{ minWidth: "clamp(200px, 55vw, 260px)", scrollSnapAlign: "start" }}
               >
                 <div
                   className="relative overflow-hidden rounded-xl"
@@ -341,7 +341,7 @@ export default function Home() {
               <div
                 key={item.title}
                 className="relative overflow-hidden rounded-xl"
-                style={{ aspectRatio: "16/9", background: item.fallback, border: "0.5px solid rgba(255,255,255,0.08)" }}
+                style={{ aspectRatio: "9/6", background: item.fallback, border: "0.5px solid rgba(255,255,255,0.08)" }}
               >
                 <Image
                   src={item.image}

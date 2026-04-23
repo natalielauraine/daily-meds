@@ -132,8 +132,8 @@ export default function BetaPage() {
                     placeholder="Your Name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="bg-transparent border-b text-sm py-2 outline-none placeholder-[rgba(255,255,255,0.2)] text-white transition-colors focus:border-white"
-                    style={{ borderColor: "rgba(255,255,255,0.15)", fontFamily: "var(--font-manrope)" }}
+                    className="bg-transparent border-b text-sm py-3 outline-none placeholder-[rgba(255,255,255,0.2)] text-white transition-colors focus:border-white"
+                    style={{ borderColor: "rgba(255,255,255,0.15)", fontFamily: "var(--font-manrope)", minHeight: "44px" }}
                   />
                 </div>
 
@@ -150,8 +150,8 @@ export default function BetaPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="bg-transparent border-b text-sm py-2 outline-none placeholder-[rgba(255,255,255,0.2)] text-white transition-colors focus:border-white"
-                    style={{ borderColor: "rgba(255,255,255,0.15)", fontFamily: "var(--font-manrope)" }}
+                    className="bg-transparent border-b text-sm py-3 outline-none placeholder-[rgba(255,255,255,0.2)] text-white transition-colors focus:border-white"
+                    style={{ borderColor: "rgba(255,255,255,0.15)", fontFamily: "var(--font-manrope)", minHeight: "44px" }}
                   />
                 </div>
 

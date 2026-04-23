@@ -124,12 +124,25 @@ export default function RootLayout({
       className={`${lexend.variable} ${manrope.variable} ${epilogue.variable} dark`}
     >
       <head>
+        {/* Apple touch icon — required for iOS "Add to Home Screen" */}
+        <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
+        {/* Explicit favicon links for cross-browser support */}
+        <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16.png" />
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
         <style dangerouslySetInnerHTML={{ __html: `
           .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
           .hide-scrollbar::-webkit-scrollbar { display: none; }
           .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
           .text-glow-primary { text-shadow: 0 0 12px rgba(255, 65, 142, 0.4); }
+          /* Prevent horizontal overflow site-wide */
+          html, body { overflow-x: hidden; max-width: 100vw; }
+          /* Minimum tap target size for all interactive elements */
+          button, a, [role="button"] { min-height: 44px; min-width: 44px; }
+          /* Safe area padding for notched devices */
+          .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+          .safe-top { padding-top: env(safe-area-inset-top); }
         `}} />
       </head>
       <body className="bg-background text-on-background antialiased font-body">
