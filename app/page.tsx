@@ -34,10 +34,10 @@ const GALLERY_ITEMS: GalleryItem[] = [
 ];
 
 const NEXT_RELEASE = [
-  { title: "Guilty",    image: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/1.png",         fallback: "linear-gradient(160deg, #1a0800 0%, #3d1500 100%)" },
-  { title: "No Money",  image: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/No%20Money.png", fallback: "linear-gradient(160deg, #0f0c08 0%, #2a2010 100%)" },
-  { title: "Stressed",  image: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/Stressed.png",  fallback: "linear-gradient(160deg, #100a1a 0%, #1e0f30 100%)" },
-  { title: "Sober",     image: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/Sober.png",     fallback: "linear-gradient(160deg, #081500 0%, #152800 100%)" },
+  { title: "Going Sober",    image: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/Going%20sober.png",      fallback: "linear-gradient(160deg, #081500 0%, #152800 100%)" },
+  { title: "Feeling Guilty", image: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/Guilt.png",              fallback: "linear-gradient(160deg, #1a0800 0%, #3d1500 100%)" },
+  { title: "Money Stress",   image: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/Money%20stress.png",     fallback: "linear-gradient(160deg, #0f0c08 0%, #2a2010 100%)" },
+  { title: "Stressed",       image: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/stressed%20sign%20up.png", fallback: "linear-gradient(160deg, #100a1a 0%, #1e0f30 100%)" },
 ];
 
 const FACE_REALITY = [
@@ -338,19 +338,26 @@ export default function Home() {
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {NEXT_RELEASE.map((item) => (
-              <div
-                key={item.title}
-                className="relative overflow-hidden rounded-xl"
-                style={{ aspectRatio: "9/6", background: item.fallback, border: "0.5px solid rgba(255,255,255,0.08)" }}
-              >
-                <Image
-                  src={item.image}
-                  alt={item.title}
-                  fill
-                  unoptimized
-                  className="object-cover"
-                  onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
-                />
+              <div key={item.title}>
+                <div
+                  className="relative overflow-hidden rounded-xl"
+                  style={{ aspectRatio: "9/6", background: item.fallback, border: "0.5px solid rgba(255,255,255,0.08)" }}
+                >
+                  <Image
+                    src={item.image}
+                    alt={item.title}
+                    fill
+                    unoptimized
+                    className="object-cover"
+                    onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                  />
+                </div>
+                <p
+                  className="mt-2 text-sm uppercase font-bold tracking-wide"
+                  style={{ fontFamily: "var(--font-lexend)", color: "#ffffff" }}
+                >
+                  {item.title}
+                </p>
               </div>
             ))}
           </div>
