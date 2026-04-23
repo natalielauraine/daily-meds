@@ -32,7 +32,7 @@ export default function BetaPage() {
       className="relative min-h-screen flex flex-col"
       style={{
         backgroundColor: "#0a0f14",
-        backgroundImage: "url('https://images.unsplash.com/photo-1519692933481-e162a57d6721?w=1800&q=80')",
+        backgroundImage: "url('https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/Stressed.png')",
         backgroundSize: "cover",
         backgroundPosition: "center",
         fontFamily: "var(--font-manrope)",
