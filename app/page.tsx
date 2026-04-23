@@ -353,15 +353,6 @@ export default function Home() {
                   className="object-cover"
                   onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
                 />
-                <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%)" }} />
-                <div className="absolute inset-0 flex items-end p-4">
-                  <span
-                    className="text-2xl md:text-3xl uppercase font-black leading-none"
-                    style={{ fontFamily: "var(--font-lexend)", color: item.color, textShadow: "0 2px 12px rgba(0,0,0,0.8)" }}
-                  >
-                    {item.title}
-                  </span>
-                </div>
               </div>
             ))}
           </div>
