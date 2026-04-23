@@ -72,7 +72,7 @@ const REASONS = [
 
 const NAV_LINKS = [
   { label: "Home",     href: "/" },
-  { label: "Library",  href: "/library" },
+  { label: "Live",     href: "/live" },
   { label: "Pricing",  href: "/pricing" },
   { label: "Breathe",  href: "/timer" },
   { label: "About",    href: "/about" },

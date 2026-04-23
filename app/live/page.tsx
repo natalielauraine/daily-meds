@@ -39,7 +39,7 @@ export default async function LiveLandingPage() {
         <nav className="hidden md:flex items-center gap-10">
           {[
             { label: "Home", href: "/" },
-            { label: "Library", href: "/library" },
+            { label: "Live", href: "/live" },
             { label: "Pricing", href: "/pricing" },
             { label: "Breathe", href: "/timer" },
             { label: "About", href: "/about" },

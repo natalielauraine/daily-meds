@@ -124,7 +124,6 @@ export default function TimerPage() {
         <nav className="hidden md:flex items-center gap-8">
           {[
             { label: "Timer", href: "/timer" },
-            { label: "Library", href: "/library" },
             { label: "Live", href: "/live" },
             { label: "About", href: "/about" },
             { label: "Group Meds", href: "/rooms" },
