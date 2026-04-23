@@ -148,11 +148,11 @@ export default function Home() {
 
           <div className="flex items-center gap-3">
             <Link
-              href="/signup"
+              href="/beta"
               className="px-4 py-2 rounded-full text-xs font-bold uppercase transition-transform hover:scale-105 whitespace-nowrap"
               style={{ background: "linear-gradient(90deg, #ff41b3 0%, #ec723d 100%)", color: "#ffffff", fontFamily: "var(--font-lexend)" }}
             >
-              Sign Up
+              Sign Up For Beta
             </Link>
             {/* Mobile hamburger */}
             <button
@@ -441,7 +441,7 @@ export default function Home() {
               real life.
             </span>
           </h2>
-          <p style={{ color: "rgba(255,255,255,0.4)", lineHeight: 1.7, maxWidth: "480px" }}>
+          <p style={{ color: "#ffffff", lineHeight: 1.7, maxWidth: "480px" }}>
             Full audio library access — 200+ sessions, new drops every week — for 14 days. Then £9.99/mo. Cancel before day 7 and pay nothing more.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 items-center">
@@ -468,7 +468,7 @@ export default function Home() {
               Or try free sessions →
             </Link>
           </div>
-          <p className="text-xs" style={{ color: "rgba(255,255,255,0.2)" }}>
+          <p className="text-xs" style={{ color: "#ffffff" }}>
             No commitment. Cancel any time before day 7.
           </p>
         </div>
