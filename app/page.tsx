@@ -35,7 +35,7 @@ const GALLERY_ITEMS: GalleryItem[] = [
 
 const NEXT_RELEASE = [
   { title: "Guilty",    image: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/1.png",         fallback: "linear-gradient(160deg, #1a0800 0%, #3d1500 100%)" },
-  { title: "No Money",  image: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/High%20AF.png", fallback: "linear-gradient(160deg, #0f0c08 0%, #2a2010 100%)" },
+  { title: "No Money",  image: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/No%20Money.png", fallback: "linear-gradient(160deg, #0f0c08 0%, #2a2010 100%)" },
   { title: "Stressed",  image: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/Stressed.png",  fallback: "linear-gradient(160deg, #100a1a 0%, #1e0f30 100%)" },
   { title: "Sober",     image: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/Sober.png",     fallback: "linear-gradient(160deg, #081500 0%, #152800 100%)" },
 ];
