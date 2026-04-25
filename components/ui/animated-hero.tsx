@@ -82,7 +82,7 @@ function Hero() {
               className="text-xl md:text-2xl leading-relaxed tracking-tight max-w-xl text-center"
               style={{ color: "#ffffff", fontFamily: "var(--font-manrope)" }}
             >
-              The Netflix of meditation, for life&apos;s most awkward moments.
+              The Netflix of meditation, designed to support you in the moments we don&apos;t talk about.
             </p>
 
             <p
