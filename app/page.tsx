@@ -149,7 +149,7 @@ export default function Home() {
           <div className="flex items-center gap-3">
             <Link
               href="/beta"
-              className="px-4 py-2 rounded-full text-xs font-bold uppercase transition-transform hover:scale-105 whitespace-nowrap"
+              className="hidden md:inline-flex px-4 py-2 rounded-full text-xs font-bold uppercase transition-transform hover:scale-105 whitespace-nowrap"
               style={{ background: "linear-gradient(90deg, #ff41b3 0%, #ec723d 100%)", color: "#ffffff", fontFamily: "var(--font-lexend)" }}
             >
               Join Our Beta
@@ -184,6 +184,14 @@ export default function Home() {
                 {item.label}
               </Link>
             ))}
+            <Link
+              href="/beta"
+              onClick={() => setMobileOpen(false)}
+              className="mt-2 text-center px-4 py-3 rounded-full text-sm font-bold uppercase"
+              style={{ background: "linear-gradient(90deg, #ff41b3 0%, #ec723d 100%)", color: "#ffffff", fontFamily: "var(--font-lexend)" }}
+            >
+              Join Our Beta
+            </Link>
           </nav>
         )}
       </header>
