@@ -16,6 +16,12 @@ const EVENT_TYPES = [
     desc: "Breathwork with Natalie & Friends",
     img: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/alchemy%20rewire%20thum.png",
   },
+  {
+    title: "Live Expert Series",
+    desc: "In-depth conversations with wellness experts",
+    img: "https://img.youtube.com/vi/OvgWX--WXaQ/maxresdefault.jpg",
+    href: "https://youtu.be/OvgWX--WXaQ",
+  },
 ];
 
 export default async function LiveLandingPage() {
@@ -121,9 +127,9 @@ export default async function LiveLandingPage() {
         >
           Live Event Types
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl">
           {EVENT_TYPES.map((event) => (
-            <Link href={isLoggedIn ? "/live" : "/signup"} key={event.title} className="group cursor-pointer">
+            <Link href={event.href ?? (isLoggedIn ? "/live" : "/signup")} key={event.title} target={event.href ? "_blank" : undefined} rel={event.href ? "noopener noreferrer" : undefined} className="group cursor-pointer">
               <div
                 className="relative overflow-hidden rounded-xl mb-6"
                 style={{ aspectRatio: "16/9" }}
