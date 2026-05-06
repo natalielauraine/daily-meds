@@ -148,11 +148,11 @@ export default function Home() {
 
           <div className="flex items-center gap-3">
             <Link
-              href="/beta"
+              href="/signup"
               className="hidden md:inline-flex items-center justify-center px-4 py-2 rounded-full text-xs font-bold uppercase transition-transform hover:scale-105 whitespace-nowrap"
               style={{ background: "linear-gradient(90deg, #ff41b3 0%, #ec723d 100%)", color: "#ffffff", fontFamily: "var(--font-lexend)" }}
             >
-              Join Our Beta
+              Sign Up
             </Link>
             {/* Mobile hamburger */}
             <button
@@ -185,12 +185,12 @@ export default function Home() {
               </Link>
             ))}
             <Link
-              href="/beta"
+              href="/signup"
               onClick={() => setMobileOpen(false)}
               className="mt-2 flex items-center justify-center px-4 py-3 rounded-full text-sm font-bold uppercase"
               style={{ background: "linear-gradient(90deg, #ff41b3 0%, #ec723d 100%)", color: "#ffffff", fontFamily: "var(--font-lexend)" }}
             >
-              Join Our Beta
+              Sign Up
             </Link>
           </nav>
         )}
@@ -239,14 +239,14 @@ export default function Home() {
                 className="uppercase mb-1"
                 style={{ fontFamily: "var(--font-lexend)", fontWeight: 900, fontSize: "clamp(1.2rem, 3vw, 1.6rem)", color: "#E2E2E2" }}
               >
-                Join Our Beta Test
+                Try the full experience
               </h2>
               <p className="text-sm" style={{ color: "rgba(255,255,255,0.4)", lineHeight: 1.6 }}>
                 Be the first to experience a new way of sitting with your emotions. No spiritual fluff.
               </p>
             </div>
             <Link
-              href="/beta"
+              href="/signup"
               className="shrink-0 px-8 py-3.5 rounded-full text-sm transition-all duration-200 hover:scale-105 whitespace-nowrap"
               style={{
                 fontFamily: "var(--font-lexend)",
@@ -256,7 +256,7 @@ export default function Home() {
                 boxShadow: "0 0 28px rgba(255,65,179,0.4)",
               }}
             >
-              Join Our Beta Test
+              Sign Up
             </Link>
           </div>
         </div>
@@ -459,7 +459,7 @@ export default function Home() {
           </p>
           <div className="flex flex-col sm:flex-row gap-3 items-center">
             <Link
-              href="/beta"
+              href="/signup"
               className="px-10 py-4 rounded-full text-sm transition-all duration-200 hover:scale-105"
               style={{
                 fontFamily: "var(--font-lexend)",
@@ -469,7 +469,7 @@ export default function Home() {
                 boxShadow: "0 0 40px rgba(255,65,179,0.4)",
               }}
             >
-              Join Our Beta Test
+              Start Free Trial
             </Link>
             <Link
               href="/free"
@@ -494,7 +494,7 @@ export default function Home() {
           <p className="text-sm">
             Questions?{" "}
             <a
-              href="mailto:joy@thedailymeds.com"
+              href="mailto:support@thedailymeds.com"
               className="underline underline-offset-4 hover:text-[#aaee20] transition-colors"
             >
               Contact us

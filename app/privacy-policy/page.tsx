@@ -212,7 +212,7 @@ const SECTIONS = [
           <li>Right to deletion of personal information</li>
           <li>Right to non-discrimination for exercising privacy rights</li>
         </ul>
-        <p className="mt-4">To exercise your rights, contact us at <a href="mailto:joy@dailymeds.com">joy@dailymeds.com</a>. We will respond within 30 days (or as required by law).</p>
+        <p className="mt-4">To exercise your rights, contact us at <a href="mailto:support@thedailymeds.com">support@thedailymeds.com</a>. We will respond within 30 days (or as required by law).</p>
       </>
     ),
   },
@@ -268,7 +268,7 @@ const SECTIONS = [
     number: "15",
     title: "Data Protection Officer",
     content: (
-      <p>For GDPR-related inquiries, you may contact our Data Protection Officer at <a href="mailto:joy@dailymeds.com">joy@dailymeds.com</a>.</p>
+      <p>For GDPR-related inquiries, you may contact our Data Protection Officer at <a href="mailto:support@thedailymeds.com">support@thedailymeds.com</a>.</p>
     ),
   },
   {
@@ -278,7 +278,7 @@ const SECTIONS = [
     content: (
       <>
         <p className="mb-2">If you have questions about this Privacy Policy or how we handle your data, please contact us:</p>
-        <p><strong>Email:</strong> <a href="mailto:joy@dailymeds.com">joy@dailymeds.com</a></p>
+        <p><strong>Email:</strong> <a href="mailto:support@thedailymeds.com">support@thedailymeds.com</a></p>
       </>
     ),
   },

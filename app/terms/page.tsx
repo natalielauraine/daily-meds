@@ -78,7 +78,7 @@ const SECTIONS = [
         <h3>5.1 Cancellation Policy</h3>
         <p>You may cancel your subscription at any time through your account settings. Cancellation will take effect at the end of your current billing period, and you will retain access to premium features until that date.</p>
         <h3>5.2 Refund Policy</h3>
-        <p>Subscription fees are generally non-refundable. However, we may provide refunds on a case-by-case basis at our sole discretion. To request a refund, contact our support team within 14 days of your purchase by emailing <a href="mailto:joy@thedailymeds.com">joy@thedailymeds.com</a>.</p>
+        <p>Subscription fees are generally non-refundable. However, we may provide refunds on a case-by-case basis at our sole discretion. To request a refund, contact our support team within 14 days of your purchase by emailing <a href="mailto:support@thedailymeds.com">support@thedailymeds.com</a>.</p>
       </>
     ),
   },
@@ -236,7 +236,7 @@ const SECTIONS = [
     content: (
       <>
         <p className="mb-3">For questions about these Terms, please contact us:</p>
-        <p><strong>Email:</strong> <a href="mailto:joy@dailymeds.com">joy@dailymeds.com</a></p>
+        <p><strong>Email:</strong> <a href="mailto:support@thedailymeds.com">support@thedailymeds.com</a></p>
       </>
     ),
   },

@@ -337,7 +337,7 @@ export default async function LiveLandingPage() {
             </p>
             <p className="text-sm" style={{ color: "rgba(255,255,255,0.4)", fontFamily: "var(--font-lexend)" }}>
               <a
-                href="mailto:joy@thedailymeds.com"
+                href="mailto:support@thedailymeds.com"
                 className="underline underline-offset-4 transition-colors hover:text-[#aaee20]"
                 style={{ color: "rgba(255,255,255,0.4)", textDecorationColor: "#aaee20" }}
               >

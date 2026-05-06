@@ -125,7 +125,7 @@ export default function FoundingMemberConfirmedPage() {
             className="text-xs"
             style={{ color: "rgba(255,255,255,0.2)", fontFamily: "var(--font-space-grotesk)" }}
           >
-            A receipt is on its way to your inbox. Questions? joy@thedailymeds.com
+            A receipt is on its way to your inbox. Questions? support@thedailymeds.com
           </p>
 
         </div>

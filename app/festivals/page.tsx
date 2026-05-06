@@ -310,7 +310,7 @@ export default function FestivalsPage() {
             </p>
 
             <Link
-              href="mailto:joy@thedailymeds.com"
+              href="mailto:support@thedailymeds.com"
               className="inline-flex items-center gap-2 px-8 py-4 rounded-full text-sm font-bold uppercase tracking-wide transition-all hover:scale-105"
               style={{
                 background: "linear-gradient(90deg, #ff41b3 0%, #ec723d 100%)",
@@ -468,7 +468,7 @@ export default function FestivalsPage() {
               We&apos;re booking festivals and events now. Reach out to start a conversation.
             </p>
             <Link
-              href="mailto:joy@thedailymeds.com"
+              href="mailto:support@thedailymeds.com"
               className="inline-flex items-center gap-2 px-8 py-4 rounded-full text-sm font-bold uppercase tracking-wide transition-all hover:scale-105"
               style={{
                 background: "linear-gradient(90deg, #ff41b3 0%, #ec723d 100%)",
