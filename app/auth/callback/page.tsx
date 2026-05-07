@@ -83,6 +83,28 @@ function CallbackHandler() {
       return;
     }
 
+    // Handle Implicit Flow (hash fragments) which Supabase often uses for email links
+    const hash = window.location.hash;
+    if (hash && hash.includes("access_token=")) {
+      // Wait for Supabase to finish parsing the hash and saving the session
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        if (session) {
+          // Tell the ping API we are active
+          fetch("/api/user/ping", { method: "POST" }).catch(() => {});
+          
+          if (hash.includes("type=recovery") || searchParams.get("type") === "recovery") {
+            router.replace("/reset-password");
+          } else {
+            router.replace(next);
+          }
+        } else {
+          router.replace("/login?error=auth");
+        }
+      });
+      return;
+    }
+
+    // If no valid auth parameters were found, fallback to login
     router.replace("/login?error=auth");
   }, []);
 
