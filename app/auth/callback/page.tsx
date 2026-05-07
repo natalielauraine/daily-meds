@@ -5,7 +5,7 @@
 // MUST happen client-side — a server route can't access the verifier.
 // Wrapped in Suspense because useSearchParams() requires it in Next.js 14.
 
-import { useEffect, Suspense } from "react";
+import { useEffect, Suspense, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "../../../lib/supabase-browser";
 
@@ -36,8 +36,12 @@ const Spinner = () => (
 function CallbackHandler() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const exchangeAttempted = useRef(false);
 
   useEffect(() => {
+    if (exchangeAttempted.current) return;
+    exchangeAttempted.current = true;
+
     const supabase = createClient();
     const code = searchParams.get("code");
     const tokenHash = searchParams.get("token_hash");
