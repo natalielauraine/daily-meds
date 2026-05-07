@@ -11,6 +11,12 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next({ request });
   }
 
+  // Don't run session refresh on the auth callback — the route handler
+  // needs the PKCE code verifier cookie intact for the code exchange.
+  if (request.nextUrl.pathname.startsWith("/auth/callback")) {
+    return NextResponse.next({ request });
+  }
+
   // Start with a plain pass-through response
   let supabaseResponse = NextResponse.next({ request });
 
