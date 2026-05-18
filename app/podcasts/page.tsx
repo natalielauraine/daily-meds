@@ -89,7 +89,7 @@ export default function PodcastsPage() {
             <Link href="/community" style={{ color: C.onSurfaceVar, fontSize: 14, textDecoration: "none" }}>Community</Link>
             <Link href="/library" style={{ color: C.onSurfaceVar, fontSize: 14, textDecoration: "none" }}>Library</Link>
             <Link
-              href="/signup"
+              href="/early-access"
               style={{
                 background: `linear-gradient(135deg, ${C.primary}, ${C.primaryCont})`,
                 color: "white",
@@ -100,7 +100,7 @@ export default function PodcastsPage() {
                 textDecoration: "none",
               }}
             >
-              Start Free
+              Join Waitlist
             </Link>
           </div>
         </div>

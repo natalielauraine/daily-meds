@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Logo from "../components/Logo";
 
-export default function BetaPage() {
+export default function EarlyAccessPage() {
   const [name, setName]       = useState("");
   const [email, setEmail]     = useState("");
   const [status, setStatus]   = useState<"idle" | "loading" | "done" | "error">("idle");
@@ -12,7 +12,7 @@ export default function BetaPage() {
     e.preventDefault();
     setStatus("loading");
     try {
-      const res = await fetch("/api/email/beta-signup", {
+      const res = await fetch("/api/email/early-access-signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email }),
@@ -68,7 +68,7 @@ export default function BetaPage() {
                 letterSpacing: "-0.02em",
               }}
             >
-              We Go Live<br />May 1st
+              We&apos;re Going Live
             </h1>
             <p
               className="mb-4 text-xl italic"
@@ -115,7 +115,7 @@ export default function BetaPage() {
                   You&apos;re on the list.
                 </p>
                 <p className="text-sm mt-2" style={{ color: "rgba(255,255,255,0.45)" }}>
-                  We&apos;ll be in touch before May 1st.
+                  We&apos;ll be in touch the moment we go live.
                 </p>
               </div>
             ) : (

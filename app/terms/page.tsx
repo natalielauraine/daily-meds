@@ -269,11 +269,11 @@ export default function TermsPage() {
             Log in
           </Link>
           <Link
-            href="/signup"
+            href="/early-access"
             className="px-5 py-2 rounded-full text-sm font-bold uppercase transition-transform hover:scale-105"
             style={{ backgroundColor: "#ff41b3", color: "#fff", fontFamily: "var(--font-lexend)" }}
           >
-            Start Free
+            Join Waitlist
           </Link>
         </div>
       </header>

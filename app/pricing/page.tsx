@@ -39,7 +39,7 @@ const PLANS = [
       "Community access",
     ],
     locked: [
-      "Full library (200+ sessions)",
+      "Full audio library",
       "Offline downloads",
       "Group meditation rooms",
       "Live sessions with Natalie",
@@ -51,11 +51,11 @@ const PLANS = [
     tagline: "Full audio library, anytime",
     price: "£9.99",
     priceNote: "per month · audio only",
-    cta: "Start listening",
+    cta: "Join Waitlist",
     featured: false,
     features: [
       "Everything in Free",
-      "Full library (200+ sessions)",
+      "Full audio library",
       "New drops every week",
       "Breathing timer",
       "Cancel any time",
@@ -72,7 +72,7 @@ const PLANS = [
     tagline: "Audio plus live sessions",
     price: "£19.99",
     priceNote: "per month",
-    cta: "Get full access",
+    cta: "Join Waitlist",
     featured: true,
     features: [
       "Everything in The Listener",
@@ -406,13 +406,13 @@ export default function PricingPage() {
                     className="uppercase mb-1"
                     style={{ fontFamily: "var(--font-plus-jakarta)", fontWeight: 800, fontSize: "clamp(1.3rem, 3vw, 1.75rem)", color: "#E2E2E2", letterSpacing: "-0.01em" }}
                   >
-                    Start a 14 day trial £1
+                    Join Waitlist
                   </h2>
                   <p
                     className="text-sm max-w-md"
                     style={{ fontFamily: "var(--font-inter)", color: "rgba(255,255,255,0.4)", lineHeight: 1.6 }}
                   >
-                    Full audio library access — 200+ sessions, new drops every week — for 14 days.
+                    Full audio library access — new drops every week — for 14 days.
                     Then £9.99/mo. Cancel before day 14 and pay nothing more.
                   </p>
                 </div>
@@ -430,7 +430,7 @@ export default function PricingPage() {
                     whiteSpace: "nowrap",
                   }}
                 >
-                  {loadingPlan === "trial" ? "Redirecting…" : "Start a 14 day trial £1"}
+                  {loadingPlan === "trial" ? "Redirecting…" : "Join Waitlist"}
                 </button>
               </div>
             </div>
@@ -541,7 +541,7 @@ export default function PricingPage() {
                       {/* CTA button — free plan links to signup, paid plans go to Stripe */}
                       {plan.id === "free" ? (
                         <Link
-                          href="/signup"
+                          href="/early-access"
                           className="block text-center py-3 rounded-full text-sm mb-6 transition-all duration-200"
                           style={{
                             fontFamily: "var(--font-space-grotesk)",
@@ -771,7 +771,7 @@ export default function PricingPage() {
               Natalie created The Daily Meds for the moments no one talks about — the comedowns, the 3am spirals, the days when everything is just a bit too much. Start for free today.
             </p>
             <Link
-              href="/signup"
+              href="/early-access"
               className="inline-flex items-center gap-2.5 px-8 py-3.5 rounded-full text-sm"
               style={{
                 fontFamily: "var(--font-space-grotesk)",

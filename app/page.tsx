@@ -148,11 +148,11 @@ export default function Home() {
 
           <div className="flex items-center gap-3">
             <Link
-              href="/signup"
+              href="/early-access"
               className="hidden md:inline-flex items-center justify-center px-4 py-2 rounded-full text-xs font-bold uppercase transition-transform hover:scale-105 whitespace-nowrap"
               style={{ background: "linear-gradient(90deg, #ff41b3 0%, #ec723d 100%)", color: "#ffffff", fontFamily: "var(--font-lexend)" }}
             >
-              Sign Up
+              Join Waitlist
             </Link>
             {/* Mobile hamburger */}
             <button
@@ -185,12 +185,12 @@ export default function Home() {
               </Link>
             ))}
             <Link
-              href="/signup"
+              href="/early-access"
               onClick={() => setMobileOpen(false)}
               className="mt-2 flex items-center justify-center px-4 py-3 rounded-full text-sm font-bold uppercase"
               style={{ background: "linear-gradient(90deg, #ff41b3 0%, #ec723d 100%)", color: "#ffffff", fontFamily: "var(--font-lexend)" }}
             >
-              Sign Up
+              Join Waitlist
             </Link>
           </nav>
         )}
@@ -246,7 +246,7 @@ export default function Home() {
               </p>
             </div>
             <Link
-              href="/signup"
+              href="/early-access"
               className="shrink-0 px-8 py-3.5 rounded-full text-sm transition-all duration-200 hover:scale-105 whitespace-nowrap"
               style={{
                 fontFamily: "var(--font-lexend)",
@@ -256,7 +256,7 @@ export default function Home() {
                 boxShadow: "0 0 28px rgba(255,65,179,0.4)",
               }}
             >
-              Sign Up
+              Join Waitlist
             </Link>
           </div>
         </div>
@@ -278,7 +278,7 @@ export default function Home() {
             {TRENDING.map((item) => (
               <Link
                 key={item.title}
-                href={isLoggedIn ? item.href : "/signup"}
+                href={isLoggedIn ? item.href : "/early-access"}
                 className="group shrink-0"
                 style={{ minWidth: "clamp(200px, 55vw, 260px)", scrollSnapAlign: "start" }}
               >
@@ -378,7 +378,7 @@ export default function Home() {
           <p className="text-base leading-relaxed" style={{ color: "rgba(255,255,255,0.55)" }}>
             {FACE_REALITY.map((item, i) => (
               <span key={item.title}>
-                <Link href={isLoggedIn ? "/library" : "/signup"} className="hover:text-white transition-colors" style={{ color: "rgba(255,255,255,0.55)" }}>
+                <Link href={isLoggedIn ? "/library" : "/early-access"} className="hover:text-white transition-colors" style={{ color: "rgba(255,255,255,0.55)" }}>
                   {item.title}
                 </Link>
                 {i < FACE_REALITY.length - 1 && <span style={{ color: "rgba(255,255,255,0.2)" }}> · </span>}
@@ -455,11 +455,11 @@ export default function Home() {
             </span>
           </h2>
           <p style={{ color: "#ffffff", lineHeight: 1.7, maxWidth: "480px" }}>
-            Full audio library access — 200+ sessions, new drops every week — for 14 days. Then £9.99/mo. Cancel before day 7 and pay nothing more.
+            Full audio library access — new drops every week — for 14 days. Then £9.99/mo. Cancel before day 7 and pay nothing more.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 items-center">
             <Link
-              href="/signup"
+              href="/early-access"
               className="px-10 py-4 rounded-full text-sm transition-all duration-200 hover:scale-105"
               style={{
                 fontFamily: "var(--font-lexend)",
@@ -469,7 +469,7 @@ export default function Home() {
                 boxShadow: "0 0 40px rgba(255,65,179,0.4)",
               }}
             >
-              Start Free Trial
+              Join Waitlist
             </Link>
             <Link
               href="/free"

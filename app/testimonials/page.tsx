@@ -189,11 +189,11 @@ export default async function TestimonialsPage() {
             Log in
           </Link>
           <Link
-            href="/signup"
+            href="/early-access"
             className="px-5 py-2 rounded-full text-sm font-bold uppercase transition-transform hover:scale-105"
             style={{ backgroundColor: "#ff41b3", color: "#fff", fontFamily: "var(--font-lexend)" }}
           >
-            Start Free
+            Join Waitlist
           </Link>
         </div>
       </header>
@@ -261,11 +261,11 @@ export default async function TestimonialsPage() {
             Start with what&apos;s free. No card needed.
           </p>
           <Link
-            href="/signup"
+            href="/early-access"
             className="px-10 py-4 rounded-full text-base font-bold uppercase tracking-wide transition-all hover:scale-105"
             style={{ backgroundColor: "#ff41b3", color: "#fff", fontFamily: "var(--font-lexend)" }}
           >
-            Start Free Today
+            Join Waitlist
           </Link>
           <Link href="/free" className="text-sm underline underline-offset-4 transition-colors hover:text-white" style={{ color: "rgba(255,255,255,0.3)", fontFamily: "var(--font-lexend)" }}>
             Browse free meditations first

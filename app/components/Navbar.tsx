@@ -185,7 +185,7 @@ export default function Navbar() {
                   Log in
                 </Link>
                 <Link
-                  href="/signup"
+                  href="/early-access"
                   className="text-xs uppercase tracking-widest text-white px-5 py-2 rounded-full transition-all duration-200 hover:opacity-90"
                   style={{
                     fontFamily: "var(--font-space-grotesk)",
@@ -194,7 +194,7 @@ export default function Navbar() {
                     boxShadow: "0 0 16px rgba(255,65,179,0.35)",
                   }}
                 >
-                  Start free
+                  Join Waitlist
                 </Link>
               </>
             )}
@@ -269,12 +269,12 @@ export default function Navbar() {
               <>
                 <Link href="/login" className="text-sm" style={{ color: "rgba(255,255,255,0.6)" }} onClick={() => setMobileMenuOpen(false)}>Log in</Link>
                 <Link
-                  href="/signup"
+                  href="/early-access"
                   className="text-sm text-white text-center py-2.5 rounded-full"
                   style={{ background: "#ff41b3", fontFamily: "var(--font-space-grotesk)", fontWeight: 700 }}
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  Start free
+                  Join Waitlist
                 </Link>
               </>
             )}

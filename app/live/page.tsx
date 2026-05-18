@@ -104,7 +104,7 @@ export default async function LiveLandingPage() {
           </h1>
           <div className="mt-8">
             <Link
-              href="/signup"
+              href="/early-access"
               className="px-10 py-4 rounded-full font-bold uppercase tracking-widest text-base transition-all hover:opacity-90"
               style={{
                 backgroundColor: "#aaee20",
@@ -129,7 +129,7 @@ export default async function LiveLandingPage() {
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl">
           {EVENT_TYPES.map((event) => (
-            <Link href={event.href ?? (isLoggedIn ? "/live" : "/signup")} key={event.title} target={event.href ? "_blank" : undefined} rel={event.href ? "noopener noreferrer" : undefined} className="group cursor-pointer">
+            <Link href={event.href ?? (isLoggedIn ? "/live" : "/early-access")} key={event.title} target={event.href ? "_blank" : undefined} rel={event.href ? "noopener noreferrer" : undefined} className="group cursor-pointer">
               <div
                 className="relative overflow-hidden rounded-xl mb-6"
                 style={{ aspectRatio: "16/9" }}
@@ -187,11 +187,11 @@ export default async function LiveLandingPage() {
               Upgrade Now
             </Link>
             <Link
-              href="/signup"
+              href="/early-access"
               className="px-12 py-5 rounded-full font-bold uppercase tracking-widest text-lg transition-all hover:bg-white/10"
               style={{ border: "1px solid rgba(255,255,255,0.15)", color: "rgba(255,255,255,0.7)", fontFamily: "var(--font-lexend)" }}
             >
-              Sign Up Free
+              Join Waitlist
             </Link>
           </div>
         </div>
@@ -296,7 +296,7 @@ export default async function LiveLandingPage() {
             {liveSessions.map((s) => (
               <Link
                 key={s.id}
-                href={s.daily_room_url || (isLoggedIn ? "/home" : "/signup")}
+                href={s.daily_room_url || (isLoggedIn ? "/home" : "/early-access")}
                 target={s.daily_room_url ? "_blank" : undefined}
                 className="group flex items-center gap-5 p-5 rounded-2xl transition-all hover:opacity-90"
                 style={{ background: s.gradient || "linear-gradient(135deg,#1a0030,#001a30)", border: "1px solid rgba(255,255,255,0.1)" }}
