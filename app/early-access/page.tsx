@@ -96,13 +96,13 @@ export default function EarlyAccessPage() {
                 className="text-2xl uppercase"
                 style={{ fontFamily: "var(--font-lexend)", fontWeight: 900, color: "#ffffff" }}
               >
-                Stay Honest.
+                Join the waitlist
               </h2>
               <p
                 className="text-xs uppercase tracking-widest mt-1"
                 style={{ color: "rgba(255,255,255,0.4)", fontFamily: "var(--font-lexend)" }}
               >
-                Get early access credentials.
+                You'll be the first to know.
               </p>
             </div>
 
@@ -173,7 +173,7 @@ export default function EarlyAccessPage() {
                     cursor: status === "loading" ? "wait" : "pointer",
                   }}
                 >
-                  {status === "loading" ? "Sending…" : "Notify Me"}
+                  {status === "loading" ? "Sending…" : "Add My Name"}
                 </button>
               </form>
             )}
