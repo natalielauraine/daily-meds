@@ -33,7 +33,7 @@ export default function AffiliateEarningsEmail({
   const hasEarnings = earningsThisMonth > 0;
 
   return (
-    <EmailLayout preview={`Your Daily Meds affiliate earnings for ${month}: £${earningsThisMonth.toFixed(2)}`}>
+    <EmailLayout preview={`Your Daily Meds affiliate earnings for ${month}: £${(earningsThisMonth / 100).toFixed(2)}`}>
 
       <Text style={emailStyles.h1}>
         Your {month} earnings 💸
@@ -60,7 +60,7 @@ export default function AffiliateEarningsEmail({
           <div>
             <Text style={emailStyles.infoLabel}>Earned</Text>
             <Text style={{ ...emailStyles.infoValue, fontSize: "22px", color: "#A78BFA" }}>
-              £{earningsThisMonth.toFixed(2)}
+              £{(earningsThisMonth / 100).toFixed(2)}
             </Text>
           </div>
         </div>
@@ -132,9 +132,9 @@ AffiliateEarningsEmail.defaultProps = {
   month: "March 2026",
   clicks: 142,
   signups: 8,
-  earningsThisMonth: 31.96,
-  totalEarnings: 87.40,
+  earningsThisMonth: 3196,
+  totalEarnings: 8740,
   referralCode: "SARAH20",
   referralUrl: "https://thedailymeds.com?ref=SARAH20",
-  payoutPending: 87.40,
+  payoutPending: 8740,
 };

@@ -356,16 +356,17 @@ export async function POST(req: NextRequest) {
             .single();
 
           if (affiliate) {
-            const amountPaid      = (session.amount_total ?? 0) / 100;
+            const amountPennies   = session.amount_total ?? 0;
             const commissionRate  = affiliate.affiliate_type === "artist" ? 0.2 : 0.1;
-            const commission      = parseFloat((amountPaid * commissionRate).toFixed(2));
+            const commissionPennies = Math.round(amountPennies * commissionRate);
             await supabase
               .from("affiliates")
-              .update({
-                signups:  affiliate.signups + 1,
-                earnings: parseFloat((affiliate.earnings + commission).toFixed(2)),
-              })
+              .update({ signups: affiliate.signups + 1 })
               .eq("id", affiliate.id);
+            await supabase.rpc("add_affiliate_earnings", {
+              aff_id: affiliate.id,
+              pennies: commissionPennies,
+            });
           }
         }
 
@@ -430,7 +431,7 @@ export async function POST(req: NextRequest) {
               TrialEndingEmail({
                 name:         userData.name || userData.email.split("@")[0],
                 trialEndDate,
-                amount:       "£19.99",
+                amount:       "£9.99",
               })
             );
 

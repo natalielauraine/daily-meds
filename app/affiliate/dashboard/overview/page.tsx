@@ -26,8 +26,8 @@ interface AffiliateRow {
 
 // ── HELPERS ──────────────────────────────────────────────────────────────────
 
-function gbp(n: number) {
-  return new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP" }).format(n);
+function gbp(pennies: number) {
+  return new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP" }).format(pennies / 100);
 }
 
 function fmtDate(iso: string) {

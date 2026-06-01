@@ -209,8 +209,8 @@ export default function AffiliateDashboardPage() {
     setTimeout(() => setCopied(false), 2000);
   }
 
-  function gbp(n: number) {
-    return `£${n.toFixed(2)}`;
+  function gbp(pennies: number) {
+    return `£${(pennies / 100).toFixed(2)}`;
   }
 
   const conversionRate = affiliate && affiliate.clicks > 0
