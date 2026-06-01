@@ -17,6 +17,21 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next({ request });
   }
 
+  // ── WAITLIST GATE ──────────────────────────────────────────────────
+  // Site is in pre-launch mode. Only /early-access and admin paths are
+  // public. Everything else redirects to the waitlist.
+  const OPEN_PATHS = ["/early-access", "/admin", "/login", "/auth", "/privacy", "/privacy-policy", "/terms"];
+  const pathname = request.nextUrl.pathname;
+  const isOpen = pathname === "/" || OPEN_PATHS.some((p) => pathname.startsWith(p));
+  if (!isOpen) {
+    return NextResponse.redirect(new URL("/early-access", request.url));
+  }
+  // Serve /early-access as the homepage
+  if (pathname === "/") {
+    return NextResponse.rewrite(new URL("/early-access", request.url));
+  }
+  // ── END WAITLIST GATE ──────────────────────────────────────────────
+
   // Start with a plain pass-through response
   let supabaseResponse = NextResponse.next({ request });
 

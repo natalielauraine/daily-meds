@@ -4,9 +4,7 @@ import "./globals.css";
 import { PlayerProvider } from "../lib/player-context";
 import { LanguageProvider } from "../lib/language-context";
 import { PresenceProvider } from "../lib/presence-context";
-import MiniPlayer from "./components/MiniPlayer";
-import PlayerSpacer from "./components/PlayerSpacer";
-import EmojiReactionToast from "./components/EmojiReactionToast";
+import AppChrome from "./components/AppChrome";
 
 const lexend = Lexend({
   subsets: ["latin"],
@@ -153,12 +151,7 @@ export default function RootLayout({
             {/* PlayerProvider wraps everything so audio persists across page navigation */}
             <PlayerProvider>
               {children}
-              {/* Spacer pushes page content up so it's not hidden behind the mini player */}
-              <PlayerSpacer />
-              {/* MiniPlayer sits outside page content so it stays pinned to the bottom */}
-              <MiniPlayer />
-              {/* EmojiReactionToast shows floating emojis sent by other users */}
-              <EmojiReactionToast />
+              <AppChrome />
             </PlayerProvider>
           </PresenceProvider>
         </LanguageProvider>
