@@ -18,7 +18,8 @@
  *   ├─────────────┼───────────────┼────────────┼───────────────────┼──────────────┤
  *   │ Free        │ The Observer  │ £0         │ No Stripe product │ 0            │
  *   │ Trial       │ Trial Setup   │ £1.00      │ One-time fee      │ 2 (then 1)   │
- *   │ Audio-Only  │ The Listener  │ £9.99/mo   │ Recurring monthly │ 1            │
+ *   │ Audio-Only  │ The Monthly Listener │ £9.99/mo   │ Recurring monthly │ 1            │
+ *   │ Audio-Yr    │ The Annual Listener  │ £99.99/yr  │ Recurring yearly  │ 1            │
  *   │ Full Access │ The Seeker    │ £19.99/mo  │ Recurring monthly │ 2            │
  *   │ Annual      │ The Dedicated │ £199.00/yr │ Recurring yearly  │ 2            │
  *   │ Lifetime    │ The Master    │ £299.99    │ One-time payment  │ 2 (or 3)     │
@@ -87,12 +88,21 @@ const PLANS = [
   },
   {
     planId: "audio",
-    productName: "Daily Meds — The Listener (Audio Only)",
-    productDescription: "Full audio library access. 200+ meditation sessions, new drops every week. Audio only — no live sessions.",
+    productName: "Daily Meds — The Monthly Listener (Audio Only)",
+    productDescription: "Full audio library access. New drops every week. Audio only — no live sessions.",
     priceAmount: 999,       // £9.99 in pence
     currency: "gbp",
     recurring: { interval: "month" },
     envVar: "NEXT_PUBLIC_STRIPE_AUDIO_PRICE_ID",
+  },
+  {
+    planId: "audio_annual",
+    productName: "Daily Meds — The Annual Listener (Audio Only)",
+    productDescription: "Full audio library access, billed annually. Audio only — no live sessions. Save vs monthly.",
+    priceAmount: 9999,      // £99.99 in pence
+    currency: "gbp",
+    recurring: { interval: "year" },
+    envVar: "NEXT_PUBLIC_STRIPE_AUDIO_ANNUAL_PRICE_ID",
   },
   {
     planId: "monthly",

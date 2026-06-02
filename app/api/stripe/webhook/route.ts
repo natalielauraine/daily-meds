@@ -36,16 +36,18 @@ export const dynamic = "force-dynamic";
 
 // Maps a Stripe price ID to a human-readable tier name stored in Supabase
 function getTierFromPriceId(priceId: string): string {
-  if (priceId === process.env.NEXT_PUBLIC_STRIPE_AUDIO_PRICE_ID)   return "audio";
-  if (priceId === process.env.NEXT_PUBLIC_STRIPE_MONTHLY_PRICE_ID) return "monthly";
-  if (priceId === process.env.NEXT_PUBLIC_STRIPE_ANNUAL_PRICE_ID)  return "annual";
-  if (priceId === process.env.NEXT_PUBLIC_STRIPE_LIFETIME_PRICE_ID) return "lifetime";
+  if (priceId === process.env.NEXT_PUBLIC_STRIPE_AUDIO_PRICE_ID)        return "audio";
+  if (priceId === process.env.NEXT_PUBLIC_STRIPE_AUDIO_ANNUAL_PRICE_ID) return "audio";
+  if (priceId === process.env.NEXT_PUBLIC_STRIPE_MONTHLY_PRICE_ID)      return "monthly";
+  if (priceId === process.env.NEXT_PUBLIC_STRIPE_ANNUAL_PRICE_ID)       return "annual";
+  if (priceId === process.env.NEXT_PUBLIC_STRIPE_LIFETIME_PRICE_ID)     return "lifetime";
   return "monthly";
 }
 
 // Maps a Stripe price ID to an access level integer (1 = audio, 2 = premium)
 function getAccessLevelFromPriceId(priceId: string): number {
-  if (priceId === process.env.NEXT_PUBLIC_STRIPE_AUDIO_PRICE_ID) return 1;
+  if (priceId === process.env.NEXT_PUBLIC_STRIPE_AUDIO_PRICE_ID)        return 1;
+  if (priceId === process.env.NEXT_PUBLIC_STRIPE_AUDIO_ANNUAL_PRICE_ID) return 1;
   return 2; // monthly, annual, lifetime, trial — all premium
 }
 

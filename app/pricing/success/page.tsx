@@ -24,6 +24,21 @@ const PLAN_DETAILS: Record<string, { label: string; gradient: string; message: s
     gradient: "linear-gradient(135deg, #adf225 0%, #adf225 35%, #adf225 70%, #f4e71d 100%)",
     message: "You're a founding member. Access everything, forever. Thank you.",
   },
+  audio: {
+    label: "Monthly Listener",
+    gradient: "linear-gradient(135deg, #ff41b3 0%, #ec723d 50%, #adf225 100%)",
+    message: "Your monthly audio membership is now active. Full meditation library unlocked.",
+  },
+  audioAnnual: {
+    label: "Annual Listener",
+    gradient: "linear-gradient(135deg, #ff41b3 0%, #ec723d 50%, #adf225 100%)",
+    message: "Your annual audio membership is now active. Full meditation library unlocked.",
+  },
+  trial: {
+    label: "Free Trial",
+    gradient: "linear-gradient(135deg, #ec723d 0%, #f4e71d 50%, #adf225 100%)",
+    message: "Your 14-day trial is active. Explore everything — we think you'll stay.",
+  },
 };
 
 // Inner component uses useSearchParams — must be inside Suspense

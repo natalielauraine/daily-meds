@@ -16,11 +16,12 @@ import { cookies } from "next/headers";
 
 // Maps plan ID → access_level integer (used as Stripe metadata so the webhook can sync it)
 const ACCESS_LEVELS: Record<string, string> = {
-  audio:    "1",
-  monthly:  "2",
-  annual:   "2",
-  lifetime: "2",
-  trial:    "1",
+  audio:       "1",
+  audioAnnual: "1",
+  monthly:     "2",
+  annual:      "2",
+  lifetime:    "2",
+  trial:       "1",
 };
 
 export async function POST(req: NextRequest) {

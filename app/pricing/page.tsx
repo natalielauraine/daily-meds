@@ -15,10 +15,11 @@ import { createClient } from "../../lib/supabase-browser";
 // Maps each plan ID to its Stripe price ID from env vars.
 // 'trial' and 'lifetime' don't need a priceId here — the checkout route handles them directly.
 const PRICE_IDS: Record<string, string> = {
-  audio:    process.env.NEXT_PUBLIC_STRIPE_AUDIO_PRICE_ID    ?? "",
-  monthly:  process.env.NEXT_PUBLIC_STRIPE_MONTHLY_PRICE_ID  ?? "",
-  annual:   process.env.NEXT_PUBLIC_STRIPE_ANNUAL_PRICE_ID   ?? "",
-  lifetime: process.env.NEXT_PUBLIC_STRIPE_LIFETIME_PRICE_ID ?? "",
+  audio:        process.env.NEXT_PUBLIC_STRIPE_AUDIO_PRICE_ID        ?? "",
+  audioAnnual:  process.env.NEXT_PUBLIC_STRIPE_AUDIO_ANNUAL_PRICE_ID ?? "",
+  monthly:      process.env.NEXT_PUBLIC_STRIPE_MONTHLY_PRICE_ID      ?? "",
+  annual:       process.env.NEXT_PUBLIC_STRIPE_ANNUAL_PRICE_ID       ?? "",
+  lifetime:     process.env.NEXT_PUBLIC_STRIPE_LIFETIME_PRICE_ID     ?? "",
 };
 
 // ── PLAN DATA ─────────────────────────────────────────────────────────────────
@@ -47,7 +48,7 @@ const PLANS = [
   },
   {
     id: "audio",
-    name: "The Listener",
+    name: "The Monthly Listener",
     tagline: "Full audio library, anytime",
     price: "£9.99",
     priceNote: "per month · audio only",
@@ -58,6 +59,28 @@ const PLANS = [
       "Full audio library",
       "New drops every week",
       "Breathing timer",
+      "Cancel any time",
+    ],
+    locked: [
+      "Live sessions with Natalie",
+      "Offline downloads",
+      "Group meditation rooms",
+    ],
+  },
+  {
+    id: "audioAnnual",
+    name: "The Annual Listener",
+    tagline: "Audio library — save with annual",
+    price: "£99.99",
+    priceNote: "per year · audio only",
+    cta: "Join Waitlist",
+    featured: false,
+    features: [
+      "Everything in Free",
+      "Full audio library",
+      "New drops every week",
+      "Breathing timer",
+      "Save vs monthly",
       "Cancel any time",
     ],
     locked: [
@@ -118,7 +141,7 @@ const FAQS = [
   },
   {
     q: "What are the different plans?",
-    a: "Free gives you 10 sessions at no cost. The Listener is £9.99/month — full audio library, no live sessions. The Seeker is £19.99/month — audio plus live sessions with Natalie. The Dedicated is £199/year — everything in The Seeker, billed annually. The Master is £299.99 one-time for lifetime access to everything, including all future content.",
+    a: "Free gives you 10 sessions at no cost. The Monthly Listener is £9.99/month — full audio library, no live sessions. The Annual Listener is £99.99/year — same audio access, save vs monthly. The Seeker is £19.99/month — audio plus live sessions with Natalie. The Dedicated is £199/year — everything in The Seeker, billed annually. The Master is £299.99 one-time for lifetime access to everything, including all future content.",
   },
   {
     q: "Is the founder membership really one payment?",
