@@ -20,15 +20,17 @@ export async function middleware(request: NextRequest) {
   // ── WAITLIST GATE ──────────────────────────────────────────────────
   // Site is in pre-launch mode. Only /early-access and admin paths are
   // public. Everything else redirects to the waitlist.
-  const OPEN_PATHS = ["/early-access", "/admin", "/login", "/auth", "/privacy", "/privacy-policy", "/terms"];
-  const pathname = request.nextUrl.pathname;
-  const isOpen = pathname === "/" || OPEN_PATHS.some((p) => pathname.startsWith(p));
-  if (!isOpen) {
-    return NextResponse.redirect(new URL("/early-access", request.url));
-  }
-  // Serve /early-access as the homepage
-  if (pathname === "/") {
-    return NextResponse.rewrite(new URL("/early-access", request.url));
+  // Set NEXT_PUBLIC_DISABLE_WAITLIST_GATE=true in env to bypass (staging).
+  if (process.env.NEXT_PUBLIC_DISABLE_WAITLIST_GATE !== "true") {
+    const OPEN_PATHS = ["/early-access", "/admin", "/login", "/auth", "/privacy", "/privacy-policy", "/terms"];
+    const pathname = request.nextUrl.pathname;
+    const isOpen = pathname === "/" || OPEN_PATHS.some((p) => pathname.startsWith(p));
+    if (!isOpen) {
+      return NextResponse.redirect(new URL("/early-access", request.url));
+    }
+    if (pathname === "/") {
+      return NextResponse.rewrite(new URL("/early-access", request.url));
+    }
   }
   // ── END WAITLIST GATE ──────────────────────────────────────────────
 
