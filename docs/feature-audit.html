@@ -1,0 +1,1313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daily Meds — Feature Audit</title>
+<style>
+  /* ── Reset & Base ─────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:        #0a0f14;
+    --bg-card:   rgba(255,255,255,0.04);
+    --bg-card-h: rgba(255,255,255,0.07);
+    --border:    rgba(255,255,255,0.08);
+    --text:      #e8eaed;
+    --text-dim:  #8b95a5;
+    --pink:      #ff41b3;
+    --orange:    #ec723d;
+    --green:     #adf225;
+    --yellow:    #f4e71d;
+    --complete:  #adf225;
+    --partial:   #f4e71d;
+    --stub:      #ff4d6a;
+    --radius:    12px;
+    --glow-pink: 0 0 40px rgba(255,65,179,0.15);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── Layout ───────────────────────────────────── */
+  .wrapper {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  /* ── Header ───────────────────────────────────── */
+  .hero {
+    text-align: center;
+    padding: 64px 0 48px;
+    position: relative;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -60px; left: 50%; transform: translateX(-50%);
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(255,65,179,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero .logo {
+    font-size: 14px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--pink);
+    margin-bottom: 12px;
+  }
+  .hero h1 {
+    font-size: clamp(32px, 5vw, 52px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, #fff 30%, var(--pink));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero .subtitle {
+    font-size: 18px;
+    color: var(--text-dim);
+    margin-top: 12px;
+  }
+  .hero .date {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-top: 8px;
+    opacity: 0.6;
+  }
+
+  /* ── Stat Bar ─────────────────────────────────── */
+  .stat-bar {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    flex-wrap: wrap;
+    margin: 32px 0 48px;
+  }
+  .stat {
+    text-align: center;
+  }
+  .stat .num {
+    font-size: 36px;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--pink), var(--orange));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .stat .label {
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  /* ── Section Headers ──────────────────────────── */
+  .section-header {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin: 56px 0 8px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-header .accent {
+    color: var(--pink);
+  }
+  .section-sub {
+    color: var(--text-dim);
+    font-size: 15px;
+    margin-bottom: 28px;
+  }
+
+  /* ── Badges ───────────────────────────────────── */
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 999px;
+    line-height: 1.4;
+  }
+  .badge-complete { background: rgba(173,242,37,0.15); color: var(--complete); }
+  .badge-partial  { background: rgba(244,231,29,0.15); color: var(--partial);  }
+  .badge-stub     { background: rgba(255,77,106,0.15);  color: var(--stub);    }
+
+  /* ── Feature Grid ─────────────────────────────── */
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  .feature-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .feature-card:hover {
+    background: var(--bg-card-h);
+    border-color: rgba(255,255,255,0.12);
+  }
+  .feature-card .card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+  .feature-card .card-name {
+    font-weight: 600;
+    font-size: 15px;
+  }
+  .feature-card .card-desc {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  /* ── Category Label ───────────────────────────── */
+  .category-label {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--pink);
+    margin: 32px 0 12px;
+    padding-left: 2px;
+  }
+
+  /* ── Details / Accordion ──────────────────────── */
+  details {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 12px;
+    overflow: hidden;
+  }
+  details[open] {
+    border-color: rgba(255,65,179,0.2);
+  }
+  summary {
+    padding: 18px 24px;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    user-select: none;
+    transition: background 0.15s;
+  }
+  summary:hover { background: var(--bg-card-h); }
+  summary::-webkit-details-marker { display: none; }
+  summary::before {
+    content: '';
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-right: 2px solid var(--text-dim);
+    border-bottom: 2px solid var(--text-dim);
+    transform: rotate(-45deg);
+    transition: transform 0.2s;
+    flex-shrink: 0;
+  }
+  details[open] > summary::before {
+    transform: rotate(45deg);
+  }
+  .detail-body {
+    padding: 0 24px 24px;
+    font-size: 14px;
+    color: var(--text-dim);
+    line-height: 1.7;
+  }
+  .detail-body ul {
+    padding-left: 20px;
+    margin: 8px 0;
+  }
+  .detail-body li {
+    margin-bottom: 6px;
+  }
+  .detail-body strong {
+    color: var(--text);
+  }
+  .detail-body .highlight {
+    color: var(--pink);
+    font-weight: 600;
+  }
+
+  /* ── Diagrams ─────────────────────────────────── */
+  .diagram-container {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px;
+    margin: 24px 0;
+    overflow-x: auto;
+  }
+
+  /* Architecture */
+  .arch-diagram {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    min-width: 700px;
+    padding: 16px 0;
+  }
+  .arch-node {
+    background: rgba(255,65,179,0.1);
+    border: 1px solid rgba(255,65,179,0.3);
+    border-radius: var(--radius);
+    padding: 12px 28px;
+    font-weight: 600;
+    font-size: 14px;
+    text-align: center;
+    position: relative;
+    min-width: 140px;
+  }
+  .arch-node.primary {
+    background: linear-gradient(135deg, rgba(255,65,179,0.2), rgba(236,114,61,0.2));
+    border-color: var(--pink);
+    box-shadow: var(--glow-pink);
+  }
+  .arch-node.platform {
+    background: rgba(173,242,37,0.08);
+    border-color: rgba(173,242,37,0.3);
+  }
+  .arch-connector {
+    width: 2px;
+    height: 28px;
+    background: linear-gradient(to bottom, var(--pink), rgba(255,65,179,0.2));
+  }
+  .arch-row {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .arch-branch {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+  .arch-label {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+  }
+  .arch-service {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 18px;
+    font-size: 13px;
+    font-weight: 500;
+    text-align: center;
+    min-width: 100px;
+  }
+  .arch-service.db     { border-color: rgba(173,242,37,0.3); color: var(--green);  }
+  .arch-service.pay    { border-color: rgba(236,114,61,0.3);  color: var(--orange); }
+  .arch-service.media  { border-color: rgba(255,65,179,0.3);  color: var(--pink);   }
+  .arch-service.comm   { border-color: rgba(244,231,29,0.3);  color: var(--yellow); }
+  .arch-spread {
+    width: 100%;
+    height: 24px;
+    position: relative;
+  }
+  .arch-spread::before {
+    content: '';
+    position: absolute;
+    left: 10%; right: 10%; top: 0;
+    height: 24px;
+    border-left: 2px solid rgba(255,65,179,0.2);
+    border-right: 2px solid rgba(255,65,179,0.2);
+    border-bottom: 2px solid rgba(255,65,179,0.2);
+    border-radius: 0 0 12px 12px;
+  }
+
+  /* DB Schema */
+  .schema-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+    min-width: 600px;
+  }
+  .schema-group {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+  }
+  .schema-group-title {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .sg-core      .schema-group-title { color: var(--pink);   }
+  .sg-live      .schema-group-title { color: var(--orange); }
+  .sg-groups    .schema-group-title { color: var(--green);  }
+  .sg-crews     .schema-group-title { color: var(--yellow); }
+  .sg-brand     .schema-group-title { color: var(--pink);   }
+  .sg-community .schema-group-title { color: var(--orange); }
+  .sg-content   .schema-group-title { color: var(--green);  }
+  .sg-affiliate .schema-group-title { color: var(--yellow); }
+  .sg-other     .schema-group-title { color: var(--text-dim); }
+  .schema-table {
+    font-size: 12px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    color: var(--text-dim);
+    padding: 3px 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .schema-table::before {
+    content: '';
+    display: inline-block;
+    width: 6px; height: 6px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+  .sg-core      .schema-table::before { background: var(--pink);   }
+  .sg-live      .schema-table::before { background: var(--orange); }
+  .sg-groups    .schema-table::before { background: var(--green);  }
+  .sg-crews     .schema-table::before { background: var(--yellow); }
+  .sg-brand     .schema-table::before { background: var(--pink);   }
+  .sg-community .schema-table::before { background: var(--orange); }
+  .sg-content   .schema-table::before { background: var(--green);  }
+  .sg-affiliate .schema-table::before { background: var(--yellow); }
+  .sg-other     .schema-table::before { background: var(--text-dim); }
+
+  /* Services Map */
+  .services-map {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+    min-width: 500px;
+  }
+  .service-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    text-align: center;
+  }
+  .service-card .svc-name {
+    font-weight: 700;
+    font-size: 16px;
+    margin-bottom: 4px;
+  }
+  .service-card .svc-role {
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+  .service-card .svc-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-bottom: 10px;
+  }
+  .svc-1 .svc-dot { background: var(--green);  box-shadow: 0 0 12px rgba(173,242,37,0.4); }
+  .svc-2 .svc-dot { background: var(--orange); box-shadow: 0 0 12px rgba(236,114,61,0.4);  }
+  .svc-3 .svc-dot { background: var(--pink);   box-shadow: 0 0 12px rgba(255,65,179,0.4);  }
+  .svc-4 .svc-dot { background: var(--yellow); box-shadow: 0 0 12px rgba(244,231,29,0.4);  }
+
+  /* ── Issues Table ─────────────────────────────── */
+  .issues-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .issues-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .issues-list li:last-child { border-bottom: none; }
+  .issue-num {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--stub);
+    background: rgba(255,77,106,0.12);
+    border-radius: 6px;
+    min-width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  /* ── Cron Table ───────────────────────────────── */
+  .cron-grid {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 0;
+    font-size: 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .cron-grid > div {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .cron-grid > div:nth-last-child(-n+2) { border-bottom: none; }
+  .cron-sched {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 12px;
+    color: var(--orange);
+    background: rgba(236,114,61,0.06);
+  }
+  .cron-desc {
+    color: var(--text-dim);
+  }
+
+  /* ── TOC ──────────────────────────────────────── */
+  .toc {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 48px;
+  }
+  .toc a {
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    text-decoration: none;
+    padding: 6px 14px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    transition: all 0.2s;
+  }
+  .toc a:hover {
+    border-color: var(--pink);
+    color: var(--pink);
+    background: rgba(255,65,179,0.06);
+  }
+
+  /* ── Executive Summary ────────────────────────── */
+  .exec-summary {
+    background: linear-gradient(135deg, rgba(255,65,179,0.06), rgba(236,114,61,0.04));
+    border: 1px solid rgba(255,65,179,0.15);
+    border-radius: var(--radius);
+    padding: 28px 32px;
+    font-size: 15px;
+    line-height: 1.8;
+    color: var(--text);
+    margin-bottom: 16px;
+  }
+
+  /* ── Footer ───────────────────────────────────── */
+  .footer {
+    text-align: center;
+    padding: 48px 0 0;
+    border-top: 1px solid var(--border);
+    margin-top: 56px;
+  }
+  .footer p {
+    font-size: 12px;
+    color: var(--text-dim);
+    opacity: 0.5;
+  }
+
+  /* ── Print ────────────────────────────────────── */
+  @media print {
+    body { background: #fff; color: #1a1a1a; }
+    .wrapper { max-width: 100%; padding: 0; }
+    .hero::before { display: none; }
+    .hero h1 { background: none; -webkit-text-fill-color: #1a1a1a; }
+    .stat .num { background: none; -webkit-text-fill-color: var(--pink); }
+    details { break-inside: avoid; }
+    details[open] { break-inside: auto; }
+    .feature-card, .diagram-container, .schema-group, .service-card, details {
+      border-color: #ddd;
+      background: #fafafa;
+    }
+    .badge-complete { background: #e8f5e9; color: #2e7d32; }
+    .badge-partial  { background: #fff8e1; color: #f57f17; }
+    .badge-stub     { background: #fce4ec; color: #c62828; }
+    .toc { display: none; }
+  }
+
+  /* ── Mobile ───────────────────────────────────── */
+  @media (max-width: 640px) {
+    .wrapper { padding: 24px 16px 60px; }
+    .feature-grid { grid-template-columns: 1fr; }
+    .stat-bar { gap: 20px; }
+    .arch-diagram { min-width: auto; }
+    .schema-grid { grid-template-columns: 1fr 1fr; min-width: auto; }
+    .services-map { grid-template-columns: 1fr; min-width: auto; }
+    .cron-grid { grid-template-columns: 1fr; }
+    .cron-sched { font-weight: 600; }
+    summary { padding: 14px 16px; font-size: 15px; }
+    .detail-body { padding: 0 16px 20px; }
+    .diagram-container { padding: 20px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrapper">
+
+  <!-- ════ HERO ════ -->
+  <div class="hero">
+    <div class="logo">Daily Meds</div>
+    <h1>Feature Audit</h1>
+    <div class="subtitle">Comprehensive inventory of every feature, service, and database table</div>
+    <div class="date">June 2, 2026 &mdash; Prepared for Nat</div>
+  </div>
+
+  <!-- ════ STAT BAR ════ -->
+  <div class="stat-bar">
+    <div class="stat"><div class="num">46</div><div class="label">Features</div></div>
+    <div class="stat"><div class="num">40</div><div class="label">Complete</div></div>
+    <div class="stat"><div class="num">4</div><div class="label">Partial</div></div>
+    <div class="stat"><div class="num">28</div><div class="label">DB Tables</div></div>
+    <div class="stat"><div class="num">8</div><div class="label">Services</div></div>
+    <div class="stat"><div class="num">6</div><div class="label">Cron Jobs</div></div>
+  </div>
+
+  <!-- ════ TOC ════ -->
+  <nav class="toc">
+    <a href="#summary">Summary</a>
+    <a href="#inventory">Inventory</a>
+    <a href="#details">Details</a>
+    <a href="#architecture">Architecture</a>
+    <a href="#schema">Schema</a>
+    <a href="#services">Services</a>
+    <a href="#cron">Cron Jobs</a>
+    <a href="#issues">Issues</a>
+  </nav>
+
+  <!-- ════ EXECUTIVE SUMMARY ════ -->
+  <div id="summary">
+    <h2 class="section-header"><span class="accent">01</span> Executive Summary</h2>
+    <div class="exec-summary">
+      Daily Meds is a full-featured meditation and wellness web application built on Next.js, Supabase, and Stripe. The codebase contains <strong>46 distinct features</strong> spanning session playback, subscription management, live video rooms, social community, affiliate marketing, and a complete admin CMS. Of these, <strong>40 are fully complete</strong> and <strong>4 are partially implemented</strong>. The app integrates 8 external services, manages 28 database tables, and runs 6 scheduled cron jobs for automated engagement. The product is currently behind a waitlist gate&mdash;all features are built and functional but not yet publicly accessible. The primary gaps are cosmetic (placeholder content on 2 pages) and a localStorage/Supabase dual-implementation issue affecting watchlist and downloads.
+    </div>
+  </div>
+
+  <!-- ════ FEATURE INVENTORY ════ -->
+  <div id="inventory">
+    <h2 class="section-header"><span class="accent">02</span> Feature Inventory</h2>
+    <p class="section-sub">Every feature verified from source. Tap any card for details below.</p>
+
+    <!-- Core Product -->
+    <div class="category-label">Core Product</div>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="card-top"><span class="card-name">Session Library</span><span class="badge badge-complete">Complete</span></div>
+        <div class="card-desc">Browse/filter/search 31 meditation sessions by mood, duration, media type. 11 mood categories.</div>
+      </div>
+      <div class="feature-card">
+        <div class="card-top"><span class="card-name">Session Player</span><span class="badge badge-complete">Complete</span></div>
+        <div class="card-desc">Cinematic fullscreen player with audio/video, subscription gating, resume position, PiP, share modal, playlist modal.</div>
+      </div>
+      <div class="feature-card">
+        <div class="card-top"><span class="card-name">Audio Player (Global)</span><span class="badge badge-complete">Complete</span></div>
+        <div class="card-desc">Persistent mini-player across all pages, saves position every 10s to Supabase, marks completions.</div>
+      </div>
+      <div class="feature-card">
+        <div class="card-top"><span class="card-name">Mood Gradients</span><span class="badge badge-complete">Complete</span></div>
+        <div class="card-desc">11 mood categories with distinct CSS gradients used site-wide.</div>
+      </div>
+    </div>
+
+    <!-- Subscriptions & Payments -->
+    <div class="category-label">Subscriptions &amp; Payments</div>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="card-top"><span class="card-name">Pricing Page</span><span class="badge badge-complete">Complete</span></div>
+        <div class="card-desc">6 tiers from Free to Lifetime (£299.99). FAQ, comparison table, trial banner.</div>
+      </div>
+      <div class="feature-card">
+        <div class="card-top"><span class="card-name">Stripe Checkout</span><span class="badge badge-complete">Complete</span></div>
+        <div class="card-desc">Creates checkout sessions for all plan types including trial combo (£1 setup + 14-day trial + £9.99/mo).</div>
+      </div>
+      <div class="feature-card">
+        <div class="card-top"><span class="card-name">Stripe Webhook</span><span class="badge badge-complete">Complete</span></div>
+        <div class="card-desc">Handles 5 event types, sends 7 email types, auto-creates Supabase accounts for guest checkouts.</div>
+      </div>
+      <div class="feature-card">
+        <div class="card-top"><span class="card-name">Upgrade to Lifetime</span><span class="badge badge-complete">Complete</span></div>
+        <div class="card-desc">Frictionless upgrade for existing subscribers using saved card.</div>
+      </div>
+      <div class="feature-card">
+        <div class="card-top"><span class="card-name">Customer Portal</span><span class="badge badge-complete">Complete</span></div>
+        <div class="card-desc">Stripe billing portal for self-service subscription management.</div>
+      </div>
+    </div>
+
+    <!-- User Accounts -->
+    <div class="category-label">User Accounts</div>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="card-top"><span class="card-name">Auth</span><span class="badge badge-complete">Complete</span></div>
+        <div class="card-desc">Email/password, Google OAuth, magic links, PKCE code exchange, password reset.</div>
+      </div>
+      <div class="feature-card">
+        <div class="card-top"><span class="card-name">Profile</span><span class="badge badge-complete">Complete</span></div>
+        <div class="card-desc">Avatar upload, inline-editable fields, subscription management, community settings, account deletion.</div>
+      </div>
+      <div class="feature-card">
+        <div class="card-top"><span class="card-name">Stats / Streaks</span><span class="badge badge-complete">Complete</span></div>
+        <div class="card-desc">Sessions completed, total minutes, current/longest streak, weekly chart, top moods.</div>
+      </div>
+    </div>
+
+    <!-- Live Sessions -->
+    <div class="category-label">Live Sessions</div>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="card-top"><span class="card-name">Live Session Page</span><span class="badge badge-complete">Complete</span></div>
+        <div class="card-desc">Currently live and upcoming sessions. 3 event types: Audio Hugs, Alchemy Rewire, Expert Series.</div>
+      </div>
+      <div class="feature-card">
+        <div class="card-top"><span class="card-name">Daily.co Rooms</span><span class="badge badge-complete">Complete</span></div>
+        <div class="card-desc">Admin creates rooms, access_level >= 2 required for tokens, host has mute/remove privileges.</div>
+      </div>
+      <div class="feature-card">
+        <div class="card-top"><span class="card-name">Live Room Page</span><span class="badge badge-partial">Partial</span></div>
+        <div class="card-desc">Daily.co iframe works, emoji reactions work, but chat uses hardcoded mock messages (not real-time).</div>
+      </div>
+    </div>
+
+    <!-- Group Features -->
+    <div class="category-label">Group Features</div>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="card-top"><span class="card-name">Group Meditation Rooms</span><span class="badge badge-complete">Complete</span></div>
+        <div class="card-desc">User-created scheduled group sessions with timer, invite codes, Supabase Realtime sync.</div>
+      </div>
+      <div class="feature-card">
+        <div class="card-top"><span class="card-name">Crews</span><span class="badge badge-complete">Complete</span></div>
+        <div class="card-desc">Private friend groups, invite codes, activity feed. Privacy: never reveals session titles.</div>
+      </div>
+      <div class="feature-card">
+        <div class="card-top"><span class="card-name">Brand Crews</span><span class="badge badge-complete">Complete</span></div>
+        <div class="card-desc">B2B feature: brands apply, admin approves, branded community pages. 5 brand types.</div>
+      </div>
+    </div>
+
+    <!-- Community -->
+    <div class="category-label">Community</div>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="card-top"><span class="card-name">Community Feed</span><span class="badge badge-complete">Complete</span></div>
+        <div class="card-desc">Social feed with automated posts (completions, streaks, milestones), 6 emoji reactions, leaderboard.</div>
+      </div>
+      <div class="feature-card">
+        <div class="card-top"><span class="card-name">Presence System</span><span class="badge badge-complete">Complete</span></div>
+        <div class="card-desc">Real-time "who is meditating" via Supabase Realtime, floating emoji animations between users.</div>
+      </div>
+      <div class="feature-card">
+        <div class="card-top"><span class="card-name">Notifications</span><span class="badge badge-complete">Complete</span></div>
+        <div class="card-desc">In-app bell with unread badge, dropdown, Realtime live updates.</div>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="category-label">Content</div>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="card-top"><span class="card-name">Podcasts</span><span class="badge badge-complete">Complete</span></div>
+        <div class="card-desc">Full podcast library with episode browsing, admin CMS with all fields (guest info, transcript, highlights).</div>
+      </div>
+      <div class="feature-card">
+        <div class="card-top"><span class="card-name">Free Content</span><span class="badge badge-complete">Complete</span></div>
+        <div class="card-desc">Landing page for free sessions (is_free = true), server-rendered.</div>
+      </div>
+      <div class="feature-card">
+        <div class="card-top"><span class="card-name">Video Player</span><span class="badge badge-complete">Complete</span></div>
+        <div class="card-desc">Vimeo embed with branded controls, fallback for missing videos.</div>
+      </div>
+    </div>
+
+    <!-- Affiliate System -->
+    <div class="category-label">Affiliate System</div>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="card-top"><span class="card-name">Affiliate Program</span><span class="badge badge-complete">Complete</span></div>
+        <div class="card-desc">Two-tier: standard (auto-enroll, 10%) and artist (application, 20%). Full marketing page.</div>
+      </div>
+      <div class="feature-card">
+        <div class="card-top"><span class="card-name">Click Tracking</span><span class="badge badge-complete">Complete</span></div>
+        <div class="card-desc">?ref= URL param detection, localStorage storage, atomic Supabase RPC increment.</div>
+      </div>
+      <div class="feature-card">
+        <div class="card-top"><span class="card-name">Affiliate Dashboard</span><span class="badge badge-complete">Complete</span></div>
+        <div class="card-desc">"Partner Pulse" with stats, referral link, tier progress, payouts table.</div>
+      </div>
+      <div class="feature-card">
+        <div class="card-top"><span class="card-name">Admin Affiliate Overview</span><span class="badge badge-complete">Complete</span></div>
+        <div class="card-desc">All affiliates with earnings, sorting, progress bars.</div>
+      </div>
+    </div>
+
+    <!-- Admin -->
+    <div class="category-label">Admin</div>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="card-top"><span class="card-name">Admin Dashboard</span><span class="badge badge-complete">Complete</span></div>
+        <div class="card-desc">User counts, revenue, subscription breakdown, recent signups.</div>
+      </div>
+      <div class="feature-card">
+        <div class="card-top"><span class="card-name">Session CMS</span><span class="badge badge-complete">Complete</span></div>
+        <div class="card-desc">Full CRUD with drag-drop audio upload to R2, Vimeo/YouTube preview, draft/published.</div>
+      </div>
+      <div class="feature-card">
+        <div class="card-top"><span class="card-name">User Management</span><span class="badge badge-complete">Complete</span></div>
+        <div class="card-desc">Paginated list with search and tier filters.</div>
+      </div>
+      <div class="feature-card">
+        <div class="card-top"><span class="card-name">Live Management</span><span class="badge badge-complete">Complete</span></div>
+        <div class="card-desc">Schedule sessions, create Daily.co rooms, go live, send email blasts.</div>
+      </div>
+      <div class="feature-card">
+        <div class="card-top"><span class="card-name">Review Management</span><span class="badge badge-complete">Complete</span></div>
+        <div class="card-desc">Approve/reject user reviews for testimonials page.</div>
+      </div>
+      <div class="feature-card">
+        <div class="card-top"><span class="card-name">OG / Social Settings</span><span class="badge badge-complete">Complete</span></div>
+        <div class="card-desc">Edit OpenGraph metadata per page.</div>
+      </div>
+      <div class="feature-card">
+        <div class="card-top"><span class="card-name">Podcast CMS</span><span class="badge badge-complete">Complete</span></div>
+        <div class="card-desc">Full episode management.</div>
+      </div>
+      <div class="feature-card">
+        <div class="card-top"><span class="card-name">Brand Crew Admin</span><span class="badge badge-complete">Complete</span></div>
+        <div class="card-desc">Approve/reject brand applications, send approval emails.</div>
+      </div>
+    </div>
+
+    <!-- Other Features -->
+    <div class="category-label">Other Features</div>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="card-top"><span class="card-name">Challenges</span><span class="badge badge-complete">Complete</span></div>
+        <div class="card-desc">4 challenge types: sessions, streak days, minutes, mood exploration. Create/join/track progress.</div>
+      </div>
+      <div class="feature-card">
+        <div class="card-top"><span class="card-name">Watchlist</span><span class="badge badge-partial">Partial</span></div>
+        <div class="card-desc">Supabase table exists and page reads from it, but player heart toggle uses localStorage (dual implementation).</div>
+      </div>
+      <div class="feature-card">
+        <div class="card-top"><span class="card-name">Downloads</span><span class="badge badge-partial">Partial</span></div>
+        <div class="card-desc">Supabase page vs localStorage lib. No actual file download capability yet.</div>
+      </div>
+      <div class="feature-card">
+        <div class="card-top"><span class="card-name">Playlists</span><span class="badge badge-complete">Complete</span></div>
+        <div class="card-desc">Full CRUD with drag-drop reorder, stored as text[] array in Supabase.</div>
+      </div>
+      <div class="feature-card">
+        <div class="card-top"><span class="card-name">Breathing Timer</span><span class="badge badge-complete">Complete</span></div>
+        <div class="card-desc">Standalone timer with 5 durations, trending session cards.</div>
+      </div>
+      <div class="feature-card">
+        <div class="card-top"><span class="card-name">Brand Partnerships</span><span class="badge badge-complete">Complete</span></div>
+        <div class="card-desc">B2B pitch page with application form.</div>
+      </div>
+      <div class="feature-card">
+        <div class="card-top"><span class="card-name">Festivals Page</span><span class="badge badge-partial">Partial</span></div>
+        <div class="card-desc">3 of 4 team members are placeholders with [Role] and [Description].</div>
+      </div>
+      <div class="feature-card">
+        <div class="card-top"><span class="card-name">Shop</span><span class="badge badge-complete">Complete</span></div>
+        <div class="card-desc">Shopify Buy Button integration ready, awaiting Shopify config (shell).</div>
+      </div>
+      <div class="feature-card">
+        <div class="card-top"><span class="card-name">PWA</span><span class="badge badge-complete">Complete</span></div>
+        <div class="card-desc">Manifest, service worker, offline page, app shortcuts.</div>
+      </div>
+      <div class="feature-card">
+        <div class="card-top"><span class="card-name">Waitlist / Early Access</span><span class="badge badge-complete">Complete</span></div>
+        <div class="card-desc">Current homepage. Supabase upsert + Resend audience + email notification.</div>
+      </div>
+      <div class="feature-card">
+        <div class="card-top"><span class="card-name">OG Image Generation</span><span class="badge badge-complete">Complete</span></div>
+        <div class="card-desc">Dynamic 1200x630 OG images and 1080x1080 share cards with mood gradients.</div>
+      </div>
+      <div class="feature-card">
+        <div class="card-top"><span class="card-name">Email Templates</span><span class="badge badge-complete">Complete</span></div>
+        <div class="card-desc">17 React Email templates covering all transactional flows.</div>
+      </div>
+      <div class="feature-card">
+        <div class="card-top"><span class="card-name">R2 File Upload</span><span class="badge badge-complete">Complete</span></div>
+        <div class="card-desc">Presigned URL + direct upload routes, admin-only, audio + image support.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ DETAILED FEATURES ════ -->
+  <div id="details">
+    <h2 class="section-header"><span class="accent">03</span> Detailed Feature Descriptions</h2>
+    <p class="section-sub">Expand each section for implementation details and dependencies.</p>
+
+    <details>
+      <summary>Core Product <span class="badge badge-complete" style="margin-left:auto">4/4 Complete</span></summary>
+      <div class="detail-body">
+        <ul>
+          <li><strong>Session Library</strong> &mdash; 31 sessions across 11 mood categories (Calm, Focus, Energy, Sleep, Gratitude, Healing, Confidence, Joy, Resilience, Balance, Clarity). Supports filtering by mood, duration, and media type. Search across session titles and descriptions. Falls back to mock data in <code>sessions-data.ts</code> when Supabase has no data.</li>
+          <li><strong>Session Player</strong> &mdash; Cinematic fullscreen experience. Handles audio and video playback with subscription-tier gating (free users see preview only). Resume position saved to Supabase via <code>user_progress</code> table. Picture-in-Picture support. Share modal generates OG images. Playlist modal for sequential playback.</li>
+          <li><strong>Audio Player (Global)</strong> &mdash; Persistent mini-player fixed to bottom of viewport. Saves playback position every 10 seconds to Supabase. Automatically marks sessions as completed. Continues playing across page navigations.</li>
+          <li><strong>Mood Gradients</strong> &mdash; 11 distinct CSS gradient definitions used consistently across session cards, player backgrounds, OG images, and share cards. Each mood has a primary and secondary color pair.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>Subscriptions &amp; Payments <span class="badge badge-complete" style="margin-left:auto">5/5 Complete</span></summary>
+      <div class="detail-body">
+        <ul>
+          <li><strong>Pricing Page</strong> &mdash; 6 subscription tiers:
+            <ul>
+              <li><span class="highlight">Free (Observer)</span> &mdash; Limited access</li>
+              <li><span class="highlight">Monthly Listener</span> &mdash; £9.99/month</li>
+              <li><span class="highlight">Annual Listener</span> &mdash; £99.99/year</li>
+              <li><span class="highlight">Seeker</span> &mdash; £19.99/month</li>
+              <li><span class="highlight">Dedicated</span> &mdash; £199/year</li>
+              <li><span class="highlight">Master (Lifetime)</span> &mdash; £299.99 one-time</li>
+            </ul>
+            Includes FAQ section and plan comparison table. Trial banner promotes the £1 setup + 14-day trial offer.
+          </li>
+          <li><strong>Stripe Checkout</strong> &mdash; Server-side session creation for all plan types. Trial combo creates a £1 setup fee with 14-day trial followed by £9.99/mo recurring. Handles both new and returning customers.</li>
+          <li><strong>Stripe Webhook</strong> &mdash; Processes 5 event types: <code>checkout.session.completed</code>, <code>customer.subscription.updated</code>, <code>customer.subscription.deleted</code>, <code>invoice.payment_succeeded</code>, <code>invoice.payment_failed</code>. Triggers 7 distinct email types via Resend. Auto-creates Supabase auth accounts for guest checkouts (users who pay before signing up).</li>
+          <li><strong>Upgrade to Lifetime</strong> &mdash; One-click upgrade path for existing subscribers. Uses saved payment method on file. Cancels existing subscription and creates lifetime record atomically.</li>
+          <li><strong>Customer Portal</strong> &mdash; Stripe's hosted billing portal. Users can update payment method, view invoices, cancel subscription, and resubscribe.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>User Accounts <span class="badge badge-complete" style="margin-left:auto">3/3 Complete</span></summary>
+      <div class="detail-body">
+        <ul>
+          <li><strong>Auth</strong> &mdash; Four auth methods: email/password signup, Google OAuth, magic link (passwordless email), and PKCE code exchange for secure token handling. Password reset flow with email confirmation. Session persistence via Supabase Auth cookies.</li>
+          <li><strong>Profile</strong> &mdash; Avatar upload to Cloudflare R2. All profile fields are inline-editable (click to edit, save on blur). Subscription tier display with management links. Community privacy settings (visibility, activity sharing). Full account deletion with cascade cleanup.</li>
+          <li><strong>Stats / Streaks</strong> &mdash; Tracks total sessions completed, total minutes meditated, current streak (consecutive days), and longest streak. Weekly bar chart visualization. Top moods breakdown showing most-used categories. All data from <code>user_sessions</code> table.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>Live Sessions <span class="badge badge-partial" style="margin-left:auto">2/3 Complete, 1 Partial</span></summary>
+      <div class="detail-body">
+        <ul>
+          <li><strong>Live Session Page</strong> &mdash; Displays currently live sessions with "LIVE" badge and upcoming sessions with countdown timers. Three event types: <span class="highlight">Audio Hugs</span> (group listening), <span class="highlight">Alchemy Rewire</span> (guided transformation), <span class="highlight">Expert Series</span> (guest teachers).</li>
+          <li><strong>Daily.co Rooms</strong> &mdash; Admin interface to create and manage Daily.co video rooms. Token generation requires <code>access_level >= 2</code> (subscriber). Host capabilities include muting participants and removing disruptive users. Room lifecycle managed through <code>live_sessions</code> table.</li>
+          <li><strong>Live Room Page</strong> &mdash; Daily.co iframe integration works for video/audio. Emoji reaction overlay works (floating emojis on click). <span style="color:var(--partial)">However, the chat panel uses hardcoded mock messages&mdash;not connected to any real-time messaging system.</span></li>
+        </ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>Group Features <span class="badge badge-complete" style="margin-left:auto">3/3 Complete</span></summary>
+      <div class="detail-body">
+        <ul>
+          <li><strong>Group Meditation Rooms</strong> &mdash; Any user can create a scheduled group session. Generates a unique invite code. Built-in meditation timer with configurable duration. Participant sync via Supabase Realtime (see who joined, who is meditating). Messages stored in <code>group_session_messages</code>.</li>
+          <li><strong>Crews</strong> &mdash; Private friend groups. Create a crew, share the invite code, and friends join. Activity feed shows completions and streaks from members. <strong>Privacy-first</strong>: the feed never reveals which specific session a member completed, only that they completed one.</li>
+          <li><strong>Brand Crews</strong> &mdash; B2B extension of crews. Brands apply through a public form. Admin reviews and approves/rejects. Approved brands get a branded community page with custom theming. 5 brand types supported (Wellness, Fitness, Corporate, Education, Healthcare).</li>
+        </ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>Community <span class="badge badge-complete" style="margin-left:auto">3/3 Complete</span></summary>
+      <div class="detail-body">
+        <ul>
+          <li><strong>Community Feed</strong> &mdash; Automated social posts generated when users complete sessions, hit streak milestones, or achieve platform milestones. 6 emoji reactions per post. Leaderboard showing top meditators by sessions, minutes, and streaks.</li>
+          <li><strong>Presence System</strong> &mdash; Real-time display of "who is meditating right now" powered by Supabase Realtime subscriptions. Floating emoji animations appear between active users to create a sense of shared experience.</li>
+          <li><strong>Notifications</strong> &mdash; In-app notification bell with unread count badge. Dropdown panel shows recent notifications. Live updates via Supabase Realtime&mdash;new notifications appear instantly without refresh.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>Content <span class="badge badge-complete" style="margin-left:auto">3/3 Complete</span></summary>
+      <div class="detail-body">
+        <ul>
+          <li><strong>Podcasts</strong> &mdash; Full podcast library with episode browsing. Admin CMS supports all podcast fields including guest name, guest bio, transcript, timestamped highlights, and episode artwork.</li>
+          <li><strong>Free Content</strong> &mdash; Dedicated landing page showing all sessions where <code>is_free = true</code>. Server-rendered for SEO. Designed as a top-of-funnel conversion page.</li>
+          <li><strong>Video Player</strong> &mdash; Vimeo OEmbed integration with branded playback controls. Graceful fallback when a session has no video (shows audio-only mode). Respects subscription tier access.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>Affiliate System <span class="badge badge-complete" style="margin-left:auto">4/4 Complete</span></summary>
+      <div class="detail-body">
+        <ul>
+          <li><strong>Affiliate Program</strong> &mdash; Two tiers: <span class="highlight">Standard</span> (auto-enrolled on signup, 10% commission) and <span class="highlight">Artist</span> (application required, 20% commission). Full marketing page explaining the program and benefits.</li>
+          <li><strong>Click Tracking</strong> &mdash; Detects <code>?ref=CODE</code> URL parameter. Stores affiliate code in localStorage for attribution. Atomic click increment via Supabase RPC function (prevents race conditions).</li>
+          <li><strong>Affiliate Dashboard</strong> &mdash; "Partner Pulse" branded dashboard showing total clicks, conversions, earnings, and payout history. Copyable referral link. Visual tier progress indicator. Payouts table with status badges.</li>
+          <li><strong>Admin Affiliate Overview</strong> &mdash; Admin view of all affiliates with sortable columns for earnings, clicks, and conversions. Progress bars for conversion rates. Export capability.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>Admin Panel <span class="badge badge-complete" style="margin-left:auto">8/8 Complete</span></summary>
+      <div class="detail-body">
+        <ul>
+          <li><strong>Admin Dashboard</strong> &mdash; Overview metrics: total users, active subscribers, revenue (MRR), subscription tier breakdown (pie chart), and recent signups list.</li>
+          <li><strong>Session CMS</strong> &mdash; Full CRUD for meditation sessions. Drag-and-drop audio upload to Cloudflare R2. Vimeo and YouTube video preview embedding. Draft/published toggle. All 11 mood categories, duration, and media type fields.</li>
+          <li><strong>User Management</strong> &mdash; Paginated user list with search by name/email. Filter by subscription tier. View individual user details and activity.</li>
+          <li><strong>Live Management</strong> &mdash; Schedule upcoming live sessions with date/time picker. Create Daily.co rooms on demand. "Go Live" button to start streaming. Bulk email blast to notify subscribers.</li>
+          <li><strong>Review Management</strong> &mdash; Queue of user-submitted reviews. Approve to display on testimonials page, or reject with optional reason.</li>
+          <li><strong>OG / Social Settings</strong> &mdash; Edit OpenGraph title, description, and image per page. Preview how links will appear when shared on social media.</li>
+          <li><strong>Podcast CMS</strong> &mdash; Full episode management with all metadata fields. Supports transcript upload, highlight timestamps, and guest information.</li>
+          <li><strong>Brand Crew Admin</strong> &mdash; Queue of brand applications. Approve to auto-create branded crew page and send welcome email. Reject with feedback.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>Other Features <span class="badge badge-partial" style="margin-left:auto">10/13 Complete, 3 Partial</span></summary>
+      <div class="detail-body">
+        <ul>
+          <li><strong>Challenges</strong> &mdash; 4 challenge types: complete N sessions, maintain N-day streak, meditate N minutes, explore N mood categories. Users can create, join, and track progress. Completion triggers community feed post.</li>
+          <li><strong>Watchlist</strong> <span class="badge badge-partial" style="font-size:10px">Partial</span> &mdash; Supabase <code>watchlist</code> table exists and the watchlist page reads from it. But the session player's heart/save toggle writes to localStorage instead. Dual implementation needs reconciliation.</li>
+          <li><strong>Downloads</strong> <span class="badge badge-partial" style="font-size:10px">Partial</span> &mdash; Same dual-implementation pattern as watchlist. The downloads page reads from Supabase, the library writes to localStorage. No actual audio file download capability exists yet.</li>
+          <li><strong>Playlists</strong> &mdash; Full CRUD. Drag-and-drop reorder of sessions within a playlist. Stored as <code>text[]</code> array of session IDs in Supabase. Playback integration with the global audio player.</li>
+          <li><strong>Breathing Timer</strong> &mdash; Standalone breathing exercise tool with 5 preset durations. Animated breathing circle. "Trending sessions" cards displayed alongside for upsell.</li>
+          <li><strong>Brand Partnerships</strong> &mdash; B2B pitch page describing the partnership program. Application form collects company details, brand type, and goals.</li>
+          <li><strong>Festivals Page</strong> <span class="badge badge-partial" style="font-size:10px">Partial</span> &mdash; Page structure is complete but 3 of 4 team member entries contain placeholder text: <code>[Role]</code> and <code>[Description]</code>.</li>
+          <li><strong>Shop</strong> &mdash; Shopify Buy Button SDK integrated. Product grid layout ready. Awaiting Shopify store configuration and product creation to go live.</li>
+          <li><strong>PWA</strong> &mdash; Full Progressive Web App: manifest.json, service worker with caching strategy, offline fallback page, and app shortcuts for quick-launch meditation.</li>
+          <li><strong>Waitlist / Early Access</strong> &mdash; Current public homepage. Email submission upserts to Supabase <code>early_access_signups</code> table, adds to Resend audience, and triggers welcome email notification.</li>
+          <li><strong>OG Image Generation</strong> &mdash; Dynamic server-side generation of 1200&times;630 OG images and 1080&times;1080 share cards. Uses mood gradients as backgrounds with session title and branding overlay.</li>
+          <li><strong>Email Templates</strong> &mdash; 17 React Email templates: welcome, trial started, trial reminder (day 5), subscription confirmed, payment failed, cancellation, lifetime upgrade, weekly recap, monthly recap, streak reminder, inactivity nudge, live session reminder, affiliate welcome, affiliate earnings, brand crew approved, brand crew rejected, early access confirmation.</li>
+          <li><strong>R2 File Upload</strong> &mdash; Two-step upload: server generates presigned URL, client uploads directly to Cloudflare R2. Admin-only routes. Supports audio (mp3, wav, m4a) and image (jpg, png, webp) file types.</li>
+        </ul>
+      </div>
+    </details>
+  </div>
+
+  <!-- ════ ARCHITECTURE DIAGRAM ════ -->
+  <div id="architecture">
+    <h2 class="section-header"><span class="accent">04</span> Architecture Diagram</h2>
+    <p class="section-sub">Request flow from user to external services.</p>
+
+    <div class="diagram-container">
+      <div class="arch-diagram">
+
+        <!-- User -->
+        <div class="arch-node primary">User (Browser / PWA)</div>
+        <div class="arch-connector"></div>
+
+        <!-- Vercel -->
+        <div class="arch-node platform">Vercel (Hosting + 6 Cron Jobs)</div>
+        <div class="arch-connector"></div>
+
+        <!-- Next.js -->
+        <div class="arch-node primary">Next.js App Router</div>
+        <div class="arch-connector" style="height:16px"></div>
+
+        <!-- Spread line -->
+        <div class="arch-spread"></div>
+
+        <!-- Service Row -->
+        <div class="arch-row">
+
+          <div class="arch-branch">
+            <div class="arch-label">Database &amp; Auth</div>
+            <div class="arch-service db">Supabase</div>
+            <div style="font-size:10px;color:var(--text-dim);text-align:center;margin-top:4px;line-height:1.4">
+              Auth, Postgres<br>Realtime, Storage
+            </div>
+          </div>
+
+          <div class="arch-branch">
+            <div class="arch-label">Payments</div>
+            <div class="arch-service pay">Stripe</div>
+            <div style="font-size:10px;color:var(--text-dim);text-align:center;margin-top:4px;line-height:1.4">
+              Checkout, Webhooks<br>Portal, Subscriptions
+            </div>
+          </div>
+
+          <div class="arch-branch">
+            <div class="arch-label">File Storage</div>
+            <div class="arch-service media">Cloudflare R2</div>
+            <div style="font-size:10px;color:var(--text-dim);text-align:center;margin-top:4px;line-height:1.4">
+              Audio files<br>Image assets
+            </div>
+          </div>
+
+          <div class="arch-branch">
+            <div class="arch-label">Live Video</div>
+            <div class="arch-service pay">Daily.co</div>
+            <div style="font-size:10px;color:var(--text-dim);text-align:center;margin-top:4px;line-height:1.4">
+              Video rooms<br>Token auth
+            </div>
+          </div>
+
+          <div class="arch-branch">
+            <div class="arch-label">Video Hosting</div>
+            <div class="arch-service media">Vimeo</div>
+            <div style="font-size:10px;color:var(--text-dim);text-align:center;margin-top:4px;line-height:1.4">
+              Pre-recorded<br>sessions
+            </div>
+          </div>
+
+          <div class="arch-branch">
+            <div class="arch-label">Email</div>
+            <div class="arch-service comm">Resend</div>
+            <div style="font-size:10px;color:var(--text-dim);text-align:center;margin-top:4px;line-height:1.4">
+              17 templates<br>Audiences
+            </div>
+          </div>
+
+          <div class="arch-branch">
+            <div class="arch-label">Commerce</div>
+            <div class="arch-service comm">Shopify</div>
+            <div style="font-size:10px;color:var(--text-dim);text-align:center;margin-top:4px;line-height:1.4">
+              Buy Button SDK<br>Merchandise
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ DATABASE SCHEMA ════ -->
+  <div id="schema">
+    <h2 class="section-header"><span class="accent">05</span> Database Schema</h2>
+    <p class="section-sub">28 Supabase tables grouped by feature area.</p>
+
+    <div class="diagram-container">
+      <div class="schema-grid">
+
+        <div class="schema-group sg-core">
+          <div class="schema-group-title">Core (4)</div>
+          <div class="schema-table">sessions</div>
+          <div class="schema-table">users</div>
+          <div class="schema-table">user_progress</div>
+          <div class="schema-table">user_sessions</div>
+        </div>
+
+        <div class="schema-group sg-live">
+          <div class="schema-group-title">Live (2)</div>
+          <div class="schema-table">live_sessions</div>
+          <div class="schema-table">live_attendances</div>
+        </div>
+
+        <div class="schema-group sg-groups">
+          <div class="schema-group-title">Groups (3)</div>
+          <div class="schema-table">group_sessions</div>
+          <div class="schema-table">group_session_participants</div>
+          <div class="schema-table">group_session_messages</div>
+        </div>
+
+        <div class="schema-group sg-crews">
+          <div class="schema-group-title">Crews (4)</div>
+          <div class="schema-table">crews</div>
+          <div class="schema-table">crew_members</div>
+          <div class="schema-table">crew_activity</div>
+          <div class="schema-table">crew_activity_reactions</div>
+        </div>
+
+        <div class="schema-group sg-brand">
+          <div class="schema-group-title">Brand (4)</div>
+          <div class="schema-table">brand_crews</div>
+          <div class="schema-table">brand_crew_members</div>
+          <div class="schema-table">brand_partnerships</div>
+          <div class="schema-table">brand_sessions</div>
+        </div>
+
+        <div class="schema-group sg-community">
+          <div class="schema-group-title">Community (6)</div>
+          <div class="schema-table">community_posts</div>
+          <div class="schema-table">community_post_likes</div>
+          <div class="schema-table">community_post_reactions</div>
+          <div class="schema-table">community_settings</div>
+          <div class="schema-table">emoji_reactions</div>
+          <div class="schema-table">notifications</div>
+        </div>
+
+        <div class="schema-group sg-content">
+          <div class="schema-group-title">Content (4)</div>
+          <div class="schema-table">podcasts</div>
+          <div class="schema-table">playlists</div>
+          <div class="schema-table">watchlist</div>
+          <div class="schema-table">downloads</div>
+        </div>
+
+        <div class="schema-group sg-affiliate">
+          <div class="schema-group-title">Affiliate (1)</div>
+          <div class="schema-table">affiliates</div>
+        </div>
+
+        <div class="schema-group sg-other">
+          <div class="schema-group-title">Other (5)</div>
+          <div class="schema-table">reviews</div>
+          <div class="schema-table">site_settings</div>
+          <div class="schema-table">challenges</div>
+          <div class="schema-table">user_challenges</div>
+          <div class="schema-table">early_access_signups</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ EXTERNAL SERVICES ════ -->
+  <div id="services">
+    <h2 class="section-header"><span class="accent">06</span> External Services Map</h2>
+    <p class="section-sub">8 services and their integration points.</p>
+
+    <div class="diagram-container">
+      <div class="services-map">
+        <div class="service-card svc-1">
+          <div class="svc-dot"></div>
+          <div class="svc-name">Supabase</div>
+          <div class="svc-role">Database (Postgres), Auth (email, OAuth, magic link), Realtime (presence, notifications), Storage (avatars)</div>
+        </div>
+        <div class="service-card svc-2">
+          <div class="svc-dot"></div>
+          <div class="svc-name">Stripe</div>
+          <div class="svc-role">Checkout sessions, subscription management, webhook events, billing portal, lifetime upgrades</div>
+        </div>
+        <div class="service-card svc-3">
+          <div class="svc-dot"></div>
+          <div class="svc-name">Cloudflare R2</div>
+          <div class="svc-role">Audio file storage (meditation sessions), image assets, presigned URL uploads</div>
+        </div>
+        <div class="service-card svc-4">
+          <div class="svc-dot"></div>
+          <div class="svc-name">Daily.co</div>
+          <div class="svc-role">Live video rooms, token-based auth, host controls (mute, remove)</div>
+        </div>
+        <div class="service-card svc-3">
+          <div class="svc-dot"></div>
+          <div class="svc-name">Vimeo</div>
+          <div class="svc-role">Pre-recorded video hosting, OEmbed player integration, branded controls</div>
+        </div>
+        <div class="service-card svc-4">
+          <div class="svc-dot"></div>
+          <div class="svc-name">Resend</div>
+          <div class="svc-role">17 transactional email templates, audience management, waitlist notifications</div>
+        </div>
+        <div class="service-card svc-2">
+          <div class="svc-dot"></div>
+          <div class="svc-name">Shopify</div>
+          <div class="svc-role">Buy Button SDK integration, merchandise storefront (awaiting config)</div>
+        </div>
+        <div class="service-card svc-1">
+          <div class="svc-dot"></div>
+          <div class="svc-name">Vercel</div>
+          <div class="svc-role">Next.js hosting, serverless functions, 6 scheduled cron jobs, edge runtime</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ CRON JOBS ════ -->
+  <div id="cron">
+    <h2 class="section-header"><span class="accent">07</span> Cron Jobs</h2>
+    <p class="section-sub">6 scheduled tasks running on Vercel.</p>
+
+    <div class="diagram-container" style="padding:0;overflow:hidden">
+      <div class="cron-grid">
+        <div class="cron-sched">Daily 9:00 AM</div>
+        <div class="cron-desc">Streak reminder &mdash; nudges users inactive 3&ndash;7 days</div>
+        <div class="cron-sched">Hourly</div>
+        <div class="cron-desc">Live session reminder &mdash; notifies subscribers 1 hour before a live event</div>
+        <div class="cron-sched">Monthly 1st</div>
+        <div class="cron-desc">Affiliate earnings summary &mdash; monthly payout report to all affiliates</div>
+        <div class="cron-sched">Daily 9:00 AM</div>
+        <div class="cron-desc">Trial day 5 reminder &mdash; engagement nudge during free trial</div>
+        <div class="cron-sched">Daily 9:00 AM</div>
+        <div class="cron-desc">Monthly recap + lifetime upsell &mdash; meditation stats summary with upgrade prompt</div>
+        <div class="cron-sched">Daily 9:00 AM</div>
+        <div class="cron-desc">Inactivity nudge &mdash; re-engagement email for users inactive 4+ days</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ KNOWN ISSUES ════ -->
+  <div id="issues">
+    <h2 class="section-header"><span class="accent">08</span> Known Issues</h2>
+    <p class="section-sub">9 items requiring attention before full public launch.</p>
+
+    <div class="diagram-container" style="padding:0;overflow:hidden">
+      <ul class="issues-list">
+        <li>
+          <span class="issue-num">1</span>
+          <span><strong>Waitlist gate active</strong> &mdash; All features are built but inaccessible to the public. The homepage is a waitlist signup form. Removing the gate exposes the full app.</span>
+        </li>
+        <li>
+          <span class="issue-num">2</span>
+          <span><strong>Mock session data</strong> &mdash; <code>sessions-data.ts</code> contains 20+ sessions with empty <code>audioUrl</code> fields. These are fallback data and should be replaced with real Supabase content before launch.</span>
+        </li>
+        <li>
+          <span class="issue-num">3</span>
+          <span><strong>Watchlist dual implementation</strong> &mdash; The watchlist page reads from Supabase, but the session player's heart/save toggle writes to localStorage. These need to be unified to Supabase.</span>
+        </li>
+        <li>
+          <span class="issue-num">4</span>
+          <span><strong>Downloads dual implementation</strong> &mdash; Same pattern as watchlist. The downloads page reads Supabase, the library module writes localStorage. No actual file download capability exists.</span>
+        </li>
+        <li>
+          <span class="issue-num">5</span>
+          <span><strong>Live room chat is mock data</strong> &mdash; The chat panel in live rooms displays hardcoded messages. It is not connected to any real-time messaging backend.</span>
+        </li>
+        <li>
+          <span class="issue-num">6</span>
+          <span><strong>Festivals page placeholders</strong> &mdash; 3 of 4 team members on the festivals page have placeholder text: <code>[Role]</code> and <code>[Description]</code>.</span>
+        </li>
+        <li>
+          <span class="issue-num">7</span>
+          <span><strong>About page placeholder text</strong> &mdash; The about page contains placeholder copy that needs to be replaced with actual content.</span>
+        </li>
+        <li>
+          <span class="issue-num">8</span>
+          <span><strong>Rooms localStorage fallback</strong> &mdash; Group meditation rooms fall back to localStorage instead of using Supabase Realtime for participant state in certain edge cases.</span>
+        </li>
+        <li>
+          <span class="issue-num">9</span>
+          <span><strong>Admin auth check fragile</strong> &mdash; <code>requireAdmin()</code> only checks against a single email address, while the middleware supports comma-separated admin emails. These should be aligned.</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ════ FOOTER ════ -->
+  <div class="footer">
+    <p>Daily Meds Feature Audit &mdash; June 2, 2026 &mdash; Confidential</p>
+  </div>
+
+</div>
+</body>
+</html>

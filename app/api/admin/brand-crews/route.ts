@@ -6,11 +6,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { requireAdmin } from "../../../../lib/require-admin";
 
-// Service role client — bypasses RLS so admin can update any row
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+function getSupabaseAdmin() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) throw new Error("Supabase env vars not configured");
+  return createClient(url, key);
+}
 
 export async function POST(req: NextRequest) {
   // Verify the caller is the admin
@@ -28,6 +29,7 @@ export async function POST(req: NextRequest) {
       ? { status: "approved", is_verified: true }
       : { status: "rejected", is_verified: false };
 
+  const supabaseAdmin = getSupabaseAdmin();
   const { data: crew, error } = await supabaseAdmin
     .from("brand_crews")
     .update(updates)

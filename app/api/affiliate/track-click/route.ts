@@ -20,22 +20,7 @@ export async function POST(req: NextRequest) {
 
   const supabase = createClient(supabaseUrl, serviceKey);
 
-  // Find the affiliate with this referral code and increment their click count
-  const { data: affiliate } = await supabase
-    .from("affiliates")
-    .select("id, clicks")
-    .eq("referral_code", referralCode)
-    .single();
-
-  if (!affiliate) {
-    // Code doesn't match any affiliate — silently ignore
-    return NextResponse.json({ ok: true });
-  }
-
-  await supabase
-    .from("affiliates")
-    .update({ clicks: affiliate.clicks + 1 })
-    .eq("id", affiliate.id);
+  await supabase.rpc("increment_affiliate_clicks", { code: referralCode });
 
   return NextResponse.json({ ok: true });
 }
