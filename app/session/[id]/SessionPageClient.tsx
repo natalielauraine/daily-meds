@@ -257,14 +257,26 @@ export default function SessionPageClient({ session }: { session: SessionData | 
       {/* ── HERO (fullscreen) ── */}
       <section className="relative w-full overflow-hidden" style={{ height: "100svh", minHeight: "600px" }}>
 
-        {/* Background: video embed or gradient */}
-        {session.mediaType === "video" && session.vimeoId ? (
-          <iframe
-            src={`https://player.vimeo.com/video/${session.vimeoId}?autoplay=1&loop=1&muted=1&title=0&byline=0&portrait=0&color=ff41b3&transparent=0&dnt=1`}
-            className="absolute inset-0 w-full h-full"
-            style={{ border: "none", transform: "scale(1.05)" }}
-            allow="autoplay; fullscreen"
-          />
+        {/* Background: video file, Vimeo embed, or gradient */}
+        {session.mediaType === "video" && (session.videoUrl || session.vimeoId) ? (
+          session.videoUrl ? (
+            <video
+              src={session.videoUrl}
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="absolute inset-0 w-full h-full object-cover"
+              style={{ transform: "scale(1.05)" }}
+            />
+          ) : (
+            <iframe
+              src={`https://player.vimeo.com/video/${session.vimeoId}?autoplay=1&loop=1&muted=1&title=0&byline=0&portrait=0&color=ff41b3&transparent=0&dnt=1`}
+              className="absolute inset-0 w-full h-full"
+              style={{ border: "none", transform: "scale(1.05)" }}
+              allow="autoplay; fullscreen"
+            />
+          )
         ) : (
           /* Audio session — gradient background with animated glow */
           <div

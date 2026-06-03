@@ -4,13 +4,16 @@ import { cookies } from "next/headers";
 import { createPresignedUploadUrl, r2PublicUrl } from "../../../../lib/r2";
 
 const ALLOWED_TYPES: Record<string, string> = {
-  "audio/wav":  "wav",
-  "audio/wave": "wav",
-  "audio/mpeg": "mp3",
-  "audio/mp4":  "m4a",
-  "image/jpeg": "jpg",
-  "image/png":  "png",
-  "image/webp": "webp",
+  "audio/wav":       "wav",
+  "audio/wave":      "wav",
+  "audio/mpeg":      "mp3",
+  "audio/mp4":       "m4a",
+  "image/jpeg":      "jpg",
+  "image/png":       "png",
+  "image/webp":      "webp",
+  "video/mp4":       "mp4",
+  "video/webm":      "webm",
+  "video/quicktime": "mov",
 };
 
 export async function POST(req: NextRequest) {
@@ -22,7 +25,8 @@ export async function POST(req: NextRequest) {
   );
 
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user || user.email !== process.env.ADMIN_EMAIL) {
+  const adminEmails = (process.env.ADMIN_EMAIL || "").split(",").map(e => e.trim().toLowerCase()).filter(Boolean);
+  if (!user || !adminEmails.includes(user.email?.toLowerCase() || "")) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

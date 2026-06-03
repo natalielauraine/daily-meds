@@ -4,25 +4,28 @@ import { cookies } from "next/headers";
 import { r2, r2PublicUrl } from "../../../../lib/r2";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 
-// Allow large audio/image uploads (up to 100 MB)
+// Allow large audio/image/video uploads (up to 500 MB)
 export const runtime = "nodejs";
 export const maxDuration = 60; // seconds
 
 // Next.js 14+ route segment config for body size
 export const fetchCache = "default-no-store";
 
-const MAX_SIZE = 100 * 1024 * 1024; // 100 MB
+const MAX_SIZE = 500 * 1024 * 1024; // 500 MB
 
 const BUCKET = process.env.CLOUDFLARE_R2_BUCKET_NAME ?? "dailymeds";
 
 const ALLOWED_TYPES: Record<string, string> = {
-  "audio/wav":  "wav",
-  "audio/wave": "wav",
-  "audio/mpeg": "mp3",
-  "audio/mp4":  "m4a",
-  "image/jpeg": "jpg",
-  "image/png":  "png",
-  "image/webp": "webp",
+  "audio/wav":       "wav",
+  "audio/wave":      "wav",
+  "audio/mpeg":      "mp3",
+  "audio/mp4":       "m4a",
+  "image/jpeg":      "jpg",
+  "image/png":       "png",
+  "image/webp":      "webp",
+  "video/mp4":       "mp4",
+  "video/webm":      "webm",
+  "video/quicktime": "mov",
 };
 
 export async function POST(req: NextRequest) {
@@ -53,7 +56,7 @@ export async function POST(req: NextRequest) {
   }
 
   if (file.size > MAX_SIZE) {
-    return NextResponse.json({ error: "File too large (max 100 MB)" }, { status: 400 });
+    return NextResponse.json({ error: "File too large (max 500 MB)" }, { status: 400 });
   }
 
   const ext = ALLOWED_TYPES[file.type];

@@ -16,6 +16,7 @@ export interface SessionData {
   mediaType: SessionMediaType;
   audioUrl: string;
   vimeoId: string;
+  videoUrl?: string;
   thumbnail?: string;
 }
 

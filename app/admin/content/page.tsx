@@ -1,11 +1,10 @@
 "use client";
 
 // Admin content management — add, edit and delete meditation sessions.
-// Features: drag-drop audio upload, Vimeo/YouTube embed preview,
+// Features: drag-drop audio + video upload, thumbnail upload,
 //           bulk upload, session preview modal, draft/published status.
 
 import { useState, useEffect, useRef } from "react";
-import Image from "next/image";
 import AdminShell from "../AdminShell";
 import { createClient } from "../../../lib/supabase-browser";
 import Banner from "../../components/ui/Banner";
@@ -48,6 +47,7 @@ type Session = {
   audio_url: string;
   vimeo_id: string;
   youtube_url: string;
+  video_url: string;
   thumbnail: string;
   is_free: boolean;
   gradient: string;
@@ -77,24 +77,12 @@ const EMPTY_FORM = {
   audio_url: "",
   vimeo_id: "",
   youtube_url: "",
+  video_url: "",
   thumbnail: "",
   is_free: false,
   gradient: GRADIENTS[0].value,
   status: "draft" as "draft" | "published",
 };
-
-// Extract a YouTube video ID from a full URL or bare ID
-function extractYouTubeId(input: string): string {
-  const s = input.trim();
-  if (/^[a-zA-Z0-9_-]{11}$/.test(s)) return s;
-  const watchMatch = s.match(/[?&]v=([a-zA-Z0-9_-]{11})/);
-  if (watchMatch) return watchMatch[1];
-  const shortMatch = s.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/);
-  if (shortMatch) return shortMatch[1];
-  const embedMatch = s.match(/embed\/([a-zA-Z0-9_-]{11})/);
-  if (embedMatch) return embedMatch[1];
-  return s;
-}
 
 // Format a byte count into a readable string like "3.2 MB"
 function formatBytes(bytes: number): string {
@@ -178,6 +166,10 @@ export default function AdminContentPage() {
   const [thumbnailDimensions, setThumbnailDimensions] = useState<string>("");
   const [thumbnailDragOver, setThumbnailDragOver]   = useState(false);
   const thumbnailInputRef                           = useRef<HTMLInputElement>(null);
+  const [videoUploading, setVideoUploading] = useState(false);
+  const [videoProgress, setVideoProgress]   = useState(0);
+  const [videoDragOver, setVideoDragOver]   = useState(false);
+  const videoInputRef                       = useRef<HTMLInputElement>(null);
 
   // ── Bulk upload ────────────────────────────────────
   const [bulkFiles, setBulkFiles]               = useState<BulkFile[]>([]);
@@ -216,6 +208,7 @@ export default function AdminContentPage() {
     setAudioProgress(0);
     setThumbnailProgress(0);
     setThumbnailDimensions("");
+    setVideoProgress(0);
     setShowForm(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -231,6 +224,7 @@ export default function AdminContentPage() {
       audio_url:     session.audio_url || "",
       vimeo_id:      session.vimeo_id || "",
       youtube_url:   session.youtube_url || "",
+      video_url:     session.video_url || "",
       thumbnail:     session.thumbnail || "",
       is_free:       session.is_free,
       gradient:      session.gradient || GRADIENTS[0].value,
@@ -352,6 +346,65 @@ export default function AdminContentPage() {
     setThumbnailUploading(false);
   }
 
+  async function handleVideoFile(file: File) {
+    if (!file.name.match(/\.(mp4|webm|mov)$/i)) {
+      setError("Only mp4, webm and mov files are accepted.");
+      return;
+    }
+    setVideoUploading(true);
+    setVideoProgress(0);
+    setError("");
+
+    try {
+      // Step 1: Get presigned URL from our API
+      const presignRes = await fetch("/api/r2/presign", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          filename: file.name,
+          contentType: file.type,
+          folder: "video",
+        }),
+      });
+      if (!presignRes.ok) throw new Error("Could not get upload URL");
+      const { uploadUrl, publicUrl } = await presignRes.json();
+
+      // Step 2: Upload directly to R2 via presigned URL (with progress)
+      await new Promise<void>((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.upload.addEventListener("progress", (e) => {
+          if (e.lengthComputable) setVideoProgress(Math.round((e.loaded / e.total) * 100));
+        });
+        xhr.addEventListener("load", () => {
+          if (xhr.status < 300) resolve();
+          else reject(new Error(`Upload failed: ${xhr.status}`));
+        });
+        xhr.addEventListener("error", () => reject(new Error("Network error")));
+        xhr.open("PUT", uploadUrl);
+        xhr.setRequestHeader("Content-Type", file.type);
+        xhr.send(file);
+      });
+
+      setForm((prev) => ({ ...prev, video_url: publicUrl }));
+
+      // Auto-detect duration
+      const vid = document.createElement("video");
+      vid.preload = "metadata";
+      vid.src = URL.createObjectURL(file);
+      vid.onloadedmetadata = () => {
+        const secs = vid.duration;
+        if (secs && isFinite(secs)) {
+          setForm((prev) => ({ ...prev, duration: `${Math.max(0.1, Math.round(secs / 6) / 10)} min` }));
+        }
+        URL.revokeObjectURL(vid.src);
+      };
+    } catch (err: unknown) {
+      setVideoProgress(0);
+      setError("Video upload failed: " + (err instanceof Error ? err.message : "unknown error"));
+    }
+    setVideoUploading(false);
+  }
+
   async function addBulkFiles(files: File[]) {
     const audioOnly = files.filter((f) => f.name.match(/\.(mp3|m4a|wav)$/i)).slice(0, 20);
     const newItems: BulkFile[] = await Promise.all(
@@ -458,18 +511,17 @@ export default function AdminContentPage() {
     setSaving(true);
     setError("");
 
-    const youtubeId = form.youtube_url ? extractYouTubeId(form.youtube_url) : "";
-
     const payload = {
       title:         form.title.trim(),
       description:   form.description.trim(),
       duration:      Math.round(parseFloat(form.duration) * 10) / 10 || 10,
       type:          form.type,
       mood_category: form.mood_category,
-      media_type:    (form.vimeo_id.trim() || form.youtube_url.trim()) ? "video" : form.audio_url.trim() ? "audio" : "audio",
+      media_type:    form.video_url.trim() ? "video" : (form.vimeo_id.trim() || form.youtube_url.trim()) ? "video" : form.audio_url.trim() ? "audio" : "audio",
       audio_url:     form.audio_url.trim() || null,
-      vimeo_id:      form.vimeo_id.trim() || null,
-      youtube_url:   youtubeId || null,
+      vimeo_id:      null,
+      youtube_url:   null,
+      video_url:     form.video_url.trim() || null,
       thumbnail:     form.thumbnail.trim() || null,
       is_free:       form.is_free,
       gradient:      form.gradient,
@@ -842,62 +894,87 @@ export default function AdminContentPage() {
                 )}
               </div>
 
-              {/* ── VIDEO EMBED (always visible) ── */}
-              <FormField label="Vimeo ID">
-                <input
-                  type="text"
-                  value={form.vimeo_id}
-                  onChange={(e) => setForm({ ...form, vimeo_id: e.target.value })}
-                  placeholder="e.g. 123456789"
-                  className={fieldClass} style={fieldStyle}
-                />
-              </FormField>
+              {/* ── VIDEO FILE UPLOAD (always visible) ── */}
+              <div className="sm:col-span-2">
+                <p className="text-xs text-white/40 mb-2">Video file <span className="text-white/20">(mp4, webm or mov)</span></p>
 
-              <FormField label="YouTube URL or ID">
-                <input
-                  type="text"
-                  value={form.youtube_url}
-                  onChange={(e) => setForm({ ...form, youtube_url: e.target.value })}
-                  placeholder="youtube.com/watch?v=... or just the ID"
-                  className={fieldClass} style={fieldStyle}
-                />
-              </FormField>
-
-              {/* Video previews — shown once an ID is entered */}
-              {(form.vimeo_id || form.youtube_url) && (
-                <div className="sm:col-span-2 grid sm:grid-cols-2 gap-4">
-                  {form.vimeo_id && (
-                    <div>
-                      <p className="text-[10px] text-white/30 mb-2 uppercase tracking-widest">Vimeo preview</p>
-                      <div className="rounded-lg overflow-hidden aspect-video" style={{ backgroundColor: "#000" }}>
-                        <iframe
-                          src={`https://player.vimeo.com/video/${form.vimeo_id}?badge=0&autopause=0`}
-                          allow="autoplay; fullscreen; picture-in-picture"
-                          className="w-full h-full"
-                          style={{ border: 0 }}
-                        />
-                      </div>
+                {form.video_url ? (
+                  <div
+                    className="flex items-center gap-3 p-3 rounded-lg"
+                    style={{ backgroundColor: "rgba(255,65,179,0.08)", border: "0.5px solid rgba(255,65,179,0.25)" }}
+                  >
+                    {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+                    <video
+                      src={form.video_url}
+                      muted
+                      className="w-12 h-12 rounded object-cover shrink-0"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs text-white truncate" style={{ fontWeight: 500 }}>
+                        {decodeURIComponent(form.video_url.split("/").pop() || "video")}
+                      </p>
+                      <p className="text-[10px] text-white/35">Uploaded &#10003;</p>
                     </div>
-                  )}
-                  {form.youtube_url && (() => {
-                    const ytId = extractYouTubeId(form.youtube_url);
-                    if (!ytId || ytId.length < 6) return null;
-                    return (
-                      <div>
-                        <p className="text-[10px] text-white/30 mb-2 uppercase tracking-widest">YouTube preview</p>
-                        <Image
-                          src={`https://img.youtube.com/vi/${ytId}/mqdefault.jpg`}
-                          alt="YouTube thumbnail"
-                          width={320}
-                          height={180}
-                          className="w-full rounded-lg"
-                        />
-                        <p className="text-[10px] text-white/25 mt-1">ID: {ytId}</p>
-                      </div>
-                    );
-                  })()}
-                </div>
-              )}
+                    <button
+                      onClick={() => setForm((prev) => ({ ...prev, video_url: "" }))}
+                      className="text-white/25 hover:text-white/60 transition-colors"
+                      aria-label="Remove video"
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                      </svg>
+                    </button>
+                  </div>
+
+                ) : videoUploading ? (
+                  <div
+                    className="p-4 rounded-lg"
+                    style={{ backgroundColor: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)" }}
+                  >
+                    <p className="text-xs text-white/40 mb-2">Uploading...</p>
+                    <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: "rgba(255,255,255,0.1)" }}>
+                      <div
+                        className="h-full rounded-full transition-all duration-300"
+                        style={{ width: `${videoProgress}%`, backgroundColor: "#ff41b3" }}
+                      />
+                    </div>
+                    <p className="text-[10px] text-white/25 mt-1">{videoProgress}%</p>
+                  </div>
+
+                ) : (
+                  <div
+                    onDragOver={(e) => { e.preventDefault(); setVideoDragOver(true); }}
+                    onDragLeave={() => setVideoDragOver(false)}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      setVideoDragOver(false);
+                      const file = e.dataTransfer.files[0];
+                      if (file) handleVideoFile(file);
+                    }}
+                    onClick={() => videoInputRef.current?.click()}
+                    className="flex flex-col items-center gap-2 py-8 rounded-lg cursor-pointer transition-colors"
+                    style={{
+                      border: `1px dashed ${videoDragOver ? "rgba(255,65,179,0.6)" : "rgba(255,255,255,0.12)"}`,
+                      backgroundColor: videoDragOver ? "rgba(255,65,179,0.06)" : "rgba(255,255,255,0.02)",
+                    }}
+                  >
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="rgba(255,255,255,0.25)">
+                      <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
+                    </svg>
+                    <p className="text-xs text-white/35">
+                      Drop an mp4, webm or mov here, or{" "}
+                      <span style={{ color: "#ff41b3" }}>browse files</span>
+                    </p>
+                    <input
+                      ref={videoInputRef}
+                      type="file"
+                      accept=".mp4,.webm,.mov"
+                      className="hidden"
+                      onChange={(e) => { const f = e.target.files?.[0]; if (f) handleVideoFile(f); }}
+                    />
+                  </div>
+                )}
+              </div>
 
               {/* Gradient picker */}
               <div className="sm:col-span-2">

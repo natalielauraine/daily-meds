@@ -58,7 +58,7 @@ async function fetchSessionFromSupabase(id: string): Promise<SessionData | null>
     const supabase = createClient(url, key);
     const { data } = await supabase
       .from("sessions")
-      .select("id, title, description, duration, mood_category, media_type, vimeo_id, audio_url, is_free, thumbnail")
+      .select("id, title, description, duration, mood_category, media_type, vimeo_id, video_url, audio_url, is_free, thumbnail")
       .eq("id", id)
       .single();
 
@@ -78,6 +78,7 @@ async function fetchSessionFromSupabase(id: string): Promise<SessionData | null>
       mediaType: data.media_type || "audio",
       audioUrl: data.audio_url || "",
       vimeoId: data.vimeo_id || "",
+      videoUrl: data.video_url || "",
       thumbnail: data.thumbnail || "",
     };
   } catch {
@@ -176,7 +177,7 @@ export default async function SessionPage({ params }: { params: { id: string } }
   if (session && !session.isFree) {
     const canPlay = await checkUserCanPlay();
     if (!canPlay) {
-      session = { ...session, audioUrl: "", vimeoId: "" };
+      session = { ...session, audioUrl: "", vimeoId: "", videoUrl: "" };
     }
   }
 
