@@ -16,6 +16,7 @@ export interface SessionData {
   mediaType: SessionMediaType;
   audioUrl: string;
   vimeoId: string;
+  thumbnail?: string;
 }
 
 export const MOCK_SESSIONS: SessionData[] = [

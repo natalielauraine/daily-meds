@@ -48,6 +48,7 @@ type Session = {
   audio_url: string;
   vimeo_id: string;
   youtube_url: string;
+  thumbnail: string;
   is_free: boolean;
   gradient: string;
   status: "draft" | "published";
@@ -76,6 +77,7 @@ const EMPTY_FORM = {
   audio_url: "",
   vimeo_id: "",
   youtube_url: "",
+  thumbnail: "",
   is_free: false,
   gradient: GRADIENTS[0].value,
   status: "draft" as "draft" | "published",
@@ -109,6 +111,28 @@ function filenameToTitle(name: string): string {
 }
 
 // Detect the duration of an audio file using the Web Audio API
+function formatDuration(totalSeconds: number): string {
+  const m = Math.floor(totalSeconds / 60);
+  const s = Math.round(totalSeconds % 60);
+  return m > 0 ? `${m}m ${s.toString().padStart(2, "0")}s` : `${s}s`;
+}
+
+async function getAudioSeconds(file: File): Promise<number> {
+  try {
+    const arrayBuffer = await file.arrayBuffer();
+    const AudioContextClass =
+      window.AudioContext ||
+      (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+    const ctx = new AudioContextClass();
+    const buffer = await ctx.decodeAudioData(arrayBuffer);
+    const duration = buffer.duration;
+    ctx.close();
+    return duration;
+  } catch {
+    return 0;
+  }
+}
+
 async function detectAudioDuration(file: File): Promise<string> {
   try {
     const arrayBuffer = await file.arrayBuffer();
@@ -144,10 +168,16 @@ export default function AdminContentPage() {
   // ── Audio / image file upload ──────────────────────
   const [audioUploading, setAudioUploading]       = useState(false);
   const [audioProgress, setAudioProgress]         = useState(0);
-  const [uploadedFile, setUploadedFile]           = useState<{ name: string; size: number } | null>(null);
+  const [uploadedFile, setUploadedFile]           = useState<{ name: string; size: number; duration?: string } | null>(null);
+  const [previewPlaying, setPreviewPlaying]       = useState(false);
+  const previewAudioRef                           = useRef<HTMLAudioElement | null>(null);
   const [audioDragOver, setAudioDragOver]         = useState(false);
   const audioInputRef                             = useRef<HTMLInputElement>(null);
-  const imageInputRef                             = useRef<HTMLInputElement>(null);
+  const [thumbnailUploading, setThumbnailUploading] = useState(false);
+  const [thumbnailProgress, setThumbnailProgress]   = useState(0);
+  const [thumbnailDimensions, setThumbnailDimensions] = useState<string>("");
+  const [thumbnailDragOver, setThumbnailDragOver]   = useState(false);
+  const thumbnailInputRef                           = useRef<HTMLInputElement>(null);
 
   // ── Bulk upload ────────────────────────────────────
   const [bulkFiles, setBulkFiles]               = useState<BulkFile[]>([]);
@@ -184,6 +214,8 @@ export default function AdminContentPage() {
     setSuccess("");
     setUploadedFile(null);
     setAudioProgress(0);
+    setThumbnailProgress(0);
+    setThumbnailDimensions("");
     setShowForm(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -199,6 +231,7 @@ export default function AdminContentPage() {
       audio_url:     session.audio_url || "",
       vimeo_id:      session.vimeo_id || "",
       youtube_url:   session.youtube_url || "",
+      thumbnail:     session.thumbnail || "",
       is_free:       session.is_free,
       gradient:      session.gradient || GRADIENTS[0].value,
       status:        session.status || "draft",
@@ -206,7 +239,21 @@ export default function AdminContentPage() {
     setEditingId(session.id);
     setError("");
     setSuccess("");
-    setUploadedFile(null);
+    if (session.audio_url) {
+      const filename = decodeURIComponent(session.audio_url.split("/").pop() || "audio file");
+      const dur = parseFloat(session.duration);
+      setUploadedFile({ name: filename, size: 0, duration: dur ? `${dur}m` : undefined });
+    } else {
+      setUploadedFile(null);
+    }
+    // Reset thumbnail upload state; detect dimensions if editing an existing thumbnail
+    setThumbnailDimensions("");
+    setThumbnailProgress(0);
+    if (session.thumbnail) {
+      const img = new window.Image();
+      img.onload = () => setThumbnailDimensions(`${img.naturalWidth} \u00d7 ${img.naturalHeight}`);
+      img.src = session.thumbnail;
+    }
     setShowForm(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -241,7 +288,9 @@ export default function AdminContentPage() {
       });
 
       setForm((prev) => ({ ...prev, audio_url: publicUrl }));
-      setUploadedFile({ name: file.name, size: file.size });
+      const secs = await getAudioSeconds(file);
+      setUploadedFile({ name: file.name, size: file.size, duration: secs ? formatDuration(secs) : undefined });
+      if (secs) setForm((prev) => ({ ...prev, duration: `${Math.max(0.1, Math.round(secs / 6) / 10)} min` }));
     } catch (err: unknown) {
       setAudioProgress(0);
       setError("Upload failed: " + (err instanceof Error ? err.message : "unknown error"));
@@ -257,13 +306,14 @@ export default function AdminContentPage() {
     await uploadAudioFile(file);
   }
 
-  async function handleImageFile(file: File) {
+  async function handleThumbnailFile(file: File) {
     if (!file.type.match(/^image\/(jpeg|png|webp)$/)) {
       setError("Only jpg, png and webp images are accepted.");
       return;
     }
-    setAudioUploading(true);
-    setAudioProgress(0);
+    setThumbnailUploading(true);
+    setThumbnailProgress(0);
+    setThumbnailDimensions("");
     setError("");
 
     try {
@@ -274,7 +324,7 @@ export default function AdminContentPage() {
       const publicUrl = await new Promise<string>((resolve, reject) => {
         const xhr = new XMLHttpRequest();
         xhr.upload.addEventListener("progress", (e) => {
-          if (e.lengthComputable) setAudioProgress(Math.round((e.loaded / e.total) * 100));
+          if (e.lengthComputable) setThumbnailProgress(Math.round((e.loaded / e.total) * 100));
         });
         xhr.addEventListener("load", () => {
           if (xhr.status < 300) {
@@ -289,13 +339,17 @@ export default function AdminContentPage() {
         xhr.send(formData);
       });
 
-      setForm((prev) => ({ ...prev, audio_url: publicUrl }));
-      setUploadedFile({ name: file.name, size: file.size });
+      setForm((prev) => ({ ...prev, thumbnail: publicUrl }));
+
+      // Detect image dimensions
+      const img = new window.Image();
+      img.onload = () => setThumbnailDimensions(`${img.naturalWidth} \u00d7 ${img.naturalHeight}`);
+      img.src = publicUrl;
     } catch (err: unknown) {
-      setAudioProgress(0);
+      setThumbnailProgress(0);
       setError("Upload failed: " + (err instanceof Error ? err.message : "unknown error"));
     }
-    setAudioUploading(false);
+    setThumbnailUploading(false);
   }
 
   async function addBulkFiles(files: File[]) {
@@ -409,13 +463,14 @@ export default function AdminContentPage() {
     const payload = {
       title:         form.title.trim(),
       description:   form.description.trim(),
-      duration:      parseInt(form.duration) || 10,
+      duration:      Math.round(parseFloat(form.duration) * 10) / 10 || 10,
       type:          form.type,
       mood_category: form.mood_category,
-      media_type:    form.media_type,
+      media_type:    (form.vimeo_id.trim() || form.youtube_url.trim()) ? "video" : form.audio_url.trim() ? "audio" : "audio",
       audio_url:     form.audio_url.trim() || null,
       vimeo_id:      form.vimeo_id.trim() || null,
       youtube_url:   youtubeId || null,
+      thumbnail:     form.thumbnail.trim() || null,
       is_free:       form.is_free,
       gradient:      form.gradient,
       status:        form.status,
@@ -571,246 +626,276 @@ export default function AdminContentPage() {
                     type="number"
                     min={1}
                     max={120}
-                    value={form.duration.replace(/[^0-9]/g, "")}
-                    onChange={(e) => setForm({ ...form, duration: e.target.value ? `${e.target.value} min` : "" })}
-                    placeholder="e.g. 9"
+                    value={String(form.duration ?? "").replace(/[^0-9.]/g, "")}
+                    readOnly
+                    tabIndex={-1}
                     className={fieldClass}
-                    style={{ ...fieldStyle, width: "80px" }}
+                    style={{ ...fieldStyle, width: "80px", opacity: 0.5, cursor: "default" }}
                   />
                   <span className="text-sm text-white/40">min</span>
+                  <span className="text-[10px] text-white/20">auto-detected from audio</span>
                 </div>
               </FormField>
 
-              <FormField label="Media type">
-                <select
-                  value={form.media_type}
-                  onChange={(e) => setForm({ ...form, media_type: e.target.value as "audio" | "video" | "image", audio_url: "" })}
-                  className={fieldClass} style={fieldStyle}
-                >
-                  <option value="audio">Audio (Cloudflare R2)</option>
-                  <option value="image">Image (Cloudflare R2)</option>
-                  <option value="video">Video (Vimeo / YouTube)</option>
-                </select>
-              </FormField>
+              {/* ── AUDIO UPLOAD (always visible) ── */}
+              <div className="sm:col-span-2">
+                <p className="text-xs text-white/40 mb-2">Audio file <span className="text-white/20">(mp3, m4a or wav)</span></p>
 
-              {/* ── AUDIO UPLOAD ── */}
-              {form.media_type === "audio" && (
-                <div className="sm:col-span-2">
-                  <p className="text-xs text-white/40 mb-2">Audio file <span className="text-white/20">(mp3, m4a or wav)</span></p>
-
-                  {uploadedFile ? (
-                    // Uploaded file row
-                    <div
-                      className="flex items-center gap-3 p-3 rounded-lg"
-                      style={{ backgroundColor: "rgba(255,65,179,0.08)", border: "0.5px solid rgba(255,65,179,0.25)" }}
-                    >
+                {uploadedFile ? (
+                  // Uploaded file row
+                  <div
+                    className="flex items-center gap-3 p-3 rounded-lg"
+                    style={{ backgroundColor: "rgba(255,65,179,0.08)", border: "0.5px solid rgba(255,65,179,0.25)" }}
+                  >
+                    {form.audio_url ? (
+                      <button
+                        onClick={() => {
+                          if (previewPlaying) {
+                            previewAudioRef.current?.pause();
+                            setPreviewPlaying(false);
+                          } else {
+                            if (!previewAudioRef.current) {
+                              previewAudioRef.current = new Audio(form.audio_url);
+                              previewAudioRef.current.onended = () => setPreviewPlaying(false);
+                              previewAudioRef.current.onloadedmetadata = () => {
+                                const secs = previewAudioRef.current?.duration;
+                                if (secs && isFinite(secs)) setUploadedFile((prev) => prev ? { ...prev, duration: formatDuration(secs) } : prev);
+                              };
+                            } else if (previewAudioRef.current.src !== form.audio_url) {
+                              previewAudioRef.current.src = form.audio_url;
+                            }
+                            previewAudioRef.current.play();
+                            setPreviewPlaying(true);
+                          }
+                        }}
+                        className="shrink-0 hover:opacity-80 transition-opacity"
+                        aria-label={previewPlaying ? "Pause preview" : "Play preview"}
+                      >
+                        {previewPlaying ? (
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="#ff41b3">
+                            <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+                          </svg>
+                        ) : (
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="#ff41b3">
+                            <path d="M8 5v14l11-7z"/>
+                          </svg>
+                        )}
+                      </button>
+                    ) : (
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="#ff41b3">
                         <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
                       </svg>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs text-white truncate" style={{ fontWeight: 500 }}>{uploadedFile.name}</p>
-                        <p className="text-[10px] text-white/35">{formatBytes(uploadedFile.size)} · Uploaded ✓</p>
-                      </div>
-                      <button
-                        onClick={() => { setUploadedFile(null); setForm((prev) => ({ ...prev, audio_url: "" })); }}
-                        className="text-white/25 hover:text-white/60 transition-colors"
-                        aria-label="Remove file"
-                      >
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-                        </svg>
-                      </button>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs text-white truncate" style={{ fontWeight: 500 }}>{uploadedFile.name}</p>
+                      <p className="text-[10px] text-white/35">{[uploadedFile.duration, uploadedFile.size ? formatBytes(uploadedFile.size) : null, "Uploaded \u2713"].filter(Boolean).join(" \u00b7 ")}</p>
                     </div>
-
-                  ) : audioUploading ? (
-                    // Progress bar
-                    <div
-                      className="p-4 rounded-lg"
-                      style={{ backgroundColor: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)" }}
-                    >
-                      <p className="text-xs text-white/40 mb-2">Uploading…</p>
-                      <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: "rgba(255,255,255,0.1)" }}>
-                        <div
-                          className="h-full rounded-full transition-all duration-300"
-                          style={{ width: `${audioProgress}%`, backgroundColor: "#ff41b3" }}
-                        />
-                      </div>
-                      <p className="text-[10px] text-white/25 mt-1">{audioProgress}%</p>
-                    </div>
-
-                  ) : (
-                    // Drag & drop zone
-                    <div
-                      onDragOver={(e) => { e.preventDefault(); setAudioDragOver(true); }}
-                      onDragLeave={() => setAudioDragOver(false)}
-                      onDrop={(e) => {
-                        e.preventDefault();
-                        setAudioDragOver(false);
-                        const file = e.dataTransfer.files[0];
-                        if (file) handleAudioFile(file);
+                    <button
+                      onClick={() => {
+                        previewAudioRef.current?.pause();
+                        setPreviewPlaying(false);
+                        setUploadedFile(null);
+                        setForm((prev) => ({ ...prev, audio_url: "" }));
                       }}
-                      onClick={() => audioInputRef.current?.click()}
-                      className="flex flex-col items-center gap-2 py-8 rounded-lg cursor-pointer transition-colors"
-                      style={{
-                        border: `1px dashed ${audioDragOver ? "rgba(255,65,179,0.6)" : "rgba(255,255,255,0.12)"}`,
-                        backgroundColor: audioDragOver ? "rgba(255,65,179,0.06)" : "rgba(255,255,255,0.02)",
-                      }}
+                      className="text-white/25 hover:text-white/60 transition-colors"
+                      aria-label="Remove file"
                     >
-                      <svg width="22" height="22" viewBox="0 0 24 24" fill="rgba(255,255,255,0.25)">
-                        <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
                       </svg>
-                      <p className="text-xs text-white/35">
-                        Drop an mp3, m4a or wav here, or{" "}
-                        <span style={{ color: "#ff41b3" }}>browse files</span>
-                      </p>
-                      <input
-                        ref={audioInputRef}
-                        type="file"
-                        accept=".mp3,.m4a,.wav"
-                        className="hidden"
-                        onChange={(e) => { const f = e.target.files?.[0]; if (f) handleAudioFile(f); }}
+                    </button>
+                  </div>
+
+                ) : audioUploading ? (
+                  // Progress bar
+                  <div
+                    className="p-4 rounded-lg"
+                    style={{ backgroundColor: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)" }}
+                  >
+                    <p className="text-xs text-white/40 mb-2">Uploading...</p>
+                    <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: "rgba(255,255,255,0.1)" }}>
+                      <div
+                        className="h-full rounded-full transition-all duration-300"
+                        style={{ width: `${audioProgress}%`, backgroundColor: "#ff41b3" }}
                       />
                     </div>
-                  )}
-                </div>
-              )}
+                    <p className="text-[10px] text-white/25 mt-1">{audioProgress}%</p>
+                  </div>
 
-              {/* ── VIMEO + YOUTUBE ── */}
-              {form.media_type === "video" && (
-                <>
-                  <FormField label="Vimeo ID">
+                ) : (
+                  // Drag & drop zone
+                  <div
+                    onDragOver={(e) => { e.preventDefault(); setAudioDragOver(true); }}
+                    onDragLeave={() => setAudioDragOver(false)}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      setAudioDragOver(false);
+                      const file = e.dataTransfer.files[0];
+                      if (file) handleAudioFile(file);
+                    }}
+                    onClick={() => audioInputRef.current?.click()}
+                    className="flex flex-col items-center gap-2 py-8 rounded-lg cursor-pointer transition-colors"
+                    style={{
+                      border: `1px dashed ${audioDragOver ? "rgba(255,65,179,0.6)" : "rgba(255,255,255,0.12)"}`,
+                      backgroundColor: audioDragOver ? "rgba(255,65,179,0.06)" : "rgba(255,255,255,0.02)",
+                    }}
+                  >
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="rgba(255,255,255,0.25)">
+                      <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+                    </svg>
+                    <p className="text-xs text-white/35">
+                      Drop an mp3, m4a or wav here, or{" "}
+                      <span style={{ color: "#ff41b3" }}>browse files</span>
+                    </p>
                     <input
-                      type="text"
-                      value={form.vimeo_id}
-                      onChange={(e) => setForm({ ...form, vimeo_id: e.target.value })}
-                      placeholder="e.g. 123456789"
-                      className={fieldClass} style={fieldStyle}
+                      ref={audioInputRef}
+                      type="file"
+                      accept=".mp3,.m4a,.wav"
+                      className="hidden"
+                      onChange={(e) => { const f = e.target.files?.[0]; if (f) handleAudioFile(f); }}
                     />
-                  </FormField>
+                  </div>
+                )}
+              </div>
 
-                  <FormField label="YouTube URL or ID">
-                    <input
-                      type="text"
-                      value={form.youtube_url}
-                      onChange={(e) => setForm({ ...form, youtube_url: e.target.value })}
-                      placeholder="youtube.com/watch?v=... or just the ID"
-                      className={fieldClass} style={fieldStyle}
+              {/* ── THUMBNAIL IMAGE (always visible) ── */}
+              <div className="sm:col-span-2">
+                <p className="text-xs text-white/40 mb-2">Thumbnail image <span className="text-white/20">(jpg, png or webp)</span></p>
+
+                {form.thumbnail ? (
+                  <div
+                    className="flex items-center gap-3 p-3 rounded-lg"
+                    style={{ backgroundColor: "rgba(255,65,179,0.08)", border: "0.5px solid rgba(255,65,179,0.25)" }}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={form.thumbnail}
+                      alt="Thumbnail"
+                      className="w-12 h-12 rounded object-cover shrink-0"
                     />
-                  </FormField>
-
-                  {/* Video previews — shown once an ID is entered */}
-                  {(form.vimeo_id || form.youtube_url) && (
-                    <div className="sm:col-span-2 grid sm:grid-cols-2 gap-4">
-                      {form.vimeo_id && (
-                        <div>
-                          <p className="text-[10px] text-white/30 mb-2 uppercase tracking-widest">Vimeo preview</p>
-                          <div className="rounded-lg overflow-hidden aspect-video" style={{ backgroundColor: "#000" }}>
-                            <iframe
-                              src={`https://player.vimeo.com/video/${form.vimeo_id}?badge=0&autopause=0`}
-                              allow="autoplay; fullscreen; picture-in-picture"
-                              className="w-full h-full"
-                              style={{ border: 0 }}
-                            />
-                          </div>
-                        </div>
-                      )}
-                      {form.youtube_url && (() => {
-                        const ytId = extractYouTubeId(form.youtube_url);
-                        if (!ytId || ytId.length < 6) return null;
-                        return (
-                          <div>
-                            <p className="text-[10px] text-white/30 mb-2 uppercase tracking-widest">YouTube preview</p>
-                            <Image
-                              src={`https://img.youtube.com/vi/${ytId}/mqdefault.jpg`}
-                              alt="YouTube thumbnail"
-                              width={320}
-                              height={180}
-                              className="w-full rounded-lg"
-                            />
-                            <p className="text-[10px] text-white/25 mt-1">ID: {ytId}</p>
-                          </div>
-                        );
-                      })()}
-                    </div>
-                  )}
-                </>
-              )}
-
-              {/* ── IMAGE UPLOAD ── */}
-              {form.media_type === "image" && (
-                <div className="sm:col-span-2">
-                  <p className="text-xs text-white/40 mb-2">Image file <span className="text-white/20">(jpg, png or webp)</span></p>
-
-                  {uploadedFile ? (
-                    <div
-                      className="flex items-center gap-3 p-3 rounded-lg"
-                      style={{ backgroundColor: "rgba(255,65,179,0.08)", border: "0.5px solid rgba(255,65,179,0.25)" }}
-                    >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="#ff41b3">
-                        <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
-                      </svg>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs text-white truncate" style={{ fontWeight: 500 }}>{uploadedFile.name}</p>
-                        <p className="text-[10px] text-white/35">{formatBytes(uploadedFile.size)} · Uploaded ✓</p>
-                      </div>
-                      <button
-                        onClick={() => { setUploadedFile(null); setForm((prev) => ({ ...prev, audio_url: "" })); }}
-                        className="text-white/25 hover:text-white/60 transition-colors"
-                      >
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-                        </svg>
-                      </button>
-                    </div>
-
-                  ) : audioUploading ? (
-                    <div
-                      className="p-4 rounded-lg"
-                      style={{ backgroundColor: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)" }}
-                    >
-                      <p className="text-xs text-white/40 mb-2">Uploading…</p>
-                      <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: "rgba(255,255,255,0.1)" }}>
-                        <div
-                          className="h-full rounded-full transition-all duration-300"
-                          style={{ width: `${audioProgress}%`, backgroundColor: "#ff41b3" }}
-                        />
-                      </div>
-                      <p className="text-[10px] text-white/25 mt-1">{audioProgress}%</p>
-                    </div>
-
-                  ) : (
-                    <div
-                      onDragOver={(e) => { e.preventDefault(); setAudioDragOver(true); }}
-                      onDragLeave={() => setAudioDragOver(false)}
-                      onDrop={(e) => {
-                        e.preventDefault();
-                        setAudioDragOver(false);
-                        const file = e.dataTransfer.files[0];
-                        if (file) handleImageFile(file);
-                      }}
-                      onClick={() => imageInputRef.current?.click()}
-                      className="flex flex-col items-center gap-2 py-8 rounded-lg cursor-pointer transition-colors"
-                      style={{
-                        border: `1px dashed ${audioDragOver ? "rgba(255,65,179,0.6)" : "rgba(255,255,255,0.12)"}`,
-                        backgroundColor: audioDragOver ? "rgba(255,65,179,0.06)" : "rgba(255,255,255,0.02)",
-                      }}
-                    >
-                      <svg width="22" height="22" viewBox="0 0 24 24" fill="rgba(255,255,255,0.25)">
-                        <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
-                      </svg>
-                      <p className="text-xs text-white/35">
-                        Drop a jpg, png or webp here, or{" "}
-                        <span style={{ color: "#ff41b3" }}>browse files</span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs text-white truncate" style={{ fontWeight: 500 }}>
+                        {decodeURIComponent(form.thumbnail.split("/").pop() || "image")}
                       </p>
-                      <input
-                        ref={imageInputRef}
-                        type="file"
-                        accept=".jpg,.jpeg,.png,.webp"
-                        className="hidden"
-                        onChange={(e) => { const f = e.target.files?.[0]; if (f) handleImageFile(f); }}
+                      <p className="text-[10px] text-white/35">
+                        {[thumbnailDimensions, "Uploaded \u2713"].filter(Boolean).join(" \u00b7 ")}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => { setForm((prev) => ({ ...prev, thumbnail: "" })); setThumbnailDimensions(""); }}
+                      className="text-white/25 hover:text-white/60 transition-colors"
+                      aria-label="Remove thumbnail"
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                      </svg>
+                    </button>
+                  </div>
+
+                ) : thumbnailUploading ? (
+                  <div
+                    className="p-4 rounded-lg"
+                    style={{ backgroundColor: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)" }}
+                  >
+                    <p className="text-xs text-white/40 mb-2">Uploading...</p>
+                    <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: "rgba(255,255,255,0.1)" }}>
+                      <div
+                        className="h-full rounded-full transition-all duration-300"
+                        style={{ width: `${thumbnailProgress}%`, backgroundColor: "#ff41b3" }}
                       />
                     </div>
+                    <p className="text-[10px] text-white/25 mt-1">{thumbnailProgress}%</p>
+                  </div>
+
+                ) : (
+                  <div
+                    onDragOver={(e) => { e.preventDefault(); setThumbnailDragOver(true); }}
+                    onDragLeave={() => setThumbnailDragOver(false)}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      setThumbnailDragOver(false);
+                      const file = e.dataTransfer.files[0];
+                      if (file) handleThumbnailFile(file);
+                    }}
+                    onClick={() => thumbnailInputRef.current?.click()}
+                    className="flex flex-col items-center gap-2 py-8 rounded-lg cursor-pointer transition-colors"
+                    style={{
+                      border: `1px dashed ${thumbnailDragOver ? "rgba(255,65,179,0.6)" : "rgba(255,255,255,0.12)"}`,
+                      backgroundColor: thumbnailDragOver ? "rgba(255,65,179,0.06)" : "rgba(255,255,255,0.02)",
+                    }}
+                  >
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="rgba(255,255,255,0.25)">
+                      <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+                    </svg>
+                    <p className="text-xs text-white/35">
+                      Drop a jpg, png or webp here, or{" "}
+                      <span style={{ color: "#ff41b3" }}>browse files</span>
+                    </p>
+                    <input
+                      ref={thumbnailInputRef}
+                      type="file"
+                      accept=".jpg,.jpeg,.png,.webp"
+                      className="hidden"
+                      onChange={(e) => { const f = e.target.files?.[0]; if (f) handleThumbnailFile(f); }}
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* ── VIDEO EMBED (always visible) ── */}
+              <FormField label="Vimeo ID">
+                <input
+                  type="text"
+                  value={form.vimeo_id}
+                  onChange={(e) => setForm({ ...form, vimeo_id: e.target.value })}
+                  placeholder="e.g. 123456789"
+                  className={fieldClass} style={fieldStyle}
+                />
+              </FormField>
+
+              <FormField label="YouTube URL or ID">
+                <input
+                  type="text"
+                  value={form.youtube_url}
+                  onChange={(e) => setForm({ ...form, youtube_url: e.target.value })}
+                  placeholder="youtube.com/watch?v=... or just the ID"
+                  className={fieldClass} style={fieldStyle}
+                />
+              </FormField>
+
+              {/* Video previews — shown once an ID is entered */}
+              {(form.vimeo_id || form.youtube_url) && (
+                <div className="sm:col-span-2 grid sm:grid-cols-2 gap-4">
+                  {form.vimeo_id && (
+                    <div>
+                      <p className="text-[10px] text-white/30 mb-2 uppercase tracking-widest">Vimeo preview</p>
+                      <div className="rounded-lg overflow-hidden aspect-video" style={{ backgroundColor: "#000" }}>
+                        <iframe
+                          src={`https://player.vimeo.com/video/${form.vimeo_id}?badge=0&autopause=0`}
+                          allow="autoplay; fullscreen; picture-in-picture"
+                          className="w-full h-full"
+                          style={{ border: 0 }}
+                        />
+                      </div>
+                    </div>
                   )}
+                  {form.youtube_url && (() => {
+                    const ytId = extractYouTubeId(form.youtube_url);
+                    if (!ytId || ytId.length < 6) return null;
+                    return (
+                      <div>
+                        <p className="text-[10px] text-white/30 mb-2 uppercase tracking-widest">YouTube preview</p>
+                        <Image
+                          src={`https://img.youtube.com/vi/${ytId}/mqdefault.jpg`}
+                          alt="YouTube thumbnail"
+                          width={320}
+                          height={180}
+                          className="w-full rounded-lg"
+                        />
+                        <p className="text-[10px] text-white/25 mt-1">ID: {ytId}</p>
+                      </div>
+                    );
+                  })()}
                 </div>
               )}
 

@@ -15,6 +15,7 @@ export type Session = {
   gradient: string;           // CSS gradient string for the thumbnail background
   glowColor: string;          // Single colour for the glow effect
   isFree: boolean;            // Whether this session is free or premium
+  thumbnail?: string;         // Optional thumbnail image URL
 };
 
 // Neon brand gradients — maps mood category names to their gradient
@@ -69,8 +70,11 @@ export default function SessionCard({ session }: { session: Session }) {
           }}
         >
           <Link href={`/session/${session.id}`} className="absolute inset-0">
-            {/* Neon gradient background */}
+            {/* Neon gradient background (fallback) */}
             <div className="absolute inset-0" style={{ background: session.gradient }} />
+            {session.thumbnail && (
+              <img src={session.thumbnail} alt="" className="absolute inset-0 w-full h-full object-cover" />
+            )}
 
             {/* Dark overlay at bottom for text readability */}
             <div

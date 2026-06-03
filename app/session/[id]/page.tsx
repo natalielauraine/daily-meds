@@ -78,6 +78,7 @@ async function fetchSessionFromSupabase(id: string): Promise<SessionData | null>
       mediaType: data.media_type || "audio",
       audioUrl: data.audio_url || "",
       vimeoId: data.vimeo_id || "",
+      thumbnail: data.thumbnail || "",
     };
   } catch {
     return null;

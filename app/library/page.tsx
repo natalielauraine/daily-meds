@@ -200,7 +200,7 @@ export default function LibraryPage() {
       const [{ data: sessionsData, error }, { data: { user } }] = await Promise.all([
         supabase
           .from("sessions")
-          .select("id, title, description, duration, type, mood_category, media_type, is_free, gradient")
+          .select("id, title, description, duration, type, mood_category, media_type, is_free, gradient, thumbnail")
           .order("created_at", { ascending: false }),
         supabase.auth.getUser(),
       ]);

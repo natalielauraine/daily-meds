@@ -18,6 +18,7 @@ export type LibrarySession = {
   media_type: "audio" | "video";
   is_free: boolean;
   gradient: string;
+  thumbnail?: string;
 };
 
 export const MOOD_GRADIENTS: Record<string, string> = {
@@ -82,6 +83,9 @@ export function LibraryCard({ session, isPaidMember }: { session: LibrarySession
         >
           <Link href={`/session/${session.id}`} className="absolute inset-0 block">
             <div className="absolute inset-0" style={{ background: session.gradient }} />
+            {session.thumbnail && (
+              <img src={session.thumbnail} alt="" className="absolute inset-0 w-full h-full object-cover" />
+            )}
             <div
               className="absolute bottom-0 left-0 right-0 h-14"
               style={{ background: "linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 100%)" }}

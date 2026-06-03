@@ -15,6 +15,7 @@ type ContinueItem = {
   duration: string;
   media_type: string;
   gradient: string;
+  thumbnail?: string;
   positionSeconds: number;
   percent: number;
 };
@@ -30,7 +31,8 @@ type ProgressRow = {
     duration: string;
     media_type: string;
     gradient: string;
-  } | null | { title: string; duration: string; media_type: string; gradient: string }[];
+    thumbnail?: string;
+  } | null | { title: string; duration: string; media_type: string; gradient: string; thumbnail?: string }[];
 };
 
 export default function ContinueWatchingRow() {
@@ -49,7 +51,7 @@ export default function ContinueWatchingRow() {
       // The join (sessions(...)) works because user_progress.session_id is a foreign key to sessions.id.
       const { data } = await supabase
         .from("user_progress")
-        .select("session_id, position_seconds, duration_seconds, updated_at, sessions(title, duration, media_type, gradient)")
+        .select("session_id, position_seconds, duration_seconds, updated_at, sessions(title, duration, media_type, gradient, thumbnail)")
         .eq("user_id", user.id)
         .eq("completed", false)
         .gt("position_seconds", 10)   // Skip sessions barely touched (under 10 seconds)
@@ -75,6 +77,7 @@ export default function ContinueWatchingRow() {
           duration: s.duration,
           media_type: s.media_type,
           gradient: s.gradient || "linear-gradient(135deg, #ff41b3, #ec723d)",
+          thumbnail: s.thumbnail || "",
           positionSeconds: row.position_seconds,
           percent,
         });
@@ -104,18 +107,21 @@ export default function ContinueWatchingRow() {
         className="flex gap-3 overflow-x-auto pb-2"
         style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
       >
-        {items.map(({ session_id, title, duration, media_type, gradient, positionSeconds, percent }) => (
+        {items.map(({ session_id, title, duration, media_type, gradient, thumbnail, positionSeconds, percent }) => (
           <Link
             key={session_id}
             href={`/session/${session_id}?t=${positionSeconds}`}
             className="shrink-0 w-44 rounded-[10px] overflow-hidden hover:scale-[1.02] transition-transform"
             style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.08)" }}
           >
-            {/* Gradient thumbnail */}
+            {/* Thumbnail image or gradient */}
             <div
               className="w-full h-24 flex items-center justify-center relative"
               style={{ background: gradient }}
             >
+              {thumbnail && (
+                <img src={thumbnail} alt="" className="absolute inset-0 w-full h-full object-cover" />
+              )}
               {/* Lotus icon */}
               <svg width="32" height="32" viewBox="0 0 48 48" fill="none">
                 <path d="M24 4C24 4 16 12 16 20C16 24.4 19.6 28 24 28C28.4 28 32 24.4 32 20C32 12 24 4 24 4Z" fill="white" opacity="0.9"/>
