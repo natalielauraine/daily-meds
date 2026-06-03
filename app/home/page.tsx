@@ -149,11 +149,11 @@ export default function LoggedInHome() {
             {sessions.map((item, i) => (
               <div key={i} className="min-w-[280px] md:min-w-[320px] group cursor-pointer" onClick={() => router.push(`/session/${item.id}`)}>
                 <div className="relative aspect-[3/4] rounded-xl overflow-hidden mb-4" style={{ background: item.gradient || "#2A2A2A" }}>
-                  {item.image_url && <img className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src={item.image_url} alt={item.title} />}
+                  {(item.thumbnail || item.image_url) && <img className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src={item.thumbnail || item.image_url} alt={item.title} />}
                   <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60"></div>
-                  
-                  {/* Replaced empty image block with a subtle logo center focus if no image is present */}
-                  {!item.image_url && (
+
+                  {/* Subtle logo center if no image is present */}
+                  {!item.thumbnail && !item.image_url && (
                     <div className="absolute inset-0 flex items-center justify-center opacity-20">
                       <svg width="40" height="40" viewBox="0 0 48 48" fill="none">
                         <path d="M24 4C24 4 16 12 16 20C16 24.4 19.6 28 24 28C28.4 28 32 24.4 32 20C32 12 24 4 24 4Z" fill="white" opacity="0.95"/>

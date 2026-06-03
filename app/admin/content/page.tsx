@@ -1258,8 +1258,12 @@ export default function AdminContentPage() {
                 className="flex items-center gap-4 p-4 rounded-[10px]"
                 style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.08)" }}
               >
-                {/* Gradient dot */}
-                <div className="w-10 h-10 rounded-full shrink-0" style={{ background: session.gradient }} />
+                {/* Thumbnail or gradient dot */}
+                <div className="w-10 h-10 rounded-lg shrink-0 overflow-hidden relative" style={{ background: session.gradient }}>
+                  {session.thumbnail && (
+                    <img src={session.thumbnail} alt="" className="absolute inset-0 w-full h-full object-cover" />
+                  )}
+                </div>
 
                 {/* Info */}
                 <div className="flex-1 min-w-0">
