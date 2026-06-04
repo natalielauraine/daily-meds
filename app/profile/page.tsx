@@ -519,8 +519,6 @@ export default function ProfilePage() {
                 <SectionLabel accent="#adf225">Preferences</SectionLabel>
                 <SettingRow label="Notifications" value="Manage push and email alerts" href="/profile" />
                 <SettingRow label="Language" value="English" href="/profile" />
-                <SettingRow label="Offline downloads" value="Manage downloaded sessions" href="/downloads" />
-                <SettingRow label="Playlists" value="View and edit your playlists" href="/playlists" />
               </Card>
 
               {/* DANGER ZONE */}

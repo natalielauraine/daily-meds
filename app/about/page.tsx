@@ -3,6 +3,7 @@
 // Replace all placeholder text with Natalie's real words when ready.
 
 import Link from "next/link";
+import Image from "next/image";
 import type { Metadata } from "next";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -256,18 +257,23 @@ export default function AboutPage() {
         <section className="w-full max-w-3xl mx-auto px-4 sm:px-6 py-20">
           <div className="flex flex-col sm:flex-row gap-10 items-start">
 
-            {/* Avatar / photo placeholder */}
+            {/* Natalie's photo */}
             <div className="shrink-0">
               <div
-                className="w-28 h-28 rounded-full flex items-center justify-center text-4xl text-white"
+                className="w-40 h-40 sm:w-52 sm:h-52 rounded-full overflow-hidden"
                 style={{
-                  background: "linear-gradient(135deg, #ff41b3, #ec723d)",
                   border: "2px solid rgba(255,255,255,0.1)",
-                  fontFamily: "var(--font-plus-jakarta)",
-                  fontWeight: 800,
+                  boxShadow: "0 0 30px rgba(255,65,179,0.15)",
                 }}
               >
-                N
+                <Image
+                  src="/natalie-lauraine.png"
+                  alt="Natalie Lauraine"
+                  width={208}
+                  height={208}
+                  className="w-full h-full object-cover"
+                  priority
+                />
               </div>
             </div>
 

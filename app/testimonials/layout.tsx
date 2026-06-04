@@ -8,8 +8,8 @@ const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://thedailymeds.com";
 export async function generateMetadata(): Promise<Metadata> {
   const setting = await getPageSettings("testimonials");
   const title       = setting?.og_title       || PAGE_DEFAULTS.testimonials.title;
-  const description = setting?.og_description || PAGE_DEFAULTS.testimonials.description;
-  const imageUrl    = setting?.og_image_url   || `${APP_URL}/api/og?title=${encodeURIComponent("What members say")}&mood=Heartbroken`;
+  const description = setting?.og_description || PAGE_DEFAULTS.testimonials.description || "We'd love to hear about your experience with Daily Meds.";
+  const imageUrl    = setting?.og_image_url   || `${APP_URL}/api/og?title=${encodeURIComponent("We'd Love Your Feedback")}&mood=Heartbroken`;
 
   return {
     title: "Testimonials",

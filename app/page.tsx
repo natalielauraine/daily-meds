@@ -49,11 +49,6 @@ const FACE_REALITY = [
 
 const REASONS = [
   {
-    icon: <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>,
-    title: "Meditate with Friends",
-    body: "Join live sessions and feel the collective energy of a community breathing as one.",
-  },
-  {
     icon: <path d="M4 6h18V4H4c-1.1 0-2 .9-2 2v11H0v3h14v-3H4V6zm19 2h-6c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h6c.55 0 1-.45 1-1V9c0-.55-.45-1-1-1zm-1 9h-4v-7h4v7z"/>,
     title: "Watch on any Device",
     body: "From your phone to your laptop, your peace follows you everywhere you go.",
@@ -63,18 +58,12 @@ const REASONS = [
     title: "Feel Your Feelings",
     body: "We don't hide from the dark stuff. We sit with it until it turns into light.",
   },
-  {
-    icon: <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/>,
-    title: "Earn With Us",
-    body: "Earn 20% commission every month when you sign up a friend. Share the calm, get rewarded.",
-  },
 ];
 
 const NAV_LINKS = [
   { label: "Home",     href: "/" },
   { label: "Live",     href: "/live" },
   { label: "Pricing",  href: "/pricing" },
-  { label: "Breathe",  href: "/timer" },
   { label: "About",    href: "/about" },
   { label: "Login",    href: "/login" },
 ];
@@ -505,8 +494,6 @@ export default function Home() {
               { label: "FAQ", href: "/pricing" },
               { label: "Account", href: "/profile" },
               { label: "Media Center", href: "/about" },
-              { label: "Partnerships", href: "/partnerships" },
-              { label: "Affiliate", href: "/affiliate" },
               { label: "Terms of Use", href: "/terms" },
               { label: "Privacy", href: "/privacy" },
             ].map((link) => (

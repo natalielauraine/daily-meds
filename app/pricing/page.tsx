@@ -1,7 +1,8 @@
 "use client";
 
-// Pricing page — four subscription tiers: Free, Audio (£9.99/mo), Full Access (£19.99/mo), Founder Lifetime (£299.99).
-// Layout: cinematic hero → comparison table → £1 trial banner → 3-col plan grid → founder section → tagline band → FAQ.
+// Pricing page — six subscription tiers: Free, Monthly Listener (£9.99/mo), Annual Listener (£99.99/yr),
+// The Seeker (£19.99/mo), The Dedicated (£199/yr), The Master (£299.99 lifetime).
+// Layout: cinematic hero → comparison table → £1 trial banner → 3-col plan grid → tagline band → FAQ.
 // Matches the Stitch "Subscription Plans" design with the neon brand palette.
 
 import { useState, useEffect } from "react";
@@ -36,14 +37,14 @@ const PLANS = [
     features: [
       "10 free sessions",
       "Mood category browsing",
-      "Breathing timer",
-      "Community access",
+      "Breathing timer (coming soon)",
+      "Community access (coming soon)",
     ],
     locked: [
       "Full audio library",
-      "Offline downloads",
-      "Group meditation rooms",
-      "Live sessions with Natalie",
+      "Offline downloads (coming soon)",
+      "Group meditation rooms (coming soon)",
+      "Live sessions with Natalie (coming soon)",
     ],
   },
   {
@@ -53,18 +54,18 @@ const PLANS = [
     price: "£9.99",
     priceNote: "per month · audio only",
     cta: "Join Waitlist",
-    featured: false,
+    featured: true,
     features: [
       "Everything in Free",
       "Full audio library",
       "New drops every week",
-      "Breathing timer",
+      "Breathing timer (coming soon)",
       "Cancel any time",
     ],
     locked: [
-      "Live sessions with Natalie",
-      "Offline downloads",
-      "Group meditation rooms",
+      "Live sessions with Natalie (coming soon)",
+      "Offline downloads (coming soon)",
+      "Group meditation rooms (coming soon)",
     ],
   },
   {
@@ -79,14 +80,14 @@ const PLANS = [
       "Everything in Free",
       "Full audio library",
       "New drops every week",
-      "Breathing timer",
+      "Breathing timer (coming soon)",
       "Save vs monthly",
       "Cancel any time",
     ],
     locked: [
-      "Live sessions with Natalie",
-      "Offline downloads",
-      "Group meditation rooms",
+      "Live sessions with Natalie (coming soon)",
+      "Offline downloads (coming soon)",
+      "Group meditation rooms (coming soon)",
     ],
   },
   {
@@ -96,15 +97,15 @@ const PLANS = [
     price: "£19.99",
     priceNote: "per month",
     cta: "Join Waitlist",
-    featured: true,
+    featured: false,
     features: [
       "Everything in The Listener",
-      "Live sessions with Natalie",
-      "Group meditation rooms",
+      "Live sessions with Natalie (coming soon)",
+      "Group meditation rooms (coming soon)",
       "Cancel any time",
     ],
     locked: [
-      "Offline downloads",
+      "Offline downloads (coming soon)",
     ],
   },
   {
@@ -117,14 +118,32 @@ const PLANS = [
     featured: false,
     features: [
       "Everything in The Seeker",
-      "Live sessions with Natalie",
-      "Group meditation rooms",
+      "Live sessions with Natalie (coming soon)",
+      "Group meditation rooms (coming soon)",
       "Save vs monthly",
       "Cancel any time",
     ],
     locked: [
-      "Offline downloads",
+      "Offline downloads (coming soon)",
     ],
+  },
+  {
+    id: "lifetime",
+    name: "The Master",
+    tagline: "Pay once, own it forever — early users only",
+    price: "£299.99",
+    priceNote: "one-time · lifetime access",
+    cta: "Claim founder membership",
+    featured: false,
+    features: [
+      "Full library, forever",
+      "All future series included",
+      "Live sessions with Natalie (coming soon)",
+      "Offline downloads (coming soon)",
+      "Group meditation rooms (coming soon)",
+      "Personal welcome message",
+    ],
+    locked: [],
   },
 ];
 
@@ -137,11 +156,11 @@ const FAQS = [
   },
   {
     q: "What's included in the free plan?",
-    a: "10 handpicked sessions, full access to the breathing timer, and community browsing. No credit card required.",
+    a: "10 handpicked sessions, mood category browsing, and community features (coming soon). No credit card required.",
   },
   {
     q: "What are the different plans?",
-    a: "Free gives you 10 sessions at no cost. The Monthly Listener is £9.99/month — full audio library, no live sessions. The Annual Listener is £99.99/year — same audio access, save vs monthly. The Seeker is £19.99/month — audio plus live sessions with Natalie. The Dedicated is £199/year — everything in The Seeker, billed annually. The Master is £299.99 one-time for lifetime access to everything, including all future content.",
+    a: "Free gives you 10 sessions at no cost. The Monthly Listener is £9.99/month — full audio library. The Annual Listener is £99.99/year — same audio access, save vs monthly. The Seeker is £19.99/month — audio plus live sessions with Natalie (coming soon). The Dedicated is £199/year — everything in The Seeker, billed annually. The Master is £299.99 one-time for lifetime access to everything, including all future content.",
   },
   {
     q: "Is the founder membership really one payment?",
@@ -149,15 +168,19 @@ const FAQS = [
   },
   {
     q: "Can I download sessions to listen offline?",
-    a: "Offline downloads are available on the Lifetime plan. Monthly subscribers can stream anywhere with internet.",
+    a: "Offline downloads are coming soon and will be available on the Lifetime plan. For now, all subscribers can stream anywhere with internet.",
   },
   {
     q: "What are group meditation rooms?",
-    a: "Rooms let you meditate live with friends, with a shared timer, ambient audio, and optional emoji reactions.",
+    a: "Group meditation rooms are coming soon. They will let you meditate live with friends, with a shared timer, ambient audio, and optional emoji reactions.",
   },
   {
     q: "Is my payment secure?",
     a: "Yes, all payments are handled by Stripe. We never store your card details.",
+  },
+  {
+    q: "What are Live sessions?",
+    a: "Live sessions are real-time guided experiences hosted by Natalie — including Audio Hugs (group listening), Alchemy Rewire (guided transformation), and Expert Series (guest teachers). Live sessions are coming soon and will be available to subscribers on eligible plans. We'll notify you as soon as they launch.",
   },
 ];
 
@@ -464,7 +487,7 @@ export default function PricingPage() {
         {/* ── PRICING GRID ── */}
         <section className="px-4 sm:px-6 lg:px-8 pb-20">
           <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-5 items-start lg:mt-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5 items-start lg:mt-4">
               {PLANS.map((plan) => {
                 const isFeatured = plan.featured;
 
@@ -666,94 +689,6 @@ export default function PricingPage() {
           </div>
         </section>
 
-        {/* ── FOUNDER OFFER ── */}
-        <section className="px-4 sm:px-6 lg:px-8 pb-20">
-          <div className="max-w-2xl mx-auto">
-            <div
-              className="relative rounded-2xl p-8 sm:p-10 overflow-hidden"
-              style={{
-                background: "linear-gradient(135deg, #1a0010 0%, #1f1f1f 60%, #0a1500 100%)",
-                border: "1.5px solid rgba(255,65,179,0.3)",
-                boxShadow: "0 0 60px rgba(255,65,179,0.08)",
-              }}
-            >
-              {/* Glow */}
-              <div
-                className="absolute top-0 right-0 w-64 h-64 pointer-events-none"
-                style={{ background: "radial-gradient(circle, rgba(255,65,179,0.1) 0%, transparent 70%)" }}
-              />
-              <div className="relative">
-                <span
-                  className="inline-block text-[10px] px-3 py-1 rounded-full uppercase tracking-widest mb-5"
-                  style={{ background: "linear-gradient(90deg, #ff41b3, #ec723d)", color: "#fff", fontFamily: "var(--font-space-grotesk)", fontWeight: 700 }}
-                >
-                  Limited Time Only
-                </span>
-                <h3
-                  className="uppercase mb-1"
-                  style={{ fontFamily: "var(--font-plus-jakarta)", fontWeight: 800, fontSize: "1.75rem", color: "#E2E2E2" }}
-                >
-                  Founder Membership
-                </h3>
-                <p
-                  className="text-xs uppercase tracking-widest mb-4"
-                  style={{ fontFamily: "var(--font-space-grotesk)", fontWeight: 500, color: "rgba(255,255,255,0.3)" }}
-                >
-                  The Master
-                </p>
-                <p
-                  className="text-sm mb-6 max-w-md"
-                  style={{ fontFamily: "var(--font-inter)", color: "rgba(255,255,255,0.45)", lineHeight: 1.7 }}
-                >
-                  Pay once. Never again. Get lifetime access to everything The Daily Meds will ever make, including all future series and content. Only available for a limited time at the founding price.
-                </p>
-
-                <div className="flex flex-col sm:flex-row items-start sm:items-end gap-6 mb-8">
-                  <div>
-                    <div className="flex items-end gap-2">
-                      <span style={{ fontFamily: "var(--font-plus-jakarta)", fontWeight: 800, fontSize: "3rem", color: "#E2E2E2", lineHeight: 1 }}>£299.99</span>
-                      <span className="mb-1 text-sm" style={{ color: "rgba(255,255,255,0.3)" }}>one-time</span>
-                    </div>
-                    <p className="text-xs mt-1" style={{ color: "#adf225" }}>Never pay again</p>
-                  </div>
-
-                  <ul className="flex flex-col gap-2 text-sm" style={{ color: "rgba(255,255,255,0.6)" }}>
-                    {[
-                      "Full library, forever",
-                      "All future series included",
-                      "Live sessions with Natalie",
-                      "Offline downloads",
-                      "Group meditation rooms",
-                      "Personal welcome message",
-                    ].map((f) => (
-                      <li key={f} className="flex items-center gap-2">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                          <circle cx="12" cy="12" r="10" fill="rgba(173,242,37,0.15)" />
-                          <path d="M7 12l3.5 3.5L17 9" stroke="#adf225" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                        {f}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                <button
-                  onClick={() => handleCheckout("lifetime")}
-                  className="px-8 py-3.5 rounded-full text-sm transition-all duration-200 hover:scale-105"
-                  style={{
-                    fontFamily: "var(--font-space-grotesk)",
-                    fontWeight: 700,
-                    background: "linear-gradient(90deg, #ff41b3, #ec723d)",
-                    color: "#fff",
-                    boxShadow: "0 0 30px rgba(255,65,179,0.4)",
-                  }}
-                >
-                  Claim founder membership
-                </button>
-              </div>
-            </div>
-          </div>
-        </section>
 
         {/* ── BOTTOM TAGLINE BAND ── */}
         <section

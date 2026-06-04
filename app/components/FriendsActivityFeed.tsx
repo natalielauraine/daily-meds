@@ -86,9 +86,6 @@ export default function FriendsActivityFeed({ limit = 4 }: Props) {
         <h2 className="text-sm text-white/50" style={{ fontWeight: 500, letterSpacing: "0.04em", textTransform: "uppercase", fontSize: "11px" }}>
           Friends
         </h2>
-        <Link href="/rooms" className="text-xs text-white/30 hover:text-white/60 transition-colors">
-          Group rooms →
-        </Link>
       </div>
 
       <div className="flex flex-col gap-2">

@@ -2,8 +2,6 @@ import type { Metadata } from "next";
 import { Lexend, Manrope, Epilogue } from "next/font/google";
 import "./globals.css";
 import { PlayerProvider } from "../lib/player-context";
-import { LanguageProvider } from "../lib/language-context";
-import { PresenceProvider } from "../lib/presence-context";
 import AppChrome from "./components/AppChrome";
 
 const lexend = Lexend({
@@ -144,17 +142,11 @@ export default function RootLayout({
         `}} />
       </head>
       <body className="bg-background text-on-background antialiased font-body">
-        {/* LanguageProvider manages the active language and RTL direction */}
-        <LanguageProvider>
-          {/* PresenceProvider tracks who is meditating and handles emoji reactions */}
-          <PresenceProvider>
-            {/* PlayerProvider wraps everything so audio persists across page navigation */}
-            <PlayerProvider>
-              {children}
-              <AppChrome />
-            </PlayerProvider>
-          </PresenceProvider>
-        </LanguageProvider>
+        {/* PlayerProvider wraps everything so audio persists across page navigation */}
+        <PlayerProvider>
+          {children}
+          <AppChrome />
+        </PlayerProvider>
       </body>
     </html>
   );

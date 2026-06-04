@@ -1,12 +1,10 @@
 "use client";
 
 // Shared session card — used by /library and /free.
-// Shows a 16:9 gradient thumbnail, mood badge, title, duration, and watchlist heart.
+// Shows a 16:9 gradient thumbnail, mood badge, title, duration.
 
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import { toggleWatchlist, isInWatchlist } from "../../lib/watchlist";
-import AddToPlaylistModal from "./AddToPlaylistModal";
 
 export type LibrarySession = {
   id: string;
@@ -37,36 +35,10 @@ export const MOOD_GRADIENTS: Record<string, string> = {
 
 export function LibraryCard({ session, isPaidMember }: { session: LibrarySession; isPaidMember: boolean }) {
   const [hovered, setHovered] = useState(false);
-  const [hearted, setHearted] = useState(false);
-  const [showMenu, setShowMenu] = useState(false);
-  const [showPlaylistModal, setShowPlaylistModal] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    setHearted(isInWatchlist(session.id));
-  }, [session.id]);
-
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        setShowMenu(false);
-      }
-    }
-    if (showMenu) document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [showMenu]);
-
-  function handleHeart(e: React.MouseEvent) {
-    e.preventDefault();
-    e.stopPropagation();
-    const nowSaved = toggleWatchlist(session.id);
-    setHearted(nowSaved);
-  }
 
   const moodGradient = MOOD_GRADIENTS[session.mood_category] ?? "linear-gradient(135deg, #ff41b3, #ec723d)";
 
   return (
-    <>
       <div
         className="cursor-pointer group flex flex-col"
         onMouseEnter={() => setHovered(true)}
@@ -77,7 +49,7 @@ export function LibraryCard({ session, isPaidMember }: { session: LibrarySession
           className="relative rounded-[10px] overflow-hidden mb-3 transition-transform duration-200"
           style={{
             aspectRatio: "16/9",
-            transform: hovered && !showMenu ? "scale(1.02)" : "scale(1)",
+            transform: hovered ? "scale(1.02)" : "scale(1)",
             border: "0.5px solid rgba(255,255,255,0.08)",
           }}
         >
@@ -109,7 +81,7 @@ export function LibraryCard({ session, isPaidMember }: { session: LibrarySession
             {/* Play button on hover */}
             <div
               className="absolute inset-0 flex items-center justify-center transition-opacity duration-200"
-              style={{ opacity: hovered && !showMenu ? 1 : 0 }}
+              style={{ opacity: hovered ? 1 : 0 }}
             >
               <div
                 className="w-12 h-12 rounded-full flex items-center justify-center"
@@ -164,27 +136,6 @@ export function LibraryCard({ session, isPaidMember }: { session: LibrarySession
             </div>
           </Link>
 
-          {/* Heart / watchlist button */}
-          <button
-            onClick={handleHeart}
-            className="absolute top-2 right-2 w-8 h-8 rounded-full flex items-center justify-center transition-all"
-            style={{
-              background: "rgba(0,0,0,0.45)",
-              backdropFilter: "blur(4px)",
-              opacity: hovered || hearted ? 1 : 0,
-            }}
-            aria-label={hearted ? "Remove from watchlist" : "Save to watchlist"}
-          >
-            {hearted ? (
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="#ff41b3">
-                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-              </svg>
-            ) : (
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-              </svg>
-            )}
-          </button>
         </div>
 
         {/* ── CARD INFO ── */}
@@ -222,13 +173,5 @@ export function LibraryCard({ session, isPaidMember }: { session: LibrarySession
           </p>
         </Link>
       </div>
-
-      {showPlaylistModal && (
-        <AddToPlaylistModal
-          sessionId={session.id}
-          onClose={() => setShowPlaylistModal(false)}
-        />
-      )}
-    </>
   );
 }

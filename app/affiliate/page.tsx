@@ -562,7 +562,7 @@ export default function AffiliatePage() {
             Meditation for real life. Created with love by Natalie Lauraine.
           </p>
           <p className="text-sm tracking-wide" style={{ color: C.primaryCont }}>
-            © {new Date().getFullYear()} I AM Sound Ltd, Trading as Daily Meds.
+            © {new Date().getFullYear()} The Daily Meds. All rights reserved.
           </p>
         </div>
         <div className="flex flex-col md:items-end gap-4">

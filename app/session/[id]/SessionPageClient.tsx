@@ -7,11 +7,9 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
-import { toggleWatchlist, isInWatchlist } from "../../../lib/watchlist";
 import { createClient } from "../../../lib/supabase-browser";
 import { usePlayer } from "../../../lib/player-context";
 import { MOCK_SESSIONS, SessionData } from "../../../lib/sessions-data";
-import AddToPlaylistModal from "../../components/AddToPlaylistModal";
 import ShareSessionModal from "../../components/ShareSessionModal";
 
 // ── HELPERS ───────────────────────────────────────────────────────────────────
@@ -43,13 +41,11 @@ export default function SessionPageClient({ session }: { session: SessionData | 
   const hasAutoPlayed = useRef(false);
 
   // ── STATE ──────────────────────────────────────────────────────────────────
-  const [hearted, setHearted]                       = useState(false);
   const [userId, setUserId]                         = useState<string | null>(null);
   const [savedInApp, setSavedInApp]                 = useState(false);
   const [subscriptionStatus, setSubscriptionStatus] = useState("free");
   const [isLoggedIn, setIsLoggedIn]                 = useState(false);
   const [subscriptionLoading, setSubscriptionLoading] = useState(true);
-  const [showPlaylistModal, setShowPlaylistModal]   = useState(false);
   const [showShareModal, setShowShareModal]         = useState(false);
   const [shareModalShown, setShareModalShown]       = useState(false);
   const [signupPromptDismissed, setSignupPromptDismissed] = useState(false);
@@ -89,10 +85,6 @@ export default function SessionPageClient({ session }: { session: SessionData | 
   const relatedSessions = MOCK_SESSIONS.filter((s) => s.id !== session?.id).slice(0, 3);
 
   // ── EFFECTS ────────────────────────────────────────────────────────────────
-
-  useEffect(() => {
-    if (session) setHearted(isInWatchlist(session.id));
-  }, [session?.id]);
 
   useEffect(() => {
     setPipSupported(typeof document !== "undefined" && !!document.pictureInPictureEnabled);
@@ -164,11 +156,6 @@ export default function SessionPageClient({ session }: { session: SessionData | 
   }, []);
 
   // ── HANDLERS ───────────────────────────────────────────────────────────────
-
-  function handleHeart() {
-    if (!session) return;
-    setHearted(toggleWatchlist(session.id));
-  }
 
   async function handleSave() {
     if (!session || !userId) return;
@@ -419,18 +406,6 @@ export default function SessionPageClient({ session }: { session: SessionData | 
 
             {/* Left: secondary actions */}
             <div className="flex items-center gap-5">
-              {/* Heart */}
-              <button
-                onClick={handleHeart}
-                className="transition-all active:scale-90"
-                style={{ color: hearted ? "#FF418E" : "rgba(255,255,255,0.5)" }}
-                aria-label={hearted ? "Remove from watchlist" : "Save to watchlist"}
-              >
-                <svg width="22" height="22" viewBox="0 0 24 24" fill={hearted ? "currentColor" : "none"} stroke="currentColor" strokeWidth={hearted ? "0" : "1.8"}>
-                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                </svg>
-              </button>
-
               {/* Save / bookmark */}
               <button
                 onClick={handleSave}
@@ -626,16 +601,6 @@ export default function SessionPageClient({ session }: { session: SessionData | 
 
             {/* Action pills */}
             <div className="flex gap-3 mt-5 flex-wrap">
-              <button
-                onClick={() => setShowPlaylistModal(true)}
-                className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-colors hover:bg-white/10"
-                style={{ border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.5)" }}
-              >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M3 6h18v2H3zm0 5h12v2H3zm0 5h18v2H3zm16-3v-3h-2v3h-3v2h3v3h2v-3h3v-2z"/>
-                </svg>
-                Add to playlist
-              </button>
               {isLoggedIn && (
                 <button
                   onClick={() => setShowShareModal(true)}
@@ -745,9 +710,6 @@ export default function SessionPageClient({ session }: { session: SessionData | 
       </div>
 
       {/* ── MODALS ── */}
-      {showPlaylistModal && (
-        <AddToPlaylistModal sessionId={session.id} onClose={() => setShowPlaylistModal(false)} />
-      )}
       {showShareModal && (
         <ShareSessionModal
           session={{ id: session.id, title: session.title, moodCategory: session.moodCategory, duration: session.duration, gradient: session.gradient }}

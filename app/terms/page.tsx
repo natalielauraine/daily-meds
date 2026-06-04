@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Terms & Conditions — Daily Meds",
-  description: "Terms and Conditions for The Daily Meds platform, operated by I AM Sound Ltd.",
+  description: "Terms and Conditions for The Daily Meds platform, operated by Daily Meds FZ LLC.",
 };
 
 const SECTIONS = [
@@ -14,7 +14,7 @@ const SECTIONS = [
     title: "Agreement to Terms",
     content: (
       <p>
-        By accessing or using Daily Meds ("the Platform", "our Service"), you agree to be bound by these Terms and Conditions. If you do not agree with any part of these terms, you may not access the Service. Daily Meds is operated by <strong>I AM Sound Ltd</strong>, Trading as Daily Meds and provides guided meditation content, wellness resources, and community features.
+        By accessing or using Daily Meds ("the Platform", "our Service"), you agree to be bound by these Terms and Conditions. If you do not agree with any part of these terms, you may not access the Service. Daily Meds is operated by <strong>Daily Meds FZ LLC</strong>, Trading as Daily Meds and provides guided meditation content, wellness resources, and community features.
       </p>
     ),
   },
@@ -297,7 +297,7 @@ export default function TermsPage() {
             Terms & Conditions
           </h1>
           <p className="text-sm" style={{ color: "rgba(255,255,255,0.35)" }}>
-            Last Updated: November 27, 2025 · Operated by I AM Sound Ltd, Trading as Daily Meds
+            Last Updated: November 27, 2025 · Operated by Daily Meds FZ LLC, Trading as Daily Meds
           </p>
         </div>
       </section>
@@ -387,7 +387,7 @@ export default function TermsPage() {
           style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}
         >
           <p className="text-xs" style={{ color: "rgba(255,255,255,0.25)" }}>
-            © {new Date().getFullYear()} I AM Sound Ltd, Trading as Daily Meds. All rights reserved.
+            © {new Date().getFullYear()} The Daily Meds. All rights reserved. All rights reserved.
           </p>
           <div className="flex items-center gap-5">
             <Link href="/privacy" className="text-xs hover:text-white transition-colors" style={{ color: "rgba(255,255,255,0.35)" }}>

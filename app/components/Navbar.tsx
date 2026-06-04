@@ -9,15 +9,11 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "../../lib/supabase-browser";
 import type { User } from "@supabase/supabase-js";
-import LanguageSelector from "./LanguageSelector";
-import NotificationBell from "./NotificationBell";
-import { useLanguage } from "../../lib/language-context";
 import Logo from "./Logo";
 
 export default function Navbar() {
   const router = useRouter();
   const supabase = createClient();
-  const { t } = useLanguage();
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
@@ -73,10 +69,9 @@ export default function Navbar() {
           <div className="hidden md:flex items-center gap-5">
             {[
               { href: "/", label: "Home" },
-              { href: "/live", label: t("nav", "live") || "Live" },
-              { href: "/timer", label: "Breathe" },
+              { href: "/live", label: "Live" },
               { href: "/pricing", label: "Pricing" },
-              { href: "/rooms", label: "Group Meds" },
+              { href: "/about", label: "About" },
             ].map(({ href, label }) => (
               <Link
                 key={href}
@@ -97,9 +92,6 @@ export default function Navbar() {
 
           {/* ── Desktop auth area ── */}
           <div className="hidden md:flex items-center gap-3">
-            <LanguageSelector />
-            {user && <NotificationBell user={user} />}
-
             {user ? (
               <div className="relative">
                 <button
@@ -146,8 +138,6 @@ export default function Navbar() {
                       { href: "/library", label: "Library" },
                       { href: "/profile", label: "Profile" },
                       { href: "/stats", label: "My Stats" },
-                      { href: "/watchlist", label: "Watchlist" },
-                      { href: "/rooms", label: "Group Meds" },
                     ].map(({ href, label }) => (
                       <Link
                         key={href}
@@ -234,8 +224,7 @@ export default function Navbar() {
             { href: "/live", label: "Live" },
             { href: "/free", label: "Free Sessions" },
             { href: "/pricing", label: "Pricing" },
-            { href: "/timer", label: "Breathe" },
-            { href: "/rooms", label: "Group Meds" },
+            { href: "/about", label: "About" },
           ].map(({ href, label }) => (
             <Link
               key={href}
@@ -262,7 +251,6 @@ export default function Navbar() {
                 </div>
                 <Link href="/profile" className="text-sm" style={{ color: "rgba(255,255,255,0.5)" }} onClick={() => setMobileMenuOpen(false)}>Profile</Link>
                 <Link href="/stats" className="text-sm" style={{ color: "rgba(255,255,255,0.5)" }} onClick={() => setMobileMenuOpen(false)}>My Stats</Link>
-                <Link href="/watchlist" className="text-sm" style={{ color: "rgba(255,255,255,0.5)" }} onClick={() => setMobileMenuOpen(false)}>Watchlist</Link>
                 <button onClick={handleLogout} className="text-left text-sm" style={{ color: "rgba(255,255,255,0.35)" }}>Log out</button>
               </>
             ) : (

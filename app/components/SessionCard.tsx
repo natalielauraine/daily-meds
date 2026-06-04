@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
-import AddToPlaylistModal from "./AddToPlaylistModal";
 
 // The shape of a single session — used across all content rows
 export type Session = {
@@ -39,7 +38,6 @@ const MOOD_GRADIENTS: Record<string, string> = {
 export default function SessionCard({ session }: { session: Session }) {
   const [hovered, setHovered] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [showPlaylistModal, setShowPlaylistModal] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -168,21 +166,6 @@ export default function SessionCard({ session }: { session: Session }) {
                   boxShadow: "0 8px 32px rgba(0,0,0,0.6)",
                 }}
               >
-                <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setMenuOpen(false);
-                    setShowPlaylistModal(true);
-                  }}
-                  className="w-full flex items-center gap-2.5 px-3 py-2 text-xs transition-colors hover:bg-white/[0.05] text-left"
-                  style={{ color: "rgba(255,255,255,0.65)", fontFamily: "var(--font-space-grotesk)" }}
-                >
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M3 6h18v2H3zm0 5h12v2H3zm0 5h18v2H3zm16-3v-3h-2v3h-3v2h3v3h2v-3h3v-2z" />
-                  </svg>
-                  Save to playlist
-                </button>
                 <Link
                   href={`/session/${session.id}`}
                   onClick={(e) => e.stopPropagation()}
@@ -248,12 +231,6 @@ export default function SessionCard({ session }: { session: Session }) {
         </Link>
       </div>
 
-      {showPlaylistModal && (
-        <AddToPlaylistModal
-          sessionId={session.id}
-          onClose={() => setShowPlaylistModal(false)}
-        />
-      )}
     </>
   );
 }

@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Privacy Policy — Daily Meds",
-  description: "How Daily Meds collects, uses, and protects your personal data. GDPR & CCPA compliant.",
+  description: "How Daily Meds collects, uses, and protects your personal data. GDPR compliant, UK Data Protection Act 2018.",
 };
 
 const SECTIONS = [
@@ -13,281 +13,273 @@ const SECTIONS = [
     number: "1",
     title: "Introduction",
     content: (
-      <p>
-        Welcome to Daily Meds. We respect your privacy and are committed to protecting your personal data. This Privacy Policy explains how we collect, use, share, and protect your information when you use our meditation platform and related services ("Service"). This policy applies to all users worldwide and complies with <strong>GDPR</strong>, <strong>CCPA</strong>, and other applicable privacy laws.
-      </p>
+      <>
+        <p>
+          Welcome to Daily Meds (<a href="https://thedailymeds.com" target="_blank" rel="noopener noreferrer">thedailymeds.com</a>). We respect your privacy and are committed to protecting your personal data. This Privacy Policy explains how we collect, use, and protect your information when you use our meditation and wellness platform and related services (the &ldquo;Service&rdquo;).
+        </p>
+        <p>
+          This policy applies to all users worldwide and complies with the <strong>UK General Data Protection Regulation (UK GDPR)</strong>, the <strong>UK Data Protection Act 2018</strong>, the <strong>EU General Data Protection Regulation (EU GDPR)</strong>, and other applicable data protection laws.
+        </p>
+      </>
+    ),
+  },
+  {
+    id: "data-controller",
+    number: "2",
+    title: "Data Controller",
+    content: (
+      <>
+        <p>The data controller responsible for your personal data is:</p>
+        <p className="mt-3">
+          <strong>Daily Meds FZ LLC</strong><br />
+          CEO and Data Controller: <strong>Natalie Lauraine</strong><br />
+          Email: <a href="mailto:support@thedailymeds.com">support@thedailymeds.com</a><br />
+          Website: <a href="https://thedailymeds.com" target="_blank" rel="noopener noreferrer">thedailymeds.com</a>
+        </p>
+        <p className="mt-3">
+          If you have any questions about how we handle your personal data, or you wish to exercise any of your data protection rights, please contact us using the details above.
+        </p>
+      </>
     ),
   },
   {
     id: "information-we-collect",
-    number: "2",
+    number: "3",
     title: "Information We Collect",
     content: (
       <>
-        <h3>2.1 Information You Provide</h3>
+        <h3>3.1 Information You Provide</h3>
         <ul>
-          <li><strong>Account Information:</strong> Name, email address, password, profile photo</li>
-          <li><strong>Payment Information:</strong> Credit card details, billing address (processed securely by third-party payment processors)</li>
-          <li><strong>Profile Data:</strong> Meditation preferences, goals, bio, and other optional profile details</li>
+          <li><strong>Account Information:</strong> Name, email address, and password (or Google account details if using Google OAuth sign-in)</li>
+          <li><strong>Payment Information:</strong> Payment card details and billing information, processed securely by Stripe. We do not store your full card number on our servers.</li>
+          <li><strong>Profile Data:</strong> Meditation preferences, goals, and other optional profile details you choose to provide</li>
           <li><strong>Community Content:</strong> Posts, comments, reactions, and messages you share in community features</li>
-          <li><strong>Communications:</strong> Messages you send to our support team or through in-app messaging</li>
+          <li><strong>Communications:</strong> Messages you send to our support team</li>
         </ul>
-        <h3>2.2 Information Collected Automatically</h3>
+        <h3>3.2 Information Collected Automatically</h3>
         <ul>
-          <li><strong>Usage Data:</strong> Meditation sessions completed, duration, frequency, feature usage, and progress tracking</li>
-          <li><strong>Device Information:</strong> Device type, operating system, browser type, IP address, device identifiers</li>
-          <li><strong>Log Data:</strong> Access times, pages viewed, clickstream data, errors encountered</li>
-          <li><strong>Cookies and Tracking:</strong> Cookies, web beacons, and similar technologies (see Section 7)</li>
-          <li><strong>Location Data:</strong> Approximate location based on IP address (we do not collect precise GPS location)</li>
+          <li><strong>Usage Data:</strong> Meditation sessions completed, duration, frequency, streaks, and progress tracking</li>
+          <li><strong>Device Information:</strong> Device type, operating system, browser type, and IP address</li>
+          <li><strong>Log Data:</strong> Access times, pages viewed, and errors encountered</li>
         </ul>
-        <h3>2.3 Information from Third Parties</h3>
+        <h3>3.3 Information from Third Parties</h3>
         <ul>
-          <li><strong>Social Media:</strong> If you connect via social login, we receive basic profile information</li>
-          <li><strong>Analytics Providers:</strong> Usage statistics and performance metrics</li>
-          <li><strong>Payment Processors:</strong> Transaction confirmation and payment status</li>
+          <li><strong>Google OAuth:</strong> If you sign in with Google, we receive your name, email address, and profile photo from your Google account</li>
+          <li><strong>Stripe:</strong> Transaction confirmation and payment status (we never receive or store your full card number)</li>
         </ul>
       </>
     ),
   },
   {
     id: "how-we-use",
-    number: "3",
+    number: "4",
     title: "How We Use Your Information",
     content: (
       <>
         <p className="mb-4">We use your information for the following purposes:</p>
-        <h3>3.1 Service Delivery</h3>
+        <h3>4.1 Service Delivery</h3>
         <ul>
-          <li>Provide access to meditation content and features</li>
+          <li>Provide access to meditation content, sessions, and features</li>
           <li>Personalise your experience and recommend content</li>
-          <li>Track your progress and maintain meditation history</li>
-          <li>Enable community features and social interactions</li>
-          <li>Process payments and manage subscriptions</li>
+          <li>Track your meditation progress, streaks, and history</li>
+          <li>Enable community features and group meditation</li>
+          <li>Process payments and manage subscriptions via Stripe</li>
         </ul>
-        <h3>3.2 Communication</h3>
+        <h3>4.2 Communication</h3>
         <ul>
-          <li>Send service-related notifications and updates</li>
-          <li>Respond to your inquiries and support requests</li>
-          <li>Send newsletters and promotional content (with your consent)</li>
-          <li>Notify you about challenges, group activities, and achievements</li>
+          <li>Send essential service-related notifications (e.g. password resets, subscription confirmations)</li>
+          <li>Respond to your support enquiries</li>
+          <li>Send newsletters and promotional content (only with your explicit consent, and you can unsubscribe at any time)</li>
         </ul>
-        <h3>3.3 Improvement and Analytics</h3>
+        <h3>4.3 Improvement and Analytics</h3>
         <ul>
           <li>Analyse usage patterns to improve our Service</li>
           <li>Develop new features and content</li>
-          <li>Conduct research and statistical analysis</li>
-          <li>Test and optimise performance</li>
+          <li>Monitor and improve platform performance and reliability</li>
         </ul>
-        <h3>3.4 Safety and Compliance</h3>
+        <h3>4.4 Safety and Compliance</h3>
         <ul>
           <li>Prevent fraud, abuse, and security threats</li>
           <li>Enforce our Terms and Conditions</li>
           <li>Comply with legal obligations</li>
-          <li>Protect user safety and platform integrity</li>
         </ul>
       </>
     ),
   },
   {
     id: "legal-basis",
-    number: "4",
-    title: "Legal Basis for Processing (GDPR)",
+    number: "5",
+    title: "Legal Basis for Processing",
     content: (
       <>
-        <p className="mb-4">For users in the European Economic Area (EEA), we process your data based on:</p>
+        <p className="mb-4">Under the UK GDPR and EU GDPR, we process your personal data based on the following lawful grounds:</p>
         <ul>
-          <li><strong>Contractual Necessity:</strong> To provide our Service and fulfil our contract with you</li>
-          <li><strong>Legitimate Interests:</strong> To improve our Service, ensure security, and conduct analytics</li>
-          <li><strong>Consent:</strong> For marketing communications and optional features (you can withdraw consent anytime)</li>
-          <li><strong>Legal Compliance:</strong> To comply with applicable laws and regulations</li>
+          <li><strong>Contractual Necessity (Article 6(1)(b)):</strong> Processing necessary to provide our Service and fulfil our contract with you — e.g. creating your account, processing payments, delivering meditation content</li>
+          <li><strong>Legitimate Interests (Article 6(1)(f)):</strong> Processing necessary for our legitimate interests, such as improving our Service, ensuring security, and conducting analytics — provided these interests do not override your fundamental rights</li>
+          <li><strong>Consent (Article 6(1)(a)):</strong> Where you have given clear consent for us to process your data for a specific purpose — e.g. marketing communications. You can withdraw consent at any time</li>
+          <li><strong>Legal Obligation (Article 6(1)(c)):</strong> Processing necessary to comply with applicable laws — e.g. retaining payment records for tax purposes</li>
         </ul>
       </>
     ),
   },
   {
     id: "sharing",
-    number: "5",
+    number: "6",
     title: "How We Share Your Information",
+    highlight: true,
     content: (
       <>
-        <p className="mb-4">We <strong>do not sell your personal data</strong>. We may share your information with:</p>
-        <h3>5.1 Service Providers</h3>
-        <p className="mb-3">Third-party vendors who help us operate our Service, including:</p>
+        <p className="mb-4"><strong>We do not sell, share, or trade your personal information (including your name, email address, or any other identifying data) to third parties. Full stop.</strong></p>
+        <p className="mb-4">We only share your data with trusted service providers who are strictly necessary to operate our Service. These providers process data on our behalf and under our instructions, subject to contractual data processing agreements:</p>
+        <h3>6.1 Service Providers</h3>
         <ul>
-          <li>Cloud hosting and storage providers</li>
-          <li>Payment processors (Stripe, etc.)</li>
-          <li>Email and communication services</li>
-          <li>Analytics and performance monitoring tools</li>
-          <li>Customer support platforms</li>
+          <li><strong>Stripe</strong> — Payment processing. Stripe receives your payment card details to process subscriptions. Stripe is PCI DSS Level 1 certified. <a href="https://stripe.com/privacy" target="_blank" rel="noopener noreferrer">Stripe Privacy Policy</a></li>
+          <li><strong>Supabase</strong> — Database, authentication, and backend infrastructure. Stores your account data and meditation progress. <a href="https://supabase.com/privacy" target="_blank" rel="noopener noreferrer">Supabase Privacy Policy</a></li>
+          <li><strong>Cloudflare</strong> — Content delivery network (CDN) and media storage. Delivers audio and video content to you. <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener noreferrer">Cloudflare Privacy Policy</a></li>
+          <li><strong>Resend</strong> — Transactional email delivery. Sends password resets, subscription confirmations, and other service emails. <a href="https://resend.com/legal/privacy-policy" target="_blank" rel="noopener noreferrer">Resend Privacy Policy</a></li>
+          <li><strong>Vercel</strong> — Web application hosting. Hosts and serves our website. <a href="https://vercel.com/legal/privacy-policy" target="_blank" rel="noopener noreferrer">Vercel Privacy Policy</a></li>
+          <li><strong>Daily.co</strong> — Live video infrastructure for group meditation sessions (coming soon). <a href="https://www.daily.co/legal/privacy" target="_blank" rel="noopener noreferrer">Daily.co Privacy Policy</a></li>
+          <li><strong>Google</strong> — OAuth authentication. If you choose to sign in with Google, Google provides your basic profile information to us. <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Google Privacy Policy</a></li>
         </ul>
-        <h3>5.2 Other Users</h3>
-        <p>Information you choose to share publicly (profile information, community posts, group interactions) will be visible to other users according to your privacy settings.</p>
-        <h3>5.3 Legal Requirements</h3>
-        <p>We may disclose information when required by law, court order, or government request, or to protect our rights, property, or safety.</p>
-        <h3>5.4 Business Transfers</h3>
-        <p>If we are involved in a merger, acquisition, or sale of assets, your information may be transferred as part of that transaction. You will have the option to not transfer your data at this point, prior to the sale of Daily Meds.</p>
+        <h3>6.2 Other Users</h3>
+        <p>Information you choose to share publicly (such as community posts, group interactions, or your display name) will be visible to other users according to the feature you are using.</p>
+        <h3>6.3 Legal Requirements</h3>
+        <p>We may disclose information when required by law, court order, or government request, or to protect our rights, property, or safety, or the rights, property, or safety of others.</p>
+        <h3>6.4 Business Transfers</h3>
+        <p>If Daily Meds FZ LLC is involved in a merger, acquisition, or sale of assets, your information may be transferred as part of that transaction. We will notify you before your data is transferred and becomes subject to a different privacy policy. You will have the option to request deletion of your data prior to any such transfer.</p>
       </>
     ),
   },
   {
     id: "retention",
-    number: "6",
+    number: "7",
     title: "Data Retention",
     content: (
       <>
-        <p className="mb-4">We retain your personal data for as long as necessary to provide our Service and fulfil the purposes described in this policy. Specifically:</p>
+        <p className="mb-4">We retain your personal data only for as long as necessary to fulfil the purposes described in this policy:</p>
         <ul>
-          <li>Account data is retained while your account is active</li>
-          <li>Meditation history and progress data is retained to provide continuity</li>
-          <li>Payment records are retained as required by law (typically 7 years)</li>
-          <li>After account deletion, we retain minimal data for legal compliance and fraud prevention</li>
+          <li><strong>Account data</strong> is retained while your account is active and until you request deletion</li>
+          <li><strong>Meditation history and progress</strong> is retained to provide continuity of your experience</li>
+          <li><strong>Payment records</strong> are retained as required by law (typically 6-7 years for tax and accounting purposes)</li>
+          <li><strong>After account deletion</strong>, we will delete or anonymise your personal data within 30 days, except where we are required by law to retain certain records</li>
         </ul>
-        <p className="mt-4">You can request deletion of your data at any time (see Section 9).</p>
+        <p className="mt-4">You can request deletion of your data at any time (see Section 9 — Your Rights).</p>
       </>
     ),
   },
   {
     id: "cookies",
-    number: "7",
-    title: "Cookies and Tracking Technologies",
+    number: "8",
+    title: "Cookies",
     content: (
       <>
-        <p className="mb-4">We use cookies and similar technologies to enhance your experience. Types of cookies we use:</p>
+        <p className="mb-4">We use <strong>essential cookies only</strong>. We do not use advertising cookies, tracking cookies, or analytics cookies.</p>
+        <p className="mb-4">The only cookies we set are:</p>
         <ul>
-          <li><strong>Essential Cookies:</strong> Required for basic functionality (authentication, security)</li>
-          <li><strong>Performance Cookies:</strong> Help us understand how users interact with the Service</li>
-          <li><strong>Functional Cookies:</strong> Remember your preferences and settings</li>
-          <li><strong>Analytics Cookies:</strong> Collect usage data to improve our Service</li>
-          <li><strong>Advertising Cookies:</strong> Used for targeted marketing (only with your consent)</li>
+          <li><strong>Authentication cookies</strong> — Set by Supabase to keep you signed in to your account. These are strictly necessary for the Service to function and cannot be disabled</li>
         </ul>
-        <p className="mt-4">You can control cookies through your browser settings. However, disabling cookies may affect functionality.</p>
+        <p className="mt-4">Because we only use strictly necessary cookies, we do not require a cookie consent banner under the UK GDPR and the Privacy and Electronic Communications Regulations (PECR).</p>
       </>
     ),
   },
   {
     id: "security",
-    number: "8",
+    number: "9",
     title: "Data Security",
     content: (
       <>
-        <p className="mb-4">We implement industry-standard security measures to protect your data, including:</p>
+        <p className="mb-4">We implement appropriate technical and organisational measures to protect your personal data, including:</p>
         <ul>
-          <li>Encryption in transit (HTTPS/TLS) and at rest</li>
-          <li>Secure authentication and password hashing</li>
-          <li>Regular security audits and vulnerability assessments</li>
-          <li>Access controls and employee training</li>
-          <li>Secure payment processing through PCI-compliant providers</li>
+          <li>Encryption in transit (HTTPS/TLS) on all connections</li>
+          <li>Encryption at rest for stored data</li>
+          <li>Secure password hashing (your password is never stored in plain text)</li>
+          <li>PCI DSS compliant payment processing via Stripe (we never see or store your full card number)</li>
+          <li>Row-level security on our database to prevent unauthorised data access</li>
+          <li>Regular security reviews</li>
         </ul>
-        <p className="mt-4">While we strive to protect your data, no security system is impenetrable. You are responsible for maintaining the confidentiality of your account credentials.</p>
+        <p className="mt-4">While we take every reasonable step to protect your data, no system is completely secure. You are responsible for keeping your account credentials confidential.</p>
       </>
     ),
   },
   {
     id: "rights",
-    number: "9",
-    title: "Your Privacy Rights",
+    number: "10",
+    title: "Your Rights",
     content: (
       <>
-        <p className="mb-4">Depending on your location, you may have the following rights:</p>
-        <h3>9.1 All Users</h3>
+        <p className="mb-4">Under the UK GDPR, EU GDPR, and UK Data Protection Act 2018, you have the following rights regarding your personal data:</p>
         <ul>
-          <li><strong>Access:</strong> Request a copy of your personal data</li>
-          <li><strong>Correction:</strong> Update or correct inaccurate information</li>
-          <li><strong>Deletion:</strong> Request deletion of your account and data</li>
-          <li><strong>Opt-Out:</strong> Unsubscribe from marketing communications</li>
+          <li><strong>Right of Access (Article 15):</strong> Request a copy of the personal data we hold about you</li>
+          <li><strong>Right to Rectification (Article 16):</strong> Request correction of any inaccurate or incomplete data</li>
+          <li><strong>Right to Erasure (Article 17):</strong> Request deletion of your personal data (&ldquo;right to be forgotten&rdquo;)</li>
+          <li><strong>Right to Restriction (Article 18):</strong> Request that we limit how we process your data</li>
+          <li><strong>Right to Data Portability (Article 20):</strong> Receive your data in a structured, commonly used, machine-readable format</li>
+          <li><strong>Right to Object (Article 21):</strong> Object to processing based on legitimate interests or for direct marketing</li>
+          <li><strong>Right to Withdraw Consent:</strong> Where processing is based on consent, withdraw that consent at any time without affecting the lawfulness of prior processing</li>
+          <li><strong>Right to Lodge a Complaint:</strong> You have the right to lodge a complaint with the UK Information Commissioner&rsquo;s Office (ICO) at <a href="https://ico.org.uk" target="_blank" rel="noopener noreferrer">ico.org.uk</a>, or with your local supervisory authority</li>
         </ul>
-        <h3>9.2 GDPR Rights (EEA Users)</h3>
-        <ul>
-          <li><strong>Data Portability:</strong> Receive your data in a structured, machine-readable format</li>
-          <li><strong>Restriction:</strong> Limit how we process your data</li>
-          <li><strong>Objection:</strong> Object to processing based on legitimate interests</li>
-          <li><strong>Withdraw Consent:</strong> Withdraw consent for processing at any time</li>
-          <li><strong>Lodge a Complaint:</strong> File a complaint with your local data protection authority</li>
-        </ul>
-        <h3>9.3 CCPA Rights (California Residents)</h3>
-        <ul>
-          <li>Right to know what personal information is collected</li>
-          <li>Right to know if personal information is sold or disclosed</li>
-          <li>Right to opt-out of the sale of personal information (we do not sell data)</li>
-          <li>Right to deletion of personal information</li>
-          <li>Right to non-discrimination for exercising privacy rights</li>
-        </ul>
-        <p className="mt-4">To exercise your rights, contact us at <a href="mailto:support@thedailymeds.com">support@thedailymeds.com</a>. We will respond within 30 days (or as required by law).</p>
+        <p className="mt-4">To exercise any of these rights, contact us at <a href="mailto:support@thedailymeds.com">support@thedailymeds.com</a>. We will respond within <strong>one calendar month</strong> as required by law. There is no fee to exercise your rights (unless a request is manifestly unfounded or excessive).</p>
       </>
     ),
   },
   {
     id: "international",
-    number: "10",
+    number: "11",
     title: "International Data Transfers",
     content: (
       <>
-        <p className="mb-4">Your information may be transferred to and processed in countries outside your country of residence, including countries that may not have the same data protection laws. We ensure appropriate safeguards are in place, including:</p>
+        <p className="mb-4">Some of our service providers operate outside the United Kingdom and European Economic Area. Where your data is transferred internationally, we ensure appropriate safeguards are in place, including:</p>
         <ul>
-          <li>Standard Contractual Clauses approved by the European Commission</li>
-          <li>Data processing agreements with third-party providers</li>
-          <li>Compliance with applicable data transfer regulations</li>
+          <li>Standard Contractual Clauses (SCCs) approved by the UK Secretary of State or European Commission</li>
+          <li>Transfers to countries with an adequacy decision from the UK or EU</li>
+          <li>Data processing agreements with all third-party providers</li>
         </ul>
+        <p className="mt-4">You can request details of the specific safeguards applied to international transfers of your data by contacting us.</p>
       </>
     ),
   },
   {
     id: "children",
-    number: "11",
-    title: "Children's Privacy",
+    number: "12",
+    title: "Age Requirement",
     content: (
-      <p>Our Service is not directed to children under 13 (or the age of majority in your jurisdiction). We do not knowingly collect personal information from children. If you believe we have collected data from a child, please contact us immediately, and we will delete it.</p>
+      <p>Our Service is intended for users aged <strong>16 and over</strong>, in accordance with Article 8 of the UK GDPR. We do not knowingly collect personal data from anyone under the age of 16. If you believe we have inadvertently collected data from someone under 16, please contact us immediately at <a href="mailto:support@thedailymeds.com">support@thedailymeds.com</a>, and we will delete it promptly.</p>
     ),
   },
   {
     id: "third-party",
-    number: "12",
-    title: "Third-Party Links and Services",
+    number: "13",
+    title: "Third-Party Links",
     content: (
-      <p>Our Service may contain links to third-party websites, apps, or services (e.g., Spotify, Apple Music, social media). We are not responsible for their privacy practices. We encourage you to review their privacy policies before providing any personal information.</p>
+      <p>Our Service may contain links to third-party websites or services. We are not responsible for the privacy practices of those third parties. We encourage you to read their privacy policies before providing any personal information to them.</p>
     ),
   },
   {
     id: "changes",
-    number: "13",
-    title: "Changes to This Privacy Policy",
-    content: (
-      <p>We may update this Privacy Policy from time to time. We will notify you of significant changes via email or through a prominent notice on the Service. Your continued use after changes constitutes acceptance of the updated policy. We recommend reviewing this policy periodically.</p>
-    ),
-  },
-  {
-    id: "dnt",
     number: "14",
-    title: "Do Not Track",
+    title: "Changes to This Policy",
     content: (
-      <p>Some browsers have a "Do Not Track" feature. We currently do not respond to Do Not Track signals, as there is no industry standard for interpreting them.</p>
-    ),
-  },
-  {
-    id: "dpo",
-    number: "15",
-    title: "Data Protection Officer",
-    content: (
-      <p>For GDPR-related inquiries, you may contact our Data Protection Officer at <a href="mailto:support@thedailymeds.com">support@thedailymeds.com</a>.</p>
+      <p>We may update this Privacy Policy from time to time to reflect changes in our practices or applicable laws. We will notify you of significant changes via email or through a prominent notice on the Service. The &ldquo;Last Updated&rdquo; date at the top of this page indicates when this policy was last revised. Your continued use of the Service after changes are posted constitutes acceptance of the updated policy.</p>
     ),
   },
   {
     id: "contact",
-    number: "16",
+    number: "15",
     title: "Contact Us",
     content: (
       <>
-        <p className="mb-2">If you have questions about this Privacy Policy or how we handle your data, please contact us:</p>
-        <p><strong>Email:</strong> <a href="mailto:support@thedailymeds.com">support@thedailymeds.com</a></p>
+        <p className="mb-3">If you have any questions about this Privacy Policy, wish to exercise your data protection rights, or have concerns about how we handle your personal data, please contact us:</p>
+        <p>
+          <strong>Daily Meds FZ LLC</strong><br />
+          Data Controller: <strong>Natalie Lauraine</strong><br />
+          Email: <a href="mailto:support@thedailymeds.com">support@thedailymeds.com</a><br />
+          Website: <a href="https://thedailymeds.com" target="_blank" rel="noopener noreferrer">thedailymeds.com</a>
+        </p>
+        <p className="mt-3">
+          You also have the right to lodge a complaint with the UK Information Commissioner&rsquo;s Office (ICO):<br />
+          <a href="https://ico.org.uk/make-a-complaint/" target="_blank" rel="noopener noreferrer">ico.org.uk/make-a-complaint</a>
+        </p>
       </>
-    ),
-  },
-  {
-    id: "consent",
-    number: "17",
-    title: "Consent",
-    content: (
-      <p>By using Daily Meds, you consent to the collection, use, and sharing of your information as described in this Privacy Policy. If you do not agree, please do not use our Service.</p>
     ),
   },
 ];
@@ -338,16 +330,12 @@ export default function PrivacyPolicyPage() {
           >
             Privacy Policy
           </h1>
-          <p className="text-sm mb-6" style={{ color: "rgba(255,255,255,0.35)" }}>
-            Last Updated: November 27, 2025
+          <p className="text-sm mb-2" style={{ color: "rgba(255,255,255,0.35)" }}>
+            Last Updated: June 2026
           </p>
-          <Link
-            href="/privacy"
-            className="inline-flex items-center gap-2 text-sm transition-colors hover:text-white"
-            style={{ color: "#ff41b3", fontFamily: "var(--font-lexend)" }}
-          >
-            🤍 Read our Privacy Promise instead →
-          </Link>
+          <p className="text-sm" style={{ color: "rgba(255,255,255,0.35)" }}>
+            Daily Meds FZ LLC &middot; Data Controller: Natalie Lauraine
+          </p>
         </div>
       </section>
 
@@ -388,8 +376,21 @@ export default function PrivacyPolicyPage() {
         {/* Sections */}
         <div className="flex flex-col gap-12">
           {SECTIONS.map((section) => (
-            <section key={section.id} id={section.id} className="scroll-mt-24">
-              <div className="p-8 rounded-2xl" style={{ backgroundColor: "#0e0e0e", border: "1px solid rgba(255,255,255,0.06)" }}>
+            <section
+              key={section.id}
+              id={section.id}
+              className="scroll-mt-24"
+            >
+              <div
+                className="p-8 rounded-2xl"
+                style={section.highlight ? {
+                  backgroundColor: "rgba(170,238,32,0.03)",
+                  border: "1px solid rgba(170,238,32,0.12)",
+                } : {
+                  backgroundColor: "#0e0e0e",
+                  border: "1px solid rgba(255,255,255,0.06)",
+                }}
+              >
                 <div className="flex items-start gap-4 mb-5">
                   <span
                     className="text-xs font-black px-2.5 py-1 rounded-lg shrink-0 mt-0.5"
@@ -418,14 +419,11 @@ export default function PrivacyPolicyPage() {
           style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}
         >
           <p className="text-xs" style={{ color: "rgba(255,255,255,0.25)" }}>
-            © {new Date().getFullYear()} I AM Sound Ltd, Trading as Daily Meds. All rights reserved.
+            &copy; {new Date().getFullYear()} Daily Meds FZ LLC. All rights reserved.
           </p>
           <div className="flex items-center gap-5">
             <Link href="/terms" className="text-xs hover:text-white transition-colors" style={{ color: "rgba(255,255,255,0.35)" }}>
               Terms & Conditions
-            </Link>
-            <Link href="/privacy" className="text-xs hover:text-white transition-colors" style={{ color: "rgba(255,255,255,0.35)" }}>
-              Privacy Promise
             </Link>
             <Link href="/" className="text-xs hover:text-white transition-colors" style={{ color: "rgba(255,255,255,0.35)" }}>
               Back to Home
@@ -458,7 +456,7 @@ export default function PrivacyPolicyPage() {
           position: relative;
         }
         .prose-section ul li::before {
-          content: '—';
+          content: '\\2014';
           position: absolute;
           left: 0;
           color: rgba(170,238,32,0.5);

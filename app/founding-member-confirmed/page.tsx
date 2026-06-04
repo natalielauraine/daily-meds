@@ -76,7 +76,7 @@ export default function FoundingMemberConfirmedPage() {
             </p>
             {[
               "Full library — every session, past and future",
-              "Live sessions with Natalie, join from anywhere",
+              "Live sessions with Natalie (coming soon)",
               "Audio-only mode for eyes-free practice",
               "New content every week, automatically",
               "Founding Member status on your profile",

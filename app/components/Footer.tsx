@@ -44,7 +44,6 @@ export default function Footer() {
               { href: "/library", label: "Library" },
               { href: "/live", label: "Live Sessions" },
               { href: "/free", label: "Free Sessions" },
-              { href: "/timer", label: "Breathing Timer" },
             ].map(({ href, label }) => (
               <Link
                 key={href}
@@ -69,7 +68,6 @@ export default function Footer() {
               { href: "/pricing", label: "Pricing" },
               { href: "/signup", label: "Sign Up" },
               { href: "/login", label: "Log In" },
-              { href: "/affiliate", label: "Affiliates" },
             ].map(({ href, label }) => (
               <Link
                 key={href}
@@ -94,7 +92,6 @@ export default function Footer() {
               { href: "/about", label: "About Natalie" },
               { href: "/testimonials", label: "Testimonials" },
               { href: "/review", label: "Leave a review" },
-              { href: "/shop", label: "Shop" },
             ].map(({ href, label }) => (
               <Link
                 key={href}

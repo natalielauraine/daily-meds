@@ -35,7 +35,6 @@ export default async function FreePage() {
         <nav className="hidden md:flex items-center gap-7">
           {[
             { label: "Home", href: "/" },
-            { label: "Live", href: "/live" },
             { label: "Breathe", href: "/timer" },
             { label: "Pricing", href: "/pricing" },
           ].map((item) => (

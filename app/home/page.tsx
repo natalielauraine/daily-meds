@@ -6,6 +6,7 @@ import Link from "next/link";
 import { createClient } from "../../lib/supabase-browser";
 import type { User } from "@supabase/supabase-js";
 import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
 // ── DATA ─────────────────────────────────────────────────────────────────────
 
@@ -224,6 +225,8 @@ export default function LoggedInHome() {
 
       </main>
 
+      <Footer />
+
       {/* BottomNavBar Shell */}
       <nav className="md:hidden fixed bottom-0 left-0 w-full z-50 bg-[#0e0e0e]/90 backdrop-blur-3xl flex justify-around items-center px-4 pt-3 pb-6 shadow-[0_-10px_40px_rgba(0,0,0,0.5)] rounded-t-[2rem]">
         <button className="flex flex-col items-center justify-center text-[#FF418E] drop-shadow-[0_0_8px_rgba(255,65,142,0.5)]">
@@ -244,25 +247,6 @@ export default function LoggedInHome() {
         </Link>
       </nav>
 
-      {/* Global Music Player Overlay (Persistent Cinematic Element) */}
-      <div className="fixed bottom-10 left-1/2 -translate-x-1/2 w-[calc(100%-3rem)] max-w-xl z-40 md:bottom-8">
-        <div className="bg-surface-container/60 backdrop-blur-3xl border border-white/5 p-4 rounded-2xl flex items-center gap-4 shadow-2xl">
-          <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0">
-            <img className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBZgOEfqJg8ic8jgLOxBxDNY9KoBb1ISPVH9_ZfN30O-gZgEtn9eYGH1e2CJ5kUayGkXFS931TDOe9O_ozf9RQpJaTydARwyCMKQHKi2xvq6JOObUUtYn8DG-IwrgeMS77TgiNLuJWrEWC6CxOp7BQ-jSLr2QH_da_CbO8utlx_Wn2N1d5c_lCqi4qLs4lMKHUKa3LDxkloWhlfq1Qwds6vE48IKelkZaolmyWbUQhgBi7oYbkNk39aoDDBm0AfQmShDiKfBG9Ow" alt="Thumbnail" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <h4 className="font-headline text-sm font-bold uppercase truncate">Shadow Work</h4>
-            <p className="font-label text-[10px] text-zinc-400 uppercase tracking-widest">04:12 / 12:00</p>
-          </div>
-          <div className="flex items-center gap-4">
-            <button className="material-symbols-outlined text-zinc-400 hover:text-white">skip_previous</button>
-            <button className="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center">
-              <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>pause</span>
-            </button>
-            <button className="material-symbols-outlined text-zinc-400 hover:text-white">skip_next</button>
-          </div>
-        </div>
-      </div>
     </>
   );
 }

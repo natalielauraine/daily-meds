@@ -270,8 +270,6 @@ export default function ReviewPage() {
                 ))}
               </optgroup>
               <optgroup label="Features">
-                <option value="Breathing Timer">Breathing Timer</option>
-                <option value="Live Sessions">Live Sessions</option>
                 <option value="Sleep Audio">Sleep Audio</option>
               </optgroup>
             </select>

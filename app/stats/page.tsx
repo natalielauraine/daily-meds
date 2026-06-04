@@ -70,32 +70,6 @@ function formatMemberSince(isoDate: string): string {
   return new Date(isoDate).toLocaleDateString("en-GB", { month: "long", year: "numeric" });
 }
 
-// ── LIVE SHOWS ────────────────────────────────────────────────────────────────
-
-const LIVE_SHOWS = [
-  {
-    title: "Live Audio Hug",
-    host: "Host: Natalie Lauraine",
-    when: "Monday 8am UK",
-    accent: "#ff41b3",
-    img: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=600&h=400&fit=crop",
-  },
-  {
-    title: "Live Podcast",
-    host: "Guest: TBC",
-    when: "Wednesday 7pm UK",
-    accent: "#ec723d",
-    img: "https://images.unsplash.com/photo-1478737270239-2f02b77fc618?w=600&h=400&fit=crop",
-  },
-  {
-    title: "Alchemy Rewire",
-    host: "Host: Natalie Lauraine",
-    when: "Friday 8am UK",
-    accent: "#adf225",
-    img: "https://images.unsplash.com/photo-1519682337058-a94d519337bc?w=600&h=400&fit=crop",
-  },
-];
-
 // ── GLASS CARD ────────────────────────────────────────────────────────────────
 
 function GlassCard({ children, className = "" }: { children: React.ReactNode; className?: string }) {
@@ -511,56 +485,6 @@ export default function StatsPage() {
             )}
           </GlassCard>
         )}
-
-        {/* ── LIVE SHOWS ── */}
-        <div className="mt-16 mb-4">
-          <h3
-            className="text-xl font-black uppercase tracking-[0.2em] mb-8 text-white"
-            style={{ fontFamily: "var(--font-lexend)" }}
-          >
-            Live Shows Coming Up
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {LIVE_SHOWS.map((show) => (
-              <Link href="/live" key={show.title}>
-                <div
-                  className="rounded-3xl overflow-hidden group transition-all duration-300 cursor-pointer"
-                  style={{
-                    background: "rgba(0,0,0,0.45)",
-                    backdropFilter: "blur(24px)",
-                    WebkitBackdropFilter: "blur(24px)",
-                    border: "0.5px solid rgba(255,255,255,0.06)",
-                  }}
-                  onMouseEnter={(e) => (e.currentTarget.style.borderColor = `${show.accent}50`)}
-                  onMouseLeave={(e) => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)")}
-                >
-                  <div className="relative h-48 overflow-hidden">
-                    <Image
-                      src={show.img}
-                      alt={show.title}
-                      fill
-                      sizes="(max-width:768px) 100vw, 400px"
-                      className="object-cover transition-transform duration-500 group-hover:scale-110"
-                    />
-                    <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.75), transparent)" }} />
-                    <div className="absolute bottom-4 left-4">
-                      <span
-                        className="text-[10px] font-black uppercase px-2 py-0.5 rounded tracking-widest"
-                        style={{ backgroundColor: show.accent, color: "#000" }}
-                      >
-                        {show.when}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="p-6">
-                    <h4 className="text-xl font-black text-white mb-1" style={{ fontFamily: "var(--font-lexend)" }}>{show.title}</h4>
-                    <p className="text-sm" style={{ color: "rgba(255,255,255,0.4)" }}>{show.host}</p>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
 
         {/* ── EMPTY STATE ── */}
         {!loading && stats.totalSessions === 0 && (

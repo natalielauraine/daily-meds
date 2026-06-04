@@ -34,6 +34,32 @@ export async function middleware(request: NextRequest) {
   }
   // ── END WAITLIST GATE ──────────────────────────────────────────────
 
+  // ── PHASE 2 REDIRECTS ─────────────────────────────────────────────
+  // Routes that aren't ready for MVP. Redirect old bookmarks/links to
+  // the coming-soon page. /live has its own coming-soon page so skip it.
+  // /admin/* routes are never redirected.
+  const PHASE2_ROUTES = [
+    "/rooms",
+    "/crew",
+    "/brand-crews",
+    "/community",
+    "/podcasts",
+    "/affiliate",
+    "/challenges",
+    "/watchlist",
+    "/downloads",
+    "/playlists",
+    "/timer",
+    "/partnerships",
+    "/festivals",
+    "/shop",
+  ];
+  const pathname = request.nextUrl.pathname;
+  if (PHASE2_ROUTES.some((r) => pathname === r || pathname.startsWith(r + "/"))) {
+    return NextResponse.redirect(new URL("/coming-soon", request.url));
+  }
+  // ── END PHASE 2 REDIRECTS ─────────────────────────────────────────
+
   // Start with a plain pass-through response
   let supabaseResponse = NextResponse.next({ request });
 
