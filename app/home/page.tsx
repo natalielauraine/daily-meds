@@ -7,6 +7,7 @@ import { createClient } from "../../lib/supabase-browser";
 import type { User } from "@supabase/supabase-js";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import { LibraryCard, type LibrarySession } from "../components/LibraryCard";
 
 // ── DATA ─────────────────────────────────────────────────────────────────────
 
@@ -119,37 +120,10 @@ export default function LoggedInHome() {
             <h2 className="font-headline text-2xl font-bold uppercase tracking-tight">Trending Right Now</h2>
             <Link className="text-primary font-label text-xs font-bold uppercase tracking-widest hover:underline" href="/library">See All</Link>
           </div>
-          <div className="flex gap-6 overflow-x-auto hide-scrollbar -mx-6 px-6 pb-4">
-            {sessions.map((item, i) => (
-              <div key={i} className="min-w-[280px] md:min-w-[320px] group cursor-pointer" onClick={() => router.push(`/session/${item.id}`)}>
-                <div className="relative aspect-[3/4] rounded-xl overflow-hidden mb-4" style={{ background: item.gradient || "#2A2A2A" }}>
-                  {(item.thumbnail || item.image_url) && <img className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src={item.thumbnail || item.image_url} alt={item.title} />}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60"></div>
-
-                  {/* Subtle logo center if no image is present */}
-                  {!item.thumbnail && !item.image_url && (
-                    <div className="absolute inset-0 flex items-center justify-center opacity-20">
-                      <svg width="40" height="40" viewBox="0 0 48 48" fill="none">
-                        <path d="M24 4C24 4 16 12 16 20C16 24.4 19.6 28 24 28C28.4 28 32 24.4 32 20C32 12 24 4 24 4Z" fill="white" opacity="0.95"/>
-                        <circle cx="24" cy="28" r="2" fill="white" opacity="0.9"/>
-                      </svg>
-                    </div>
-                  )}
-
-                  <div className="absolute bottom-4 left-4 right-4 flex justify-between items-center z-10">
-                    <span className="bg-black/40 backdrop-blur-md px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-tighter">{item.duration}</span>
-                    <span className="material-symbols-outlined text-white" style={{ fontVariationSettings: "'FILL' 1" }}>play_circle</span>
-                  </div>
-                </div>
-                <h3 className="font-headline font-bold uppercase text-lg group-hover:text-primary transition-colors">{item.title}</h3>
-              </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {sessions.map((item: any) => (
+              <LibraryCard key={item.id} session={item as LibrarySession} isPaidMember={false} />
             ))}
-            {/* Hint Card */}
-            <div className="min-w-[280px] md:min-w-[320px] opacity-40 group cursor-pointer">
-              <div className="relative aspect-[3/4] rounded-xl overflow-hidden mb-4">
-                <img className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDuWXeOg1DRLC_SEcgMWHtNaj6Fmm8oM5oRWWBpvYzRbsWev6ulR9bnRZT0lrq3SqSelJUKJ20L5BZGQGdbA8cggqt9_30Tp29wG1oB8dhGONiTjSqhGx6MH6iL7p6GaBMHWigbLPOVDsSivJgLW6bvUEiyovzzU3JcYTx0ntIJkGeV3recaqZcEsdIznkO3lK-144JumsLsGJmhdTBhJI9s3dB9zGldC6e8MkNQCj-wPj65dERX62gxb7pGvXjkPnRCJH6jtcssg" alt="Hint" />
-              </div>
-            </div>
           </div>
         </section>
 
