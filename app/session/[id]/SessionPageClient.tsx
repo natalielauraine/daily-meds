@@ -717,7 +717,7 @@ export default function SessionPageClient({ session }: { session: SessionData | 
       {/* ── MODALS ── */}
       {showShareModal && (
         <ShareSessionModal
-          session={{ id: session.id, title: session.title, moodCategory: session.moodCategory, duration: session.duration, gradient: session.gradient }}
+          session={{ id: session.id, title: session.title, moodCategory: session.moodCategory, duration: session.duration, gradient: session.gradient, thumbnail: session.thumbnail }}
           onClose={() => setShowShareModal(false)}
         />
       )}
