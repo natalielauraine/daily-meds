@@ -123,15 +123,9 @@ export function LibraryCard({ session, isPaidMember }: { session: LibrarySession
               className="absolute bottom-2 left-2 text-white/80 text-[10px] px-1.5 py-0.5 rounded flex items-center gap-1"
               style={{ background: "rgba(0,0,0,0.5)" }}
             >
-              {session.media_type === "video" ? (
-                <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
-                </svg>
-              ) : (
-                <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 15c1.66 0 2.99-1.34 2.99-3L15 6c0-1.66-1.34-3-3-3S9 4.34 9 6v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 15 6.7 12H5c0 3.42 2.72 6.23 6 6.72V22h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/>
-                </svg>
-              )}
+              <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+              </svg>
               {session.duration}
             </div>
           </Link>

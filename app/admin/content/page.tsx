@@ -144,6 +144,8 @@ export default function AdminContentPage() {
   const [sessions, setSessions]         = useState<Session[]>([]);
   const [loading, setLoading]           = useState(true);
   const [statusFilter, setStatusFilter] = useState<"all" | "draft" | "published">("all");
+  const [search, setSearch]             = useState("");
+  const [moodFilter, setMoodFilter]     = useState("All");
 
   // ── Single-session form ────────────────────────────
   const [showForm, setShowForm]   = useState(false);
@@ -177,9 +179,6 @@ export default function AdminContentPage() {
   const [bulkDragOver, setBulkDragOver]         = useState(false);
   const [bulkOverallProgress, setBulkOverallProgress] = useState(0);
   const bulkInputRef                            = useRef<HTMLInputElement>(null);
-
-  // ── Preview modal ──────────────────────────────────
-  const [previewSession, setPreviewSession] = useState<Session | null>(null);
 
   // ── Notifications + delete ─────────────────────────
   const [notifyingId, setNotifyingId]   = useState<string | null>(null);
@@ -386,18 +385,6 @@ export default function AdminContentPage() {
       });
 
       setForm((prev) => ({ ...prev, video_url: publicUrl }));
-
-      // Auto-detect duration
-      const vid = document.createElement("video");
-      vid.preload = "metadata";
-      vid.src = URL.createObjectURL(file);
-      vid.onloadedmetadata = () => {
-        const secs = vid.duration;
-        if (secs && isFinite(secs)) {
-          setForm((prev) => ({ ...prev, duration: `${Math.max(0.1, Math.round(secs / 6) / 10)} min` }));
-        }
-        URL.revokeObjectURL(vid.src);
-      };
     } catch (err: unknown) {
       setVideoProgress(0);
       setError("Video upload failed: " + (err instanceof Error ? err.message : "unknown error"));
@@ -484,7 +471,7 @@ export default function AdminContentPage() {
         audio_url:     publicUrl,
         is_free:       item.is_free,
         gradient:      MOOD_GRADIENTS[item.mood_category] || GRADIENTS[0].value,
-        status:        "published",
+        status:        "draft",
       });
 
       if (insertErr) {
@@ -584,8 +571,10 @@ export default function AdminContentPage() {
   }
 
   const filteredSessions = sessions.filter((s) => {
-    if (statusFilter === "all") return true;
-    return (s.status || "draft") === statusFilter;
+    if (search && !s.title.toLowerCase().includes(search.toLowerCase())) return false;
+    if (moodFilter !== "All" && s.mood_category !== moodFilter) return false;
+    if (statusFilter !== "all" && (s.status || "draft") !== statusFilter) return false;
+    return true;
   });
 
   const draftCount     = sessions.filter((s) => (s.status || "draft") === "draft").length;
@@ -1209,7 +1198,7 @@ export default function AdminContentPage() {
                 >
                   {bulkUploading
                     ? "Uploading…"
-                    : `Publish All (${bulkFiles.filter((f) => f.status === "queued").length} files)`}
+                    : `Upload All as Drafts (${bulkFiles.filter((f) => f.status === "queued").length} files)`}
                 </button>
                 <button
                   onClick={() => { setBulkFiles([]); setBulkOverallProgress(0); }}
@@ -1224,6 +1213,50 @@ export default function AdminContentPage() {
         </div>
 
         {/* ── SESSION LIST ── */}
+
+        {/* Search bar */}
+        <div className="relative mb-3">
+          <svg className="absolute left-3 top-1/2 -translate-y-1/2 text-white/25" width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+          </svg>
+          <input
+            type="text"
+            placeholder="Search sessions…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full pl-9 pr-8 py-2 rounded-lg text-sm text-white placeholder:text-white/25 outline-none"
+            style={{ backgroundColor: "rgba(255,255,255,0.05)", border: "0.5px solid rgba(255,255,255,0.1)" }}
+          />
+          {search && (
+            <button
+              onClick={() => setSearch("")}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+              </svg>
+            </button>
+          )}
+        </div>
+
+        {/* Mood filter pills */}
+        <div className="flex items-center gap-1.5 mb-3 flex-wrap">
+          {["All", ...MOOD_CATEGORIES].map((mood) => (
+            <button
+              key={mood}
+              onClick={() => setMoodFilter(mood)}
+              className="px-2.5 py-1 rounded-full text-[11px] transition-colors"
+              style={{
+                backgroundColor: moodFilter === mood ? "rgba(255,65,179,0.15)" : "rgba(255,255,255,0.04)",
+                border: `0.5px solid ${moodFilter === mood ? "rgba(255,65,179,0.4)" : "rgba(255,255,255,0.08)"}`,
+                color: moodFilter === mood ? "#ff41b3" : "rgba(255,255,255,0.3)",
+                fontWeight: moodFilter === mood ? 500 : 400,
+              }}
+            >
+              {mood}
+            </button>
+          ))}
+        </div>
 
         {/* Status filter pills */}
         <div className="flex items-center gap-2 mb-4 flex-wrap">
@@ -1286,17 +1319,19 @@ export default function AdminContentPage() {
                 {/* Actions */}
                 <div className="flex items-center gap-1 shrink-0">
 
-                  {/* Preview */}
-                  <button
-                    onClick={() => setPreviewSession(session)}
+                  {/* View as customer */}
+                  <a
+                    href={`/session/${session.id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="p-2 text-white/25 hover:text-pink-400 transition-colors"
-                    aria-label="Preview"
-                    title="Preview this session"
+                    aria-label="View session"
+                    title="View as customer (new tab)"
                   >
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                      <path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/>
                     </svg>
-                  </button>
+                  </a>
 
                   {/* Publish — only shown on drafts */}
                   {(session.status || "draft") === "draft" && (
@@ -1355,96 +1390,6 @@ export default function AdminContentPage() {
                 </div>
               </div>
             ))}
-          </div>
-        )}
-
-        {/* ── PREVIEW MODAL ── */}
-        {previewSession && (
-          <div
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
-            style={{ backgroundColor: "rgba(0,0,0,0.88)" }}
-            onClick={() => setPreviewSession(null)}
-          >
-            <div
-              className="w-full max-w-sm rounded-[12px] overflow-hidden"
-              style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.12)" }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Modal header */}
-              <div
-                className="flex items-center justify-between px-5 py-4"
-                style={{ borderBottom: "0.5px solid rgba(255,255,255,0.07)" }}
-              >
-                <p className="text-sm text-white" style={{ fontWeight: 500 }}>Session preview</p>
-                <button
-                  onClick={() => setPreviewSession(null)}
-                  className="text-white/30 hover:text-white/60 transition-colors"
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-                  </svg>
-                </button>
-              </div>
-
-              <div className="p-5 flex flex-col gap-5">
-
-                {/* Homepage card view */}
-                <div>
-                  <p className="text-[10px] text-white/25 uppercase tracking-widest mb-2">Homepage card</p>
-                  <div
-                    className="flex items-center gap-3 p-3 rounded-[10px]"
-                    style={{ backgroundColor: "#131313", border: "0.5px solid rgba(255,255,255,0.07)" }}
-                  >
-                    <div
-                      className="w-12 h-12 rounded-full shrink-0 flex items-center justify-center"
-                      style={{ background: previewSession.gradient }}
-                    >
-                      <svg width="20" height="20" viewBox="0 0 48 48" fill="none">
-                        <path d="M24 4C24 4 16 12 16 20C16 24.4 19.6 28 24 28C28.4 28 32 24.4 32 20C32 12 24 4 24 4Z" fill="white" opacity="0.9"/>
-                      </svg>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm text-white truncate" style={{ fontWeight: 500 }}>{previewSession.title}</p>
-                      <p className="text-xs text-white/40">{previewSession.mood_category} · {previewSession.duration}</p>
-                    </div>
-                    {previewSession.is_free && (
-                      <span className="text-[10px] px-1.5 py-0.5 rounded text-white shrink-0"
-                        style={{ backgroundColor: "rgba(173,242,37,0.8)", fontWeight: 500 }}>FREE</span>
-                    )}
-                  </div>
-                </div>
-
-                {/* Player page view */}
-                <div>
-                  <p className="text-[10px] text-white/25 uppercase tracking-widest mb-2">Session player</p>
-                  <div
-                    className="flex flex-col items-center text-center py-6 px-4 rounded-[10px]"
-                    style={{ backgroundColor: "#131313", border: "0.5px solid rgba(255,255,255,0.06)" }}
-                  >
-                    <div
-                      className="w-20 h-20 rounded-full flex items-center justify-center mb-3"
-                      style={{
-                        background: previewSession.gradient,
-                        boxShadow: `0 0 40px 10px ${previewSession.gradient.match(/#[0-9A-Fa-f]{6}/)?.[0] ?? "#ff41b3"}35`,
-                      }}
-                    >
-                      <svg width="32" height="32" viewBox="0 0 48 48" fill="none">
-                        <path d="M24 4C24 4 16 12 16 20C16 24.4 19.6 28 24 28C28.4 28 32 24.4 32 20C32 12 24 4 24 4Z" fill="white" opacity="0.95"/>
-                      </svg>
-                    </div>
-                    <p className="text-xs text-white/35 mb-1">{previewSession.type} · {previewSession.duration}</p>
-                    <p className="text-base text-white mb-3" style={{ fontWeight: 500 }}>{previewSession.title}</p>
-                    <span
-                      className="text-[10px] px-3 py-1 rounded-full text-white"
-                      style={{ background: previewSession.gradient, fontWeight: 500 }}
-                    >
-                      {previewSession.mood_category}
-                    </span>
-                  </div>
-                </div>
-
-              </div>
-            </div>
           </div>
         )}
 
