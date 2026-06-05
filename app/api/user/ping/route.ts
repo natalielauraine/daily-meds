@@ -23,7 +23,18 @@ export async function POST(req: NextRequest) {
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
 
-  const updates: Record<string, string> = { last_active_at: new Date().toISOString() };
+  // Ensure the public.users row exists (auth.users is created by Supabase Auth,
+  // but public.users must be created separately)
+  await supabase.from("users").upsert(
+    {
+      id: user.id,
+      email: user.email,
+      name: user.user_metadata?.full_name || user.user_metadata?.name || null,
+      avatar_url: user.user_metadata?.avatar_url || null,
+      last_active_at: new Date().toISOString(),
+    },
+    { onConflict: "id", ignoreDuplicates: false }
+  );
 
   const refCode = cookieStore.get("dm_ref")?.value;
   if (refCode) {
@@ -35,12 +46,10 @@ export async function POST(req: NextRequest) {
         .eq("referral_code", refCode)
         .single();
       if (affiliate?.user_id) {
-        updates.referred_by = affiliate.user_id;
+        await supabase.from("users").update({ referred_by: affiliate.user_id }).eq("id", user.id);
       }
     }
   }
-
-  await supabase.from("users").update(updates).eq("id", user.id);
 
   return NextResponse.json({ ok: true });
 }

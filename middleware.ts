@@ -91,6 +91,16 @@ export async function middleware(request: NextRequest) {
   // the session token and writes updated cookies via setAll above.
   const { data: { user } } = await supabase.auth.getUser();
 
+  // Authenticated users hitting the landing page go straight to /home — no flash
+  if (user && request.nextUrl.pathname === "/") {
+    const homeUrl = new URL("/home", request.url);
+    const redirectResponse = NextResponse.redirect(homeUrl);
+    supabaseResponse.cookies.getAll().forEach((cookie) => {
+      redirectResponse.cookies.set(cookie.name, cookie.value);
+    });
+    return redirectResponse;
+  }
+
   const protectedPaths = [
     // /session is intentionally NOT here — free sessions are public.
     // Premium gating and signup prompts are handled inside the session page.

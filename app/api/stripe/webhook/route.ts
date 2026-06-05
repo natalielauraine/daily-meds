@@ -220,13 +220,14 @@ export async function POST(req: NextRequest) {
 
         await supabase
           .from("users")
-          .update({
+          .upsert({
+            id:                  userId,
+            email:               session.customer_details?.email || session.customer_email || undefined,
             subscription_status: tier,
             access_level:        accessLevel,
             stripe_customer_id:  session.customer as string,
             ...(trialEndsAt ? { trial_ends_at: trialEndsAt } : {}),
-          })
-          .eq("id", userId);
+          }, { onConflict: "id", ignoreDuplicates: false });
 
         // ── TRIAL WELCOME EMAIL ───────────────────────────────────────────────
         if (tier === "trial") {
