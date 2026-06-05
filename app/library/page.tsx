@@ -195,9 +195,11 @@ export default function LibraryPage() {
           >
             Library
           </h1>
-          <p className="text-sm text-white/40" style={{ fontFamily: "var(--font-space-grotesk)" }}>
-            {loading ? "Loading sessions…" : `${sessions.length} session${sessions.length !== 1 ? "s" : ""}`}
-          </p>
+          {loading && (
+            <p className="text-sm text-white/40" style={{ fontFamily: "var(--font-space-grotesk)" }}>
+              Loading…
+            </p>
+          )}
         </div>
 
         {/* ── SEARCH BAR ── */}

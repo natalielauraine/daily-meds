@@ -261,9 +261,29 @@ function FaqItem({ q, a }: { q: string; a: string }) {
 
 // ── PAGE ──────────────────────────────────────────────────────────────────────
 
+const PLAN_ORDER = ["free", "audio", "audioAnnual", "monthly", "annual", "lifetime"];
+
 export default function PricingPage() {
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+  const [currentPlanId, setCurrentPlanId] = useState<string | null>(null);
   const router = useRouter();
+
+  useEffect(() => {
+    async function loadSubscription() {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data } = await supabase
+        .from("users")
+        .select("subscription_status")
+        .eq("id", user.id)
+        .single();
+      if (data?.subscription_status && data.subscription_status !== "free") {
+        setCurrentPlanId(data.subscription_status);
+      }
+    }
+    loadSubscription();
+  }, []);
 
   // Called when the user clicks a paid plan CTA.
   // Posts to the checkout API, then redirects to Stripe's hosted payment page.
@@ -379,6 +399,12 @@ export default function PricingPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5 items-start lg:mt-4">
               {PLANS.map((plan) => {
                 const isFeatured = plan.featured;
+                const isCurrentPlan = currentPlanId === plan.id ||
+                  (currentPlanId === "audio" && plan.id === "audio") ||
+                  (currentPlanId === "trial" && plan.id === "audio");
+                const currentIndex = currentPlanId ? PLAN_ORDER.indexOf(currentPlanId === "trial" ? "audio" : currentPlanId) : -1;
+                const planIndex = PLAN_ORDER.indexOf(plan.id);
+                const isUpgrade = currentPlanId && !isCurrentPlan && planIndex > currentIndex && plan.id !== "free";
 
                 const displayPrice = plan.price;
                 const displayNote = plan.priceNote;
@@ -395,20 +421,22 @@ export default function PricingPage() {
                       transform: isFeatured ? "translateY(-10px)" : "none",
                     }}
                   >
-                    {/* Most Popular badge — floats above the featured card */}
-                    {isFeatured && (
+                    {/* Badge — current plan or most popular */}
+                    {(isCurrentPlan || isFeatured) && (
                       <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
                         <span
                           className="text-[10px] px-3 py-1 rounded-full uppercase whitespace-nowrap"
                           style={{
-                            background: "linear-gradient(90deg, #ff41b3, #ec723d)",
-                            color: "white",
+                            background: isCurrentPlan
+                              ? "linear-gradient(90deg, #ADF225, #059669)"
+                              : "linear-gradient(90deg, #ff41b3, #ec723d)",
+                            color: isCurrentPlan ? "#000" : "white",
                             fontFamily: "var(--font-space-grotesk)",
                             fontWeight: 700,
                             letterSpacing: "0.06em",
                           }}
                         >
-                          Most Popular
+                          {isCurrentPlan ? "Your Plan" : "Most Popular"}
                         </span>
                       </div>
                     )}
@@ -488,6 +516,19 @@ export default function PricingPage() {
                         >
                           {plan.cta}
                         </Link>
+                      ) : isCurrentPlan ? (
+                        <div
+                          className="w-full text-center py-3 rounded-full text-sm mb-6"
+                          style={{
+                            fontFamily: "var(--font-space-grotesk)",
+                            fontWeight: 700,
+                            background: "rgba(173,242,37,0.1)",
+                            color: "#ADF225",
+                            border: "1px solid rgba(173,242,37,0.25)",
+                          }}
+                        >
+                          Current plan
+                        </div>
                       ) : (
                         <button
                           onClick={() => handleCheckout(plan.id)}
@@ -503,7 +544,7 @@ export default function PricingPage() {
                             cursor: loadingPlan === plan.id ? "wait" : "pointer",
                           }}
                         >
-                          {loadingPlan === plan.id ? "Redirecting…" : plan.cta}
+                          {loadingPlan === plan.id ? "Redirecting…" : isUpgrade ? "Upgrade" : plan.cta}
                         </button>
                       )}
 
