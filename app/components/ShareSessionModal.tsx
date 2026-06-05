@@ -110,8 +110,8 @@ export default function ShareSessionModal({ session, onClose }: Props) {
       <div className="fixed inset-0 z-40 bg-black/75 backdrop-blur-sm" onClick={onClose} />
 
       <div
-        className="fixed bottom-0 left-0 right-0 z-50 rounded-t-[20px] overflow-y-auto"
-        style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.1)", maxHeight: "92vh" }}
+        className="fixed bottom-0 left-1/2 -translate-x-1/2 z-50 rounded-t-[20px] overflow-y-auto w-full"
+        style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.1)", maxHeight: "92vh", maxWidth: "420px" }}
       >
         <div className="flex justify-center pt-3 pb-1">
           <div className="w-8 h-1 rounded-full bg-white/20" />
@@ -138,8 +138,8 @@ export default function ShareSessionModal({ session, onClose }: Props) {
           {/* ── SCREENSHOTABLE SHARE CARD ── */}
           <div
             ref={cardRef}
-            className="rounded-[16px] overflow-hidden mb-4"
-            style={{ aspectRatio: "4/5" }}
+            className="rounded-[16px] overflow-hidden mb-4 mx-auto"
+            style={{ aspectRatio: "4/5", maxWidth: "340px" }}
           >
             <div className="relative w-full h-full flex flex-col" style={{ background: "#0a0a0a" }}>
 
