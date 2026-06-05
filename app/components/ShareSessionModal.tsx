@@ -34,9 +34,12 @@ export default function ShareSessionModal({ session, onClose }: Props) {
     const supabase = createClient();
     supabase.auth.getUser().then(async ({ data: { user } }) => {
       if (!user) return;
-      setReferralCode(user.id.substring(0, 8));
-      const { data } = await supabase.from("users").select("streak").eq("id", user.id).single();
-      if (data?.streak && typeof data.streak === "number") setStreak(data.streak);
+      const [{ data: profile }, { data: affiliate }] = await Promise.all([
+        supabase.from("users").select("streak").eq("id", user.id).single(),
+        supabase.from("affiliates").select("referral_code").eq("user_id", user.id).single(),
+      ]);
+      if (profile?.streak && typeof profile.streak === "number") setStreak(profile.streak);
+      if (affiliate?.referral_code) setReferralCode(affiliate.referral_code);
     });
   }, []);
 

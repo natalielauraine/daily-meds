@@ -23,10 +23,24 @@ export async function POST(req: NextRequest) {
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
 
-  await supabase
-    .from("users")
-    .update({ last_active_at: new Date().toISOString() })
-    .eq("id", user.id);
+  const updates: Record<string, string> = { last_active_at: new Date().toISOString() };
+
+  const refCode = cookieStore.get("dm_ref")?.value;
+  if (refCode) {
+    const { data: currentUser } = await supabase.from("users").select("referred_by").eq("id", user.id).single();
+    if (currentUser && !currentUser.referred_by) {
+      const { data: affiliate } = await supabase
+        .from("affiliates")
+        .select("user_id")
+        .eq("referral_code", refCode)
+        .single();
+      if (affiliate?.user_id) {
+        updates.referred_by = affiliate.user_id;
+      }
+    }
+  }
+
+  await supabase.from("users").update(updates).eq("id", user.id);
 
   return NextResponse.json({ ok: true });
 }
