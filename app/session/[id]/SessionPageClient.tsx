@@ -159,11 +159,17 @@ export default function SessionPageClient({ session }: { session: SessionData | 
     if (!session || !userId) return;
     const supabase = createClient();
     if (savedInApp) {
-      setSavedInApp(false);
-      await supabase.from("downloads").delete().eq("user_id", userId).eq("session_id", session.id);
+      const { error } = await supabase.from("downloads").delete().eq("user_id", userId).eq("session_id", session.id);
+      if (!error) setSavedInApp(false);
     } else {
-      setSavedInApp(true);
-      await supabase.from("downloads").upsert({ user_id: userId, session_id: session.id }, { onConflict: "user_id,session_id" });
+      const existing = await supabase.from("downloads").select("id").eq("user_id", userId).eq("session_id", session.id).maybeSingle();
+      if (!existing.data) {
+        const { error } = await supabase.from("downloads").insert({ user_id: userId, session_id: session.id });
+        if (!error) setSavedInApp(true);
+        else console.error("Failed to save favorite:", error.message);
+      } else {
+        setSavedInApp(true);
+      }
     }
   }
 

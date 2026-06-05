@@ -27,7 +27,7 @@ export default function FavoritesPage() {
           .from("downloads")
           .select("session_id, sessions(id, title, description, duration, type, mood_category, media_type, is_free, is_coming_soon, gradient, thumbnail)")
           .eq("user_id", user.id)
-          .order("created_at", { ascending: false }),
+          .order("downloaded_at", { ascending: false }),
         supabase
           .from("users")
           .select("subscription_status")
