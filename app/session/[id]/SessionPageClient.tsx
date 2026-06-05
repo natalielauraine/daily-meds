@@ -34,8 +34,7 @@ export default function SessionPageClient({ session }: { session: SessionData | 
 
   const {
     currentSession, isPlaying, currentTime, duration,
-    volume, isMuted, speed,
-    playSession, togglePlay, seek, setVolume, setIsMuted, setSpeed,
+    playSession, togglePlay, seek,
   } = usePlayer();
 
   const hasAutoPlayed = useRef(false);
@@ -49,14 +48,7 @@ export default function SessionPageClient({ session }: { session: SessionData | 
   const [showShareModal, setShowShareModal]         = useState(false);
   const [shareModalShown, setShareModalShown]       = useState(false);
   const [signupPromptDismissed, setSignupPromptDismissed] = useState(false);
-  const [showVolumeSlider, setShowVolumeSlider]     = useState(false);
   const [showNotes, setShowNotes]                   = useState(false);
-
-  // PiP state
-  const canvasRef    = useRef<HTMLCanvasElement>(null);
-  const pipVideoRef  = useRef<HTMLVideoElement>(null);
-  const [isPiP, setIsPiP]             = useState(false);
-  const [pipSupported, setPipSupported] = useState(false);
 
   // ── DERIVED ────────────────────────────────────────────────────────────────
   const isThisSession    = currentSession?.id === session?.id;
@@ -81,10 +73,6 @@ export default function SessionPageClient({ session }: { session: SessionData | 
   const sessionLabel = session?.type === "Live Session" ? "Live" : "Audio";
 
   // ── EFFECTS ────────────────────────────────────────────────────────────────
-
-  useEffect(() => {
-    setPipSupported(typeof document !== "undefined" && !!document.pictureInPictureEnabled);
-  }, []);
 
   useEffect(() => {
     const supabase = createClient();
@@ -121,36 +109,6 @@ export default function SessionPageClient({ session }: { session: SessionData | 
     }
   }, [sessionEnded, isLoggedIn]);
 
-  // Draw session artwork onto hidden canvas for PiP
-  useEffect(() => {
-    if (!session) return;
-    const canvas = canvasRef.current;
-    const video  = pipVideoRef.current;
-    if (!canvas || !video) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-    const colors = session.gradient.match(/#[0-9A-Fa-f]{6}/g) ?? ["#1F1F1F", "#1F1F1F"];
-    const bg = ctx.createLinearGradient(0, 0, 320, 180);
-    bg.addColorStop(0, colors[0]);
-    bg.addColorStop(1, colors[colors.length - 1]);
-    ctx.fillStyle = bg;
-    ctx.fillRect(0, 0, 320, 180);
-    ctx.fillStyle = "rgba(0,0,0,0.4)";
-    ctx.fillRect(0, 0, 320, 180);
-    ctx.fillStyle = "rgba(255,255,255,0.9)";
-    ctx.font = "bold 16px sans-serif";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillText(session.title, 160, 90);
-    if (!video.srcObject) video.srcObject = canvas.captureStream(0);
-  }, [session?.id, session?.gradient]);
-
-  useEffect(() => {
-    function onLeave() { setIsPiP(false); }
-    document.addEventListener("leavepictureinpicture", onLeave);
-    return () => document.removeEventListener("leavepictureinpicture", onLeave);
-  }, []);
-
   // ── HANDLERS ───────────────────────────────────────────────────────────────
 
   async function handleSave() {
@@ -168,21 +126,6 @@ export default function SessionPageClient({ session }: { session: SessionData | 
       } else {
         setSavedInApp(true);
       }
-    }
-  }
-
-  async function togglePiP() {
-    const video = pipVideoRef.current;
-    if (!video) return;
-    if (document.pictureInPictureElement) {
-      await document.exitPictureInPicture();
-      setIsPiP(false);
-    } else {
-      try {
-        await video.play();
-        await video.requestPictureInPicture();
-        setIsPiP(true);
-      } catch { /* silently ignore */ }
     }
   }
 
@@ -214,10 +157,6 @@ export default function SessionPageClient({ session }: { session: SessionData | 
 
   return (
     <div className="relative min-h-screen" style={{ backgroundColor: "#010101", color: "white" }}>
-
-      {/* Hidden PiP elements */}
-      <canvas ref={canvasRef} width={320} height={180} style={{ display: "none" }} />
-      <video ref={pipVideoRef} muted playsInline style={{ display: "none" }} />
 
       {/* ── TOP NAV ── */}
       <nav className="fixed top-0 w-full z-50 flex justify-between items-center px-6 py-4">
@@ -415,185 +354,37 @@ export default function SessionPageClient({ session }: { session: SessionData | 
         </div>
       </section>
 
-      {/* ── FLOATING PLAYER BAR ── */}
-      <section className="fixed z-50 left-1/2 -translate-x-1/2" style={{ bottom: "100px", width: "90%", maxWidth: "900px" }}>
-        <div
-          className="rounded-[32px] px-6 md:px-10 py-5"
-          style={{
-            background: "rgba(14,14,14,0.65)",
-            backdropFilter: "blur(24px)",
-            WebkitBackdropFilter: "blur(24px)",
-            border: "1px solid rgba(255,255,255,0.07)",
-            boxShadow: "0 -8px 40px rgba(0,0,0,0.6)",
-          }}
-        >
-          {/* ── PROGRESS BAR ── */}
-          <div className="relative w-full mb-6 group cursor-pointer" style={{ height: "6px" }}>
-            <div className="absolute inset-0 rounded-full" style={{ backgroundColor: "rgba(255,255,255,0.1)" }} />
-            {/* Filled gradient */}
-            <div
-              className="absolute top-0 left-0 h-full rounded-full"
-              style={{
-                width: `${progressPercent}%`,
-                background: "linear-gradient(90deg, #FE8A58, #FF418E)",
-                boxShadow: "0 0 12px rgba(255,65,142,0.4)",
-                transition: "width 0.1s linear",
-              }}
-            />
-            {/* Scrub thumb — appears on hover */}
-            <div
-              className="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full shadow-xl opacity-0 group-hover:opacity-100 transition-opacity"
-              style={{ left: `calc(${progressPercent}% - 8px)` }}
-            />
-            {/* Invisible range input for interaction */}
-            <input
-              type="range"
-              min={0}
-              max={displayDuration || 0}
-              step={0.5}
-              value={displayTime}
-              onChange={handleSeek}
-              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-              style={{ margin: 0 }}
-            />
-          </div>
-
-          {/* ── CONTROLS ── */}
-          <div className="flex items-center justify-between">
-
-            {/* Left: spacer for layout balance */}
-            <div className="w-8" />
-
-            {/* Center: primary playback */}
-            <div className="flex items-center gap-6 md:gap-10">
-              {/* Skip back 30s */}
-              <button
-                onClick={() => seek(Math.max(0, displayTime - 30))}
-                className="transition-all active:scale-90"
-                style={{ color: "rgba(255,255,255,0.5)" }}
-                aria-label="Skip back 30 seconds"
-              >
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M11.99 5V1l-5 5 5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6h-2c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>
-                  <text x="12" y="16" textAnchor="middle" fontSize="6" fill="currentColor" fontWeight="bold">30</text>
-                </svg>
-              </button>
-
-              {/* Play / Pause — large white circle */}
-              {subscriptionLoading ? (
-                <div className="w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center" style={{ backgroundColor: "rgba(255,255,255,0.1)" }}>
-                  <div className="w-5 h-5 rounded-full border-2 border-white/20 border-t-white animate-spin" />
-                </div>
-              ) : canPlay ? (
-                <button
-                  onClick={handlePlay}
-                  className="w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center transition-all hover:scale-105 active:scale-95 shadow-2xl"
-                  style={{ backgroundColor: "white" }}
-                  aria-label={displayPlaying ? "Pause" : "Play"}
-                >
-                  {displayPlaying ? (
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="#010101">
-                      <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
-                    </svg>
-                  ) : (
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="#010101" style={{ marginLeft: "3px" }}>
-                      <path d="M8 5v14l11-7z"/>
-                    </svg>
-                  )}
-                </button>
-              ) : (
-                <Link
-                  href={isLoggedIn ? "/pricing" : "/signup"}
-                  className="w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center transition-all hover:scale-105 shadow-2xl"
-                  style={{ backgroundColor: "#FF418E" }}
-                >
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
-                    <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
-                  </svg>
-                </Link>
-              )}
-
-              {/* Skip forward 30s */}
-              <button
-                onClick={() => seek(Math.min(displayDuration, displayTime + 30))}
-                className="transition-all active:scale-90"
-                style={{ color: "rgba(255,255,255,0.5)" }}
-                aria-label="Skip forward 30 seconds"
-              >
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12.01 5V1l5 5-5 5V7c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6h2c0 4.42-3.58 8-8 8s-8-3.58-8-8 3.58-8 8-8z"/>
-                  <text x="12" y="16" textAnchor="middle" fontSize="6" fill="currentColor" fontWeight="bold">30</text>
-                </svg>
-              </button>
+      {/* ── PLAY BUTTON (when MiniPlayer not yet active) ── */}
+      {!isThisSession && (
+        <div className="fixed z-50 left-1/2 -translate-x-1/2" style={{ bottom: "140px" }}>
+          {subscriptionLoading ? (
+            <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ backgroundColor: "rgba(255,255,255,0.1)" }}>
+              <div className="w-5 h-5 rounded-full border-2 border-white/20 border-t-white animate-spin" />
             </div>
-
-            {/* Right: utilities */}
-            <div className="flex items-center gap-5">
-              {/* Volume */}
-              <div className="relative">
-                <button
-                  onClick={() => setShowVolumeSlider((v) => !v)}
-                  className="transition-all active:scale-90"
-                  style={{ color: isMuted ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.5)" }}
-                  aria-label="Volume"
-                >
-                  {isMuted || volume === 0 ? (
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>
-                    </svg>
-                  ) : (
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
-                    </svg>
-                  )}
-                </button>
-                {showVolumeSlider && (
-                  <div
-                    className="absolute bottom-10 left-1/2 -translate-x-1/2 p-3 rounded-xl"
-                    style={{ background: "rgba(14,14,14,0.95)", border: "1px solid rgba(255,255,255,0.1)", width: "120px" }}
-                  >
-                    <input
-                      type="range" min={0} max={1} step={0.01}
-                      value={isMuted ? 0 : volume}
-                      onChange={(e) => { const v = Number(e.target.value); setVolume(v); setIsMuted(v === 0); }}
-                      className="w-full accent-[#FF418E]"
-                    />
-                  </div>
-                )}
-              </div>
-
-              {/* Speed */}
-              <button
-                onClick={() => {
-                  const speeds = [0.75, 1, 1.25, 1.5];
-                  const next = speeds[(speeds.indexOf(speed) + 1) % speeds.length];
-                  setSpeed(next);
-                }}
-                className="text-xs font-bold transition-all active:scale-90"
-                style={{ color: speed !== 1 ? "#ADF225" : "rgba(255,255,255,0.5)", fontFamily: "var(--font-space-grotesk)", minWidth: "36px" }}
-                aria-label="Playback speed"
-              >
-                {speed}x
-              </button>
-
-              {/* PiP */}
-              {pipSupported && (
-                <button
-                  onClick={togglePiP}
-                  className="transition-all active:scale-90"
-                  style={{ color: isPiP ? "#ADF225" : "rgba(255,255,255,0.5)" }}
-                  aria-label={isPiP ? "Exit picture in picture" : "Picture in picture"}
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-                    <rect x="2" y="4" width="20" height="16" rx="2"/>
-                    <rect x="11" y="10" width="9" height="6" rx="0.5" fill="currentColor" stroke="none" opacity="0.8"/>
-                  </svg>
-                </button>
-              )}
-            </div>
-          </div>
+          ) : canPlay ? (
+            <button
+              onClick={handlePlay}
+              className="w-16 h-16 rounded-full flex items-center justify-center transition-all hover:scale-105 active:scale-95 shadow-2xl"
+              style={{ backgroundColor: "white" }}
+              aria-label="Play"
+            >
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="#010101" style={{ marginLeft: "3px" }}>
+                <path d="M8 5v14l11-7z"/>
+              </svg>
+            </button>
+          ) : (
+            <Link
+              href={isLoggedIn ? "/pricing" : "/signup"}
+              className="w-16 h-16 rounded-full flex items-center justify-center transition-all hover:scale-105 shadow-2xl"
+              style={{ backgroundColor: "#FF418E" }}
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+                <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+              </svg>
+            </Link>
+          )}
         </div>
-      </section>
+      )}
 
       {/* Lock message — centered overlay */}
       {!subscriptionLoading && !canPlay && (
@@ -670,15 +461,15 @@ export default function SessionPageClient({ session }: { session: SessionData | 
         />
       )}
 
-      {/* ── BOTTOM NAV ── */}
+      {/* ── BOTTOM NAV (sits above the global MiniPlayer) ── */}
       <div
-        className="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-5 pt-3"
+        className="fixed left-0 w-full z-40 flex justify-around items-center px-4 py-2"
         style={{
-          background: "rgba(14,14,14,0.7)",
+          bottom: currentSession ? "64px" : "0",
+          background: "rgba(14,14,14,0.85)",
           backdropFilter: "blur(20px)",
           WebkitBackdropFilter: "blur(20px)",
-          borderRadius: "32px 32px 0 0",
-          boxShadow: "0 -8px 32px rgba(173,242,37,0.04)",
+          borderTop: "0.5px solid rgba(255,255,255,0.06)",
         }}
       >
         <Link href="/library" className="flex flex-col items-center gap-1 p-3 transition-colors" style={{ color: "rgba(255,255,255,0.4)" }}>
