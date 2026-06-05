@@ -137,7 +137,6 @@ export default function Navbar() {
                     {[
                       { href: "/library", label: "Library" },
                       { href: "/profile", label: "Profile" },
-                      { href: "/stats", label: "My Stats" },
                     ].map(({ href, label }) => (
                       <Link
                         key={href}
@@ -250,7 +249,6 @@ export default function Navbar() {
                   <span className="text-sm truncate" style={{ color: "rgba(255,255,255,0.6)" }}>{displayName}</span>
                 </div>
                 <Link href="/profile" className="text-sm" style={{ color: "rgba(255,255,255,0.5)" }} onClick={() => setMobileMenuOpen(false)}>Profile</Link>
-                <Link href="/stats" className="text-sm" style={{ color: "rgba(255,255,255,0.5)" }} onClick={() => setMobileMenuOpen(false)}>My Stats</Link>
                 <button onClick={handleLogout} className="text-left text-sm" style={{ color: "rgba(255,255,255,0.35)" }}>Log out</button>
               </>
             ) : (
