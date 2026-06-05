@@ -6,8 +6,11 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "../lib/supabase-browser";
 import Logo from "./components/Logo";
+import Footer from "./components/Footer";
 import LandingEmailForm from "./components/LandingEmailForm";
 import LandingFAQ from "./components/LandingFAQ";
+import { LibraryCard } from "./components/LibraryCard";
+import type { LibrarySession } from "./components/LibraryCard";
 import dynamic from "next/dynamic";
 import { Hero as AnimatedHero } from "../components/ui/animated-hero";
 
@@ -17,28 +20,6 @@ import type { GalleryItem } from "../components/ui/circular-gallery";
 const ReferralTracker = dynamic(() => import("./components/ReferralTracker"), { ssr: false });
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://thedailymeds.com";
-
-const TRENDING = [
-  { title: "Hungover", badge: "Essential", gradient: "linear-gradient(160deg, #2a0800 0%, #ec723d 100%)", href: "/free", image: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/Exhausted.png" },
-  { title: "Digital Overwhelm", badge: "High Intensity", gradient: "linear-gradient(160deg, #2a0018 0%, #ff41b3 100%)", href: "/free", image: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/Hacked.png" },
-  { title: "High AF", badge: "Deep Dive", gradient: "linear-gradient(160deg, #1a1500 0%, #f4e71d 100%)", href: "/free", image: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/High%20AF.png" },
-  { title: "Working Late", badge: "Sleep", gradient: "linear-gradient(160deg, #00050f 0%, #3b82f6 100%)", href: "/free", image: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/Working%20Latehausted.png" },
-];
-
-const GALLERY_ITEMS: GalleryItem[] = [
-  { common: "Exhausted", binomial: "Guided Release · 20 min", photo: { url: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/Exhausted.png", text: "Exhausted session", by: "The Daily Meds" } },
-  { common: "Digital Overwhelm", binomial: "Breathwork · 18 min", photo: { url: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/Hacked.png", text: "Digital Overwhelm session", by: "The Daily Meds" } },
-  { common: "High AF", binomial: "Guided Meditation · 15 min", photo: { url: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/High%20AF.png", text: "High AF session", by: "The Daily Meds" } },
-  { common: "Stressed", binomial: "Morning Reset · 10 min", photo: { url: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/Smoking.png", text: "Stressed session", by: "The Daily Meds" } },
-  { common: "Overtime Again", binomial: "Sleep Audio · 45 min", photo: { url: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/Working%20Latehausted.png", text: "Overtime Again session", by: "The Daily Meds" } },
-];
-
-const NEXT_RELEASE = [
-  { title: "Going Sober",    image: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/Going%20sober.png",      fallback: "linear-gradient(160deg, #081500 0%, #152800 100%)" },
-  { title: "Feeling Guilty", image: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/Guilt.png",              fallback: "linear-gradient(160deg, #1a0800 0%, #3d1500 100%)" },
-  { title: "Money Stress",   image: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/Money%20stress.png",     fallback: "linear-gradient(160deg, #0f0c08 0%, #2a2010 100%)" },
-  { title: "Stressed",       image: "https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/stressed%20sign%20up.png", fallback: "linear-gradient(160deg, #100a1a 0%, #1e0f30 100%)" },
-];
 
 const FACE_REALITY = [
   { title: "Guilt", gradient: "linear-gradient(135deg, #0d0015 0%, #7c3aed 100%)" },
@@ -71,12 +52,12 @@ const NAV_LINKS = [
 export default function Home() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [trialLoading, setTrialLoading] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [authChecked, setAuthChecked] = useState(false);
+  const [trendingSessions, setTrendingSessions] = useState<any[]>([]);
+  const [comingSoonSessions, setComingSoonSessions] = useState<any[]>([]);
   const router = useRouter();
 
   useEffect(() => {
-    // If the user's magic link was already consumed or expired, Supabase traps them here
-    // with a gnarly hash error. We gracefully intercept it and route to a clean login UI.
     if (window.location.hash.includes("error_code=otp_expired")) {
       router.replace("/login?error=expired");
       return;
@@ -87,10 +68,27 @@ export default function Home() {
       if (data.user) {
         router.replace("/home");
       } else {
-        setIsLoggedIn(false);
+        setAuthChecked(true);
       }
     });
+
+    supabase.from('sessions')
+      .select('*')
+      .eq('status', 'published')
+      .eq('is_coming_soon', false)
+      .limit(4)
+      .order('created_at', { ascending: false })
+      .then(({ data }) => { if (data) setTrendingSessions(data); });
+
+    supabase.from('sessions')
+      .select('*')
+      .eq('status', 'published')
+      .eq('is_coming_soon', true)
+      .order('created_at', { ascending: false })
+      .then(({ data }) => { if (data) setComingSoonSessions(data); });
   }, [router]);
+
+  if (!authChecked) return null;
 
   async function handleTrial() {
     setTrialLoading(true);
@@ -137,11 +135,11 @@ export default function Home() {
 
           <div className="flex items-center gap-3">
             <Link
-              href="/early-access"
+              href="/login"
               className="hidden md:inline-flex items-center justify-center px-4 py-2 rounded-full text-xs font-bold uppercase transition-transform hover:scale-105 whitespace-nowrap"
               style={{ background: "linear-gradient(90deg, #ff41b3 0%, #ec723d 100%)", color: "#ffffff", fontFamily: "var(--font-lexend)" }}
             >
-              Join Waitlist
+              Get Started
             </Link>
             {/* Mobile hamburger */}
             <button
@@ -174,12 +172,12 @@ export default function Home() {
               </Link>
             ))}
             <Link
-              href="/early-access"
+              href="/login"
               onClick={() => setMobileOpen(false)}
               className="mt-2 flex items-center justify-center px-4 py-3 rounded-full text-sm font-bold uppercase"
               style={{ background: "linear-gradient(90deg, #ff41b3 0%, #ec723d 100%)", color: "#ffffff", fontFamily: "var(--font-lexend)" }}
             >
-              Join Waitlist
+              Get Started
             </Link>
           </nav>
         )}
@@ -208,7 +206,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── £1 TRIAL BANNER ────────────────────────────────────────────── */}
+      {/* ── TRIAL BANNER ──────────────────────────────────────────────── */}
       <section className="px-4 sm:px-6 lg:px-12 pb-4" style={{ backgroundColor: "#010101" }}>
         <div
           className="relative rounded-2xl overflow-hidden"
@@ -231,11 +229,11 @@ export default function Home() {
                 Try the full experience
               </h2>
               <p className="text-sm" style={{ color: "rgba(255,255,255,0.4)", lineHeight: 1.6 }}>
-                Be the first to experience a new way of sitting with your emotions. No spiritual fluff.
+                A new way of sitting with your emotions. No spiritual fluff.
               </p>
             </div>
             <Link
-              href="/early-access"
+              href="/login"
               className="shrink-0 px-8 py-3.5 rounded-full text-sm transition-all duration-200 hover:scale-105 whitespace-nowrap"
               style={{
                 fontFamily: "var(--font-lexend)",
@@ -245,121 +243,60 @@ export default function Home() {
                 boxShadow: "0 0 28px rgba(255,65,179,0.4)",
               }}
             >
-              Join Waitlist
+              Get Started
             </Link>
           </div>
         </div>
       </section>
 
       {/* ── TRENDING MEDS ──────────────────────────────────────────────── */}
-      <section className="py-12" style={{ backgroundColor: "#010101" }}>
-        <div className="px-6 md:px-12">
-          <h2
-            className="text-2xl uppercase tracking-widest mb-8"
-            style={{ fontFamily: "var(--font-lexend)", fontWeight: 900, color: "#aaee20" }}
-          >
-            Trending Meds
-          </h2>
-          <div
-            className="flex gap-4 pb-6 hide-scrollbar"
-            style={{ overflowX: "auto", scrollSnapType: "x mandatory", WebkitOverflowScrolling: "touch" }}
-          >
-            {TRENDING.map((item) => (
-              <Link
-                key={item.title}
-                href={isLoggedIn ? item.href : "/early-access"}
-                className="group shrink-0"
-                style={{ minWidth: "clamp(200px, 55vw, 260px)", scrollSnapAlign: "start" }}
+      {trendingSessions.length > 0 && (
+        <section className="py-12" style={{ backgroundColor: "#010101" }}>
+          <div className="px-6 md:px-12">
+            <div className="flex justify-between items-end mb-8">
+              <h2
+                className="text-2xl uppercase tracking-widest"
+                style={{ fontFamily: "var(--font-lexend)", fontWeight: 900, color: "#aaee20" }}
               >
-                <div
-                  className="relative overflow-hidden rounded-xl"
-                  style={{ aspectRatio: "2/3", border: "0.5px solid rgba(255,255,255,0.08)" }}
-                >
-                  {item.image ? (
-                    <Image
-                      src={item.image}
-                      alt={item.title}
-                      fill
-                      unoptimized
-                      className="object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                  ) : (
-                    <div className="absolute inset-0 transition-transform duration-500 group-hover:scale-105" style={{ background: item.gradient }} />
-                  )}
-                  {/* Hover overlay */}
-                  <div
-                    className="absolute inset-0 flex flex-col justify-end p-5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                    style={{ background: "linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 60%)" }}
-                  >
-                    <span
-                      className="self-start text-[10px] font-black px-2 py-1 rounded mb-2 uppercase tracking-tighter"
-                      style={{ backgroundColor: "#aaee20", color: "#1a2600" }}
-                    >
-                      {item.badge}
-                    </span>
-                    <h3
-                      className="text-xl uppercase italic"
-                      style={{ fontFamily: "var(--font-lexend)", fontWeight: 900 }}
-                    >
-                      {item.title}
-                    </h3>
-                  </div>
-                  {/* Always-visible label */}
-                  <div
-                    className="absolute bottom-0 left-0 right-0 p-4"
-                    style={{ background: "linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 100%)" }}
-                  >
-                    <p className="text-[10px] uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.5)" }}>{item.title}</p>
-                  </div>
-                </div>
-                <p
-                  className="mt-3 text-sm uppercase tracking-wide font-bold group-hover:text-[#aaee20] transition-colors"
-                  style={{ fontFamily: "var(--font-lexend)" }}
-                >
-                  {item.title}
-                </p>
+                Trending Meds
+              </h2>
+              <Link href="/library" className="text-xs uppercase tracking-widest font-bold hover:underline" style={{ color: "#aaee20", fontFamily: "var(--font-lexend)" }}>
+                See All
               </Link>
-            ))}
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+              {trendingSessions.map((session: any) => (
+                <LibraryCard key={session.id} session={session as LibrarySession} isPaidMember={false} />
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
-      {/* ── NEXT RELEASE ──────────────────────────────────────────────── */}
-      <section className="py-12" style={{ backgroundColor: "#010101" }}>
-        <div className="px-6 md:px-12">
-          <h2
-            className="text-2xl uppercase tracking-widest mb-8"
-            style={{ fontFamily: "var(--font-lexend)", fontWeight: 900, color: "#ffffff" }}
-          >
-            Next Release
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {NEXT_RELEASE.map((item) => (
-              <div key={item.title}>
-                <div
-                  className="relative overflow-hidden rounded-xl"
-                  style={{ aspectRatio: "9/6", background: item.fallback, border: "0.5px solid rgba(255,255,255,0.08)" }}
-                >
-                  <Image
-                    src={item.image}
-                    alt={item.title}
-                    fill
-                    unoptimized
-                    className="object-cover"
-                    onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
-                  />
-                </div>
-                <p
-                  className="mt-2 text-sm uppercase font-bold tracking-wide"
-                  style={{ fontFamily: "var(--font-lexend)", color: "#ffffff" }}
-                >
-                  {item.title}
-                </p>
+      {/* ── COMING SOON ──────────────────────────────────────────────── */}
+      {comingSoonSessions.length > 0 && (
+        <section className="py-12" style={{ backgroundColor: "#010101" }}>
+          <div className="px-6 md:px-12">
+            <div className="flex justify-between items-end mb-8">
+              <h2
+                className="text-2xl uppercase tracking-widest"
+                style={{ fontFamily: "var(--font-lexend)", fontWeight: 900, color: "#ffffff" }}
+              >
+                Coming Soon
+              </h2>
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                <span className="text-[10px] font-extrabold uppercase tracking-[0.2em]" style={{ color: "#ff41b3", fontFamily: "var(--font-lexend)" }}>New Drops Weekly</span>
               </div>
-            ))}
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+              {comingSoonSessions.map((session: any) => (
+                <LibraryCard key={session.id} session={session as LibrarySession} isPaidMember={false} />
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* ── FACE REALITY ───────────────────────────────────────────────── */}
       <section className="py-12" style={{ backgroundColor: "#010101" }}>
@@ -367,7 +304,7 @@ export default function Home() {
           <p className="text-base leading-relaxed" style={{ color: "rgba(255,255,255,0.55)" }}>
             {FACE_REALITY.map((item, i) => (
               <span key={item.title}>
-                <Link href={isLoggedIn ? "/library" : "/early-access"} className="hover:text-white transition-colors" style={{ color: "rgba(255,255,255,0.55)" }}>
+                <Link href="/library" className="hover:text-white transition-colors" style={{ color: "rgba(255,255,255,0.55)" }}>
                   {item.title}
                 </Link>
                 {i < FACE_REALITY.length - 1 && <span style={{ color: "rgba(255,255,255,0.2)" }}> · </span>}
@@ -448,7 +385,7 @@ export default function Home() {
           </p>
           <div className="flex flex-col sm:flex-row gap-3 items-center">
             <Link
-              href="/early-access"
+              href="/login"
               className="px-10 py-4 rounded-full text-sm transition-all duration-200 hover:scale-105"
               style={{
                 fontFamily: "var(--font-lexend)",
@@ -458,7 +395,7 @@ export default function Home() {
                 boxShadow: "0 0 40px rgba(255,65,179,0.4)",
               }}
             >
-              Join Waitlist
+              Get Started
             </Link>
             <Link
               href="/free"
@@ -474,44 +411,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── FOOTER ─────────────────────────────────────────────────────── */}
-      <footer
-        className="py-12 px-6"
-        style={{ borderTop: "0.5px solid rgba(255,255,255,0.06)", color: "#adaaaa" }}
-      >
-        <div className="max-w-[1200px] mx-auto flex flex-col gap-8">
-          <p className="text-sm">
-            Questions?{" "}
-            <a
-              href="mailto:support@thedailymeds.com"
-              className="underline underline-offset-4 hover:text-[#aaee20] transition-colors"
-            >
-              Contact us
-            </a>
-          </p>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
-            {[
-              { label: "FAQ", href: "/pricing" },
-              { label: "Account", href: "/profile" },
-              { label: "Media Center", href: "/about" },
-              { label: "Terms of Use", href: "/terms" },
-              { label: "Privacy", href: "/privacy" },
-            ].map((link) => (
-              <Link
-                key={link.label}
-                href={link.href}
-                className="underline underline-offset-4 hover:text-[#aaee20] transition-colors"
-              >
-                {link.label}
-              </Link>
-            ))}
-          </div>
-          <div className="flex flex-col md:flex-row justify-between items-center pt-4 gap-4">
-            <Logo href="/" size="sm" />
-            <p className="text-[10px]">© {new Date().getFullYear()} The Daily Meds. All Rights Reserved.</p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

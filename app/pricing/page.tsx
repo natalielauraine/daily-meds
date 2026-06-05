@@ -53,7 +53,7 @@ const PLANS = [
     tagline: "Full audio library, anytime",
     price: "£9.99",
     priceNote: "per month · audio only",
-    cta: "Join Waitlist",
+    cta: "Start Listening",
     featured: false,
     features: [
       "Everything in Free",
@@ -74,7 +74,7 @@ const PLANS = [
     tagline: "Audio library — save with annual",
     price: "£99.99",
     priceNote: "per year · audio only",
-    cta: "Join Waitlist",
+    cta: "Start Listening",
     featured: true,
     features: [
       "Everything in Free",
@@ -96,7 +96,7 @@ const PLANS = [
     tagline: "Audio plus live sessions",
     price: "£19.99",
     priceNote: "per month",
-    cta: "Join Waitlist",
+    cta: "Subscribe",
     featured: false,
     features: [
       "Everything in The Listener",
@@ -453,7 +453,7 @@ export default function PricingPage() {
                     className="uppercase mb-1"
                     style={{ fontFamily: "var(--font-plus-jakarta)", fontWeight: 800, fontSize: "clamp(1.3rem, 3vw, 1.75rem)", color: "#E2E2E2", letterSpacing: "-0.01em" }}
                   >
-                    Join Waitlist
+                    Start Your Free Trial
                   </h2>
                   <p
                     className="text-sm max-w-md"
@@ -477,7 +477,7 @@ export default function PricingPage() {
                     whiteSpace: "nowrap",
                   }}
                 >
-                  {loadingPlan === "trial" ? "Redirecting…" : "Join Waitlist"}
+                  {loadingPlan === "trial" ? "Redirecting…" : "Start Free Trial"}
                 </button>
               </div>
             </div>
@@ -588,7 +588,7 @@ export default function PricingPage() {
                       {/* CTA button — free plan links to signup, paid plans go to Stripe */}
                       {plan.id === "free" ? (
                         <Link
-                          href="/early-access"
+                          href="/login"
                           className="block text-center py-3 rounded-full text-sm mb-6 transition-all duration-200"
                           style={{
                             fontFamily: "var(--font-space-grotesk)",
@@ -730,7 +730,7 @@ export default function PricingPage() {
               Natalie created The Daily Meds for the moments no one talks about — the comedowns, the 3am spirals, the days when everything is just a bit too much. Start for free today.
             </p>
             <Link
-              href="/early-access"
+              href="/login"
               className="inline-flex items-center gap-2.5 px-8 py-3.5 rounded-full text-sm"
               style={{
                 fontFamily: "var(--font-space-grotesk)",

@@ -103,14 +103,11 @@ export default function LoggedInHome() {
         {/* Feeling Chips Row */}
         <section className="space-y-4">
           <div className="flex flex-wrap gap-3">
-            {["Anxious", "Flat", "Wired", "Sad", "Scattered"].map(mood => (
+            {["Hungover", "After The Sesh", "On A Comedown", "Feeling Empty", "Can't Sleep", "Anxious", "Heartbroken", "Overwhelmed", "Low Energy", "Morning Reset", "Focus Mode"].map(mood => (
               <Link key={mood} href={`/library?mood=${mood}`} className="px-8 py-3 rounded-full bg-surface-container-high hover:bg-primary-container hover:text-on-primary-container transition-all duration-300 font-headline font-bold uppercase tracking-wider text-sm">
                 {mood}
               </Link>
             ))}
-            <Link href="/library?mood=Overwhelmed" className="px-8 py-3 rounded-full bg-primary-container text-on-primary-container shadow-[0_0_20px_rgba(255,65,142,0.4)] font-headline font-bold uppercase tracking-wider text-sm transition-all">
-              Overwhelmed
-            </Link>
           </div>
         </section>
 
