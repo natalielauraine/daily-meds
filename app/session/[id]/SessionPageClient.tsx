@@ -683,33 +683,35 @@ export default function SessionPageClient({ session }: { session: SessionData | 
           boxShadow: "0 -8px 32px rgba(173,242,37,0.04)",
         }}
       >
-        <Link href="/" className="flex flex-col items-center gap-1 p-3 transition-colors" style={{ color: "rgba(255,255,255,0.4)" }}>
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
-          </svg>
-          <span className="text-[10px] font-black uppercase tracking-widest" style={{ fontFamily: "var(--font-plus-jakarta)" }}>Sanctuary</span>
-        </Link>
         <Link href="/library" className="flex flex-col items-center gap-1 p-3 transition-colors" style={{ color: "rgba(255,255,255,0.4)" }}>
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
           </svg>
-          <span className="text-[10px] font-black uppercase tracking-widest" style={{ fontFamily: "var(--font-plus-jakarta)" }}>Explore</span>
+          <span className="text-[9px] font-black uppercase tracking-widest" style={{ fontFamily: "var(--font-plus-jakarta)" }}>Audios</span>
         </Link>
-        {/* Active tab — lime glow */}
-        <div
-          className="flex flex-col items-center gap-1 p-3 rounded-full"
-          style={{ backgroundColor: "#ADF225", boxShadow: "0 0 18px #ADF225", color: "#000" }}
-        >
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+        <Link href="/coming-soon" className="flex flex-col items-center gap-1 p-3 transition-colors" style={{ color: "rgba(255,255,255,0.4)" }}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M21 6h-7.59l3.29-3.29L16 2l-4 4-4-4-.71.71L10.59 6H3c-1.1 0-2 .89-2 2v12c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.11-.9-2-2-2zm0 14H3V8h18v12zM9 10v8l7-4z"/>
           </svg>
-          <span className="text-[10px] font-black uppercase tracking-widest" style={{ fontFamily: "var(--font-plus-jakarta)" }}>Rituals</span>
-        </div>
-        <Link href="/profile" className="flex flex-col items-center gap-1 p-3 transition-colors" style={{ color: "rgba(255,255,255,0.4)" }}>
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
+          <span className="text-[9px] font-black uppercase tracking-widest" style={{ fontFamily: "var(--font-plus-jakarta)" }}>Live</span>
+        </Link>
+        <Link href="/coming-soon" className="flex flex-col items-center gap-1 p-3 transition-colors" style={{ color: "rgba(255,255,255,0.4)" }}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
           </svg>
-          <span className="text-[10px] font-black uppercase tracking-widest" style={{ fontFamily: "var(--font-plus-jakarta)" }}>Profile</span>
+          <span className="text-[9px] font-black uppercase tracking-widest" style={{ fontFamily: "var(--font-plus-jakarta)" }}>Groups</span>
+        </Link>
+        <Link href="/coming-soon" className="flex flex-col items-center gap-1 p-3 transition-colors" style={{ color: "rgba(255,255,255,0.4)" }}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
+          </svg>
+          <span className="text-[9px] font-black uppercase tracking-widest" style={{ fontFamily: "var(--font-plus-jakarta)" }}>Feed</span>
+        </Link>
+        <Link href="/coming-soon" className="flex flex-col items-center gap-1 p-3 transition-colors" style={{ color: "rgba(255,255,255,0.4)" }}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+          </svg>
+          <span className="text-[9px] font-black uppercase tracking-widest" style={{ fontFamily: "var(--font-plus-jakarta)" }}>Favorites</span>
         </Link>
       </div>
 
