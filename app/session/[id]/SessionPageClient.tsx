@@ -79,9 +79,6 @@ export default function SessionPageClient({ session }: { session: SessionData | 
 
   const sessionLabel = session?.type === "Live Session" ? "Live" : "Audio";
 
-  // Related sessions — exclude current, show up to 3
-  const relatedSessions = MOCK_SESSIONS.filter((s) => s.id !== session?.id).slice(0, 3);
-
   // ── EFFECTS ────────────────────────────────────────────────────────────────
 
   useEffect(() => {
@@ -549,7 +546,7 @@ export default function SessionPageClient({ session }: { session: SessionData | 
       </section>
 
       {/* ── BELOW-FOLD CONTENT ── */}
-      <div className="px-6 md:px-12 pt-12 pb-48" style={{ marginTop: "calc(100svh - 60px)" }}>
+      <div className="relative z-10 px-6 md:px-12 pt-12 pb-48" style={{ marginTop: "-120px" }}>
 
         {/* Lock message if can't play */}
         {!subscriptionLoading && !canPlay && (
@@ -578,10 +575,10 @@ export default function SessionPageClient({ session }: { session: SessionData | 
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        <div className="max-w-3xl mx-auto">
 
           {/* Experience Notes */}
-          <div className="md:col-span-2">
+          <div>
             <h3
               className="text-sm uppercase tracking-widest mb-5"
               style={{ color: "#ADF225", fontFamily: "var(--font-space-grotesk)", fontWeight: 700 }}
@@ -647,55 +644,6 @@ export default function SessionPageClient({ session }: { session: SessionData | 
             </div>
           </div>
 
-          {/* Upcoming Rituals */}
-          <div>
-            <h3
-              className="text-sm uppercase tracking-widest mb-5"
-              style={{ color: "rgba(255,255,255,0.35)", fontFamily: "var(--font-space-grotesk)", fontWeight: 700 }}
-            >
-              Upcoming Rituals
-            </h3>
-            <div className="flex flex-col gap-3">
-              {relatedSessions.map((related, i) => (
-                <Link
-                  key={related.id}
-                  href={`/session/${related.id}`}
-                  className="flex items-center gap-4 p-3 rounded-2xl transition-colors hover:bg-white/5"
-                  style={{ backgroundColor: "#1a1919" }}
-                >
-                  {/* Gradient thumbnail */}
-                  <div
-                    className="w-16 h-16 rounded-xl flex-shrink-0 flex items-center justify-center"
-                    style={{ background: related.gradient }}
-                  >
-                    <svg width="22" height="22" viewBox="0 0 48 48" fill="none">
-                      <path d="M24 4C24 4 16 12 16 20C16 24.4 19.6 28 24 28C28.4 28 32 24.4 32 20C32 12 24 4 24 4Z" fill="white" opacity="0.9"/>
-                      <path d="M10 14C10 14 2 18 2 25C2 29.4 5.6 33 10 33C13 33 15.6 31.4 17 29" stroke="white" strokeWidth="2.5" strokeLinecap="round" fill="none" opacity="0.8"/>
-                      <path d="M38 14C38 14 46 18 46 25C46 29.4 42.4 33 38 33C35 33 32.4 31.4 31 29" stroke="white" strokeWidth="2.5" strokeLinecap="round" fill="none" opacity="0.8"/>
-                      <circle cx="24" cy="28" r="2" fill="white" opacity="0.9"/>
-                    </svg>
-                  </div>
-                  <div className="min-w-0">
-                    <p
-                      className="text-[10px] font-bold tracking-widest uppercase mb-0.5"
-                      style={{ color: "#FF418E", fontFamily: "var(--font-space-grotesk)" }}
-                    >
-                      {i === 0 ? "Next Session" : "Up Next"}
-                    </p>
-                    <h4
-                      className="text-sm text-white uppercase truncate"
-                      style={{ fontFamily: "var(--font-plus-jakarta)", fontWeight: 800 }}
-                    >
-                      {related.title}
-                    </h4>
-                    <p className="text-xs mt-0.5" style={{ color: "rgba(255,255,255,0.4)" }}>
-                      {related.duration} · {related.type}
-                    </p>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
         </div>
       </div>
 
