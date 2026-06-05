@@ -243,7 +243,7 @@ export default function SessionPageClient({ session }: { session: SessionData | 
       </nav>
 
       {/* ── HERO (fullscreen) ── */}
-      <section className="relative w-full overflow-hidden" style={{ height: "100svh", minHeight: "600px" }}>
+      <section className="relative w-full overflow-hidden" style={{ height: "70svh", minHeight: "450px" }}>
 
         {/* Background: video file, Vimeo embed, or gradient */}
         {session.mediaType === "video" && (session.videoUrl || session.vimeoId) ? (
@@ -546,7 +546,7 @@ export default function SessionPageClient({ session }: { session: SessionData | 
       </section>
 
       {/* ── BELOW-FOLD CONTENT ── */}
-      <div className="relative z-10 px-6 md:px-12 pt-12 pb-48" style={{ marginTop: "-120px" }}>
+      <div className="relative z-10 px-6 md:px-12 pt-8 pb-48" style={{ marginTop: "-80px" }}>
 
         {/* Lock message if can't play */}
         {!subscriptionLoading && !canPlay && (
