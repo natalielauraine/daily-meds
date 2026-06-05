@@ -306,7 +306,7 @@ export default function SessionPageClient({ session }: { session: SessionData | 
         />
 
         {/* Session metadata — bottom-left overlay, sits above the floating player bar */}
-        <div className="absolute left-6 md:left-12 z-10 max-w-2xl" style={{ bottom: "220px" }}>
+        <div className="absolute left-6 md:left-12 z-10 max-w-2xl" style={{ bottom: "clamp(140px, 25svh, 220px)", top: "72px", display: "flex", flexDirection: "column", justifyContent: "flex-end" }}>
           <div className="flex items-center gap-3 mb-4">
             {/* Session badge */}
             <span
@@ -417,7 +417,7 @@ export default function SessionPageClient({ session }: { session: SessionData | 
       </section>
 
       {/* ── FLOATING PLAYER BAR ── */}
-      <section className="fixed z-50 left-1/2 -translate-x-1/2" style={{ bottom: "80px", width: "90%", maxWidth: "900px" }}>
+      <section className="fixed z-50 left-1/2 -translate-x-1/2" style={{ bottom: "100px", width: "90%", maxWidth: "900px" }}>
         <div
           className="rounded-[32px] px-6 md:px-10 py-5"
           style={{
