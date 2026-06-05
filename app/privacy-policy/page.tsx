@@ -1,6 +1,7 @@
 import Link from "next/link";
-import Logo from "../components/Logo";
 import type { Metadata } from "next";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
 export const metadata: Metadata = {
   title: "Privacy Policy — Daily Meds",
@@ -295,28 +296,7 @@ export default function PrivacyPolicyPage() {
     <div style={{ backgroundColor: "#010101", color: "#ffffff", fontFamily: "var(--font-manrope)", minHeight: "100vh" }}>
 
       {/* ── HEADER ─────────────────────────────────────────────────────── */}
-      <header
-        className="sticky top-0 z-50 flex items-center justify-between px-6 py-4"
-        style={{
-          backgroundColor: "rgba(1,1,1,0.92)",
-          backdropFilter: "blur(20px)",
-          borderBottom: "0.5px solid rgba(255,255,255,0.06)",
-        }}
-      >
-        <Logo href="/" size="md" />
-        <div className="flex items-center gap-4">
-          <Link href="/login" className="text-sm transition-colors hover:text-white" style={{ color: "rgba(255,255,255,0.5)", fontFamily: "var(--font-lexend)" }}>
-            Log in
-          </Link>
-          <Link
-            href="/signup"
-            className="px-5 py-2 rounded-full text-sm font-bold uppercase transition-transform hover:scale-105"
-            style={{ backgroundColor: "#ff41b3", color: "#fff", fontFamily: "var(--font-lexend)" }}
-          >
-            Start Free
-          </Link>
-        </div>
-      </header>
+      <Navbar />
 
       {/* ── HERO ───────────────────────────────────────────────────────── */}
       <section
@@ -419,24 +399,9 @@ export default function PrivacyPolicyPage() {
           ))}
         </div>
 
-        {/* Bottom nav */}
-        <div
-          className="mt-16 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4"
-          style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}
-        >
-          <p className="text-xs" style={{ color: "rgba(255,255,255,0.25)" }}>
-            &copy; {new Date().getFullYear()} Daily Meds FZ LLC. All rights reserved.
-          </p>
-          <div className="flex items-center gap-5">
-            <Link href="/terms" className="text-xs hover:text-white transition-colors" style={{ color: "rgba(255,255,255,0.35)" }}>
-              Terms & Conditions
-            </Link>
-            <Link href="/" className="text-xs hover:text-white transition-colors" style={{ color: "rgba(255,255,255,0.35)" }}>
-              Back to Home
-            </Link>
-          </div>
-        </div>
       </div>
+
+      <Footer />
 
       <style>{`
         .prose-section h3 {
