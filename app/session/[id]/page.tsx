@@ -58,7 +58,7 @@ async function fetchSessionFromSupabase(id: string): Promise<SessionData | null>
     const supabase = createClient(url, key);
     const { data } = await supabase
       .from("sessions")
-      .select("id, title, description, duration, mood_category, media_type, vimeo_id, video_url, audio_url, is_free, thumbnail")
+      .select("id, short_id, title, description, duration, mood_category, media_type, vimeo_id, video_url, audio_url, is_free, thumbnail")
       .eq("id", id)
       .single();
 
@@ -67,6 +67,7 @@ async function fetchSessionFromSupabase(id: string): Promise<SessionData | null>
     const moodCategory = data.mood_category || "";
     return {
       id: data.id,
+      shortId: data.short_id || "",
       title: data.title || "",
       description: data.description || "",
       duration: data.duration || "",

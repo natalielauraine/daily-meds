@@ -7,6 +7,7 @@
 import { useState, useEffect, useRef } from "react";
 import AdminShell from "../AdminShell";
 import { createClient } from "../../../lib/supabase-browser";
+import { generateShortId } from "../../../lib/short-id";
 import Banner from "../../components/ui/Banner";
 import EmptyState from "../../components/ui/EmptyState";
 import LoadingSkeleton from "../../components/ui/LoadingSkeleton";
@@ -53,6 +54,7 @@ type Session = {
   is_coming_soon: boolean;
   gradient: string;
   status: "draft" | "published";
+  short_id: string;
   created_at: string;
 };
 
@@ -475,6 +477,7 @@ export default function AdminContentPage() {
         is_free:       item.is_free,
         gradient:      MOOD_GRADIENTS[item.mood_category] || GRADIENTS[0].value,
         status:        "draft",
+        short_id:      generateShortId(),
       });
 
       if (insertErr) {
@@ -521,7 +524,7 @@ export default function AdminContentPage() {
 
     const { error: saveErr } = editingId
       ? await supabase.from("sessions").update(payload).eq("id", editingId)
-      : await supabase.from("sessions").insert(payload);
+      : await supabase.from("sessions").insert({ ...payload, short_id: generateShortId() });
 
     setSaving(false);
     if (saveErr) { setError("Could not save: " + saveErr.message); return; }

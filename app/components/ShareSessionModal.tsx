@@ -6,6 +6,7 @@ import html2canvas from "html2canvas";
 
 interface SessionInfo {
   id: string;
+  shortId?: string;
   title: string;
   moodCategory: string;
   duration: string;
@@ -27,7 +28,8 @@ export default function ShareSessionModal({ session, onClose }: Props) {
   const cardRef = useRef<HTMLDivElement>(null);
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-  const shareUrl = `${appUrl}/s/${session.id}${referralCode ? `?r=${referralCode}` : ""}`;
+  const shareSlug = session.shortId || session.id;
+  const shareUrl = `${appUrl}/s/${shareSlug}${referralCode ? `?r=${referralCode}` : ""}`;
   const caption = `Just completed "${session.title}" on @thedailymeds — ${streak} day streak! Try it free: ${shareUrl}`;
 
   useEffect(() => {

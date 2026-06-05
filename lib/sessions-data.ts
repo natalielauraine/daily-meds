@@ -5,6 +5,7 @@ export type SessionMediaType = "audio" | "video";
 
 export interface SessionData {
   id: string;
+  shortId?: string;
   title: string;
   description: string;
   duration: string;
