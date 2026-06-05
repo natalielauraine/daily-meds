@@ -14,7 +14,7 @@ const SECTIONS = [
     title: "Agreement to Terms",
     content: (
       <p>
-        By accessing or using Daily Meds ("the Platform", "our Service"), you agree to be bound by these Terms and Conditions. If you do not agree with any part of these terms, you may not access the Service. Daily Meds is operated by <strong>Daily Meds FZ LLC</strong>, Trading as Daily Meds and provides guided meditation content, wellness resources, and community features.
+        By accessing or using Daily Meds (&ldquo;the Platform&rdquo;, &ldquo;our Service&rdquo;), you agree to be bound by these Terms and Conditions. If you do not agree with any part of these terms, you may not access the Service. Daily Meds is operated by <strong>I AM Sound Ltd</strong>, Trading as Daily Meds and provides guided meditation content, wellness resources, and community features.
       </p>
     ),
   },
@@ -78,7 +78,7 @@ const SECTIONS = [
         <h3>5.1 Cancellation Policy</h3>
         <p>You may cancel your subscription at any time through your account settings. Cancellation will take effect at the end of your current billing period, and you will retain access to premium features until that date.</p>
         <h3>5.2 Refund Policy</h3>
-        <p>Subscription fees are generally non-refundable. However, we may provide refunds on a case-by-case basis at our sole discretion. To request a refund, contact our support team within 14 days of your purchase by emailing <a href="mailto:support@thedailymeds.com">support@thedailymeds.com</a>.</p>
+        <p>Subscription fees are generally non-refundable. However, we may provide refunds on a case-by-case basis at our sole discretion. To request a refund, contact our support team within 14 days of your purchase by emailing <a href="mailto:joy@dailymeds.com">joy@dailymeds.com</a>.</p>
       </>
     ),
   },
@@ -89,7 +89,7 @@ const SECTIONS = [
     content: (
       <>
         <h3>6.1 Our Content</h3>
-        <p className="mb-4">All meditation recordings, audio files, videos, text, graphics, logos, and other content provided on the Platform ("Content") are owned by or licensed to Daily Meds and are protected by copyright, trademark, and other intellectual property laws. You may not:</p>
+        <p className="mb-4">All meditation recordings, audio files, videos, text, graphics, logos, and other content provided on the Platform (&ldquo;Content&rdquo;) are owned by or licensed to Daily Meds and are protected by copyright, trademark, and other intellectual property laws. You may not:</p>
         <ul>
           <li>Copy, modify, distribute, or reproduce our Content without permission</li>
           <li>Download or record meditation sessions for redistribution</li>
@@ -115,7 +115,7 @@ const SECTIONS = [
           <li>Harass, bully, or threaten other users</li>
           <li>Spam or distribute unsolicited commercial messages</li>
           <li>Impersonate others or misrepresent your affiliation</li>
-          <li>Attempt to hack, disrupt, or compromise the Platform's security</li>
+          <li>Attempt to hack, disrupt, or compromise the Platform&rsquo;s security</li>
           <li>Use automated systems or bots without authorization</li>
         </ul>
         <p className="mt-4">We reserve the right to suspend or terminate accounts that violate these guidelines.</p>
@@ -145,7 +145,7 @@ const SECTIONS = [
     number: "9",
     title: "Privacy and Data Protection",
     content: (
-      <p>Your privacy is important to us. Our <Link href="/privacy">Privacy Policy</Link> explains how we collect, use, and protect your personal information. By using the Platform, you consent to our data practices as described in the Privacy Policy.</p>
+      <p>Your privacy is important to us. Our <Link href="/privacy-policy">Privacy Policy</Link> explains how we collect, use, and protect your personal information. By using the Platform, you consent to our data practices as described in the Privacy Policy.</p>
     ),
   },
   {
@@ -162,7 +162,7 @@ const SECTIONS = [
     title: "Disclaimer of Warranties",
     content: (
       <p className="uppercase text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.5)" }}>
-        The platform is provided "as is" and "as available" without warranties of any kind, express or implied. We disclaim all warranties including merchantability, fitness for a particular purpose, and non-infringement. We do not warrant that the service will be uninterrupted, secure, or error-free.
+        The platform is provided &ldquo;as is&rdquo; and &ldquo;as available&rdquo; without warranties of any kind, express or implied. We disclaim all warranties including merchantability, fitness for a particular purpose, and non-infringement. We do not warrant that the service will be uninterrupted, secure, or error-free.
       </p>
     ),
   },
@@ -236,7 +236,7 @@ const SECTIONS = [
     content: (
       <>
         <p className="mb-3">For questions about these Terms, please contact us:</p>
-        <p><strong>Email:</strong> <a href="mailto:support@thedailymeds.com">support@thedailymeds.com</a></p>
+        <p><strong>Email:</strong> <a href="mailto:joy@dailymeds.com">joy@dailymeds.com</a></p>
       </>
     ),
   },
@@ -245,7 +245,7 @@ const SECTIONS = [
     number: "20",
     title: "Entire Agreement",
     content: (
-      <p>These Terms, together with our <Link href="/privacy">Privacy Policy</Link>, constitute the entire agreement between you and Daily Meds regarding the use of the Platform and supersede all prior agreements and understandings.</p>
+      <p>These Terms, together with our <Link href="/privacy-policy">Privacy Policy</Link>, constitute the entire agreement between you and Daily Meds regarding the use of the Platform and supersede all prior agreements and understandings.</p>
     ),
   },
 ];
@@ -297,7 +297,7 @@ export default function TermsPage() {
             Terms & Conditions
           </h1>
           <p className="text-sm" style={{ color: "rgba(255,255,255,0.35)" }}>
-            Last Updated: November 27, 2025 · Operated by Daily Meds FZ LLC, Trading as Daily Meds
+            Last Updated: November 27, 2025 · Operated by I AM Sound Ltd, Trading as Daily Meds
           </p>
         </div>
       </section>
@@ -387,7 +387,7 @@ export default function TermsPage() {
           style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}
         >
           <p className="text-xs" style={{ color: "rgba(255,255,255,0.25)" }}>
-            © {new Date().getFullYear()} The Daily Meds. All rights reserved. All rights reserved.
+            © {new Date().getFullYear()} Daily Meds. All rights reserved.
           </p>
           <div className="flex items-center gap-5">
             <Link href="/privacy" className="text-xs hover:text-white transition-colors" style={{ color: "rgba(255,255,255,0.35)" }}>

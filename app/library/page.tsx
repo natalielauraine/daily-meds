@@ -128,7 +128,7 @@ export default function LibraryPage() {
       const [{ data: sessionsData, error }, { data: { user } }] = await Promise.all([
         supabase
           .from("sessions")
-          .select("id, title, description, duration, type, mood_category, media_type, is_free, gradient, thumbnail")
+          .select("id, title, description, duration, type, mood_category, media_type, is_free, is_coming_soon, gradient, thumbnail")
           .order("created_at", { ascending: false }),
         supabase.auth.getUser(),
       ]);
@@ -154,15 +154,17 @@ export default function LibraryPage() {
 
   // Apply all active filters to the session list
   const filtered = sessions.filter((s) => {
-    // Search — case-insensitive title match
     if (search && !s.title.toLowerCase().includes(search.toLowerCase())) return false;
-    // Mood category
     if (activeMood !== "All" && s.mood_category !== activeMood) return false;
-    // Duration
     if (!matchesDuration(s, activeDuration)) return false;
-    // Media type
     if (activeType !== "all" && s.media_type !== activeType) return false;
     return true;
+  }).sort((a, b) => {
+    if (!isPaidMember) {
+      if (a.is_free && !b.is_free) return -1;
+      if (!a.is_free && b.is_free) return 1;
+    }
+    return 0;
   });
 
   // Count how many filters are active (excludes search)

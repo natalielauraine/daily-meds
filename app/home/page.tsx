@@ -33,46 +33,7 @@ const TRENDING_NOW = [
   },
 ];
 
-const DROPPING_SOON = [
-  {
-    title: "Guilty",
-    time: "Coming Friday",
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCMXiw-cheL9Dqx57KZrX1vk7u_ojbaq0per-l7HITRt5yzpJkOe2z_Xm_IQYzZBffU7djNZSeJuPQGlcivQymSxF4njvVtBFQJvdNfG-P56BluUDMfhp1l1rSkf3synvb2VCsow_aAd0rdr_H0ViNf3hKBnlzSJ1hAg1rT0LRGyUVogm__sM8A24J154eRyAKg3_NDKC8XYmeQl8bxUKpSPmaH2FBOZC6sXQ4Bev-gLf3h0SFAPOm190f1Wqy1w59oGNyf9R_Cow"
-  },
-  {
-    title: "No Money",
-    time: "In 4 Days",
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBIBM1cZOIjZfjsa8-dN-Qd-rZhMV7FJmJXuBoyVbZh3crb_Ez-TlMvrHIhf4M4brMATcTtF8p9Pj4GXKJDeWg9QQsVzhj_Y3z7EyZ8pjjFtf78EQ1P1DOKHfbT2W0F1Ob3crhnXiUJS2epFtDMxHMXgGg-JSMf5txJJ1biwjnsNUdRH5HKrIxHCeAr5-mQWD1zO4AI94rZPCM2QMPtL6K7ykcquu_2gjy0Up4NS6D6DfCLR-7iwWhIQ5KuTKhcwGZm31r7rNb3QA"
-  },
-  {
-    title: "Stressed",
-    time: "Next Week",
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCQzLBO_U9T5OVrHcEVwZt84ErowclO4VvsQyjwsTPwvPXWvCgDX_UhG9BK2OoM6JcdHOmcB0YLWhZJQmuW9axaCRxHTsKzqReZUpXDlPpTih1UV5T84xrOPpWpFIaXs7_qlQelXuHHfE4h7gNiyk4r-08YBjgixIa5RU0BqS2kLPqzmDpoyum4Fpw9dHcCorUDV3iJ_LPyhKNsKnKRm6hxZkKkP_WK3p6B9zlp3XYXzbpYLwUuLSWzYWY51cxCwjZLvlCaorHwbA"
-  },
-  {
-    title: "Sober",
-    time: "Stay Tuned",
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDKNpEY7Uchqb23uvgbJUy3QL_QADC2CCZbhcSlLVJndLxUIWxjpncvhEC3xL-6oJ_DAAEvEspDnRqX4SRX0hFplY1Np2iF2DvYlAIB6X_Sv7hLsTW7mhk-_EO4YUF5ANg55cAgumiC3LMSsYMJKHiX8rwXAs1rHHyU4pryuOI54A5vS_AyVCIU-U4Jl9HOIV9YCY9U41XDWNbI6h7n99Gp-TycSN_5R6EIRTK4NuIP7MCvnCVkUhHwU-sC0B2krRzp0x4ES0zasw"
-  }
-];
 
-const RAISING_VIBES = [
-  {
-    title: "Electric Breath",
-    subtitle: "15 Min Upcycle",
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCaxicWg70H9NKSbHQa9IIobvbBiT00tHZy8H2j46n9ywkKd1zvtAPbT7xJbf8mdImdUrBUtiMmnzPO4t9SKnMV_9vZU8aT7iTaVsANCy6vWMJZhDjBm0udAZ9_-t35YxGqMgUpd9KjVCDhPS2EDIaw3mfErlIA53p5dY_X557mSwghUcycRT5-IAgnzrduDOqiQw_X_7WWfb5OsuxjjxgNfh9OgCr43LRVUaCklOziq6r6HFiRvCcd5lbaGnyI1YTyc8P2x5poEg"
-  },
-  {
-    title: "Sonic Lift",
-    subtitle: "High BPM Focus",
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDD9O9CA9gvFLweCP9z8VXKLVV_NgLCRwHjn8usvSxfFQR_Q4ABfN6KK6lOF0NoEE8K_WvMApXqrjf_h34hPXRKlj5MaPlVUun7xxflR2YBqD_g-QF4UGEPf89gGuWqdahyO57rkFSCgXNfKZyIJgzdAwrkZS4WXm4uk-lPurYfvA75MQ1s7sNCymIJL0BlKTEGscuGxJLoPlAYahsM-I6VDqrWW2w3fy5M_iWuGQoikdSkfe0_8-NvZFMbotnEAEWhiJyNCjCe-w"
-  },
-  {
-    title: "Clear Sky",
-    subtitle: "Mental Clarity",
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDjPXB1GsmMXNqAy2UHk1HHOus8wkEoBhjcD7oBhH6GCfUQmxQ7C3U_geqdeltbj8JdlVUjXgU-6CvWASRk2F071PO3hqsNIRofVMwAW8dOXtNNKIcKazEosx8IakVy3yy1URIdNCJZKohFH8yFytuIlVnlNWQqCzx75d-jQMbawoSdpqlppuujkNilUWM2MPEsgHoaO2TqtzSG2vTD1VYYSSuafdQZoK6zlBp7t5eIA9RFR7LDleETDO4hil7clfqrTSZl26AqjA"
-  }
-];
 
 // ── COMPONENT ────────────────────────────────────────────────────────────────
 
@@ -81,6 +42,7 @@ export default function LoggedInHome() {
   const supabase = createClient();
   const [user, setUser] = useState<User | null>(null);
   const [sessions, setSessions] = useState<any[]>([]);
+  const [comingSoon, setComingSoon] = useState<any[]>([]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -93,10 +55,21 @@ export default function LoggedInHome() {
 
     supabase.from('sessions')
       .select('*')
+      .eq('status', 'published')
+      .eq('is_coming_soon', false)
       .limit(6)
       .order('created_at', { ascending: false })
       .then(({ data }) => {
         if (data) setSessions(data);
+      });
+
+    supabase.from('sessions')
+      .select('id, title, thumbnail, gradient, mood_category')
+      .eq('status', 'published')
+      .eq('is_coming_soon', true)
+      .order('created_at', { ascending: false })
+      .then(({ data }) => {
+        if (data) setComingSoon(data);
       });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -180,48 +153,36 @@ export default function LoggedInHome() {
           </div>
         </section>
 
-        {/* Dropping Soon (The Teaser Reel) */}
-        <section className="space-y-6">
-          <div className="flex justify-between items-end">
-            <h2 className="font-headline text-2xl font-bold uppercase tracking-tight">Dropping Soon</h2>
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-              <span className="font-label text-[10px] font-extrabold uppercase text-primary tracking-[0.2em]">New Drops Weekly</span>
+        {/* Dropping Soon (The Teaser Reel) — dynamic from DB */}
+        {comingSoon.length > 0 && (
+          <section className="space-y-6">
+            <div className="flex justify-between items-end">
+              <h2 className="font-headline text-2xl font-bold uppercase tracking-tight">Dropping Soon</h2>
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                <span className="font-label text-[10px] font-extrabold uppercase text-primary tracking-[0.2em]">New Drops Weekly</span>
+              </div>
             </div>
-          </div>
-          <div className="flex gap-6 overflow-x-auto hide-scrollbar -mx-6 px-6 pb-4">
-            {DROPPING_SOON.map((item, i) => (
-              <div key={i} className="min-w-[280px] md:min-w-[320px] group relative cursor-not-allowed">
-                <div className="relative aspect-video rounded-xl overflow-hidden mb-4 grayscale hover:grayscale-0 transition-all duration-700">
-                  <img className="w-full h-full object-cover" src={item.image} alt={item.title} />
-                  <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center backdrop-blur-[2px]">
-                    <span className="bg-primary/20 text-primary border border-primary/30 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest backdrop-blur-md">{item.title}</span>
-                    <span className="mt-4 text-[10px] text-zinc-400 font-bold uppercase tracking-[0.3em]">{item.time}</span>
+            <div className="flex gap-6 overflow-x-auto hide-scrollbar -mx-6 px-6 pb-4">
+              {comingSoon.map((item) => (
+                <div key={item.id} className="min-w-[280px] md:min-w-[320px] group relative cursor-not-allowed">
+                  <div className="relative aspect-video rounded-xl overflow-hidden mb-4 grayscale hover:grayscale-0 transition-all duration-700">
+                    {item.thumbnail ? (
+                      <img className="w-full h-full object-cover" src={item.thumbnail} alt={item.title} />
+                    ) : (
+                      <div className="w-full h-full" style={{ background: item.gradient }} />
+                    )}
+                    <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center backdrop-blur-[2px]">
+                      <span className="bg-primary/20 text-primary border border-primary/30 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest backdrop-blur-md">{item.title}</span>
+                      <span className="mt-4 text-[10px] text-zinc-400 font-bold uppercase tracking-[0.3em]">Coming Soon</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        </section>
+              ))}
+            </div>
+          </section>
+        )}
 
-        {/* Raising Your Vibe */}
-        <section className="space-y-6">
-          <h2 className="font-headline text-2xl font-bold uppercase tracking-tight">Raising Your Vibe</h2>
-          <div className="flex gap-6 overflow-x-auto hide-scrollbar -mx-6 px-6 pb-4">
-            {RAISING_VIBES.map((item, i) => (
-              <div key={i} className="min-w-[280px] md:min-w-[350px] group cursor-pointer">
-                <div className="relative aspect-square rounded-2xl overflow-hidden mb-4">
-                  <img className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" src={item.image} alt={item.title} />
-                  <div className="absolute inset-0 bg-gradient-to-tr from-secondary/40 via-transparent to-transparent"></div>
-                  <div className="absolute bottom-6 left-6">
-                    <span className="text-secondary font-headline text-3xl font-black uppercase tracking-tighter leading-none block mb-2">{item.title}</span>
-                    <span className="text-white/80 font-label text-xs font-bold uppercase tracking-widest">{item.subtitle}</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
 
       </main>
 

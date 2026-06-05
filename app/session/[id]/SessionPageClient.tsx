@@ -77,9 +77,7 @@ export default function SessionPageClient({ session }: { session: SessionData | 
     duration: session.duration,
   } : null;
 
-  // Session number from mock data index (1-based)
-  const sessionIndex = session ? (MOCK_SESSIONS.findIndex((s) => s.id === session.id) + 1) : 0;
-  const sessionLabel = sessionIndex > 0 ? `Session ${String(sessionIndex).padStart(2, "0")}` : session?.type || "Session";
+  const sessionLabel = session?.type === "Live Session" ? "Live" : "Audio";
 
   // Related sessions — exclude current, show up to 3
   const relatedSessions = MOCK_SESSIONS.filter((s) => s.id !== session?.id).slice(0, 3);
@@ -322,13 +320,19 @@ export default function SessionPageClient({ session }: { session: SessionData | 
                 {formatRemaining(displayTime, displayDuration)}
               </span>
             )}
-            {/* Free badge */}
-            {session.isFree && (
+            {session.isFree ? (
               <span
                 className="px-2 py-0.5 text-[10px] font-black tracking-widest uppercase rounded-full"
                 style={{ backgroundColor: "#ADF225", color: "#000" }}
               >
                 Free
+              </span>
+            ) : (
+              <span
+                className="px-2 py-0.5 text-[10px] font-black tracking-widest uppercase rounded-full"
+                style={{ backgroundColor: "rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.5)" }}
+              >
+                Premium
               </span>
             )}
           </div>

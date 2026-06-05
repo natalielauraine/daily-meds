@@ -50,6 +50,7 @@ type Session = {
   video_url: string;
   thumbnail: string;
   is_free: boolean;
+  is_coming_soon: boolean;
   gradient: string;
   status: "draft" | "published";
   created_at: string;
@@ -80,6 +81,7 @@ const EMPTY_FORM = {
   video_url: "",
   thumbnail: "",
   is_free: false,
+  is_coming_soon: false,
   gradient: GRADIENTS[0].value,
   status: "draft" as "draft" | "published",
 };
@@ -143,7 +145,7 @@ export default function AdminContentPage() {
   // ── Sessions list ──────────────────────────────────
   const [sessions, setSessions]         = useState<Session[]>([]);
   const [loading, setLoading]           = useState(true);
-  const [statusFilter, setStatusFilter] = useState<"all" | "draft" | "published">("all");
+  const [statusFilter, setStatusFilter] = useState<"all" | "draft" | "published" | "coming_soon">("all");
   const [search, setSearch]             = useState("");
   const [moodFilter, setMoodFilter]     = useState("All");
 
@@ -226,6 +228,7 @@ export default function AdminContentPage() {
       video_url:     session.video_url || "",
       thumbnail:     session.thumbnail || "",
       is_free:       session.is_free,
+      is_coming_soon: session.is_coming_soon || false,
       gradient:      session.gradient || GRADIENTS[0].value,
       status:        session.status || "draft",
     });
@@ -511,6 +514,7 @@ export default function AdminContentPage() {
       video_url:     form.video_url.trim() || null,
       thumbnail:     form.thumbnail.trim() || null,
       is_free:       form.is_free,
+      is_coming_soon: form.is_coming_soon,
       gradient:      form.gradient,
       status:        form.status,
     };
@@ -573,12 +577,14 @@ export default function AdminContentPage() {
   const filteredSessions = sessions.filter((s) => {
     if (search && !s.title.toLowerCase().includes(search.toLowerCase())) return false;
     if (moodFilter !== "All" && s.mood_category !== moodFilter) return false;
+    if (statusFilter === "coming_soon") return s.is_coming_soon;
     if (statusFilter !== "all" && (s.status || "draft") !== statusFilter) return false;
     return true;
   });
 
-  const draftCount     = sessions.filter((s) => (s.status || "draft") === "draft").length;
-  const publishedCount = sessions.filter((s) => s.status === "published").length;
+  const draftCount      = sessions.filter((s) => (s.status || "draft") === "draft").length;
+  const publishedCount  = sessions.filter((s) => s.status === "published").length;
+  const comingSoonCount = sessions.filter((s) => s.is_coming_soon).length;
 
   return (
     <AdminShell>
@@ -989,6 +995,22 @@ export default function AdminContentPage() {
                 </div>
 
                 <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => setForm({ ...form, is_coming_soon: !form.is_coming_soon })}
+                    className="w-10 h-6 rounded-full transition-colors relative"
+                    style={{ backgroundColor: form.is_coming_soon ? "#ec723d" : "rgba(255,255,255,0.12)" }}
+                    role="switch"
+                    aria-checked={form.is_coming_soon}
+                  >
+                    <div
+                      className="absolute top-0.5 w-5 h-5 rounded-full bg-white transition-transform"
+                      style={{ left: form.is_coming_soon ? "calc(100% - 22px)" : "2px" }}
+                    />
+                  </button>
+                  <span className="text-sm text-white/55">Coming Soon</span>
+                </div>
+
+                <div className="flex items-center gap-3">
                   <span className="text-xs text-white/35">Status</span>
                   <button
                     onClick={() => setForm({ ...form, status: form.status === "draft" ? "published" : "draft" })}
@@ -1260,11 +1282,11 @@ export default function AdminContentPage() {
 
         {/* Status filter pills */}
         <div className="flex items-center gap-2 mb-4 flex-wrap">
-          {(["all", "draft", "published"] as const).map((f) => (
+          {(["all", "draft", "published", "coming_soon"] as const).map((f) => (
             <button
               key={f}
               onClick={() => setStatusFilter(f)}
-              className="px-3 py-1.5 rounded-full text-xs transition-colors capitalize"
+              className="px-3 py-1.5 rounded-full text-xs transition-colors"
               style={{
                 backgroundColor: statusFilter === f ? "rgba(255,65,179,0.15)" : "rgba(255,255,255,0.05)",
                 border: `0.5px solid ${statusFilter === f ? "rgba(255,65,179,0.4)" : "rgba(255,255,255,0.1)"}`,
@@ -1272,9 +1294,10 @@ export default function AdminContentPage() {
                 fontWeight: statusFilter === f ? 500 : 400,
               }}
             >
-              {f === "all"       ? `All (${sessions.length})`       : null}
-              {f === "draft"     ? `Drafts (${draftCount})`         : null}
-              {f === "published" ? `Published (${publishedCount})`  : null}
+              {f === "all"         ? `All (${sessions.length})`            : null}
+              {f === "draft"       ? `Drafts (${draftCount})`              : null}
+              {f === "published"   ? `Published (${publishedCount})`       : null}
+              {f === "coming_soon" ? `Coming Soon (${comingSoonCount})`    : null}
             </button>
           ))}
         </div>
@@ -1310,6 +1333,12 @@ export default function AdminContentPage() {
                       <span className="text-[10px] px-1.5 py-0.5 rounded shrink-0"
                         style={{ backgroundColor: "rgba(251,191,36,0.12)", color: "#FBB924", border: "0.5px solid rgba(251,191,36,0.25)", fontWeight: 500 }}>
                         DRAFT
+                      </span>
+                    )}
+                    {session.is_coming_soon && (
+                      <span className="text-[10px] px-1.5 py-0.5 rounded shrink-0"
+                        style={{ backgroundColor: "rgba(236,114,61,0.12)", color: "#ec723d", border: "0.5px solid rgba(236,114,61,0.25)", fontWeight: 500 }}>
+                        COMING SOON
                       </span>
                     )}
                   </div>

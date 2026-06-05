@@ -54,7 +54,7 @@ const PLANS = [
     price: "£9.99",
     priceNote: "per month · audio only",
     cta: "Join Waitlist",
-    featured: true,
+    featured: false,
     features: [
       "Everything in Free",
       "Full audio library",
@@ -75,7 +75,7 @@ const PLANS = [
     price: "£99.99",
     priceNote: "per year · audio only",
     cta: "Join Waitlist",
-    featured: false,
+    featured: true,
     features: [
       "Everything in Free",
       "Full audio library",
@@ -130,7 +130,7 @@ const PLANS = [
   {
     id: "lifetime",
     name: "The Master",
-    tagline: "Pay once, own it forever — early users only",
+    tagline: "Pay once, own it forever — only 350 spots available",
     price: "£299.99",
     priceNote: "one-time · lifetime access",
     cta: "Claim founder membership",
@@ -141,6 +141,7 @@ const PLANS = [
       "Live sessions with Natalie (coming soon)",
       "Offline downloads (coming soon)",
       "Group meditation rooms (coming soon)",
+      "Discounts on live events",
       "Personal welcome message",
     ],
     locked: [],

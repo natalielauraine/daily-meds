@@ -12,8 +12,9 @@ export default async function FreePage() {
     supabase.auth.getUser(),
     supabase
       .from("sessions")
-      .select("id, title, description, duration, type, mood_category, media_type, is_free, gradient, thumbnail")
+      .select("id, title, description, duration, type, mood_category, media_type, is_free, is_coming_soon, gradient, thumbnail")
       .eq("is_free", true)
+      .neq("is_coming_soon", true)
       .order("created_at", { ascending: false }),
   ]);
   const isLoggedIn = !!user;
