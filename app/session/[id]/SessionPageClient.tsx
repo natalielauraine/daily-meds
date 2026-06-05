@@ -408,20 +408,8 @@ export default function SessionPageClient({ session }: { session: SessionData | 
           {/* ── CONTROLS ── */}
           <div className="flex items-center justify-between">
 
-            {/* Left: secondary actions */}
-            <div className="flex items-center gap-5">
-              {/* Save / bookmark */}
-              <button
-                onClick={handleSave}
-                className="transition-all active:scale-90"
-                style={{ color: savedInApp ? "#ADF225" : "rgba(255,255,255,0.5)" }}
-                aria-label={savedInApp ? "Unsave" : "Save"}
-              >
-                <svg width="22" height="22" viewBox="0 0 24 24" fill={savedInApp ? "currentColor" : "none"} stroke="currentColor" strokeWidth={savedInApp ? "0" : "1.8"}>
-                  <path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"/>
-                </svg>
-              </button>
-            </div>
+            {/* Left: spacer for layout balance */}
+            <div className="w-8" />
 
             {/* Center: primary playback */}
             <div className="flex items-center gap-6 md:gap-10">
@@ -602,6 +590,39 @@ export default function SessionPageClient({ session }: { session: SessionData | 
                 "{session.description}"
               </p>
             </div>
+
+            {/* Favorite toggle */}
+            {isLoggedIn && (
+              <div
+                className="flex items-center justify-between p-5 rounded-2xl mt-6"
+                style={{ backgroundColor: "#1a1919", border: "1px solid rgba(255,255,255,0.05)" }}
+              >
+                <div className="flex items-center gap-3">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill={savedInApp ? "#ADF225" : "none"} stroke={savedInApp ? "#ADF225" : "rgba(255,255,255,0.4)"} strokeWidth="1.8">
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                  </svg>
+                  <div>
+                    <p className="text-sm text-white" style={{ fontWeight: 600 }}>Favorite Ritual</p>
+                    <p className="text-[11px]" style={{ color: "rgba(255,255,255,0.35)" }}>
+                      {savedInApp ? "Saved to your favorites" : "Save to your favorites for easy access"}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={handleSave}
+                  className="w-11 h-6 rounded-full transition-colors relative shrink-0"
+                  style={{ backgroundColor: savedInApp ? "#ADF225" : "rgba(255,255,255,0.12)" }}
+                  role="switch"
+                  aria-checked={savedInApp}
+                  aria-label={savedInApp ? "Remove from favorites" : "Add to favorites"}
+                >
+                  <div
+                    className="absolute top-0.5 w-5 h-5 rounded-full bg-white transition-all"
+                    style={{ left: savedInApp ? "calc(100% - 22px)" : "2px" }}
+                  />
+                </button>
+              </div>
+            )}
 
             {/* Action pills */}
             <div className="flex gap-3 mt-5 flex-wrap">
