@@ -65,7 +65,7 @@ export default function LoggedInHome() {
       });
 
     supabase.from('sessions')
-      .select('id, title, thumbnail, gradient, mood_category')
+      .select('*')
       .eq('status', 'published')
       .eq('is_coming_soon', true)
       .order('created_at', { ascending: false })
@@ -137,21 +137,9 @@ export default function LoggedInHome() {
                 <span className="font-label text-[10px] font-extrabold uppercase text-primary tracking-[0.2em]">New Drops Weekly</span>
               </div>
             </div>
-            <div className="flex gap-6 overflow-x-auto hide-scrollbar -mx-6 px-6 pb-4">
-              {comingSoon.map((item) => (
-                <div key={item.id} className="min-w-[280px] md:min-w-[320px] group relative cursor-not-allowed">
-                  <div className="relative aspect-video rounded-xl overflow-hidden mb-4 grayscale hover:grayscale-0 transition-all duration-700">
-                    {item.thumbnail ? (
-                      <img className="w-full h-full object-cover" src={item.thumbnail} alt={item.title} />
-                    ) : (
-                      <div className="w-full h-full" style={{ background: item.gradient }} />
-                    )}
-                    <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center backdrop-blur-[2px]">
-                      <span className="bg-primary/20 text-primary border border-primary/30 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest backdrop-blur-md">{item.title}</span>
-                      <span className="mt-4 text-[10px] text-zinc-400 font-bold uppercase tracking-[0.3em]">Coming Soon</span>
-                    </div>
-                  </div>
-                </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {comingSoon.map((item: any) => (
+                <LibraryCard key={item.id} session={item as LibrarySession} isPaidMember={false} />
               ))}
             </div>
           </section>

@@ -596,11 +596,11 @@ export default function SessionPageClient({ session }: { session: SessionData | 
         </div>
       </section>
 
-      {/* Lock message — shown below hero when user can't play */}
+      {/* Lock message — centered overlay */}
       {!subscriptionLoading && !canPlay && (
         <div
-          className="relative z-10 max-w-2xl mx-auto p-6 rounded-2xl text-center"
-          style={{ background: "rgba(255,65,142,0.08)", border: "1px solid rgba(255,65,142,0.2)", marginTop: "-40px" }}
+          className="fixed z-40 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-md p-6 rounded-2xl text-center"
+          style={{ background: "rgba(20,20,20,0.92)", border: "1px solid rgba(255,65,142,0.25)", backdropFilter: "blur(16px)" }}
         >
           <p className="text-white font-bold mb-1" style={{ fontFamily: "var(--font-plus-jakarta)", fontWeight: 800 }}>
             {isLoggedIn ? "Premium session" : "Members only"}
