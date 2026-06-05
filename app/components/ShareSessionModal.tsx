@@ -27,7 +27,7 @@ export default function ShareSessionModal({ session, onClose }: Props) {
   const cardRef = useRef<HTMLDivElement>(null);
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-  const shareUrl = `${appUrl}?utm_source=share_card&utm_medium=social&utm_campaign=session_complete${referralCode ? `&ref=${referralCode}` : ""}`;
+  const shareUrl = `${appUrl}/s/${session.id}${referralCode ? `?r=${referralCode}` : ""}`;
   const caption = `Just completed "${session.title}" on @thedailymeds — ${streak} day streak! Try it free: ${shareUrl}`;
 
   useEffect(() => {

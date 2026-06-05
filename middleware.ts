@@ -22,7 +22,7 @@ export async function middleware(request: NextRequest) {
   // public. Everything else redirects to the waitlist.
   // Set NEXT_PUBLIC_DISABLE_WAITLIST_GATE=true in env to bypass (staging).
   if (process.env.NEXT_PUBLIC_DISABLE_WAITLIST_GATE !== "true") {
-    const OPEN_PATHS = ["/early-access", "/admin", "/login", "/auth", "/privacy", "/privacy-policy", "/terms"];
+    const OPEN_PATHS = ["/early-access", "/admin", "/login", "/auth", "/privacy", "/privacy-policy", "/terms", "/s", "/api"];
     const pathname = request.nextUrl.pathname;
     const isOpen = pathname === "/" || OPEN_PATHS.some((p) => pathname.startsWith(p));
     if (!isOpen) {
