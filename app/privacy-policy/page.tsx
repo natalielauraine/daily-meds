@@ -337,7 +337,7 @@ export default function PrivacyPolicyPage() {
             Privacy Policy
           </h1>
           <p className="text-sm mb-2" style={{ color: "rgba(255,255,255,0.35)" }}>
-            Last Updated: November 27, 2025
+            Last Updated: June 5, 2026
           </p>
           <p className="text-sm" style={{ color: "rgba(255,255,255,0.35)" }}>
             Daily Meds

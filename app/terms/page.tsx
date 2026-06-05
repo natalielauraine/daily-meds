@@ -297,7 +297,7 @@ export default function TermsPage() {
             Terms & Conditions
           </h1>
           <p className="text-sm" style={{ color: "rgba(255,255,255,0.35)" }}>
-            Last Updated: November 27, 2025 · Operated by I AM Sound Ltd, Trading as Daily Meds
+            Last Updated: June 5, 2026 · Operated by Daily Meds
           </p>
         </div>
       </section>
