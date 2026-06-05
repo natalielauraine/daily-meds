@@ -62,78 +62,6 @@ function matchesDuration(session: LibrarySession, filter: string): boolean {
   return true;
 }
 
-// ── PLACEHOLDER VIDEO CARDS ───────────────────────────────────────────────────
-// These represent slots where new video sessions will be uploaded.
-
-const PLACEHOLDER_VIDEOS = [
-  { label: "Hungover & Overwhelmed",   gradient: "linear-gradient(135deg, #1a0a18, #0d1220)", accent: "#ff41b3", duration: "12 min" },
-  { label: "After The Sesh",           gradient: "linear-gradient(135deg, #0f1a0a, #1a150d)", accent: "#aaee20", duration: "18 min" },
-  { label: "Can't Sleep",              gradient: "linear-gradient(135deg, #0a1020, #18100a)", accent: "#ec723d", duration: "22 min" },
-  { label: "Anxious & Overstimulated", gradient: "linear-gradient(135deg, #1a0a10, #0a0f1a)", accent: "#ff41b3", duration: "15 min" },
-  { label: "Morning Reset",            gradient: "linear-gradient(135deg, #151a0a, #0d1a18)", accent: "#aaee20", duration: "10 min" },
-  { label: "Heartbroken",              gradient: "linear-gradient(135deg, #1a0a14, #150a1a)", accent: "#ec723d", duration: "20 min" },
-  { label: "Focus Mode",               gradient: "linear-gradient(135deg, #0a181a, #100a1a)", accent: "#ff41b3", duration: "25 min" },
-  { label: "On A Comedown",            gradient: "linear-gradient(135deg, #1a120a, #0a1a14)", accent: "#aaee20", duration: "16 min" },
-];
-
-function PlaceholderCard({ item }: { item: typeof PLACEHOLDER_VIDEOS[number] }) {
-  return (
-    <div className="flex flex-col opacity-50">
-      <div
-        className="relative rounded-[10px] overflow-hidden mb-3"
-        style={{
-          aspectRatio: "16/9",
-          background: item.gradient,
-          border: "1px dashed rgba(255,255,255,0.12)",
-        }}
-      >
-        {/* Centre icon */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div
-            className="w-10 h-10 rounded-full flex items-center justify-center"
-            style={{ border: `1px dashed ${item.accent}40`, background: `${item.accent}10` }}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill={item.accent} opacity={0.5}>
-              <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
-            </svg>
-          </div>
-        </div>
-
-        {/* Coming Soon badge */}
-        <div
-          className="absolute top-2 left-2 text-[9px] px-2 py-0.5 rounded uppercase tracking-widest font-bold"
-          style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.3)", border: "0.5px solid rgba(255,255,255,0.1)" }}
-        >
-          Coming Soon
-        </div>
-
-        {/* Duration */}
-        <div
-          className="absolute bottom-2 left-2 text-[10px] px-1.5 py-0.5 rounded flex items-center gap-1"
-          style={{ background: "rgba(0,0,0,0.4)", color: "rgba(255,255,255,0.4)" }}
-        >
-          <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
-          </svg>
-          {item.duration}
-        </div>
-      </div>
-
-      {/* Info */}
-      <div className="flex flex-col gap-1">
-        <span
-          className="text-[9px] px-2 py-0.5 rounded-full self-start uppercase"
-          style={{ background: `${item.accent}20`, color: item.accent, fontWeight: 700, letterSpacing: "0.04em" }}
-        >
-          {item.label}
-        </span>
-        <div className="h-3.5 rounded w-3/4" style={{ background: "rgba(255,255,255,0.06)" }} />
-        <div className="h-2.5 rounded w-1/2" style={{ background: "rgba(255,255,255,0.04)" }} />
-      </div>
-    </div>
-  );
-}
-
 // ── FILTER PILL ───────────────────────────────────────────────────────────────
 // Small pill button used for mood, duration, and type filters.
 
@@ -385,12 +313,6 @@ export default function LibraryPage() {
             {filtered.map((session) => (
               <LibraryCard key={session.id} session={session} isPaidMember={isPaidMember} />
             ))}
-            {/* Placeholder slots — shown when no filters are active so the grid always looks populated */}
-            {!search && activeMood === "All" && activeDuration === "all" && activeType === "all" &&
-              PLACEHOLDER_VIDEOS.map((item) => (
-                <PlaceholderCard key={item.label} item={item} />
-              ))
-            }
           </div>
         )}
 
