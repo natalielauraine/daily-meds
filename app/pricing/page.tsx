@@ -396,40 +396,6 @@ export default function PricingPage() {
           </div>
         </section>
 
-        {/* ── COMPARISON TABLE ── */}
-        <section className="px-4 sm:px-6 lg:px-8 py-16">
-          <div className="max-w-5xl mx-auto">
-            <p
-              className="text-xs uppercase tracking-widest mb-2 text-center"
-              style={{ fontFamily: "var(--font-space-grotesk)", fontWeight: 500, color: "rgba(255,255,255,0.3)" }}
-            >
-              How we compare
-            </p>
-            <h2
-              className="text-center uppercase mb-10"
-              style={{
-                fontFamily: "var(--font-plus-jakarta)",
-                fontWeight: 800,
-                fontSize: "clamp(1.2rem, 3vw, 1.75rem)",
-                letterSpacing: "-0.01em",
-                color: "#E2E2E2",
-              }}
-            >
-              Why Daily Meds is different
-            </h2>
-            <div className="rounded-2xl overflow-hidden" style={{ border: "0.5px solid rgba(255,255,255,0.08)" }}>
-              <Image
-                src="https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/Pricing%20Differennciator.png"
-                alt="Daily Meds vs Calm vs Insight Timer vs Headspace comparison"
-                width={2106}
-                height={1226}
-                className="w-full h-auto"
-                unoptimized
-              />
-            </div>
-          </div>
-        </section>
-
         {/* ── £1 TRIAL BANNER ── */}
         {showTrial && (
         <section className="px-4 sm:px-6 lg:px-8 pb-10">
@@ -745,6 +711,40 @@ export default function PricingPage() {
                 <path d="M8 5v14l11-7z" />
               </svg>
             </Link>
+          </div>
+        </section>
+
+        {/* ── COMPARISON TABLE ── */}
+        <section className="px-4 sm:px-6 lg:px-8 py-16">
+          <div className="max-w-5xl mx-auto">
+            <p
+              className="text-xs uppercase tracking-widest mb-2 text-center"
+              style={{ fontFamily: "var(--font-space-grotesk)", fontWeight: 500, color: "rgba(255,255,255,0.3)" }}
+            >
+              How we compare
+            </p>
+            <h2
+              className="text-center uppercase mb-10"
+              style={{
+                fontFamily: "var(--font-plus-jakarta)",
+                fontWeight: 800,
+                fontSize: "clamp(1.2rem, 3vw, 1.75rem)",
+                letterSpacing: "-0.01em",
+                color: "#E2E2E2",
+              }}
+            >
+              Why Daily Meds is different
+            </h2>
+            <div className="rounded-2xl overflow-hidden" style={{ border: "0.5px solid rgba(255,255,255,0.08)" }}>
+              <Image
+                src="https://uuglprtvwvumucnkrshj.supabase.co/storage/v1/object/public/share%20cards/Pricing%20Differennciator.png"
+                alt="Daily Meds vs Calm vs Insight Timer vs Headspace comparison"
+                width={2106}
+                height={1226}
+                className="w-full h-auto"
+                unoptimized
+              />
+            </div>
           </div>
         </section>
 
