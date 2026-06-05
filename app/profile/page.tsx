@@ -401,6 +401,16 @@ export default function ProfilePage() {
                   </svg>
                 </Link>
                 <Link
+                  href="/profile/favorites"
+                  className="flex items-center justify-between px-4 py-3 rounded-xl transition-colors hover:bg-white/[0.04]"
+                  style={{ backgroundColor: "#111111" }}
+                >
+                  <span className="text-sm text-white/60" style={{ fontFamily: "var(--font-manrope)" }}>Favorite Rituals</span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="rgba(255,255,255,0.2)">
+                    <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                  </svg>
+                </Link>
+                <Link
                   href="/library"
                   className="flex items-center justify-between px-4 py-3 rounded-xl transition-colors hover:bg-white/[0.04]"
                   style={{ backgroundColor: "#111111" }}
