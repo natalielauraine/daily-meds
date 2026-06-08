@@ -358,22 +358,20 @@ export default function ProfilePage() {
       // ── STATS DATA ──
       const { data: progress } = await supabase
         .from("user_progress")
-        .select("completed, updated_at, sessions(title, duration, mood_category)")
+        .select("completed, updated_at, session_id")
         .eq("user_id", u.id);
 
       if (progress && progress.length > 0) {
-        type ProgressRow = {
-          completed: boolean;
-          updated_at: string;
-          sessions: { title: string; duration: string | number; mood_category: string } | null | { title: string; duration: string | number; mood_category: string }[];
-        };
+        const sessionIds = Array.from(new Set(progress.map((p: { session_id: string }) => p.session_id).filter(Boolean)));
+        const { data: sessions } = await supabase
+          .from("sessions")
+          .select("id, mood_category")
+          .in("id", sessionIds);
+        const moodMap = new Map((sessions || []).map((s: { id: string; mood_category: string }) => [s.id, s.mood_category]));
 
         const rows: { completed: boolean; updated_at: string; mood_category: string }[] = [];
-        for (const p of progress as unknown as ProgressRow[]) {
-          if (!p.sessions) continue;
-          const s = Array.isArray(p.sessions) ? p.sessions[0] : p.sessions;
-          if (!s) continue;
-          rows.push({ completed: p.completed, updated_at: p.updated_at, mood_category: s.mood_category });
+        for (const p of progress as { completed: boolean; updated_at: string; session_id: string }[]) {
+          rows.push({ completed: p.completed, updated_at: p.updated_at, mood_category: moodMap.get(p.session_id) || "Unknown" });
         }
 
         const completedRows = rows.filter((r) => r.completed);

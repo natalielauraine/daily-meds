@@ -20,20 +20,7 @@ type ContinueItem = {
   percent: number;
 };
 
-// Shape of a joined row from Supabase — sessions comes back as an object (one-to-one FK)
-type ProgressRow = {
-  session_id: string;
-  position_seconds: number;
-  duration_seconds: number;
-  updated_at: string;
-  sessions: {
-    title: string;
-    duration: string;
-    media_type: string;
-    gradient: string;
-    thumbnail?: string;
-  } | null | { title: string; duration: string; media_type: string; gradient: string; thumbnail?: string }[];
-};
+
 
 export default function ContinueWatchingRow() {
   const [items, setItems] = useState<ContinueItem[]>([]);
@@ -47,26 +34,27 @@ export default function ContinueWatchingRow() {
       // Not logged in — nothing to show
       if (!user) { setLoading(false); return; }
 
-      // Fetch in-progress sessions joined with session details, most recent first.
-      // The join (sessions(...)) works because user_progress.session_id is a foreign key to sessions.id.
       const { data } = await supabase
         .from("user_progress")
-        .select("session_id, position_seconds, duration_seconds, updated_at, sessions(title, duration, media_type, gradient, thumbnail)")
+        .select("session_id, position_seconds, duration_seconds, updated_at")
         .eq("user_id", user.id)
         .eq("completed", false)
-        .gt("position_seconds", 10)   // Skip sessions barely touched (under 10 seconds)
+        .gt("position_seconds", 10)
         .order("updated_at", { ascending: false })
         .limit(10);
 
-      if (!data) { setLoading(false); return; }
+      if (!data || data.length === 0) { setLoading(false); return; }
 
-      // Build the list — skip any rows where the session join came back empty.
-      // Supabase can return the joined row as an object or a single-item array depending on FK setup.
+      const sessionIds = data.map((r: { session_id: string }) => r.session_id).filter(Boolean);
+      const { data: sessions } = await supabase
+        .from("sessions")
+        .select("id, title, duration, media_type, gradient, thumbnail")
+        .in("id", sessionIds);
+      const sessionMap = new Map((sessions || []).map((s: { id: string; title: string; duration: number; media_type: string; gradient: string; thumbnail: string }) => [s.id, s]));
+
       const matched: ContinueItem[] = [];
-      for (const row of data as ProgressRow[]) {
-        if (!row.sessions) continue;
-        // Normalise: handle both object and array shapes
-        const s = Array.isArray(row.sessions) ? row.sessions[0] : row.sessions;
+      for (const row of data as { session_id: string; position_seconds: number; duration_seconds: number; updated_at: string }[]) {
+        const s = sessionMap.get(row.session_id);
         if (!s) continue;
         const percent = row.duration_seconds > 0
           ? Math.min(99, Math.round((row.position_seconds / row.duration_seconds) * 100))

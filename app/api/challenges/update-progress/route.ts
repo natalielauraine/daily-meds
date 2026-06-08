@@ -91,16 +91,20 @@ export async function POST(req: NextRequest) {
     } else if (challenge.challenge_type === "mood") {
       // Count how many unique mood categories the user has tried
       // This requires querying user_progress + sessions table
-      const { data: moodData } = await supabase
+      const { data: moodProgress } = await supabase
         .from("user_progress")
-        .select("sessions(mood_category)")
+        .select("session_id")
         .eq("user_id", user.id)
         .eq("completed", true);
 
+      const moodSessionIds = Array.from(new Set((moodProgress ?? []).map((r: { session_id: string }) => r.session_id).filter(Boolean)));
+      const { data: moodSessions } = moodSessionIds.length > 0
+        ? await supabase.from("sessions").select("mood_category").in("id", moodSessionIds)
+        : { data: [] };
+
       const moods = new Set<string>();
-      (moodData ?? []).forEach((row) => {
-        const m = (row.sessions as { mood_category?: string } | null)?.mood_category;
-        if (m) moods.add(m);
+      (moodSessions ?? []).forEach((row: { mood_category?: string }) => {
+        if (row.mood_category) moods.add(row.mood_category);
       });
       // Also include the current session's mood category
       if (moodCategory) moods.add(moodCategory);
