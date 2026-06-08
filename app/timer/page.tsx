@@ -5,18 +5,11 @@ import Link from "next/link";
 import Image from "next/image";
 import { createClient } from "../../lib/supabase-browser";
 import type { User } from "@supabase/supabase-js";
-import Logo from "../components/Logo";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
 const DURATIONS = [1, 5, 10, 20, 30];
 
-const TRENDING = [
-  { title: "Hungover", tag: "Guided Release · 20 min", gradient: "linear-gradient(160deg, #2a0800 0%, #ec723d 100%)", href: "/signup" },
-  { title: "Anxious", tag: "Breathwork · 18 min", gradient: "linear-gradient(160deg, #2a0018 0%, #ff41b3 100%)", href: "/signup" },
-  { title: "Guilty", tag: "Guided Meditation · 15 min", gradient: "linear-gradient(160deg, #1a1500 0%, #f4e71d 100%)", href: "/signup" },
-  { title: "Daily Ritual", tag: "Morning Reset · 10 min", gradient: "linear-gradient(160deg, #0a1800 0%, #aaee20 100%)", href: "/signup" },
-  { title: "Snuggle Down", tag: "Sleep Audio · 45 min", gradient: "linear-gradient(160deg, #00050f 0%, #3b82f6 100%)", href: "/signup" },
-  { title: "Heartbroken", tag: "Emotional Release · 22 min", gradient: "linear-gradient(160deg, #150000 0%, #dc2626 100%)", href: "/signup" },
-];
 
 function pad(n: number) {
   return String(n).padStart(2, "0");
@@ -93,7 +86,7 @@ export default function TimerPage() {
   const progress = 1 - secondsLeft / (selectedDuration * 60);
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ backgroundColor: "#001716", color: "#ffffff", fontFamily: "var(--font-manrope)" }}>
+    <div className="min-h-screen flex flex-col" style={{ backgroundColor: "#131313", color: "#ffffff", fontFamily: "var(--font-manrope)" }}>
 
       {/* ── FIXED BACKGROUND ──────────────────────────────────────────── */}
       <div className="fixed inset-0 z-0 overflow-hidden">
@@ -111,46 +104,7 @@ export default function TimerPage() {
       <div className="fixed top-1/4 -right-20 w-96 h-96 rounded-full pointer-events-none" style={{ background: "rgba(255,65,142,0.08)", filter: "blur(120px)" }} />
       <div className="fixed bottom-1/4 -left-20 w-80 h-80 rounded-full pointer-events-none" style={{ background: "rgba(236,114,61,0.08)", filter: "blur(100px)" }} />
 
-      {/* ── HEADER ─────────────────────────────────────────────────────── */}
-      <header
-        className="fixed top-0 w-full z-50 flex items-center justify-between px-6 py-4"
-        style={{
-          background: "rgba(0,0,0,0.5)",
-          backdropFilter: "blur(16px)",
-          borderBottom: "1px solid rgba(255,255,255,0.08)",
-        }}
-      >
-        <Logo href="/" size="md" />
-        <nav className="hidden md:flex items-center gap-8">
-          {[
-            { label: "Timer", href: "/timer" },
-            { label: "Live", href: "/live" },
-            { label: "About", href: "/about" },
-            { label: "Group Meds", href: "/rooms" },
-          ].map((item) => (
-            <Link
-              key={item.label}
-              href={item.href}
-              className="text-sm font-bold transition-colors hover:text-white"
-              style={{
-                color: item.label === "Timer" ? "#aaee20" : "rgba(255,255,255,0.55)",
-                fontFamily: "var(--font-lexend)",
-                borderBottom: item.label === "Timer" ? "2px solid #aaee20" : "none",
-                paddingBottom: "2px",
-              }}
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-        <Link
-          href={user ? "/profile" : "/login"}
-          className="px-6 py-2 rounded-full text-sm font-bold uppercase tracking-wide transition-all hover:opacity-90"
-          style={{ backgroundColor: "#ff41b3", color: "#fff", fontFamily: "var(--font-lexend)" }}
-        >
-          {user ? "My Account" : "Sign In"}
-        </Link>
-      </header>
+      <Navbar />
 
       {/* ── MAIN CONTENT ───────────────────────────────────────────────── */}
       <main className="relative z-10 flex-grow flex flex-col items-center justify-center px-4 pt-28 pb-16">
@@ -332,52 +286,6 @@ export default function TimerPage() {
           ) : null}
         </div>
 
-        {/* ── TRENDING SESSIONS ──────────────────────────────────────── */}
-        <section className="w-full max-w-5xl mt-24">
-          <div className="flex items-end justify-between mb-8 px-2">
-            <h2
-              className="text-2xl uppercase tracking-tighter"
-              style={{ fontFamily: "var(--font-lexend)", fontWeight: 900, color: "#aaee20" }}
-            >
-              Trending Sessions
-            </h2>
-            <Link
-              href="/library"
-              className="text-xs font-bold uppercase tracking-widest hover:text-white transition-colors"
-              style={{ color: "rgba(255,255,255,0.4)", fontFamily: "var(--font-lexend)" }}
-            >
-              View All →
-            </Link>
-          </div>
-          <div className="flex gap-4 pb-4" style={{ overflowX: "auto", scrollSnapType: "x mandatory" }}>
-            {TRENDING.map((item) => (
-              <Link
-                key={item.title}
-                href={item.href}
-                className="group shrink-0"
-                style={{ minWidth: "200px", scrollSnapAlign: "start" }}
-              >
-                <div
-                  className="relative overflow-hidden rounded-xl"
-                  style={{ aspectRatio: "2/3", border: "0.5px solid rgba(255,255,255,0.08)" }}
-                >
-                  <div
-                    className="absolute inset-0 transition-transform duration-500 group-hover:scale-105"
-                    style={{ background: item.gradient }}
-                  />
-                  <div
-                    className="absolute bottom-0 left-0 right-0 p-4"
-                    style={{ background: "linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%)" }}
-                  >
-                    <p className="text-xs uppercase tracking-widest font-bold mb-1" style={{ color: "rgba(255,255,255,0.5)" }}>{item.tag}</p>
-                    <p className="text-sm font-black uppercase group-hover:text-[#aaee20] transition-colors" style={{ fontFamily: "var(--font-lexend)" }}>{item.title}</p>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </section>
-
         {/* ── SIGN UP BOX (only if not logged in) ───────────────────── */}
         {authChecked && !user && (
           <section className="w-full max-w-2xl mt-16">
@@ -418,35 +326,7 @@ export default function TimerPage() {
         )}
       </main>
 
-      {/* ── FOOTER ─────────────────────────────────────────────────────── */}
-      <footer
-        className="relative z-10 w-full py-8 flex flex-col md:flex-row items-center justify-between px-8 gap-4"
-        style={{
-          background: "rgba(0,0,0,0.7)",
-          backdropFilter: "blur(16px)",
-          borderTop: "1px solid rgba(255,255,255,0.05)",
-        }}
-      >
-        <Logo href="/" size="sm" />
-        <p className="text-sm" style={{ color: "rgba(255,255,255,0.3)", fontFamily: "var(--font-manrope)" }}>
-          © {new Date().getFullYear()} The Daily Meds. Breathe deeply.
-        </p>
-        <div className="flex gap-6">
-          {[
-            { label: "Privacy Policy", href: "/privacy" },
-            { label: "Terms of Service", href: "/terms" },
-          ].map((link) => (
-            <Link
-              key={link.label}
-              href={link.href}
-              className="text-sm hover:text-white transition-colors"
-              style={{ color: "rgba(255,255,255,0.35)" }}
-            >
-              {link.label}
-            </Link>
-          ))}
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

@@ -20,6 +20,7 @@ export default function Navbar() {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   // Controls whether the navbar has scrolled and should show the solid bg
   const [scrolled, setScrolled] = useState(false);
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setUser(data.user));
@@ -60,22 +61,25 @@ export default function Navbar() {
       }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        <div className="relative flex items-center justify-between h-14">
 
           {/* ── Logo ── */}
           <Logo href="/" size="sm" />
 
-          {/* ── Desktop nav links ── */}
-          <div className="hidden md:flex items-center gap-5">
+          {/* ── Desktop nav links — absolutely centered ── */}
+          <div className="hidden md:flex items-center gap-5 absolute left-1/2 -translate-x-1/2 h-full" style={{ paddingTop: 12 }}>
             {[
               { href: "/", label: "Home" },
+              { href: "/free", label: "Free" },
               { href: "/live", label: "Live" },
+              { href: "/timer", label: "Breathe", requiresAuth: true },
               { href: "/pricing", label: "Pricing" },
               { href: "/about", label: "About" },
-            ].map(({ href, label }) => (
+            ].map(({ href, label, requiresAuth }) => (
               <Link
-                key={href}
-                href={href}
+                key={label}
+                href={requiresAuth && !user ? "#" : href}
+                onClick={requiresAuth && !user ? (e) => { e.preventDefault(); setShowLoginPrompt(true); } : undefined}
                 className="text-xs uppercase tracking-widest transition-colors duration-200"
                 style={{
                   fontFamily: "var(--font-space-grotesk)",
@@ -220,17 +224,21 @@ export default function Navbar() {
         >
           {[
             { href: "/", label: "Home" },
+            { href: "/free", label: "Free" },
             { href: "/live", label: "Live" },
-            { href: "/free", label: "Free Sessions" },
+            { href: "/timer", label: "Breathe", requiresAuth: true },
             { href: "/pricing", label: "Pricing" },
             { href: "/about", label: "About" },
-          ].map(({ href, label }) => (
+          ].map(({ href, label, requiresAuth }) => (
             <Link
-              key={href}
-              href={href}
+              key={label}
+              href={requiresAuth && !user ? "#" : href}
+              onClick={(e) => {
+                if (requiresAuth && !user) { e.preventDefault(); setMobileMenuOpen(false); setShowLoginPrompt(true); }
+                else setMobileMenuOpen(false);
+              }}
               className="text-sm uppercase tracking-widest transition-colors"
               style={{ fontFamily: "var(--font-space-grotesk)", fontWeight: 500, color: "rgba(255,255,255,0.6)" }}
-              onClick={() => setMobileMenuOpen(false)}
             >
               {label}
             </Link>
@@ -264,6 +272,65 @@ export default function Navbar() {
                 </Link>
               </>
             )}
+          </div>
+        </div>
+      )}
+      {/* ── Login prompt modal for Breathe ── */}
+      {showLoginPrompt && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center px-4"
+          style={{ background: "rgba(0,0,0,0.7)", backdropFilter: "blur(8px)" }}
+          onClick={() => setShowLoginPrompt(false)}
+        >
+          <div
+            className="rounded-2xl p-8 max-w-sm w-full text-center relative"
+            style={{ background: "#1F1F1F", border: "1px solid rgba(255,255,255,0.1)" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setShowLoginPrompt(false)}
+              className="absolute top-4 right-4"
+              style={{ color: "rgba(255,255,255,0.4)" }}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M18 6L6 18M6 6l12 12" />
+              </svg>
+            </button>
+            <div
+              className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-5"
+              style={{ background: "linear-gradient(135deg, #adf225, #059669)" }}
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-5.5-2.5l7.51-3.49L17.5 6.5 9.99 9.99 6.5 17.5zm5.5-6.6c.61 0 1.1.49 1.1 1.1s-.49 1.1-1.1 1.1-1.1-.49-1.1-1.1.49-1.1 1.1-1.1z"/>
+              </svg>
+            </div>
+            <h3
+              className="text-xl text-white mb-2 uppercase"
+              style={{ fontFamily: "var(--font-plus-jakarta)", fontWeight: 800 }}
+            >
+              Breathe with us
+            </h3>
+            <p className="text-sm mb-6" style={{ color: "rgba(255,255,255,0.45)" }}>
+              Log in or create a free account to access the breathing timer.
+            </p>
+            <div className="flex flex-col gap-3">
+              <Link
+                href="/login"
+                className="w-full py-3 rounded-full text-sm text-white text-center transition-all hover:opacity-90"
+                style={{ background: "#ff41b3", fontFamily: "var(--font-space-grotesk)", fontWeight: 700 }}
+                onClick={() => setShowLoginPrompt(false)}
+              >
+                Log in
+              </Link>
+              <Link
+                href="/signup"
+                className="w-full py-3 rounded-full text-sm text-center transition-all hover:bg-white/[0.06]"
+                style={{ border: "1px solid rgba(255,255,255,0.15)", color: "rgba(255,255,255,0.6)", fontFamily: "var(--font-space-grotesk)", fontWeight: 700 }}
+                onClick={() => setShowLoginPrompt(false)}
+              >
+                Create free account
+              </Link>
+            </div>
           </div>
         </div>
       )}

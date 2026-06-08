@@ -19,7 +19,8 @@
       "Bash(curl -s http://localhost:3001:*)",
       "Bash(openssl rand:*)",
       "Bash(pkill -f \"next dev\":*)",
-      "Bash(pkill -f \"next-server\":*)"
+      "Bash(pkill -f \"next-server\":*)",
+      "Bash(fuser -k 3001/tcp:*)"
     ],
     "deny": [
       "Bash(git push origin main:*)",

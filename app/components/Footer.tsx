@@ -44,6 +44,7 @@ export default function Footer() {
               { href: "/library", label: "Library" },
               { href: "/live", label: "Live Sessions" },
               { href: "/free", label: "Free Sessions" },
+              { href: "/timer", label: "Breathe" },
             ].map(({ href, label }) => (
               <Link
                 key={href}
@@ -89,7 +90,8 @@ export default function Footer() {
               About
             </h4>
             {[
-              { href: "/about", label: "About Natalie" },
+              { href: "/about", label: "About" },
+              { href: "/founder", label: "About Natalie" },
               { href: "/testimonials", label: "Testimonials" },
               { href: "/review", label: "Leave a review" },
             ].map(({ href, label }) => (

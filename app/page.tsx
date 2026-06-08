@@ -380,9 +380,6 @@ export default function Home() {
               real life.
             </span>
           </h2>
-          <p style={{ color: "#ffffff", lineHeight: 1.7, maxWidth: "480px" }}>
-            Full audio library access — new drops every week — for 14 days. Then £9.99/mo. Cancel before day 7 and pay nothing more.
-          </p>
           <div className="flex flex-col sm:flex-row gap-3 items-center">
             <Link
               href="/login"
@@ -405,9 +402,6 @@ export default function Home() {
               Or try free sessions →
             </Link>
           </div>
-          <p className="text-xs" style={{ color: "#ffffff" }}>
-            No commitment. Cancel any time before day 7.
-          </p>
         </div>
       </section>
 

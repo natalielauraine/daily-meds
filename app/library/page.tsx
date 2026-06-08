@@ -28,6 +28,10 @@ const MOOD_CATEGORIES = [
   "Low Energy",
   "Morning Reset",
   "Focus Mode",
+  "Relationships",
+  "Friendships",
+  "Family",
+  "Work",
 ];
 
 const DURATION_OPTIONS = [
@@ -106,17 +110,18 @@ export default function LibraryPage() {
   const [activeMood, setActiveMood] = useState("All");
   const [activeDuration, setActiveDuration] = useState("all");
   const [activeType, setActiveType] = useState("all");
+  const [freeOnly, setFreeOnly] = useState(false);
 
-  // On mount, check if there's a ?mood= query param from the homepage feeling chips
+  // On mount, check if there's a ?mood= or ?free= query param from the homepage
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const qMood = params.get("mood");
     if (qMood) {
-      // Find a matching mood from the categories to handle exact casing, or just set it
       const match = MOOD_CATEGORIES.find(m => m.toLowerCase() === qMood.toLowerCase());
       if (match) setActiveMood(match);
       else setActiveMood(qMood);
     }
+    if (params.get("free") === "true") setFreeOnly(true);
   }, []);
 
   // Load sessions and subscription status in parallel on mount
@@ -158,6 +163,7 @@ export default function LibraryPage() {
     if (activeMood !== "All" && s.mood_category !== activeMood) return false;
     if (!matchesDuration(s, activeDuration)) return false;
     if (activeType !== "all" && s.media_type !== activeType) return false;
+    if (freeOnly && !s.is_free) return false;
     return true;
   }).sort((a, b) => {
     if (!isPaidMember) {
@@ -172,6 +178,7 @@ export default function LibraryPage() {
     activeMood !== "All",
     activeDuration !== "all",
     activeType !== "all",
+    freeOnly,
   ].filter(Boolean).length;
 
   function clearAllFilters() {
@@ -179,6 +186,7 @@ export default function LibraryPage() {
     setActiveMood("All");
     setActiveDuration("all");
     setActiveType("all");
+    setFreeOnly(false);
   }
 
   return (
@@ -237,8 +245,21 @@ export default function LibraryPage() {
         {/* ── FILTERS ── */}
         <div className="flex flex-col gap-3 mb-8">
 
-          {/* Mood pills — horizontally scrollable on mobile */}
+          {/* Free content toggle + Mood pills — horizontally scrollable on mobile */}
           <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none" style={{ scrollbarWidth: "none" }}>
+            <button
+              onClick={() => setFreeOnly(!freeOnly)}
+              className="shrink-0 px-4 py-2 rounded-full text-xs uppercase tracking-widest transition-all duration-200"
+              style={{
+                fontFamily: "var(--font-space-grotesk)",
+                fontWeight: 700,
+                background: freeOnly ? "linear-gradient(135deg, #adf225, #059669)" : "rgba(173,242,37,0.1)",
+                color: freeOnly ? "#000" : "#adf225",
+                border: freeOnly ? "none" : "1px solid rgba(173,242,37,0.25)",
+              }}
+            >
+              Free Content
+            </button>
             {MOOD_CATEGORIES.map((mood) => (
               <FilterPill
                 key={mood}

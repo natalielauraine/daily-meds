@@ -1,6 +1,7 @@
 import Link from "next/link";
-import Logo from "../components/Logo";
 import dynamic from "next/dynamic";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 import { createClient } from "../../lib/supabase-server";
 import { LibraryCard, LibrarySession } from "../components/LibraryCard";
 
@@ -21,42 +22,9 @@ export default async function FreePage() {
   const sessions = (freeSessions ?? []) as LibrarySession[];
 
   return (
-    <div style={{ backgroundColor: "#010101", color: "#ffffff", fontFamily: "var(--font-manrope)", minHeight: "100vh" }}>
+    <div style={{ backgroundColor: "#131313", color: "#ffffff", fontFamily: "var(--font-manrope)", minHeight: "100vh" }}>
 
-      {/* ── HEADER ─────────────────────────────────────────────────────── */}
-      <header
-        className="sticky top-0 z-50 flex items-center justify-between px-6 py-4"
-        style={{
-          backgroundColor: "rgba(1,1,1,0.9)",
-          backdropFilter: "blur(20px)",
-          borderBottom: "0.5px solid rgba(255,255,255,0.06)",
-        }}
-      >
-        <Logo href="/" size="md" />
-        <nav className="hidden md:flex items-center gap-7">
-          {[
-            { label: "Home", href: "/" },
-            { label: "Breathe", href: "/timer" },
-            { label: "Pricing", href: "/pricing" },
-          ].map((item) => (
-            <Link
-              key={item.label}
-              href={item.href}
-              className="text-xs uppercase tracking-widest font-bold transition-colors hover:text-white"
-              style={{ color: "rgba(255,255,255,0.5)", fontFamily: "var(--font-lexend)" }}
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-        <Link
-          href={isLoggedIn ? "/library" : "/early-access"}
-          className="px-5 py-2 rounded-full text-sm font-bold uppercase transition-transform hover:scale-105"
-          style={{ backgroundColor: "#ff41b3", color: "#fff", fontFamily: "var(--font-lexend)" }}
-        >
-          Join Waitlist
-        </Link>
-      </header>
+      <Navbar />
 
       {/* ── HERO ───────────────────────────────────────────────────────── */}
       <section
@@ -78,8 +46,8 @@ export default async function FreePage() {
               fontSize: "clamp(2.4rem, 7vw, 5rem)",
             }}
           >
-            Free content for when{" "}
-            <span className="italic" style={{ color: "#aaee20" }}>life&apos;s difficult</span>
+            Free Content for When{" "}
+            <span className="italic" style={{ color: "#aaee20" }}>Life Gets Difficult</span>
           </h1>
           <p className="text-lg max-w-xl leading-relaxed" style={{ color: "#adaaaa" }}>
             Add your email to unlock any session. No subscription required — just real support, right now.
@@ -158,8 +126,8 @@ export default async function FreePage() {
             >
               Crisis Meditations
             </h2>
-            <p className="text-sm" style={{ color: "rgba(255,255,255,0.45)" }}>
-              For the moments you need something right now. Hover to preview.
+            <p className="text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.45)" }}>
+              Coming soon. This free content is here for moments of deep distress. If you are in a crisis situation, these meditations have been designed to help you regulate your nervous system. They will always be free on The Daily Meds.
             </p>
           </div>
 
@@ -191,50 +159,20 @@ export default async function FreePage() {
             Unlock the full library, with sessions added every week — for just{" "}
             <strong style={{ color: "#ffffff" }}>£9.99/month</strong>. Cancel anytime.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md justify-center">
-            <Link
-              href={isLoggedIn ? "/library" : "/early-access"}
-              className="flex-1 text-center px-8 py-4 rounded-full font-black uppercase tracking-wide text-sm transition-all hover:scale-105"
-              style={{ backgroundColor: "#ff41b3", color: "#fff", fontFamily: "var(--font-lexend)", boxShadow: "0 0 24px rgba(255,65,179,0.35)" }}
-            >
-              Start Full Access
-            </Link>
-            <Link
-              href="/pricing"
-              className="flex-1 text-center px-8 py-4 rounded-full font-bold uppercase tracking-wide text-sm transition-all hover:bg-white/10"
-              style={{ border: "1px solid rgba(255,255,255,0.15)", color: "rgba(255,255,255,0.7)", fontFamily: "var(--font-lexend)" }}
-            >
-              See Pricing
-            </Link>
-          </div>
+          <Link
+            href="/pricing"
+            className="px-12 py-4 rounded-full font-black uppercase tracking-wide text-sm transition-all hover:scale-105"
+            style={{ backgroundColor: "#ff41b3", color: "#fff", fontFamily: "var(--font-lexend)", boxShadow: "0 0 24px rgba(255,65,179,0.35)" }}
+          >
+            Get Full Access Now
+          </Link>
           <p className="text-xs" style={{ color: "rgba(255,255,255,0.3)" }}>
             No commitment. Cancel anytime. Trusted by thousands.
           </p>
         </div>
       </section>
 
-      {/* ── FOOTER ─────────────────────────────────────────────────────── */}
-      <footer
-        className="py-10 px-6"
-        style={{ borderTop: "0.5px solid rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.35)" }}
-      >
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <Logo href="/" size="sm" />
-          <div className="flex items-center gap-6 text-xs">
-            {[
-              { label: "Privacy", href: "/privacy" },
-              { label: "Terms", href: "/terms" },
-              { label: "Pricing", href: "/pricing" },
-              { label: "About", href: "/about" },
-            ].map((link) => (
-              <Link key={link.label} href={link.href} className="hover:text-white transition-colors">
-                {link.label}
-              </Link>
-            ))}
-          </div>
-          <p className="text-xs">© {new Date().getFullYear()} The Daily Meds</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

@@ -27,37 +27,6 @@ function SectionLabel({ children }: { children: string }) {
   );
 }
 
-// ── HOW IT WORKS STEP ────────────────────────────────────────────────────────
-
-function Step({
-  number,
-  title,
-  description,
-  gradient,
-}: {
-  number: string;
-  title: string;
-  description: string;
-  gradient: string;
-}) {
-  return (
-    <div className="flex flex-col items-start gap-4">
-      {/* Step number circle */}
-      <div
-        className="w-12 h-12 rounded-full flex items-center justify-center text-white text-sm shrink-0"
-        style={{ background: gradient, fontWeight: 500 }}
-      >
-        {number}
-      </div>
-      <div>
-        <h3 className="text-white text-base mb-2" style={{ fontWeight: 500 }}>
-          {title}
-        </h3>
-        <p className="text-sm text-white/45 leading-relaxed">{description}</p>
-      </div>
-    </div>
-  );
-}
 
 // ── PAGE ──────────────────────────────────────────────────────────────────────
 
@@ -100,7 +69,7 @@ export default function AboutPage() {
             className="text-xs text-white/35 mb-4"
             style={{ letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 500 }}
           >
-            Natalie Lauraine
+            About
           </p>
 
           <h1
@@ -116,151 +85,217 @@ export default function AboutPage() {
           </p>
         </section>
 
-        {/* ── 2. THE STORY ─────────────────────────────────────── */}
-        <section className="w-full max-w-3xl mx-auto px-4 sm:px-6 py-20">
-          <div
-            className="rounded-xl p-8 sm:p-12"
-            style={{ backgroundColor: "#1F1F1F", border: "1px solid rgba(255,255,255,0.07)" }}
-          >
-            <SectionLabel>The story</SectionLabel>
-            <h2 className="text-2xl sm:text-3xl text-white mb-8 uppercase" style={{ fontFamily: "var(--font-plus-jakarta)", fontWeight: 800 }}>
-              Why I built this
-            </h2>
-
-            <div className="flex flex-col gap-5 text-white/55 leading-relaxed text-sm sm:text-base">
-              <p>
-                I built The Daily Meds with AI after years of it living in my head as one of those ideas filed under &ldquo;one day.&rdquo; I&apos;d been pushing too hard for too long, pulled in too many directions, and finally just sat down and did it. I wasn&apos;t in crisis. I was just done waiting. Most meditation apps have that generic wellness edge — zen, spiritual, or worse, corporate — like they were made by someone who has never actually had a problem and just wants to make everything feel calm. But the world right now is genuinely chaotic, and we need something more honest and more grounded to cope with the lives we are actually living.
-              </p>
-              <p>
-                I&apos;d been hosting meditations on Insight Timer since 2019. I love that platform, but it gives creators no direct access to their own audience, and you can&apos;t promote anything else you do through it. I could see from messages that people were using my meditations after nights out, during comedowns, in the middle of anxiety spirals, before big decisions, and after losses. People aren&apos;t meditating in quiet rooms with candles. Most of us never have. We meditate in bed with our hearts racing, in a festival toilet when we&apos;ve done too much and need five minutes to come back to ourselves, or in the back of a taxi trying to hold it together. Nobody had made anything for that. I wanted to fill that gap and meet people exactly where they are.
-              </p>
-              <p>
-                I tried everything that existed. The gentle voices telling me to imagine a peaceful meadow when what I needed was someone to just help me breathe. The clinical apps that felt like homework. The spiritual ones that required beliefs I didn&apos;t hold. None of it was built for real life. Especially not the messy parts.
-              </p>
-              <p>
-                So in November 2025, with no technical background, I built the first version myself on Lovable. Ten days. I figured if I could feel my way through the hard nights and life&apos;s most awkward moments, I could figure out vibe coding. Then I switched to Claude Code for phase two, tackled Next.js, and built the whole thing again from scratch. If you&apos;re reading this, it means we went live. That one felt good.
-              </p>
-            </div>
-
-            {/* Pull quote */}
+        {/* ── 2. THE FOUNDER ────────────────────────────────────── */}
+        <section className="w-full max-w-6xl mx-auto px-4 sm:px-6 py-20">
+          <Link href="/founder" className="block group">
             <div
-              className="mt-10 pl-5 border-l-2"
-              style={{ borderColor: "rgba(255,65,179,0.4)" }}
+              className="rounded-xl overflow-hidden flex flex-col lg:flex-row transition-all duration-300 group-hover:shadow-[0_0_40px_rgba(255,65,179,0.1)]"
+              style={{ backgroundColor: "#1F1F1F", border: "1px solid rgba(255,255,255,0.07)" }}
             >
-              <p className="text-white/70 text-base sm:text-lg leading-relaxed italic" style={{ fontWeight: 400 }}>
-                &ldquo;I didn&apos;t build this because I had everything figured out. I built it because I needed it and it didn&apos;t exist.&rdquo;
-              </p>
-              <p className="text-xs text-white/30 mt-3">— Natalie Lauraine, founder</p>
-            </div>
-          </div>
-        </section>
-
-        {/* ── 3. THE MISSION ───────────────────────────────────── */}
-        <section className="w-full max-w-3xl mx-auto px-4 sm:px-6 pb-20">
-          <SectionLabel>The mission</SectionLabel>
-          <h2 className="text-2xl sm:text-3xl text-white mb-6" style={{ fontWeight: 500 }}>
-            Practical tools for real life
-          </h2>
-          <p className="text-white/45 leading-relaxed text-sm sm:text-base mb-10 max-w-2xl">
-            Daily Meds is not a spiritual practice. It&apos;s not about enlightenment, chakras,
-            or becoming a calmer person. It&apos;s nervous system regulation for people who
-            live full lives — including the messy bits.
-          </p>
-
-          {/* Three mission pillars */}
-          <div className="grid sm:grid-cols-3 gap-4">
-            {[
-              {
-                icon: (
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-5.5-2.5l7.51-3.49L17.5 6.5 9.99 9.99 6.5 17.5zm5.5-6.6c.61 0 1.1.49 1.1 1.1s-.49 1.1-1.1 1.1-1.1-.49-1.1-1.1.49-1.1 1.1-1.1z"/>
-                  </svg>
-                ),
-                gradient: "linear-gradient(135deg, #ff41b3, #ec723d)",
-                title: "Practical",
-                body: "Every session is built around a specific feeling — not a vague wellness goal. Hungover. Anxious. Heartbroken. You pick the moment, we have the session.",
-              },
-              {
-                icon: (
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/>
-                  </svg>
-                ),
-                gradient: "linear-gradient(135deg, #ec723d, #f4e71d)",
-                title: "Grounded",
-                body: "No woo. No jargon. No pretending you need to be spiritual to regulate your nervous system. These are real techniques that actually work.",
-              },
-              {
-                icon: (
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                  </svg>
-                ),
-                gradient: "linear-gradient(135deg, #adf225, #f4e71d)",
-                title: "Human",
-                body: "Built by someone who has actually been there. Who has needed this on a Sunday morning and found nothing that felt right. That\u2019s why this exists.",
-              },
-            ].map((item) => (
-              <div
-                key={item.title}
-                className="rounded-[10px] p-5"
-                style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.08)" }}
-              >
-                <div
-                  className="w-9 h-9 rounded-full flex items-center justify-center text-white mb-4"
-                  style={{ background: item.gradient }}
+              <div className="flex-1 p-8 sm:p-12 flex flex-col justify-center">
+                <SectionLabel>The founder</SectionLabel>
+                <h2 className="text-2xl sm:text-3xl text-white mb-4 uppercase" style={{ fontFamily: "var(--font-plus-jakarta)", fontWeight: 800 }}>
+                  Natalie Lauraine
+                </h2>
+                <p className="text-white/50 leading-relaxed text-sm sm:text-base mb-6">
+                  Meditation Artist and Inspirational Speaker with over 15 years of experience spanning nightlife, radio, music and wellness. Creator of Audio Hugs — a binaural spatial audio format designed for emotional regulation in real life.
+                </p>
+                <span
+                  className="text-xs uppercase tracking-widest inline-flex items-center gap-2 transition-colors group-hover:text-white"
+                  style={{ color: "#ff41b3", fontFamily: "var(--font-space-grotesk)", fontWeight: 700 }}
                 >
-                  {item.icon}
-                </div>
-                <h3 className="text-white text-sm mb-2" style={{ fontWeight: 500 }}>{item.title}</h3>
-                <p className="text-xs text-white/40 leading-relaxed">{item.body}</p>
+                  Read her story
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                  </svg>
+                </span>
               </div>
-            ))}
+
+              <div className="hidden lg:block lg:w-[420px] shrink-0 relative">
+                <Image
+                  src="/natalie-story-crop.jpg"
+                  alt="Natalie Lauraine"
+                  fill
+                  className="object-cover"
+                  sizes="420px"
+                />
+              </div>
+            </div>
+          </Link>
+        </section>
+
+        {/* ── 3. WHAT IS THE DAILY MEDS ─────────────────────── */}
+        <section className="w-full max-w-3xl mx-auto px-4 sm:px-6 pb-20">
+          <SectionLabel>What is The Daily Meds</SectionLabel>
+          <h2 className="text-2xl sm:text-3xl text-white mb-6" style={{ fontWeight: 500 }}>
+            Reality-based wellness
+          </h2>
+          <div className="flex flex-col gap-5 text-white/50 leading-relaxed text-sm sm:text-base">
+            <p>
+              The Daily Meds is an audio streaming platform focused on reality-based wellness meditations built for the emotions we don&apos;t really focus on but spend all our time trying to avoid.
+            </p>
+            <p>
+              We don&apos;t focus on how you want to feel in the future; we focus on how you are feeling right now. We don&apos;t aim to change anything, we&apos;re just here to help you feel the uncomfortable feelings.
+            </p>
+            <p className="text-white/65 italic">
+              The 3am thoughts. The Monday dread. The comedown shame. The anger you cannot explain. The numbness that keeps showing up when you expected to feel fine.
+            </p>
+            <p>
+              Most wellness platforms guide you toward a calmer, better version of yourself. The Daily Meds meets you where you actually are.
+            </p>
           </div>
         </section>
 
-        {/* ── 4. HOW IT WORKS ─────────────────────────────────── */}
+        {/* ── 4. WHY IT EXISTS ────────────────────────────────── */}
         <section
           className="w-full py-20 px-4 sm:px-6"
           style={{ backgroundColor: "#1B1B1B", borderTop: "1px solid rgba(255,255,255,0.05)", borderBottom: "1px solid rgba(255,255,255,0.05)" }}
         >
           <div className="max-w-3xl mx-auto">
-            <SectionLabel>How it works</SectionLabel>
-            <h2 className="text-2xl sm:text-3xl text-white mb-12" style={{ fontWeight: 500 }}>
-              Three steps. That&apos;s it.
+            <SectionLabel>Why it exists</SectionLabel>
+            <h2 className="text-2xl sm:text-3xl text-white mb-6" style={{ fontWeight: 500 }}>
+              Because no one else had built it
             </h2>
-
-            <div className="grid sm:grid-cols-3 gap-10 sm:gap-8">
-              <Step
-                number="1"
-                title="Choose your mood"
-                description="Pick how you actually feel right now — not how you want to feel. Hungover, anxious, heartbroken, overwhelmed. We have a session for it."
-                gradient="linear-gradient(135deg, #ff41b3, #ec723d)"
-              />
-              <Step
-                number="2"
-                title="Press play"
-                description="Guided audio sessions from 5 to 45 minutes. No setup, no equipment. Just put your headphones in wherever you are."
-                gradient="linear-gradient(135deg, #ff41b3, #f4e71d)"
-              />
-              <Step
-                number="3"
-                title="Feel better"
-                description="Your nervous system actually shifts. Not because of magic — because these techniques work. Come back whenever you need."
-                gradient="linear-gradient(135deg, #adf225, #f4e71d)"
-              />
+            <div className="flex flex-col gap-5 text-white/50 leading-relaxed text-sm sm:text-base">
+              <p>
+                Founder Natalie Lauraine built a platform grounded in one belief: emotional freedom is not found in a destination. Not in a pay rise, a holiday or the right relationship. Freedom is what happens when you develop the ability to sit with yourself — regardless of how you feel — without needing to escape.
+              </p>
+              <p>
+                That is the entire premise.
+              </p>
             </div>
           </div>
         </section>
 
-        {/* ── 5. CREDENTIALS / BACKGROUND ─────────────────────── */}
+        {/* ── 5. WHAT MAKES IT DIFFERENT ──────────────────────── */}
         <section className="w-full max-w-3xl mx-auto px-4 sm:px-6 py-20">
-          <div className="flex flex-col sm:flex-row gap-10 items-start">
+          <SectionLabel>What makes it different</SectionLabel>
+          <h2 className="text-2xl sm:text-3xl text-white mb-6" style={{ fontWeight: 500 }}>
+            Emotion-specific content
+          </h2>
+          <div className="flex flex-col gap-5 text-white/50 leading-relaxed text-sm sm:text-base">
+            <p>
+              The content is emotion-specific. Rather than broad categories like &ldquo;stress&rdquo; or &ldquo;anxiety&rdquo;, The Daily Meds library is organised around the actual felt experience. Wobbly. Grumpy. Hungover. Heartbroken. Coming down. That particular kind of tired that sleep does not fix.
+            </p>
+            <p>
+              When content names exactly what you are feeling, something in the nervous system relaxes before the audio even begins. You feel seen. And feeling seen is the beginning of regulation.
+            </p>
+          </div>
+        </section>
 
-            {/* Natalie's photo */}
+        {/* ── 6. WHO IT IS FOR ────────────────────────────────── */}
+        <section
+          className="w-full py-20 px-4 sm:px-6"
+          style={{ backgroundColor: "#1B1B1B", borderTop: "1px solid rgba(255,255,255,0.05)", borderBottom: "1px solid rgba(255,255,255,0.05)" }}
+        >
+          <div className="max-w-3xl mx-auto">
+            <SectionLabel>Who it is for</SectionLabel>
+            <h2 className="text-2xl sm:text-3xl text-white mb-6" style={{ fontWeight: 500 }}>
+              Anyone who has feelings
+            </h2>
+            <div className="flex flex-col gap-5 text-white/50 leading-relaxed text-sm sm:text-base">
+              <p>
+                The Daily Meds is not only for people who meditate. It is for anyone who has feelings — which is everyone, whether they like it or not.
+              </p>
+              <p>
+                You do not need a practice. You do not need to be spiritual. You just need to be willing to sit with yourself for a few minutes and let the audio do its work.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* ── 7. THE CONTENT ──────────────────────────────────── */}
+        <section className="w-full max-w-3xl mx-auto px-4 sm:px-6 py-20">
+          <SectionLabel>The content</SectionLabel>
+          <h2 className="text-2xl sm:text-3xl text-white mb-6" style={{ fontWeight: 500 }}>
+            222 titles across 18 emotional categories
+          </h2>
+          <div className="flex flex-col gap-5 text-white/50 leading-relaxed text-sm sm:text-base">
+            <p>
+              We have over 222 titles in process across 18 emotional categories, all recorded in binaural spatial audio at Metrica Studios in Ibiza.
+            </p>
+            <p>
+              <strong className="text-white/70">Audio Hug Journeys</strong> are Natalie&apos;s signature format — immersive sound journeys built around precise emotional moments and deep-felt presence.
+            </p>
+            <p>
+              <strong className="text-white/70">Alchemy Rewire Breathwork</strong> sessions teach nervous system regulation techniques drawn from breathwork, somatic practice and Alchemy Rewire methodology. These are not generic relaxation sessions. They are short breathwork journeys built for where you actually are.
+            </p>
+          </div>
+        </section>
+
+        {/* ── 8. WHY BINAURAL SPATIAL AUDIO ───────────────────── */}
+        <section
+          className="w-full py-20 px-4 sm:px-6"
+          style={{ backgroundColor: "#1B1B1B", borderTop: "1px solid rgba(255,255,255,0.05)", borderBottom: "1px solid rgba(255,255,255,0.05)" }}
+        >
+          <div className="max-w-3xl mx-auto">
+            <SectionLabel>Why binaural spatial audio</SectionLabel>
+            <h2 className="text-2xl sm:text-3xl text-white mb-6" style={{ fontWeight: 500 }}>
+              A physiological choice, not an aesthetic one
+            </h2>
+            <div className="flex flex-col gap-5 text-white/50 leading-relaxed text-sm sm:text-base">
+              <p>
+                The Daily Meds records in binaural spatial audio. This is not an aesthetic choice. It is a physiological one.
+              </p>
+              <p>
+                When delivered through headphones, binaural audio creates a three-dimensional sound environment your brain perceives as physically surrounding you. The nervous system responds as though someone is actually present with you in the room. That sense of presence is not incidental — it is the mechanism.
+              </p>
+              <p>
+                The Daily Meds also produces content in Dolby Atmos, allowing sound to move in genuine three-dimensional space around the listener. The result is an audio environment the nervous system receives as safe, close and real.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* ── 9. THE SCIENCE ──────────────────────────────────── */}
+        <section className="w-full max-w-3xl mx-auto px-4 sm:px-6 py-20">
+          <SectionLabel>The science</SectionLabel>
+          <h2 className="text-2xl sm:text-3xl text-white mb-6" style={{ fontWeight: 500 }}>
+            It works differently on the body
+          </h2>
+          <div className="flex flex-col gap-5 text-white/50 leading-relaxed text-sm sm:text-base">
+            <p>
+              Binaural spatial audio activates the vagus nerve more effectively than standard stereo — triggering the neural pathways associated with safety, co-regulation and calm. Research has demonstrated measurable reductions in cortisol within 15 minutes of listening. Combined with intentional voice, pacing and nervous system-informed delivery, this effect compounds significantly.
+            </p>
+            <p>
+              The format is not just more pleasant to listen to. It works differently on the body.
+            </p>
+            <p>
+              Natalie Lauraine&apos;s birth frequency is 17.766 Hz — the same frequency as psilocybin mushrooms. Listeners consistently describe effects that go beyond relaxation: deep calm, emotional release, a sense of being genuinely held. The Daily Meds will soon be working with neuroscientists at MuLabs to test the measurable efficiency of Natalie&apos;s voice on the human brain and body. Results coming soon.
+            </p>
+          </div>
+        </section>
+
+        {/* ── 10. THE PHILOSOPHY ──────────────────────────────── */}
+        <section
+          className="w-full py-20 px-4 sm:px-6"
+          style={{ backgroundColor: "#1B1B1B", borderTop: "1px solid rgba(255,255,255,0.05)", borderBottom: "1px solid rgba(255,255,255,0.05)" }}
+        >
+          <div className="max-w-3xl mx-auto">
+            <SectionLabel>The philosophy</SectionLabel>
+            <h2 className="text-2xl sm:text-3xl text-white mb-6" style={{ fontWeight: 500 }}>
+              The daily medicine
+            </h2>
+            <div className="flex flex-col gap-5 text-white/50 leading-relaxed text-sm sm:text-base">
+              <p>
+                Most of us were never taught to sit with difficulty. We were taught to manage it, suppress it or move past it as quickly as possible.
+              </p>
+              <p>
+                The Daily Meds teaches the other skill. The ability to be with yourself, as you are, in this moment, without needing it to be different.
+              </p>
+              <p className="text-white/65 italic">
+                That is the daily medicine. And it is available every day.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* ── NATALIE PHOTO + LINK ──────────────────────────── */}
+        <section className="w-full max-w-3xl mx-auto px-4 sm:px-6 py-20">
+          <Link href="/founder" className="group flex flex-col sm:flex-row gap-8 items-center">
             <div className="shrink-0">
               <div
-                className="w-40 h-40 sm:w-52 sm:h-52 rounded-full overflow-hidden"
+                className="w-40 h-40 sm:w-52 sm:h-52 rounded-full overflow-hidden transition-all duration-300 group-hover:shadow-[0_0_40px_rgba(255,65,179,0.25)]"
                 style={{
                   border: "2px solid rgba(255,255,255,0.1)",
                   boxShadow: "0 0 30px rgba(255,65,179,0.15)",
@@ -276,52 +311,25 @@ export default function AboutPage() {
                 />
               </div>
             </div>
-
-            <div className="flex-1">
-              <SectionLabel>Background</SectionLabel>
-              <h2 className="text-2xl text-white mb-5" style={{ fontWeight: 500 }}>
+            <div className="flex-1 text-center sm:text-left">
+              <SectionLabel>Meet the founder</SectionLabel>
+              <h2 className="text-2xl text-white mb-3" style={{ fontWeight: 500 }}>
                 Natalie Lauraine
               </h2>
-
-              <div className="flex flex-col gap-4 text-sm text-white/45 leading-relaxed">
-                <p>
-                  I&apos;m Natalie Lauraine, originally from Plymouth, Devon, UK — born in a place literally called The Sound, which feels about right. I grew up in rave and club culture and have spent the last decade living and working in Ibiza at the intersection of music, wellness, and the kind of nights that teach you things therapy doesn&apos;t.
-                </p>
-                <p>
-                  I&apos;m a certified Alchemy Rewire™ Navigator — a breathwork and nervous system regulation method — and I&apos;ve been creating meditation and audio wellness content since 2019, with over 9,000 reviews on Insight Timer. Along the way I developed my own niche: Audio Hugs™, spatial audio live transmissions recorded in Dolby Atmos.
-                </p>
-                <p>
-                  I&apos;m not a clinician. I&apos;m someone who has been in the rooms, at the festivals, through the comedowns, and out the other side. I stopped taking drugs in 2011, alcohol in 2014, spent three years celibate, and came off social media entirely from 2018 to 2022. I&apos;ve rebuilt my whole life from the inside out. I know those dark emotions well. That&apos;s what this is built on.
-                </p>
-              </div>
-
-              <div className="flex flex-wrap gap-2 mt-6">
-                {[
-                  "Alchemy Rewire™ Navigator",
-                  "Audio Hugs™ — Spatial Audio in Dolby Atmos",
-                  "9,000+ Insight Timer reviews — 7 years of meditation audio",
-                  "The Science of Wellbeing, Yale University",
-                  "Sustainable Business Management, Cambridge University",
-                  "Sound Healing Practitioner",
-                  "Advanced Radio Production",
-                  "Mental Health and Suicide Prevention",
-                  "Sobriety and Accountability Coach — Music Industry",
-                  "Voice Artist",
-                  "Former nightclub operator, London West End",
-                  "Former sales manager, brokerage floors",
-                  "Model, event producer, serial founder",
-                ].map((item) => (
-                  <span
-                    key={item}
-                    className="px-3 py-1.5 rounded-full text-xs text-white/50"
-                    style={{ backgroundColor: "rgba(255,255,255,0.06)", border: "0.5px solid rgba(255,255,255,0.1)" }}
-                  >
-                    {item}
-                  </span>
-                ))}
-              </div>
+              <p className="text-sm text-white/45 leading-relaxed mb-4">
+                Alchemy Rewire™ Navigator. 9,000+ Insight Timer reviews. Creator of Audio Hugs™. Featured in Marie Claire, Cond&eacute; Nast Traveller, DJ Magazine.
+              </p>
+              <span
+                className="text-xs uppercase tracking-widest inline-flex items-center gap-2 transition-colors group-hover:text-white"
+                style={{ color: "#ff41b3", fontFamily: "var(--font-space-grotesk)", fontWeight: 700 }}
+              >
+                Full story and credentials
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                </svg>
+              </span>
             </div>
-          </div>
+          </Link>
         </section>
 
         {/* ── 6. CTA ───────────────────────────────────────────── */}
