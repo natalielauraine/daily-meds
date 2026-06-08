@@ -92,7 +92,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       if (!audio || !session || !userId || !audio.duration) return;
 
       const supabase = createClient();
-      await supabase.from("user_progress").upsert(
+      const { error } = await supabase.from("user_progress").upsert(
         {
           user_id: userId,
           session_id: session.id,
@@ -103,6 +103,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         },
         { onConflict: "user_id,session_id" }
       );
+      if (error) console.error("[player] progress save failed:", error.message);
     }, 10000);
 
     return () => clearInterval(interval);
@@ -135,7 +136,6 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       if (userId && session) {
         const supabase = createClient();
 
-        // Mark progress as completed (powers Continue Watching)
         supabase.from("user_progress").upsert(
           {
             user_id: userId,
@@ -146,15 +146,14 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
             updated_at: new Date().toISOString(),
           },
           { onConflict: "user_id,session_id" }
-        );
+        ).then(({ error }) => { if (error) console.error("[player] completion save failed:", error.message); });
 
-        // Record the completed session (powers monthly recap stats)
         supabase.from("user_sessions").insert({
           user_id:          userId,
           session_id:       session.id,
           duration_minutes: Math.round((audio.duration || 0) / 60),
           completed_at:     new Date().toISOString(),
-        });
+        }).then(({ error }) => { if (error) console.error("[player] user_sessions insert failed:", error.message); });
       }
     };
 
