@@ -60,7 +60,6 @@ const PLANS = [
       "Full audio library",
       "New drops every week",
       "Breathing timer (coming soon)",
-      "Cancel any time",
     ],
     locked: [
       "Live sessions with Natalie (coming soon)",
@@ -82,7 +81,6 @@ const PLANS = [
       "New drops every week",
       "Breathing timer (coming soon)",
       "Save vs monthly",
-      "Cancel any time",
     ],
     locked: [
       "Live sessions with Natalie (coming soon)",
@@ -102,7 +100,6 @@ const PLANS = [
       "Everything in The Listener",
       "Live sessions with Natalie (coming soon)",
       "Group meditation rooms (coming soon)",
-      "Cancel any time",
     ],
     locked: [
       "Offline downloads (coming soon)",
@@ -117,11 +114,10 @@ const PLANS = [
     cta: "Go annual",
     featured: false,
     features: [
-      "Everything in The Seeker",
+      "Everything in The Listener",
       "Live sessions with Natalie (coming soon)",
       "Group meditation rooms (coming soon)",
       "Save vs monthly",
-      "Cancel any time",
     ],
     locked: [
       "Offline downloads (coming soon)",
@@ -387,7 +383,7 @@ export default function PricingPage() {
               className="text-base sm:text-lg mb-10 max-w-xl mx-auto"
               style={{ fontFamily: "var(--font-inter)", color: "rgba(255,255,255,0.4)", lineHeight: 1.7 }}
             >
-              If you pressed play, something&apos;s on your mind. Every plan includes access to Natalie&apos;s audio library.
+              If you pressed play, something&apos;s on your mind. Every plan includes access to Natalie&apos;s audio library. Cancel any time.
             </p>
 
           </div>

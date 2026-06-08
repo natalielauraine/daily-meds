@@ -107,7 +107,7 @@ export default function AboutPage() {
             className="text-4xl sm:text-6xl text-white mb-6 max-w-2xl leading-tight uppercase"
             style={{ fontFamily: "var(--font-plus-jakarta)", fontWeight: 800, letterSpacing: "-0.02em" }}
           >
-            Audio for emotional emergencies
+            The Daily Meds is &ldquo;Audio for emotional emergencies&rdquo;
           </h1>
 
           <p className="text-base sm:text-lg text-white/45 max-w-xl leading-relaxed">
@@ -173,7 +173,7 @@ export default function AboutPage() {
               {
                 icon: (
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/>
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-5.5-2.5l7.51-3.49L17.5 6.5 9.99 9.99 6.5 17.5zm5.5-6.6c.61 0 1.1.49 1.1 1.1s-.49 1.1-1.1 1.1-1.1-.49-1.1-1.1.49-1.1 1.1-1.1z"/>
                   </svg>
                 ),
                 gradient: "linear-gradient(135deg, #ff41b3, #ec723d)",
@@ -198,7 +198,7 @@ export default function AboutPage() {
                 ),
                 gradient: "linear-gradient(135deg, #adf225, #f4e71d)",
                 title: "Human",
-                body: "Built by someone who has actually been there. Who has needed this on a Sunday morning and found nothing that felt right. That&apos;s why this exists.",
+                body: "Built by someone who has actually been there. Who has needed this on a Sunday morning and found nothing that felt right. That\u2019s why this exists.",
               },
             ].map((item) => (
               <div
@@ -338,27 +338,26 @@ export default function AboutPage() {
           />
 
           <h2 className="text-3xl sm:text-4xl text-white mb-4 max-w-lg leading-tight" style={{ fontWeight: 500 }}>
-            Ready to feel better?
+            Find your next session
           </h2>
           <p className="text-white/40 text-sm sm:text-base mb-10 max-w-md leading-relaxed">
-            Join thousands of people using Daily Meds for their most difficult moments.
-            Free to start. No commitment.
+            Real audio for real moments. Browse the library and press play whenever you need it.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-3 items-center">
             <Link
-              href="/pricing"
+              href="/library"
               className="px-8 py-3.5 rounded-[10px] text-sm text-white transition-opacity hover:opacity-80"
               style={{ background: "#ff41b3", fontFamily: "var(--font-space-grotesk)", fontWeight: 700, boxShadow: "0 0 20px rgba(255,65,179,0.35)" }}
             >
-              Join Daily Meds
+              Browse sessions
             </Link>
             <Link
-              href="/library"
+              href="/pricing"
               className="px-8 py-3.5 rounded-[10px] text-sm text-white/60 transition-colors hover:text-white"
               style={{ border: "0.5px solid rgba(255,255,255,0.15)" }}
             >
-              Browse sessions
+              View plans
             </Link>
           </div>
         </section>
