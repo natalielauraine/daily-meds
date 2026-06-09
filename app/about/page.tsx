@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 function SectionLabel({ children }: { children: string }) {
   return (
     <p
-      className="text-xs text-white/30 mb-3"
+      className="text-xs text-cream/60 mb-3"
       style={{ letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 500 }}
     >
       {children}
@@ -66,7 +66,7 @@ export default function AboutPage() {
           </div>
 
           <p
-            className="text-xs text-white/35 mb-4"
+            className="text-xs text-cream/65 mb-4"
             style={{ letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 500 }}
           >
             About
@@ -79,7 +79,7 @@ export default function AboutPage() {
             The Daily Meds is &ldquo;Audio for emotional emergencies&rdquo;
           </h1>
 
-          <p className="text-base sm:text-lg text-white/45 max-w-xl leading-relaxed">
+          <p className="text-base sm:text-lg text-cream/70 max-w-xl leading-relaxed">
             Meditation for life&apos;s most awkward moments. Not spiritual. Not corporate.
             Just real tools for when things get a bit much.
           </p>
@@ -97,7 +97,7 @@ export default function AboutPage() {
                 <h2 className="text-2xl sm:text-3xl text-white mb-4 uppercase" style={{ fontFamily: "var(--font-plus-jakarta)", fontWeight: 800 }}>
                   Natalie Lauraine
                 </h2>
-                <p className="text-white/50 leading-relaxed text-sm sm:text-base mb-6">
+                <p className="text-cream/60 leading-relaxed text-sm sm:text-base mb-6">
                   Meditation Artist and Inspirational Speaker with over 15 years of experience spanning nightlife, radio, music and wellness. Creator of Audio Hugs — a binaural spatial audio format designed for emotional regulation in real life.
                 </p>
                 <span
@@ -130,14 +130,14 @@ export default function AboutPage() {
           <h2 className="text-2xl sm:text-3xl text-white mb-6" style={{ fontWeight: 500 }}>
             Reality-based wellness
           </h2>
-          <div className="flex flex-col gap-5 text-white/50 leading-relaxed text-sm sm:text-base">
+          <div className="flex flex-col gap-5 text-cream/60 leading-relaxed text-sm sm:text-base">
             <p>
               The Daily Meds is an audio streaming platform focused on reality-based wellness meditations built for the emotions we don&apos;t really focus on but spend all our time trying to avoid.
             </p>
             <p>
               We don&apos;t focus on how you want to feel in the future; we focus on how you are feeling right now. We don&apos;t aim to change anything, we&apos;re just here to help you feel the uncomfortable feelings.
             </p>
-            <p className="text-white/65 italic">
+            <p className="text-cream/75 italic">
               The 3am thoughts. The Monday dread. The comedown shame. The anger you cannot explain. The numbness that keeps showing up when you expected to feel fine.
             </p>
             <p>
@@ -156,7 +156,7 @@ export default function AboutPage() {
             <h2 className="text-2xl sm:text-3xl text-white mb-6" style={{ fontWeight: 500 }}>
               Because no one else had built it
             </h2>
-            <div className="flex flex-col gap-5 text-white/50 leading-relaxed text-sm sm:text-base">
+            <div className="flex flex-col gap-5 text-cream/60 leading-relaxed text-sm sm:text-base">
               <p>
                 Founder Natalie Lauraine built a platform grounded in one belief: emotional freedom is not found in a destination. Not in a pay rise, a holiday or the right relationship. Freedom is what happens when you develop the ability to sit with yourself — regardless of how you feel — without needing to escape.
               </p>
@@ -173,7 +173,7 @@ export default function AboutPage() {
           <h2 className="text-2xl sm:text-3xl text-white mb-6" style={{ fontWeight: 500 }}>
             Emotion-specific content
           </h2>
-          <div className="flex flex-col gap-5 text-white/50 leading-relaxed text-sm sm:text-base">
+          <div className="flex flex-col gap-5 text-cream/60 leading-relaxed text-sm sm:text-base">
             <p>
               The content is emotion-specific. Rather than broad categories like &ldquo;stress&rdquo; or &ldquo;anxiety&rdquo;, The Daily Meds library is organised around the actual felt experience. Wobbly. Grumpy. Hungover. Heartbroken. Coming down. That particular kind of tired that sleep does not fix.
             </p>
@@ -193,7 +193,7 @@ export default function AboutPage() {
             <h2 className="text-2xl sm:text-3xl text-white mb-6" style={{ fontWeight: 500 }}>
               Anyone who has feelings
             </h2>
-            <div className="flex flex-col gap-5 text-white/50 leading-relaxed text-sm sm:text-base">
+            <div className="flex flex-col gap-5 text-cream/60 leading-relaxed text-sm sm:text-base">
               <p>
                 The Daily Meds is not only for people who meditate. It is for anyone who has feelings — which is everyone, whether they like it or not.
               </p>
@@ -210,15 +210,15 @@ export default function AboutPage() {
           <h2 className="text-2xl sm:text-3xl text-white mb-6" style={{ fontWeight: 500 }}>
             222 titles across 18 emotional categories
           </h2>
-          <div className="flex flex-col gap-5 text-white/50 leading-relaxed text-sm sm:text-base">
+          <div className="flex flex-col gap-5 text-cream/60 leading-relaxed text-sm sm:text-base">
             <p>
               We have over 222 titles in process across 18 emotional categories, all recorded in binaural spatial audio at Metrica Studios in Ibiza.
             </p>
             <p>
-              <strong className="text-white/70">Audio Hug Journeys</strong> are Natalie&apos;s signature format — immersive sound journeys built around precise emotional moments and deep-felt presence.
+              <strong className="text-cream/80">Audio Hug Journeys</strong> are Natalie&apos;s signature format — immersive sound journeys built around precise emotional moments and deep-felt presence.
             </p>
             <p>
-              <strong className="text-white/70">Alchemy Rewire Breathwork</strong> sessions teach nervous system regulation techniques drawn from breathwork, somatic practice and Alchemy Rewire methodology. These are not generic relaxation sessions. They are short breathwork journeys built for where you actually are.
+              <strong className="text-cream/80">Alchemy Rewire Breathwork</strong> sessions teach nervous system regulation techniques drawn from breathwork, somatic practice and Alchemy Rewire methodology. These are not generic relaxation sessions. They are short breathwork journeys built for where you actually are.
             </p>
           </div>
         </section>
@@ -233,7 +233,7 @@ export default function AboutPage() {
             <h2 className="text-2xl sm:text-3xl text-white mb-6" style={{ fontWeight: 500 }}>
               A physiological choice, not an aesthetic one
             </h2>
-            <div className="flex flex-col gap-5 text-white/50 leading-relaxed text-sm sm:text-base">
+            <div className="flex flex-col gap-5 text-cream/60 leading-relaxed text-sm sm:text-base">
               <p>
                 The Daily Meds records in binaural spatial audio. This is not an aesthetic choice. It is a physiological one.
               </p>
@@ -253,7 +253,7 @@ export default function AboutPage() {
           <h2 className="text-2xl sm:text-3xl text-white mb-6" style={{ fontWeight: 500 }}>
             It works differently on the body
           </h2>
-          <div className="flex flex-col gap-5 text-white/50 leading-relaxed text-sm sm:text-base">
+          <div className="flex flex-col gap-5 text-cream/60 leading-relaxed text-sm sm:text-base">
             <p>
               Binaural spatial audio activates the vagus nerve more effectively than standard stereo — triggering the neural pathways associated with safety, co-regulation and calm. Research has demonstrated measurable reductions in cortisol within 15 minutes of listening. Combined with intentional voice, pacing and nervous system-informed delivery, this effect compounds significantly.
             </p>
@@ -276,14 +276,14 @@ export default function AboutPage() {
             <h2 className="text-2xl sm:text-3xl text-white mb-6" style={{ fontWeight: 500 }}>
               The daily medicine
             </h2>
-            <div className="flex flex-col gap-5 text-white/50 leading-relaxed text-sm sm:text-base">
+            <div className="flex flex-col gap-5 text-cream/60 leading-relaxed text-sm sm:text-base">
               <p>
                 Most of us were never taught to sit with difficulty. We were taught to manage it, suppress it or move past it as quickly as possible.
               </p>
               <p>
                 The Daily Meds teaches the other skill. The ability to be with yourself, as you are, in this moment, without needing it to be different.
               </p>
-              <p className="text-white/65 italic">
+              <p className="text-cream/75 italic">
                 That is the daily medicine. And it is available every day.
               </p>
             </div>
@@ -316,7 +316,7 @@ export default function AboutPage() {
               <h2 className="text-2xl text-white mb-3" style={{ fontWeight: 500 }}>
                 Natalie Lauraine
               </h2>
-              <p className="text-sm text-white/45 leading-relaxed mb-4">
+              <p className="text-sm text-cream/70 leading-relaxed mb-4">
                 Alchemy Rewire™ Navigator. 9,000+ Insight Timer reviews. Creator of Audio Hugs™. Featured in Marie Claire, Cond&eacute; Nast Traveller, DJ Magazine.
               </p>
               <span
@@ -348,7 +348,7 @@ export default function AboutPage() {
           <h2 className="text-3xl sm:text-4xl text-white mb-4 max-w-lg leading-tight" style={{ fontWeight: 500 }}>
             Find your next session
           </h2>
-          <p className="text-white/40 text-sm sm:text-base mb-10 max-w-md leading-relaxed">
+          <p className="text-cream/65 text-sm sm:text-base mb-10 max-w-md leading-relaxed">
             Real audio for real moments. Browse the library and press play whenever you need it.
           </p>
 
@@ -362,7 +362,7 @@ export default function AboutPage() {
             </Link>
             <Link
               href="/pricing"
-              className="px-8 py-3.5 rounded-[10px] text-sm text-white/60 transition-colors hover:text-white"
+              className="px-8 py-3.5 rounded-[10px] text-sm text-cream/70 transition-colors hover:text-white"
               style={{ border: "0.5px solid rgba(255,255,255,0.15)" }}
             >
               View plans

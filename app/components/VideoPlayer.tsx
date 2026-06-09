@@ -27,7 +27,7 @@ export default function VideoPlayer({ vimeoId, title }: VideoPlayerProps) {
         className="aspect-video w-full rounded-lg flex items-center justify-center"
         style={{ backgroundColor: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)" }}
       >
-        <p className="text-white/30 text-sm">Video not yet uploaded</p>
+        <p className="text-cream/60 text-sm">Video not yet uploaded</p>
       </div>
     );
   }

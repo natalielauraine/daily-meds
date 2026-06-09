@@ -472,7 +472,7 @@ export default function GroupSessionPage() {
   if (error || !session) {
     return (
       <div className="flex flex-col min-h-screen items-center justify-center px-4" style={{ backgroundColor: "#131313" }}>
-        <p className="text-white/40 text-sm mb-4 text-center">{error || "Session not found."}</p>
+        <p className="text-cream/65 text-sm mb-4 text-center">{error || "Session not found."}</p>
         <Link href="/rooms" className="text-sm text-[#ff41b3] hover:opacity-80 transition-opacity">
           ← Back to rooms
         </Link>
@@ -489,14 +489,14 @@ export default function GroupSessionPage() {
     >
       <Link
         href="/rooms"
-        className="inline-flex items-center gap-1.5 text-sm text-white/40 hover:text-white/70 transition-colors"
+        className="inline-flex items-center gap-1.5 text-sm text-cream/65 hover:text-cream/80 transition-colors"
       >
         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
           <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
         </svg>
         Leave
       </Link>
-      <p className="text-sm text-white/60 truncate mx-4" style={{ fontWeight: 500 }}>{session.title}</p>
+      <p className="text-sm text-cream/70 truncate mx-4" style={{ fontWeight: 500 }}>{session.title}</p>
       <div className="w-12" />
     </div>
   );
@@ -518,7 +518,7 @@ export default function GroupSessionPage() {
             </div>
 
             <h2 className="text-2xl text-white mb-2" style={{ fontWeight: 500 }}>Session complete</h2>
-            <p className="text-sm text-white/40 mb-8">
+            <p className="text-sm text-cream/65 mb-8">
               {session.session_title ?? `${session.duration_minutes} min timer`}
             </p>
 
@@ -529,14 +529,14 @@ export default function GroupSessionPage() {
                 style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.08)" }}
               >
                 <span className="text-3xl text-white mb-1" style={{ fontWeight: 500 }}>{completedCount}</span>
-                <span className="text-xs text-white/35">people completed</span>
+                <span className="text-xs text-cream/65">people completed</span>
               </div>
               <div
                 className="flex flex-col items-center px-6 py-4 rounded-[10px]"
                 style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.08)" }}
               >
                 <span className="text-3xl text-white mb-1" style={{ fontWeight: 500 }}>{totalGroupMinutes}</span>
-                <span className="text-xs text-white/35">group minutes</span>
+                <span className="text-xs text-cream/65">group minutes</span>
               </div>
             </div>
 
@@ -575,7 +575,7 @@ export default function GroupSessionPage() {
 
             {/* Timer */}
             <div className="text-center mb-8">
-              <p className="text-xs text-white/30 mb-3">Meditating together</p>
+              <p className="text-xs text-cream/60 mb-3">Meditating together</p>
               <p
                 className="text-6xl tabular-nums"
                 style={{
@@ -589,7 +589,7 @@ export default function GroupSessionPage() {
               >
                 {formatCountdown(secondsRemaining)}
               </p>
-              <p className="text-xs text-white/25 mt-2">
+              <p className="text-xs text-cream/60 mt-2">
                 {session.session_title ?? `${session.duration_minutes} min session`}
               </p>
             </div>
@@ -609,8 +609,8 @@ export default function GroupSessionPage() {
                   </svg>
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm text-white/70" style={{ fontWeight: 500 }}>{session.session_title}</p>
-                  <p className="text-xs text-white/30">Playing for all participants</p>
+                  <p className="text-sm text-cream/80" style={{ fontWeight: 500 }}>{session.session_title}</p>
+                  <p className="text-xs text-cream/60">Playing for all participants</p>
                 </div>
                 {/* Shown when browser blocks autoplay — user taps to start */}
                 {audioReady && (
@@ -628,7 +628,7 @@ export default function GroupSessionPage() {
 
             {/* Participants */}
             <div className="mb-8">
-              <p className="text-xs text-white/40 mb-3">
+              <p className="text-xs text-cream/65 mb-3">
                 {participants.length} meditating now
               </p>
               <ParticipantAvatars participants={participants} gradient={gradient} />
@@ -703,14 +703,14 @@ export default function GroupSessionPage() {
 
             {/* Chat during the session */}
             <div className="mt-6">
-              <p className="text-xs text-white/40 mb-3">Group chat</p>
+              <p className="text-xs text-cream/65 mb-3">Group chat</p>
               <div
                 className="rounded-[10px] overflow-hidden"
                 style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.08)" }}
               >
                 <div className="h-44 overflow-y-auto px-4 py-3 flex flex-col gap-2">
                   {messages.length === 0 ? (
-                    <p className="text-xs text-white/20 text-center mt-6">No messages yet</p>
+                    <p className="text-xs text-cream/60 text-center mt-6">No messages yet</p>
                   ) : (
                     messages.map((msg) => (
                       <div key={msg.id} className="flex gap-2 items-start">
@@ -721,7 +721,7 @@ export default function GroupSessionPage() {
                           {msg.display_name[0]?.toUpperCase() ?? "?"}
                         </div>
                         <div>
-                          <span className="text-[11px] text-white/40 mr-1.5">{msg.display_name}</span>
+                          <span className="text-[11px] text-cream/65 mr-1.5">{msg.display_name}</span>
                           <span className="text-xs text-white/80">{msg.content}</span>
                         </div>
                       </div>
@@ -753,7 +753,7 @@ export default function GroupSessionPage() {
                     </button>
                   </form>
                 ) : (
-                  <p className="text-xs text-white/25 text-center py-3">
+                  <p className="text-xs text-cream/60 text-center py-3">
                     <Link href="/login" className="underline">Sign in</Link> to chat
                   </p>
                 )}
@@ -798,8 +798,8 @@ export default function GroupSessionPage() {
             </div>
 
             <h2 className="text-white text-xl mb-1" style={{ fontWeight: 500 }}>{session.title}</h2>
-            <p className="text-sm text-white/40 mb-1">Hosted by {session.host_name}</p>
-            <p className="text-xs text-white/30 mb-6">
+            <p className="text-sm text-cream/65 mb-1">Hosted by {session.host_name}</p>
+            <p className="text-xs text-cream/60 mb-6">
               {session.session_title ?? `${session.duration_minutes} min timer`}
               {" · "}
               {formatSessionTime(session.scheduled_at)}
@@ -807,7 +807,7 @@ export default function GroupSessionPage() {
 
             {/* Countdown to start */}
             <div className="mb-6">
-              <p className="text-xs text-white/30 mb-2">Starting in</p>
+              <p className="text-xs text-cream/60 mb-2">Starting in</p>
               <p
                 className="text-5xl tabular-nums"
                 style={{
@@ -848,7 +848,7 @@ export default function GroupSessionPage() {
                 <p className="text-sm text-[#adf225] mb-1">You&apos;re in ✓</p>
                 <button
                   onClick={handleLeave}
-                  className="w-full py-2 rounded-[10px] text-sm text-white/40 transition-colors hover:text-white/70"
+                  className="w-full py-2 rounded-[10px] text-sm text-cream/65 transition-colors hover:text-cream/80"
                   style={{ border: "0.5px solid rgba(255,255,255,0.12)" }}
                 >
                   Leave session
@@ -864,7 +864,7 @@ export default function GroupSessionPage() {
               style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.08)" }}
             >
               <div>
-                <p className="text-xs text-white/40 mb-0.5">Invite code</p>
+                <p className="text-xs text-cream/65 mb-0.5">Invite code</p>
                 <p className="text-white tracking-[0.2em] text-base" style={{ fontWeight: 500 }}>
                   {session.invite_code}
                 </p>
@@ -899,7 +899,7 @@ export default function GroupSessionPage() {
           {/* Participant list */}
           {participants.length > 0 && (
             <div className="mb-6">
-              <p className="text-xs text-white/40 mb-3">
+              <p className="text-xs text-cream/65 mb-3">
                 {participants.length} participant{participants.length !== 1 ? "s" : ""}
                 {session.max_participants < 999 && ` · ${session.max_participants} max`}
               </p>
@@ -915,7 +915,7 @@ export default function GroupSessionPage() {
           {/* Waiting room chat — opens 5 minutes before the session starts */}
           {secondsToStart <= 300 && (
             <div>
-              <p className="text-xs text-white/40 mb-3">Waiting room chat</p>
+              <p className="text-xs text-cream/65 mb-3">Waiting room chat</p>
               <div
                 className="rounded-[10px] overflow-hidden"
                 style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.08)" }}
@@ -923,7 +923,7 @@ export default function GroupSessionPage() {
                 {/* Message list */}
                 <div className="h-52 overflow-y-auto px-4 py-3 flex flex-col gap-2">
                   {messages.length === 0 ? (
-                    <p className="text-xs text-white/20 text-center mt-8">
+                    <p className="text-xs text-cream/60 text-center mt-8">
                       No messages yet — say hello!
                     </p>
                   ) : (
@@ -936,13 +936,13 @@ export default function GroupSessionPage() {
                           {msg.display_name[0]?.toUpperCase() ?? "?"}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <span className="text-[11px] text-white/40 mr-1.5">{msg.display_name}</span>
+                          <span className="text-[11px] text-cream/65 mr-1.5">{msg.display_name}</span>
                           <span className="text-xs text-white/80">{msg.content}</span>
                         </div>
                         {/* Like button */}
                         <button
                           onClick={() => handleLike(msg.id, msg.likes ?? 0)}
-                          className="shrink-0 flex items-center gap-1 text-[11px] text-white/30 hover:text-pink-400 transition-colors"
+                          className="shrink-0 flex items-center gap-1 text-[11px] text-cream/60 hover:text-pink-400 transition-colors"
                         >
                           <span>❤️</span>
                           {(msg.likes ?? 0) > 0 && <span>{msg.likes}</span>}
@@ -978,7 +978,7 @@ export default function GroupSessionPage() {
                       <button
                         type="button"
                         onClick={() => setChatEmojiOpen((o) => !o)}
-                        className="text-lg text-white/30 hover:text-white/60 transition-colors"
+                        className="text-lg text-cream/60 hover:text-cream/70 transition-colors"
                       >
                         🙂
                       </button>
@@ -1001,7 +1001,7 @@ export default function GroupSessionPage() {
                     </form>
                   </div>
                 ) : (
-                  <p className="text-xs text-white/25 text-center py-3">
+                  <p className="text-xs text-cream/60 text-center py-3">
                     <Link href="/login" className="underline">Sign in</Link> to chat
                   </p>
                 )}
@@ -1044,7 +1044,7 @@ function ParticipantAvatars({
             )}
           </div>
           {showNames && (
-            <span className="text-[10px] text-white/35 max-w-[48px] truncate text-center">
+            <span className="text-[10px] text-cream/65 max-w-[48px] truncate text-center">
               {p.display_name}
             </span>
           )}

@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 function SectionLabel({ children }: { children: string }) {
   return (
     <p
-      className="text-xs text-white/30 mb-3"
+      className="text-xs text-cream/60 mb-3"
       style={{ letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 500 }}
     >
       {children}
@@ -38,7 +38,7 @@ export default function FounderPage() {
           />
 
           <p
-            className="text-xs text-white/35 mb-4"
+            className="text-xs text-cream/65 mb-4"
             style={{ letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 500 }}
           >
             Founder
@@ -51,7 +51,7 @@ export default function FounderPage() {
             Natalie Lauraine
           </h1>
 
-          <p className="text-base sm:text-lg text-white/45 max-w-xl leading-relaxed">
+          <p className="text-base sm:text-lg text-cream/70 max-w-xl leading-relaxed">
             Meditation Artist and Inspirational Speaker with over 15 years of experience spanning the nightlife, radio, music and wellness industries. Founder of The Daily Meds and creator of Audio Hugs — a binaural spatial audio format designed for emotional regulation in real life.
           </p>
         </section>
@@ -64,7 +64,7 @@ export default function FounderPage() {
           >
             {/* Text — left side */}
             <div className="flex-1 p-8 sm:p-12 lg:p-16">
-              <p className="text-white/55 leading-relaxed text-sm sm:text-base mb-12">
+              <p className="text-cream/65 leading-relaxed text-sm sm:text-base mb-12">
                 Her work sits at the intersection of lived experience and applied neuroscience. Built on the belief that the most powerful wellness tool any person possesses is the ability to sit with themselves — fully, honestly and without escape.
               </p>
 
@@ -73,7 +73,7 @@ export default function FounderPage() {
                 From the West End to Ibiza
               </h2>
 
-              <div className="flex flex-col gap-5 text-white/50 leading-relaxed text-sm sm:text-base">
+              <div className="flex flex-col gap-5 text-cream/60 leading-relaxed text-sm sm:text-base">
                 <p>
                   Natalie began her career in West London{"'"}s VIP hospitality scene, moving through nightclubs, parties and venues before extending into the UK festival circuit — Reading, Leeds, V Festival, SW4, Lovebox — and eventually making Ibiza her permanent home in 2015. Her radio career spanned over 5 stations across the UK and Ibiza.
                 </p>
@@ -86,10 +86,10 @@ export default function FounderPage() {
                 <p>
                   Something Natalie is very clear about: there is nothing wrong with spiritual curiosity. She has explored it all. But what she found through all of that exploration was that the most urgent work is not to transcend reality but to embody it fully.
                 </p>
-                <p className="text-white/65 italic">
+                <p className="text-cream/75 italic">
                   It is being here — grounded in this body, in this day, in this reality, facing this feeling — that will save you.
                 </p>
-                <p className="text-white/40 italic text-sm">
+                <p className="text-cream/65 italic text-sm">
                   As Ram Dass once said. Be Here Now{"\u2026"}
                 </p>
               </div>
@@ -116,7 +116,7 @@ export default function FounderPage() {
             The instrument is the work
           </h2>
 
-          <div className="flex flex-col gap-5 text-white/50 leading-relaxed text-sm sm:text-base">
+          <div className="flex flex-col gap-5 text-cream/60 leading-relaxed text-sm sm:text-base">
             <p>
               Natalie{"'"}s voice is not incidental to her work. It is the work.
             </p>
@@ -140,11 +140,11 @@ export default function FounderPage() {
               Freedom from the inside out
             </h2>
 
-            <div className="flex flex-col gap-5 text-white/50 leading-relaxed text-sm sm:text-base">
+            <div className="flex flex-col gap-5 text-cream/60 leading-relaxed text-sm sm:text-base">
               <p>
                 Freedom is not found in the external world. Not in financial security, the right relationship or the right life circumstances. Freedom is what becomes available when a person develops the ability to sit with themselves — without distraction, without escape — regardless of what they are feeling.
               </p>
-              <p className="text-white/65 italic">
+              <p className="text-cream/75 italic">
                 The Daily Meds is built on that belief. Every single day.
               </p>
             </div>
@@ -179,14 +179,14 @@ export default function FounderPage() {
 
               <div className="mb-8">
                 <h3 className="text-white text-sm mb-3" style={{ fontWeight: 600 }}>Featured in</h3>
-                <p className="text-sm text-white/45 leading-relaxed">
+                <p className="text-sm text-cream/70 leading-relaxed">
                   Marie Claire, Metro, Time Out London, Stylist, Balance, Dose, Closer, Heat, Cond{"é"} Nast Traveller, DJ Magazine.
                 </p>
               </div>
 
               <div className="mb-8">
                 <h3 className="text-white text-sm mb-3" style={{ fontWeight: 600 }}>Speaker at</h3>
-                <p className="text-sm text-white/45 leading-relaxed">
+                <p className="text-sm text-cream/70 leading-relaxed">
                   Amsterdam Dance Event, Brighton Music Conference, WooMoon Ibiza, Ibiza Spirit Festival, Regent{"'"}s University London, Point Blank Music College, Sunderland University, University of Scotland, EO Network, Semetrical Agency and more.
                 </p>
               </div>
@@ -206,7 +206,7 @@ export default function FounderPage() {
                 ].map((item) => (
                   <span
                     key={item}
-                    className="px-3 py-1.5 rounded-full text-xs text-white/50"
+                    className="px-3 py-1.5 rounded-full text-xs text-cream/60"
                     style={{ backgroundColor: "rgba(255,255,255,0.06)", border: "0.5px solid rgba(255,255,255,0.1)" }}
                   >
                     {item}
@@ -230,7 +230,7 @@ export default function FounderPage() {
           <h2 className="text-3xl sm:text-4xl text-white mb-4 max-w-lg leading-tight" style={{ fontWeight: 500 }}>
             Find your next session
           </h2>
-          <p className="text-white/40 text-sm sm:text-base mb-10 max-w-md leading-relaxed">
+          <p className="text-cream/65 text-sm sm:text-base mb-10 max-w-md leading-relaxed">
             Real audio for real moments. Browse the library and press play whenever you need it.
           </p>
 
@@ -244,7 +244,7 @@ export default function FounderPage() {
             </Link>
             <Link
               href="/about"
-              className="px-8 py-3.5 rounded-[10px] text-sm text-white/60 transition-colors hover:text-white"
+              className="px-8 py-3.5 rounded-[10px] text-sm text-cream/70 transition-colors hover:text-white"
               style={{ border: "0.5px solid rgba(255,255,255,0.15)" }}
             >
               About The Daily Meds

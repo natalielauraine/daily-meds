@@ -157,7 +157,7 @@ export default function LiveRoomPage() {
             style={{ background: "rgba(255,255,255,0.06)" }}
             aria-label="Notifications"
           >
-            <svg fill="currentColor" height="20" width="20" viewBox="0 0 256 256" style={{ color: "rgba(255,255,255,0.7)" }}>
+            <svg fill="currentColor" height="20" width="20" viewBox="0 0 256 256" style={{ color: "rgba(246,241,230,0.8)" }}>
               <path d="M221.8,175.94C216.25,166.38,208,139.33,208,104a80,80,0,1,0-160,0c0,35.34-8.26,62.38-13.81,71.94A16,16,0,0,0,48,200H88.81a40,40,0,0,0,78.38,0H208a16,16,0,0,0,13.8-24.06ZM128,216a24,24,0,0,1-22.62-16h45.24A24,24,0,0,1,128,216ZM48,184c7.7-13.24,16-43.92,16-80a64,64,0,1,1,128,0c0,36.05,8.28,66.73,16,80Z"/>
             </svg>
           </button>
@@ -167,7 +167,7 @@ export default function LiveRoomPage() {
             style={{ background: "rgba(255,255,255,0.06)" }}
             aria-label="Profile"
           >
-            <svg fill="currentColor" height="20" width="20" viewBox="0 0 256 256" style={{ color: "rgba(255,255,255,0.7)" }}>
+            <svg fill="currentColor" height="20" width="20" viewBox="0 0 256 256" style={{ color: "rgba(246,241,230,0.8)" }}>
               <path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24ZM74.08,197.5a64,64,0,0,1,107.84,0,87.83,87.83,0,0,1-107.84,0ZM96,120a32,32,0,1,1,32,32A32,32,0,0,1,96,120Zm97.76,66.41a79.66,79.66,0,0,0-36.06-28.75,48,48,0,1,0-59.4,0,79.66,79.66,0,0,0-36.06,28.75,88,88,0,1,1,131.52,0Z"/>
             </svg>
           </button>
@@ -248,8 +248,8 @@ export default function LiveRoomPage() {
                     </div>
                   </div>
                   {!dailyDomain ? (
-                    <p className="text-xs text-center px-8" style={{ color: "rgba(255,255,255,0.3)" }}>
-                      Add <code style={{ color: "rgba(255,255,255,0.5)" }}>NEXT_PUBLIC_DAILY_DOMAIN</code> to .env.local to go live
+                    <p className="text-xs text-center px-8" style={{ color: "rgba(246,241,230,0.6)" }}>
+                      Add <code style={{ color: "rgba(246,241,230,0.6)" }}>NEXT_PUBLIC_DAILY_DOMAIN</code> to .env.local to go live
                     </p>
                   ) : (
                     <button
@@ -347,7 +347,7 @@ export default function LiveRoomPage() {
           <div className="flex items-center gap-3 px-1 overflow-x-auto pb-1" style={{ scrollbarWidth: "none" }}>
             <span
               className="text-xs font-bold uppercase tracking-widest mr-1 shrink-0"
-              style={{ color: "rgba(255,255,255,0.4)", fontFamily: "var(--font-space-grotesk)" }}
+              style={{ color: "rgba(246,241,230,0.65)", fontFamily: "var(--font-space-grotesk)" }}
             >
               React:
             </span>
@@ -402,7 +402,7 @@ export default function LiveRoomPage() {
                 <span className="w-2 h-2 rounded-full" style={{ backgroundColor: "#ADF225" }} />
                 <span
                   className="text-[10px] font-bold uppercase"
-                  style={{ color: "rgba(255,255,255,0.4)", fontFamily: "var(--font-space-grotesk)" }}
+                  style={{ color: "rgba(246,241,230,0.65)", fontFamily: "var(--font-space-grotesk)" }}
                 >
                   Live
                 </span>
@@ -431,11 +431,11 @@ export default function LiveRoomPage() {
                       <span className="text-xs font-bold" style={{ color: msg.colorClass, fontFamily: "var(--font-plus-jakarta)" }}>
                         {msg.name}
                       </span>
-                      <span className="text-[10px]" style={{ color: "rgba(255,255,255,0.3)", fontFamily: "var(--font-space-grotesk)" }}>
+                      <span className="text-[10px]" style={{ color: "rgba(246,241,230,0.6)", fontFamily: "var(--font-space-grotesk)" }}>
                         {msg.time}
                       </span>
                     </div>
-                    <p className="text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.7)" }}>
+                    <p className="text-sm leading-relaxed" style={{ color: "rgba(246,241,230,0.8)" }}>
                       {msg.text}
                     </p>
                   </div>
@@ -475,12 +475,12 @@ export default function LiveRoomPage() {
               </form>
               <div className="mt-3 flex items-center justify-between px-1">
                 <div className="flex gap-3">
-                  <button className="transition-colors" style={{ color: "rgba(255,255,255,0.3)" }} aria-label="Emoji">
+                  <button className="transition-colors" style={{ color: "rgba(246,241,230,0.6)" }} aria-label="Emoji">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                       <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"/>
                     </svg>
                   </button>
-                  <button className="transition-colors" style={{ color: "rgba(255,255,255,0.3)" }} aria-label="GIF">
+                  <button className="transition-colors" style={{ color: "rgba(246,241,230,0.6)" }} aria-label="GIF">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                       <path d="M11.5 9H13v6h-1.5zM9 9H6c-.6 0-1 .5-1 1v4c0 .5.4 1 1 1h3c.6 0 1-.5 1-1v-2H8.5v1.5h-2v-3H10V10c0-.5-.4-1-1-1zm10 1.5V9h-4.5v6H16v-2h2v-1.5h-2v-1z"/>
                     </svg>
@@ -591,7 +591,7 @@ function PageShell({ children }: { children: React.ReactNode }) {
             <span className="text-lg font-bold" style={{ fontFamily: "var(--font-plus-jakarta)", color: "white" }}>The Daily Meds</span>
           </Link>
         </div>
-        <Link href="/live" className="text-sm transition-colors" style={{ color: "rgba(255,255,255,0.4)" }}>
+        <Link href="/live" className="text-sm transition-colors" style={{ color: "rgba(246,241,230,0.65)" }}>
           ← Back to Live
         </Link>
       </header>

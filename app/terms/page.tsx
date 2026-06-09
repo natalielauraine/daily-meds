@@ -162,7 +162,7 @@ const SECTIONS = [
     number: "11",
     title: "Disclaimer of Warranties",
     content: (
-      <p className="uppercase text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.5)" }}>
+      <p className="uppercase text-sm leading-relaxed" style={{ color: "rgba(246,241,230,0.6)" }}>
         The platform is provided &ldquo;as is&rdquo; and &ldquo;as available&rdquo; without warranties of any kind, express or implied. We disclaim all warranties including merchantability, fitness for a particular purpose, and non-infringement. We do not warrant that the service will be uninterrupted, secure, or error-free.
       </p>
     ),
@@ -172,7 +172,7 @@ const SECTIONS = [
     number: "12",
     title: "Limitation of Liability",
     content: (
-      <p className="uppercase text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.5)" }}>
+      <p className="uppercase text-sm leading-relaxed" style={{ color: "rgba(246,241,230,0.6)" }}>
         To the maximum extent permitted by law, Daily Meds and its affiliates shall not be liable for any indirect, incidental, special, consequential, or punitive damages, including lost profits, data loss, or personal injury arising from your use of the platform. Our total liability shall not exceed the amount you paid to us in the 12 months preceding the claim.
       </p>
     ),
@@ -266,7 +266,7 @@ export default function TermsPage() {
         <div className="max-w-3xl mx-auto">
           <span
             className="text-xs uppercase tracking-widest px-4 py-1.5 rounded-full border inline-block mb-6"
-            style={{ borderColor: "rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.4)", fontFamily: "var(--font-lexend)" }}
+            style={{ borderColor: "rgba(255,255,255,0.1)", color: "rgba(246,241,230,0.65)", fontFamily: "var(--font-lexend)" }}
           >
             Legal
           </span>
@@ -276,7 +276,7 @@ export default function TermsPage() {
           >
             Terms & Conditions
           </h1>
-          <p className="text-sm" style={{ color: "rgba(255,255,255,0.35)" }}>
+          <p className="text-sm" style={{ color: "rgba(246,241,230,0.65)" }}>
             Last Updated: June 5, 2026 · Operated by Daily Meds
           </p>
         </div>
@@ -292,7 +292,7 @@ export default function TermsPage() {
         >
           <h2
             className="text-xs uppercase tracking-widest mb-4"
-            style={{ color: "rgba(255,255,255,0.35)", fontFamily: "var(--font-lexend)" }}
+            style={{ color: "rgba(246,241,230,0.65)", fontFamily: "var(--font-lexend)" }}
           >
             Contents
           </h2>
@@ -302,7 +302,7 @@ export default function TermsPage() {
                 key={s.id}
                 href={`#${s.id}`}
                 className="text-sm flex items-center gap-2 transition-colors hover:text-white group"
-                style={{ color: "rgba(255,255,255,0.45)" }}
+                style={{ color: "rgba(246,241,230,0.7)" }}
               >
                 <span
                   className="text-xs font-bold w-6 shrink-0 group-hover:text-[#aaee20] transition-colors"
@@ -352,7 +352,7 @@ export default function TermsPage() {
 
                 <div
                   className="prose-section pl-10"
-                  style={{ color: "rgba(255,255,255,0.65)", lineHeight: "1.8" }}
+                  style={{ color: "rgba(246,241,230,0.75)", lineHeight: "1.8" }}
                 >
                   {section.content}
                 </div>

@@ -49,7 +49,7 @@ export default async function FreePage() {
             Free Content for When{" "}
             <span className="italic" style={{ color: "#aaee20" }}>Life Gets Difficult</span>
           </h1>
-          <p className="text-lg max-w-xl leading-relaxed" style={{ color: "#adaaaa" }}>
+          <p className="text-lg max-w-xl leading-relaxed" style={{ color: "#d9d1c1" }}>
             Add your email to unlock any session. No subscription required — just real support, right now.
           </p>
           <Link
@@ -72,7 +72,7 @@ export default async function FreePage() {
             >
               Always Free
             </h2>
-            <p className="text-sm" style={{ color: "rgba(255,255,255,0.45)" }}>
+            <p className="text-sm" style={{ color: "rgba(246,241,230,0.7)" }}>
               These sessions are yours — no strings attached. Enter your email to play.
             </p>
           </div>
@@ -86,7 +86,7 @@ export default async function FreePage() {
               <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
               <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
             </svg>
-            <p className="text-sm" style={{ color: "rgba(255,255,255,0.65)" }}>
+            <p className="text-sm" style={{ color: "rgba(246,241,230,0.75)" }}>
               <span style={{ color: "#aaee20", fontWeight: 700 }}>Free to play</span> — just add your email to unlock any session below.{" "}
               <Link href={isLoggedIn ? "/library" : "/early-access"} className="underline hover:text-white transition-colors" style={{ color: "#aaee20" }}>
                 {isLoggedIn ? "Go to library →" : "Sign up here →"}
@@ -101,7 +101,7 @@ export default async function FreePage() {
             >
               <p
                 className="text-sm uppercase tracking-widest"
-                style={{ color: "rgba(255,255,255,0.35)", fontFamily: "var(--font-lexend)" }}
+                style={{ color: "rgba(246,241,230,0.65)", fontFamily: "var(--font-lexend)" }}
               >
                 Free sessions coming soon
               </p>
@@ -126,7 +126,7 @@ export default async function FreePage() {
             >
               Crisis Meditations
             </h2>
-            <p className="text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.45)" }}>
+            <p className="text-sm leading-relaxed" style={{ color: "rgba(246,241,230,0.7)" }}>
               Coming soon. This free content is here for moments of deep distress. If you are in a crisis situation, these meditations have been designed to help you regulate your nervous system. They will always be free on The Daily Meds.
             </p>
           </div>
@@ -155,7 +155,7 @@ export default async function FreePage() {
           >
             Want the full library?
           </h2>
-          <p className="text-lg leading-relaxed" style={{ color: "#adaaaa" }}>
+          <p className="text-lg leading-relaxed" style={{ color: "#d9d1c1" }}>
             Unlock the full library, with sessions added every week — for just{" "}
             <strong style={{ color: "#ffffff" }}>£9.99/month</strong>. Cancel anytime.
           </p>
@@ -166,7 +166,7 @@ export default async function FreePage() {
           >
             Get Full Access Now
           </Link>
-          <p className="text-xs" style={{ color: "rgba(255,255,255,0.3)" }}>
+          <p className="text-xs" style={{ color: "rgba(246,241,230,0.6)" }}>
             No commitment. Cancel anytime. Trusted by thousands.
           </p>
         </div>

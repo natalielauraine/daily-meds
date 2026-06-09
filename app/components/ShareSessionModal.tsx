@@ -127,11 +127,11 @@ export default function ShareSessionModal({ session, onClose }: Props) {
           <div className="flex items-center justify-between mb-5">
             <div>
               <h3 className="text-white text-base" style={{ fontWeight: 500 }}>Share this session</h3>
-              <p className="text-xs text-white/40 mt-0.5">Screenshot or download the card below</p>
+              <p className="text-xs text-cream/65 mt-0.5">Screenshot or download the card below</p>
             </div>
             <button
               onClick={onClose}
-              className="w-8 h-8 rounded-full flex items-center justify-center text-white/40 hover:text-white/70 transition-colors"
+              className="w-8 h-8 rounded-full flex items-center justify-center text-cream/65 hover:text-cream/80 transition-colors"
               style={{ backgroundColor: "rgba(255,255,255,0.06)" }}
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
@@ -207,7 +207,7 @@ export default function ShareSessionModal({ session, onClose }: Props) {
                 <div className="flex items-center gap-3 mb-4">
                   <span
                     className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider"
-                    style={{ color: "rgba(255,255,255,0.5)" }}
+                    style={{ color: "rgba(246,241,230,0.6)" }}
                   >
                     <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
                       <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
@@ -215,7 +215,7 @@ export default function ShareSessionModal({ session, onClose }: Props) {
                     {session.duration}
                   </span>
                   <span className="w-1 h-1 rounded-full" style={{ background: "rgba(255,255,255,0.2)" }} />
-                  <span className="text-xs font-bold uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.5)" }}>
+                  <span className="text-xs font-bold uppercase tracking-wider" style={{ color: "rgba(246,241,230,0.6)" }}>
                     Guided Meditation
                   </span>
                 </div>
@@ -245,7 +245,7 @@ export default function ShareSessionModal({ session, onClose }: Props) {
             </div>
           </div>
 
-          <p className="text-[11px] text-white/25 text-center mb-6">
+          <p className="text-[11px] text-cream/60 text-center mb-6">
             Screenshot this card or download as an image
           </p>
 
@@ -265,7 +265,7 @@ export default function ShareSessionModal({ session, onClose }: Props) {
             <button
               onClick={handleShare}
               disabled={sharing}
-              className="flex items-center justify-center gap-2 py-3.5 rounded-[10px] text-sm text-white/70 transition-colors hover:text-white disabled:opacity-50"
+              className="flex items-center justify-center gap-2 py-3.5 rounded-[10px] text-sm text-cream/80 transition-colors hover:text-white disabled:opacity-50"
               style={{ backgroundColor: "rgba(255,255,255,0.07)", border: "0.5px solid rgba(255,255,255,0.15)", fontWeight: 500 }}
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
@@ -281,7 +281,7 @@ export default function ShareSessionModal({ session, onClose }: Props) {
             style={{ backgroundColor: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.08)" }}
           >
             <div className="flex items-center justify-between mb-2">
-              <p className="text-xs text-white/40">Caption — tap to copy</p>
+              <p className="text-xs text-cream/65">Caption — tap to copy</p>
               <button
                 onClick={handleCopyCaption}
                 className="text-xs transition-colors"
@@ -290,18 +290,18 @@ export default function ShareSessionModal({ session, onClose }: Props) {
                 {copied ? "Copied!" : "Copy"}
               </button>
             </div>
-            <p className="text-xs text-white/55 leading-relaxed cursor-pointer select-all" onClick={handleCopyCaption}>
+            <p className="text-xs text-cream/65 leading-relaxed cursor-pointer select-all" onClick={handleCopyCaption}>
               {caption}
             </p>
           </div>
 
           {referralCode && (
-            <p className="text-[11px] text-white/20 text-center mb-2">
-              Your referral code <span className="text-white/35">{referralCode}</span> is included
+            <p className="text-[11px] text-cream/60 text-center mb-2">
+              Your referral code <span className="text-cream/65">{referralCode}</span> is included
             </p>
           )}
 
-          <button onClick={onClose} className="w-full py-3 text-sm text-white/30 hover:text-white/60 transition-colors mt-2">
+          <button onClick={onClose} className="w-full py-3 text-sm text-cream/60 hover:text-cream/70 transition-colors mt-2">
             Close
           </button>
         </div>

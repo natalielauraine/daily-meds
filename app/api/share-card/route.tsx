@@ -237,7 +237,7 @@ export async function GET(req: NextRequest) {
           {/* Tagline */}
           <div
             style={{
-              color: "rgba(255,255,255,0.7)",
+              color: "rgba(246,241,230,0.8)",
               fontSize: 28,
               fontStyle: "italic",
               letterSpacing: "0.01em",
@@ -252,7 +252,7 @@ export async function GET(req: NextRequest) {
           style={{
             position: "absolute",
             bottom: 56,
-            color: "rgba(255,255,255,0.45)",
+            color: "rgba(246,241,230,0.7)",
             fontSize: 22,
             letterSpacing: "0.04em",
             display: "flex",

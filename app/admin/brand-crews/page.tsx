@@ -98,7 +98,7 @@ export default function AdminBrandCrewsPage() {
         </div>
         <Link
           href="/brand-crews"
-          className="text-xs text-white/40 hover:text-white/70 transition-colors"
+          className="text-xs text-cream/65 hover:text-cream/80 transition-colors"
         >
           View public page →
         </Link>
@@ -140,7 +140,7 @@ export default function AdminBrandCrewsPage() {
           <div className="w-6 h-6 rounded-full border-2 border-white/20 border-t-pink-400 animate-spin" />
         </div>
       ) : filtered.length === 0 ? (
-        <p className="text-white/30 text-sm text-center py-16">No {filter} applications.</p>
+        <p className="text-cream/60 text-sm text-center py-16">No {filter} applications.</p>
       ) : (
         <div className="flex flex-col gap-4">
           {filtered.map((crew) => (
@@ -169,10 +169,10 @@ export default function AdminBrandCrewsPage() {
                       {crew.status}
                     </span>
                     {crew.brand_type && (
-                      <span className="text-[10px] text-white/30 uppercase tracking-wide">{crew.brand_type}</span>
+                      <span className="text-[10px] text-cream/60 uppercase tracking-wide">{crew.brand_type}</span>
                     )}
                   </div>
-                  <p className="text-xs text-white/40 mb-1">{crew.contact_email}</p>
+                  <p className="text-xs text-cream/65 mb-1">{crew.contact_email}</p>
                   {crew.website_url && (
                     <a href={crew.website_url} target="_blank" rel="noopener noreferrer"
                       className="text-xs text-[#ff41b3] hover:opacity-80">{crew.website_url}</a>
@@ -180,12 +180,12 @@ export default function AdminBrandCrewsPage() {
                 </div>
                 <div className="text-right shrink-0">
                   <p className="text-sm text-white" style={{ fontWeight: 500 }}>{crew.memberCount}</p>
-                  <p className="text-[10px] text-white/25">members</p>
+                  <p className="text-[10px] text-cream/60">members</p>
                 </div>
               </div>
 
               {crew.description && (
-                <p className="text-xs text-white/45 leading-relaxed mb-4">{crew.description}</p>
+                <p className="text-xs text-cream/70 leading-relaxed mb-4">{crew.description}</p>
               )}
 
               {/* Social links */}
@@ -193,17 +193,17 @@ export default function AdminBrandCrewsPage() {
                 <div className="flex gap-3 mb-4">
                   {crew.social_links?.instagram && (
                     <a href={crew.social_links.instagram} target="_blank" rel="noopener noreferrer"
-                      className="text-xs text-white/30 hover:text-white/60">Instagram ↗</a>
+                      className="text-xs text-cream/60 hover:text-cream/70">Instagram ↗</a>
                   )}
                   {crew.social_links?.tiktok && (
                     <a href={crew.social_links.tiktok} target="_blank" rel="noopener noreferrer"
-                      className="text-xs text-white/30 hover:text-white/60">TikTok ↗</a>
+                      className="text-xs text-cream/60 hover:text-cream/70">TikTok ↗</a>
                   )}
                 </div>
               )}
 
               <div className="flex items-center justify-between">
-                <p className="text-[10px] text-white/20">
+                <p className="text-[10px] text-cream/60">
                   Applied {new Date(crew.created_at).toLocaleDateString("en-GB")}
                   {" · "}Code: <span className="font-mono">{crew.invite_code}</span>
                 </p>
@@ -235,7 +235,7 @@ export default function AdminBrandCrewsPage() {
                   <button
                     onClick={() => handleAction(crew.id, "approve")}
                     disabled={actionLoading === crew.id}
-                    className="px-3 py-1.5 rounded-lg text-xs text-white/40 hover:text-white transition-colors"
+                    className="px-3 py-1.5 rounded-lg text-xs text-cream/65 hover:text-white transition-colors"
                     style={{ border: "0.5px solid rgba(255,255,255,0.1)" }}
                   >
                     Approve anyway

@@ -117,7 +117,7 @@ export default function MoodCategorySection() {
               style={{
                 fontFamily: "var(--font-space-grotesk)",
                 fontWeight: 500,
-                color: "rgba(255,255,255,0.35)",
+                color: "rgba(246,241,230,0.65)",
               }}
             >
               Browse by mood
@@ -129,7 +129,7 @@ export default function MoodCategorySection() {
                 fontWeight: 800,
                 fontSize: "clamp(1.2rem, 3vw, 1.75rem)",
                 letterSpacing: "-0.01em",
-                color: "#E2E2E2",
+                color: "#f6f1e6",
               }}
             >
               Choose what you want to explore
@@ -141,7 +141,7 @@ export default function MoodCategorySection() {
             style={{
               fontFamily: "var(--font-space-grotesk)",
               fontWeight: 500,
-              color: "rgba(255,255,255,0.4)",
+              color: "rgba(246,241,230,0.65)",
             }}
           >
             See all
@@ -209,7 +209,7 @@ export default function MoodCategorySection() {
                     {mood.label}
                   </p>
                   <p
-                    className="text-white/60 leading-tight"
+                    className="text-cream/70 leading-tight"
                     style={{
                       fontFamily: "var(--font-space-grotesk)",
                       fontSize: "10px",
@@ -243,7 +243,7 @@ export default function MoodCategorySection() {
           >
             <p
               className="text-sm"
-              style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.7)" }}
+              style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(246,241,230,0.8)" }}
             >
               Showing sessions for: <span className="text-white font-medium">{activeMood}</span>
             </p>

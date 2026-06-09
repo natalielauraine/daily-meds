@@ -59,7 +59,7 @@ const PROMO_MOODS = [
   { label: "Feeling Anxious", dur: "12 min", color: "#ff6a9e" },
   { label: "Just Breathe",    dur: "5 min",  color: "#52e32c" },
   { label: "Hungover",        dur: "20 min", color: "#ffb598" },
-  { label: "Snuggle Down",    dur: "45 min", color: "#e5e5e5" },
+  { label: "Snuggle Down",    dur: "45 min", color: "#f6f1e6" },
 ];
 
 export default function EpisodePage() {
@@ -98,7 +98,7 @@ export default function EpisodePage() {
   if (loading) {
     return (
       <div style={{ background: "#0e0e0e", minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <p style={{ color: "#ababab", fontFamily: "var(--font-manrope)" }}>Loading…</p>
+        <p style={{ color: "#d9d1c1", fontFamily: "var(--font-manrope)" }}>Loading…</p>
       </div>
     );
   }
@@ -120,7 +120,7 @@ export default function EpisodePage() {
 
   return (
     <div
-      style={{ background: "#0e0e0e", minHeight: "100vh", color: "#e5e5e5", fontFamily: "var(--font-manrope)" }}
+      style={{ background: "#0e0e0e", minHeight: "100vh", color: "#f6f1e6", fontFamily: "var(--font-manrope)" }}
       className="selection:bg-[#ff6a9e] selection:text-white"
     >
       {/* Hidden audio */}
@@ -143,7 +143,7 @@ export default function EpisodePage() {
               onClick={() => setVideoModal(null)}
               style={{
                 position: "absolute", top: -44, right: 0,
-                background: "none", border: "none", color: "#ababab", fontSize: 28, cursor: "pointer",
+                background: "none", border: "none", color: "#d9d1c1", fontSize: 28, cursor: "pointer",
               }}
             >×</button>
             <div style={{ borderRadius: 16, overflow: "hidden", aspectRatio: "16/9", background: "#131313" }}>
@@ -178,9 +178,9 @@ export default function EpisodePage() {
       }}>
         <Link
           href="/podcasts"
-          style={{ display: "flex", alignItems: "center", gap: 8, color: "#e5e5e5", textDecoration: "none", transition: "color 0.2s" }}
+          style={{ display: "flex", alignItems: "center", gap: 8, color: "#f6f1e6", textDecoration: "none", transition: "color 0.2s" }}
           onMouseEnter={(e) => (e.currentTarget.style.color = "#ff6a9e")}
-          onMouseLeave={(e) => (e.currentTarget.style.color = "#e5e5e5")}
+          onMouseLeave={(e) => (e.currentTarget.style.color = "#f6f1e6")}
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
           <span style={{ fontFamily: "var(--font-manrope)", fontSize: 13, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase" }}>Episodes</span>
@@ -188,9 +188,9 @@ export default function EpisodePage() {
         <div style={{ display: "flex", gap: 20 }}>
           <button
             onClick={() => navigator.share?.({ title: ep.title, url: window.location.href })}
-            style={{ background: "none", border: "none", cursor: "pointer", color: "#ababab", transition: "color 0.2s", padding: 0 }}
+            style={{ background: "none", border: "none", cursor: "pointer", color: "#d9d1c1", transition: "color 0.2s", padding: 0 }}
             onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "#ff6a9e")}
-            onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "#ababab")}
+            onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "#d9d1c1")}
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
               <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/>
@@ -198,7 +198,7 @@ export default function EpisodePage() {
           </button>
           <button
             onClick={() => setBookmarked(!bookmarked)}
-            style={{ background: "none", border: "none", cursor: "pointer", color: bookmarked ? "#ff6a9e" : "#ababab", transition: "color 0.2s", padding: 0 }}
+            style={{ background: "none", border: "none", cursor: "pointer", color: bookmarked ? "#ff6a9e" : "#d9d1c1", transition: "color 0.2s", padding: 0 }}
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill={bookmarked ? "#ff6a9e" : "none"} stroke="currentColor" strokeWidth="2">
               <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
@@ -236,7 +236,7 @@ export default function EpisodePage() {
             {ep.pull_quote && (
               <p style={{
                 fontFamily: "var(--font-manrope)", fontSize: 20, fontWeight: 300,
-                lineHeight: 1.6, color: "#ababab",
+                lineHeight: 1.6, color: "#d9d1c1",
                 borderLeft: "2px solid #ff6a9e", paddingLeft: 24,
               }}>
                 "{ep.pull_quote}"
@@ -265,7 +265,7 @@ export default function EpisodePage() {
               </button>
               <button
                 style={{
-                  background: "#262626", color: "#e5e5e5",
+                  background: "#262626", color: "#f6f1e6",
                   padding: "16px 32px", borderRadius: 999,
                   fontFamily: "var(--font-lexend)", fontWeight: 700,
                   fontSize: 12, letterSpacing: "0.18em", textTransform: "uppercase",
@@ -359,7 +359,7 @@ export default function EpisodePage() {
                 </div>
               ) : (
                 <div style={{ width: "100%", aspectRatio: "4/5", borderRadius: 8, background: "#131313", border: "1px solid rgba(255,255,255,0.05)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <svg width="60" height="60" viewBox="0 0 24 24" fill="#ababab" opacity={0.2}>
+                  <svg width="60" height="60" viewBox="0 0 24 24" fill="#d9d1c1" opacity={0.2}>
                     <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
                   </svg>
                 </div>
@@ -389,7 +389,7 @@ export default function EpisodePage() {
                   {ep.guest_name ?? "The Guest"}
                 </h2>
                 {ep.guest_bio && (
-                  <div style={{ display: "flex", flexDirection: "column", gap: 16, color: "#ababab", lineHeight: 1.8, fontSize: 17 }}>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 16, color: "#d9d1c1", lineHeight: 1.8, fontSize: 17 }}>
                     {ep.guest_bio.split("\n\n").map((para, i) => (
                       <p key={i}>{para}</p>
                     ))}
@@ -497,7 +497,7 @@ export default function EpisodePage() {
                         {h.title}
                       </h3>
                       {h.subtitle && (
-                        <p style={{ fontFamily: "var(--font-manrope)", fontSize: 10, color: "rgba(255,255,255,0.6)", textTransform: "uppercase", letterSpacing: "0.2em", fontWeight: 700 }}>
+                        <p style={{ fontFamily: "var(--font-manrope)", fontSize: 10, color: "rgba(246,241,230,0.7)", textTransform: "uppercase", letterSpacing: "0.2em", fontWeight: 700 }}>
                           {h.subtitle}
                         </p>
                       )}
@@ -528,14 +528,14 @@ export default function EpisodePage() {
                         style={{
                           display: "flex", alignItems: "center", gap: 16,
                           padding: 16, background: "#191919", borderRadius: 8,
-                          textDecoration: "none", color: "#e5e5e5",
+                          textDecoration: "none", color: "#f6f1e6",
                           transition: "background 0.2s",
                         }}
                         onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = "#1f1f1f")}
                         onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = "#191919")}
                       >
                         <div style={{ width: 48, height: 48, background: "#2c2c2c", borderRadius: 4, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                          <svg width="20" height="20" viewBox="0 0 24 24" fill="#ababab">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="#d9d1c1">
                             <path d="M19 6h-2c0-2.76-2.24-5-5-5S7 3.24 7 6H5c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-7-3c1.66 0 3 1.34 3 3H9c0-1.66 1.34-3 3-3zm0 10c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/>
                           </svg>
                         </div>
@@ -561,7 +561,7 @@ export default function EpisodePage() {
                         style={{
                           padding: 24, background: "#131313", borderRadius: 8,
                           border: "1px solid rgba(255,255,255,0.05)",
-                          textDecoration: "none", color: "#e5e5e5",
+                          textDecoration: "none", color: "#f6f1e6",
                           transition: "border-color 0.2s", display: "block",
                         }}
                         onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.borderColor = "rgba(82,227,44,0.3)")}
@@ -626,7 +626,7 @@ export default function EpisodePage() {
                 </button>
                 {transcriptOpen && (
                   <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: 24 }}>
-                    <p style={{ color: "#ababab", lineHeight: 2, fontSize: 15, whiteSpace: "pre-wrap" }}>{ep.transcript}</p>
+                    <p style={{ color: "#d9d1c1", lineHeight: 2, fontSize: 15, whiteSpace: "pre-wrap" }}>{ep.transcript}</p>
                   </div>
                 )}
               </div>
@@ -648,7 +648,7 @@ export default function EpisodePage() {
                 }}>
                   Meditation that meets<br/>you where you are.
                 </h2>
-                <p style={{ color: "#ababab", maxWidth: 480, margin: "0 auto", fontSize: 15 }}>
+                <p style={{ color: "#d9d1c1", maxWidth: 480, margin: "0 auto", fontSize: 15 }}>
                   No gurus. No fluff. Just the honest science of finding focus in the noise.
                 </p>
               </div>
@@ -684,11 +684,11 @@ export default function EpisodePage() {
                   href="/free"
                   style={{
                     fontFamily: "var(--font-manrope)", fontSize: 11, textTransform: "uppercase",
-                    letterSpacing: "0.15em", color: "#ababab", textDecoration: "none",
+                    letterSpacing: "0.15em", color: "#d9d1c1", textDecoration: "none",
                     transition: "color 0.2s", padding: "16px 0",
                   }}
                   onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "white")}
-                  onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "#ababab")}
+                  onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "#d9d1c1")}
                 >
                   Browse Free Meditations
                 </Link>
@@ -743,34 +743,34 @@ export default function EpisodePage() {
                 The Daily Meds
               </h2>
             </div>
-            <p style={{ fontSize: 13, color: "#ababab", maxWidth: 320, lineHeight: 1.7 }}>
+            <p style={{ fontSize: 13, color: "#d9d1c1", maxWidth: 320, lineHeight: 1.7 }}>
               Intelligent, grounded, and slightly rebellious wellness for the modern mind.
             </p>
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
             <h6 style={{ fontFamily: "var(--font-lexend)", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.15em", color: "white" }}>Connect</h6>
             {["Instagram", "YouTube", "Discord"].map((l) => (
-              <a key={l} href="#" style={{ fontSize: 13, color: "#ababab", textDecoration: "none", transition: "color 0.2s" }}
+              <a key={l} href="#" style={{ fontSize: 13, color: "#d9d1c1", textDecoration: "none", transition: "color 0.2s" }}
                 onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "#ff6a9e")}
-                onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "#ababab")}
+                onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "#d9d1c1")}
               >{l}</a>
             ))}
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
             <h6 style={{ fontFamily: "var(--font-lexend)", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.15em", color: "white" }}>App</h6>
             {[["Library", "/library"], ["Pricing", "/pricing"], ["Community", "/community"], ["Podcast", "/podcasts"]].map(([l, href]) => (
-              <Link key={l} href={href} style={{ fontSize: 13, color: "#ababab", textDecoration: "none", transition: "color 0.2s" }}
+              <Link key={l} href={href} style={{ fontSize: 13, color: "#d9d1c1", textDecoration: "none", transition: "color 0.2s" }}
                 onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "#ff6a9e")}
-                onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "#ababab")}
+                onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "#d9d1c1")}
               >{l}</Link>
             ))}
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
             <h6 style={{ fontFamily: "var(--font-lexend)", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.15em", color: "white" }}>Legal</h6>
             {[["Privacy", "/privacy"], ["Terms", "/terms"], ["Support", "/about"]].map(([l, href]) => (
-              <Link key={l} href={href} style={{ fontSize: 13, color: "#ababab", textDecoration: "none", transition: "color 0.2s" }}
+              <Link key={l} href={href} style={{ fontSize: 13, color: "#d9d1c1", textDecoration: "none", transition: "color 0.2s" }}
                 onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "#ff6a9e")}
-                onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "#ababab")}
+                onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "#d9d1c1")}
               >{l}</Link>
             ))}
           </div>

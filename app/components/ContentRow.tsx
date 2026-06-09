@@ -25,7 +25,7 @@ export default function ContentRow({ title, seeAllHref, sessions, badge }: Conte
                 fontWeight: 800,
                 fontSize: "15px",
                 letterSpacing: "0.02em",
-                color: "#E2E2E2",
+                color: "#f6f1e6",
               }}
             >
               {title}
@@ -49,11 +49,11 @@ export default function ContentRow({ title, seeAllHref, sessions, badge }: Conte
 
           <Link
             href={seeAllHref}
-            className="text-[10px] uppercase tracking-widest flex items-center gap-1 transition-colors duration-200 hover:text-white/70"
+            className="text-[10px] uppercase tracking-widest flex items-center gap-1 transition-colors duration-200 hover:text-cream/80"
             style={{
               fontFamily: "var(--font-space-grotesk)",
               fontWeight: 500,
-              color: "rgba(255,255,255,0.35)",
+              color: "rgba(246,241,230,0.65)",
             }}
           >
             See all

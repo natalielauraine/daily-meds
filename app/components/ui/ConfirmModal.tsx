@@ -30,7 +30,7 @@ export default function ConfirmModal({
         <div className="flex gap-3 justify-end">
           <button
             onClick={onCancel}
-            className="px-4 py-2 rounded-md text-sm text-white/60 hover:text-white transition-colors"
+            className="px-4 py-2 rounded-md text-sm text-cream/70 hover:text-white transition-colors"
             style={{ border: "0.5px solid rgba(255,255,255,0.2)" }}
           >
             {cancelLabel}

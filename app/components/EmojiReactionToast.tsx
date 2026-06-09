@@ -57,7 +57,7 @@ export default function EmojiReactionToast() {
 
           {/* Sender's name fades in below */}
           <span
-            className="mt-1 text-xs text-white/60 rounded-full px-2 py-0.5"
+            className="mt-1 text-xs text-cream/70 rounded-full px-2 py-0.5"
             style={{ backgroundColor: "rgba(0,0,0,0.4)", backdropFilter: "blur(4px)" }}
           >
             from {f.from_name}

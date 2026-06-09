@@ -223,7 +223,7 @@ export function LibraryCard({ session, isPaidMember }: { session: LibrarySession
             </h3>
             <p
               className="text-[10px] uppercase tracking-wider"
-              style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.3)" }}
+              style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(246,241,230,0.6)" }}
             >
               {session.type}
             </p>

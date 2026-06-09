@@ -70,11 +70,11 @@ export default function ForgotPasswordPage() {
                 </svg>
               </div>
               <h2 className="text-white font-bold text-xl">Check your email</h2>
-              <p style={{ color: "#ababab", fontSize: 14, lineHeight: 1.6 }}>
+              <p style={{ color: "#d9d1c1", fontSize: 14, lineHeight: 1.6 }}>
                 We sent a password reset link to <strong className="text-white">{email}</strong>.
                 Check your inbox — it may take a minute.
               </p>
-              <p style={{ color: "#ababab", fontSize: 13 }}>
+              <p style={{ color: "#d9d1c1", fontSize: 13 }}>
                 Didn&apos;t get it?{" "}
                 <button
                   onClick={() => setSent(false)}
@@ -90,14 +90,14 @@ export default function ForgotPasswordPage() {
             <>
               <div className="mb-6">
                 <h1 className="text-white font-bold text-xl mb-1">Reset your password</h1>
-                <p style={{ color: "#ababab", fontSize: 14 }}>
+                <p style={{ color: "#d9d1c1", fontSize: 14 }}>
                   Enter your email and we&apos;ll send you a reset link.
                 </p>
               </div>
 
               <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs" style={{ color: "rgba(255,255,255,0.5)" }}>
+                  <label className="text-xs" style={{ color: "rgba(246,241,230,0.6)" }}>
                     Email address
                   </label>
                   <input
@@ -140,7 +140,7 @@ export default function ForgotPasswordPage() {
             <Link
               href="/login"
               className="text-xs transition-colors"
-              style={{ color: "rgba(255,255,255,0.35)" }}
+              style={{ color: "rgba(246,241,230,0.65)" }}
               onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.7)")}
               onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.35)")}
             >

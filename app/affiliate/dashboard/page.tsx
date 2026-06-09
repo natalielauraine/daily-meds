@@ -95,7 +95,7 @@ function Sidebar({ active, onNav }: { active: string; onNav: (s: string) => void
         <Link
           href="/profile"
           className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm transition-colors"
-          style={{ color: "rgba(255,255,255,0.3)" }}
+          style={{ color: "rgba(246,241,230,0.6)" }}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
             <path d="M10.09 15.59L11.5 17l5-5-5-5-1.41 1.41L12.67 11H3v2h9.67l-2.58 2.59zM19 3H5c-1.11 0-2 .9-2 2v4h2V5h14v14H5v-4H3v4c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/>
@@ -136,8 +136,8 @@ function TopNav() {
           >
             Dashboard
           </span>
-          <span className="px-3 py-1 rounded text-sm" style={{ color: "rgba(255,255,255,0.4)" }}>Affiliates</span>
-          <span className="px-3 py-1 rounded text-sm" style={{ color: "rgba(255,255,255,0.4)" }}>Campaigns</span>
+          <span className="px-3 py-1 rounded text-sm" style={{ color: "rgba(246,241,230,0.65)" }}>Affiliates</span>
+          <span className="px-3 py-1 rounded text-sm" style={{ color: "rgba(246,241,230,0.65)" }}>Campaigns</span>
         </div>
       </div>
       {/* Right icons */}
@@ -244,13 +244,13 @@ export default function AffiliateDashboardPage() {
           <h1 className="text-xl text-white mb-2" style={{ fontFamily: "var(--font-plus-jakarta)", fontWeight: 800 }}>
             Setting up your affiliate account…
           </h1>
-          <p className="text-sm mb-6 leading-relaxed" style={{ color: "rgba(255,255,255,0.4)" }}>
+          <p className="text-sm mb-6 leading-relaxed" style={{ color: "rgba(246,241,230,0.65)" }}>
             Every Daily Meds member is automatically enrolled as an affiliate. If this persists, please contact support.
           </p>
           <a
             href="mailto:hello@thedailymeds.com"
             className="text-sm transition-colors hover:text-white"
-            style={{ color: "rgba(255,255,255,0.4)" }}
+            style={{ color: "rgba(246,241,230,0.65)" }}
           >
             Contact support →
           </a>

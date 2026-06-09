@@ -120,7 +120,7 @@ export default function LoggedInHome() {
             <h2 className="font-headline text-2xl font-bold uppercase tracking-tight">Trending Right Now</h2>
             <Link className="text-primary font-label text-xs font-bold uppercase tracking-widest hover:underline" href="/library">See All</Link>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
             {sessions.map((item: any) => (
               <LibraryCard key={item.id} session={item as LibrarySession} isPaidMember={false} />
             ))}
@@ -137,7 +137,7 @@ export default function LoggedInHome() {
                 <span className="font-label text-[10px] font-extrabold uppercase text-primary tracking-[0.2em]">New Drops Weekly</span>
               </div>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
               {comingSoon.map((item: any) => (
                 <LibraryCard key={item.id} session={item as LibrarySession} isPaidMember={false} />
               ))}

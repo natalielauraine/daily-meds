@@ -129,7 +129,7 @@ export default function NotificationBell({ user }: { user: User }) {
             {unreadCount > 0 && (
               <button
                 onClick={markAllRead}
-                className="text-[10px] text-white/30 hover:text-white/60 transition-colors"
+                className="text-[10px] text-cream/60 hover:text-cream/70 transition-colors"
               >
                 Mark all read
               </button>
@@ -141,8 +141,8 @@ export default function NotificationBell({ user }: { user: User }) {
             {notifications.length === 0 ? (
               <div className="px-4 py-10 text-center">
                 <p className="text-2xl mb-2">🔔</p>
-                <p className="text-xs text-white/25">No notifications yet</p>
-                <p className="text-[11px] text-white/15 mt-1">
+                <p className="text-xs text-cream/60">No notifications yet</p>
+                <p className="text-[11px] text-cream/60 mt-1">
                   You&apos;ll see reactions to your posts here
                 </p>
               </div>
@@ -167,8 +167,8 @@ export default function NotificationBell({ user }: { user: User }) {
 
                   {/* Message + time */}
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs text-white/70 leading-relaxed">{n.message}</p>
-                    <p className="text-[10px] text-white/30 mt-0.5">{timeAgo(n.created_at)}</p>
+                    <p className="text-xs text-cream/80 leading-relaxed">{n.message}</p>
+                    <p className="text-[10px] text-cream/60 mt-0.5">{timeAgo(n.created_at)}</p>
                   </div>
 
                   {/* Unread dot */}

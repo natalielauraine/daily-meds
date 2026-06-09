@@ -204,12 +204,12 @@ function SettingRow({
       <div className="flex flex-col gap-0.5">
         <span
           className="text-sm"
-          style={{ color: danger ? "#ff5555" : "#e2e2e2", fontFamily: "var(--font-manrope)", fontWeight: 500 }}
+          style={{ color: danger ? "#ff5555" : "#f6f1e6", fontFamily: "var(--font-manrope)", fontWeight: 500 }}
         >
           {label}
         </span>
         {value && (
-          <span className="text-xs" style={{ color: "rgba(255,255,255,0.3)", fontFamily: "var(--font-manrope)" }}>
+          <span className="text-xs" style={{ color: "rgba(246,241,230,0.6)", fontFamily: "var(--font-manrope)" }}>
             {value}
           </span>
         )}
@@ -259,7 +259,7 @@ function InlineEdit({
         className="flex flex-col gap-3 px-5 py-4"
         style={{ borderBottom: "0.5px solid rgba(255,255,255,0.05)" }}
       >
-        <label className="text-xs uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.3)", fontFamily: "var(--font-lexend)" }}>
+        <label className="text-xs uppercase tracking-widest" style={{ color: "rgba(246,241,230,0.6)", fontFamily: "var(--font-lexend)" }}>
           {label}
         </label>
         <input
@@ -282,7 +282,7 @@ function InlineEdit({
           <button
             onClick={() => { setEditing(false); setVal(value); }}
             className="px-5 py-2 rounded-xl text-xs font-bold uppercase tracking-widest"
-            style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.5)", fontFamily: "var(--font-lexend)" }}
+            style={{ background: "rgba(255,255,255,0.06)", color: "rgba(246,241,230,0.6)", fontFamily: "var(--font-lexend)" }}
           >
             Cancel
           </button>
@@ -298,7 +298,7 @@ function InlineEdit({
       onClick={() => setEditing(true)}
     >
       <div className="flex flex-col gap-0.5">
-        <span className="text-sm" style={{ color: "#e2e2e2", fontWeight: 500, fontFamily: "var(--font-manrope)" }}>{label}</span>
+        <span className="text-sm" style={{ color: "#f6f1e6", fontWeight: 500, fontFamily: "var(--font-manrope)" }}>{label}</span>
         <span className="text-xs" style={{ color: saved ? "#adf225" : "rgba(255,255,255,0.3)", fontFamily: "var(--font-manrope)" }}>
           {saved ? "Saved" : (value || "Not set")}
         </span>
@@ -455,12 +455,12 @@ export default function ProfilePage() {
   }
 
   const PLAN_LABELS: Record<string, { label: string; name: string; color: string }> = {
-    free:     { label: "Free Plan",            name: "The Observer",    color: "rgba(255,255,255,0.4)" },
+    free:     { label: "Free Plan",            name: "The Observer",    color: "rgba(246,241,230,0.65)" },
     trial:    { label: "Trial · 14 days",      name: "The Explorer",   color: "#ff41b3" },
     audio:    { label: "Audio · £9.99/mo",     name: "The Listener",   color: "#ff41b3" },
     monthly:  { label: "Monthly · £19.99/mo",  name: "The Seeker",     color: "#ff41b3" },
     annual:   { label: "Annual · £199.99/yr",  name: "The Dedicated",  color: "#ec723d" },
-    lifetime: { label: "Lifetime Member",      name: "The Master",     color: "#adf225" },
+    lifetime: { label: "Lifetime Member",      name: "The Founder",    color: "#adf225" },
   };
   const plan = PLAN_LABELS[subscriptionStatus] ?? PLAN_LABELS.free;
 
@@ -516,7 +516,7 @@ export default function ProfilePage() {
               <Card className="p-5 flex flex-col justify-between">
                 <p
                   className="text-[10px] uppercase tracking-[0.2em] font-bold mb-3"
-                  style={{ color: "rgba(255,255,255,0.35)", fontFamily: "var(--font-lexend)" }}
+                  style={{ color: "rgba(246,241,230,0.65)", fontFamily: "var(--font-lexend)" }}
                 >
                   Sessions
                 </p>
@@ -538,7 +538,7 @@ export default function ProfilePage() {
               <Card className="p-5 flex flex-col justify-between">
                 <p
                   className="text-[10px] uppercase tracking-[0.2em] font-bold mb-3"
-                  style={{ color: "rgba(255,255,255,0.35)", fontFamily: "var(--font-lexend)" }}
+                  style={{ color: "rgba(246,241,230,0.65)", fontFamily: "var(--font-lexend)" }}
                 >
                   Streak
                 </p>
@@ -561,7 +561,7 @@ export default function ProfilePage() {
             <Card className="p-5">
               <p
                 className="text-[10px] uppercase tracking-[0.2em] font-bold mb-5"
-                style={{ color: "rgba(255,255,255,0.35)", fontFamily: "var(--font-lexend)" }}
+                style={{ color: "rgba(246,241,230,0.65)", fontFamily: "var(--font-lexend)" }}
               >
                 Last 14 days
               </p>
@@ -582,7 +582,7 @@ export default function ProfilePage() {
                         <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: color }} />
                         <span
                           className="text-[10px] tracking-wide"
-                          style={{ color: "rgba(255,255,255,0.4)", fontFamily: "var(--font-lexend)" }}
+                          style={{ color: "rgba(246,241,230,0.65)", fontFamily: "var(--font-lexend)" }}
                         >
                           {mood}
                         </span>
@@ -643,7 +643,7 @@ export default function ProfilePage() {
                 <h2 className="text-xl text-white mb-0.5" style={{ fontFamily: "var(--font-plus-jakarta)", fontWeight: 800 }}>
                   {displayName}
                 </h2>
-                <p className="text-sm mb-3" style={{ color: "rgba(255,255,255,0.4)" }}>{user?.email}</p>
+                <p className="text-sm mb-3" style={{ color: "rgba(246,241,230,0.65)" }}>{user?.email}</p>
                 {/* Plan badge */}
                 <div className="flex flex-col items-center gap-1">
                   <span
@@ -661,7 +661,7 @@ export default function ProfilePage() {
                     style={{
                       background: subscriptionStatus === "free" ? "rgba(255,255,255,0.06)" : "rgba(255,65,179,0.15)",
                       border: `0.5px solid ${subscriptionStatus === "free" ? "rgba(255,255,255,0.1)" : "rgba(255,65,179,0.3)"}`,
-                      color: "rgba(255,255,255,0.4)",
+                      color: "rgba(246,241,230,0.65)",
                       fontFamily: "var(--font-space-grotesk)",
                       fontWeight: 600,
                     }}
@@ -680,7 +680,7 @@ export default function ProfilePage() {
                   className="flex items-center justify-between px-4 py-3 rounded-xl transition-colors hover:bg-white/[0.04]"
                   style={{ backgroundColor: "#111111" }}
                 >
-                  <span className="text-sm text-white/60" style={{ fontFamily: "var(--font-manrope)" }}>Favorite Rituals</span>
+                  <span className="text-sm text-cream/70" style={{ fontFamily: "var(--font-manrope)" }}>Favorite Rituals</span>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="rgba(255,255,255,0.2)">
                     <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
                   </svg>
@@ -690,7 +690,7 @@ export default function ProfilePage() {
                   className="flex items-center justify-between px-4 py-3 rounded-xl transition-colors hover:bg-white/[0.04]"
                   style={{ backgroundColor: "#111111" }}
                 >
-                  <span className="text-sm text-white/60" style={{ fontFamily: "var(--font-manrope)" }}>Browse library</span>
+                  <span className="text-sm text-cream/70" style={{ fontFamily: "var(--font-manrope)" }}>Browse library</span>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="rgba(255,255,255,0.2)">
                     <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
                   </svg>
@@ -728,7 +728,7 @@ export default function ProfilePage() {
                   onClick={handleSendPasswordReset}
                 >
                   <div className="flex flex-col gap-0.5">
-                    <span className="text-sm" style={{ color: "#e2e2e2", fontWeight: 500, fontFamily: "var(--font-manrope)" }}>Change password</span>
+                    <span className="text-sm" style={{ color: "#f6f1e6", fontWeight: 500, fontFamily: "var(--font-manrope)" }}>Change password</span>
                     <span className="text-xs" style={{ color: passwordMsg ? "#adf225" : "rgba(255,255,255,0.3)", fontFamily: "var(--font-manrope)" }}>
                       {passwordMsg || "Send reset link to your email"}
                     </span>
@@ -747,7 +747,7 @@ export default function ProfilePage() {
                   style={{ borderBottom: "0.5px solid rgba(255,255,255,0.05)" }}
                 >
                   <div className="flex flex-col gap-0.5">
-                    <span className="text-sm" style={{ color: "#e2e2e2", fontWeight: 500, fontFamily: "var(--font-manrope)" }}>Current plan</span>
+                    <span className="text-sm" style={{ color: "#f6f1e6", fontWeight: 500, fontFamily: "var(--font-manrope)" }}>Current plan</span>
                     <span className="text-xs font-bold" style={{ color: plan.color, fontFamily: "var(--font-manrope)" }}>
                       {plan.label}
                     </span>
@@ -776,7 +776,7 @@ export default function ProfilePage() {
                           <p className="text-sm font-bold text-white" style={{ fontFamily: "var(--font-plus-jakarta)" }}>
                             Own it forever · £297 once
                           </p>
-                          <p className="text-xs mt-0.5" style={{ color: "rgba(255,255,255,0.45)", fontFamily: "var(--font-manrope)" }}>
+                          <p className="text-xs mt-0.5" style={{ color: "rgba(246,241,230,0.7)", fontFamily: "var(--font-manrope)" }}>
                             Lifetime access, no recurring charges, locked-in price.
                           </p>
                         </div>
@@ -814,7 +814,7 @@ export default function ProfilePage() {
                   style={{ borderBottom: "0.5px solid rgba(255,255,255,0.05)" }}
                   onClick={handleSignOut}
                 >
-                  <span className="text-sm" style={{ color: "#e2e2e2", fontWeight: 500, fontFamily: "var(--font-manrope)" }}>Sign out</span>
+                  <span className="text-sm" style={{ color: "#f6f1e6", fontWeight: 500, fontFamily: "var(--font-manrope)" }}>Sign out</span>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="rgba(255,255,255,0.2)">
                     <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
                   </svg>

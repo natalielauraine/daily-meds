@@ -146,8 +146,8 @@ export default function SessionPageClient({ session }: { session: SessionData | 
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "#010101" }}>
         <div className="text-center">
-          <p className="text-white/40 text-sm mb-4">Session not found.</p>
-          <Link href="/" className="text-white/60 hover:text-white text-sm transition-colors">← Back to home</Link>
+          <p className="text-cream/65 text-sm mb-4">Session not found.</p>
+          <Link href="/" className="text-cream/70 hover:text-white text-sm transition-colors">← Back to home</Link>
         </div>
       </div>
     );
@@ -258,7 +258,7 @@ export default function SessionPageClient({ session }: { session: SessionData | 
             {displayDuration > 0 && (
               <span
                 className="text-xs font-bold tracking-widest uppercase"
-                style={{ color: "rgba(255,255,255,0.5)", fontFamily: "var(--font-space-grotesk)" }}
+                style={{ color: "rgba(246,241,230,0.6)", fontFamily: "var(--font-space-grotesk)" }}
               >
                 {formatRemaining(displayTime, displayDuration)}
               </span>
@@ -273,7 +273,7 @@ export default function SessionPageClient({ session }: { session: SessionData | 
             ) : (
               <span
                 className="px-2 py-0.5 text-[10px] font-black tracking-widest uppercase rounded-full"
-                style={{ backgroundColor: "rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.5)" }}
+                style={{ backgroundColor: "rgba(255,255,255,0.1)", color: "rgba(246,241,230,0.6)" }}
               >
                 Premium
               </span>
@@ -297,7 +297,7 @@ export default function SessionPageClient({ session }: { session: SessionData | 
           {/* Author */}
           <p
             className="flex items-center gap-3 text-lg font-bold uppercase tracking-widest mb-4"
-            style={{ color: "rgba(255,255,255,0.5)", fontFamily: "var(--font-space-grotesk)" }}
+            style={{ color: "rgba(246,241,230,0.6)", fontFamily: "var(--font-space-grotesk)" }}
           >
             <span className="w-8 h-px" style={{ backgroundColor: "#FF418E" }} />
             Natalie Lauraine
@@ -341,7 +341,7 @@ export default function SessionPageClient({ session }: { session: SessionData | 
                 style={{
                   background: "rgba(255,255,255,0.08)",
                   border: "1px solid rgba(255,255,255,0.12)",
-                  color: "rgba(255,255,255,0.5)",
+                  color: "rgba(246,241,230,0.6)",
                 }}
               >
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
@@ -395,7 +395,7 @@ export default function SessionPageClient({ session }: { session: SessionData | 
           <p className="text-white font-bold mb-1" style={{ fontFamily: "var(--font-plus-jakarta)", fontWeight: 800 }}>
             {isLoggedIn ? "Premium session" : "Members only"}
           </p>
-          <p className="text-sm mb-4" style={{ color: "rgba(255,255,255,0.45)" }}>
+          <p className="text-sm mb-4" style={{ color: "rgba(246,241,230,0.7)" }}>
             {isLoggedIn
               ? "Upgrade to unlock every session in the library."
               : "Create a free account or log in to access this session."}
@@ -406,7 +406,7 @@ export default function SessionPageClient({ session }: { session: SessionData | 
                 Sign up free
               </Link>
             )}
-            <Link href={isLoggedIn ? "/pricing" : "/login"} className="px-5 py-2 rounded-full text-sm font-bold" style={{ background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.7)" }}>
+            <Link href={isLoggedIn ? "/pricing" : "/login"} className="px-5 py-2 rounded-full text-sm font-bold" style={{ background: "rgba(255,255,255,0.08)", color: "rgba(246,241,230,0.8)" }}>
               {isLoggedIn ? "See plans" : "Log in"}
             </Link>
           </div>
@@ -439,7 +439,7 @@ export default function SessionPageClient({ session }: { session: SessionData | 
             </h3>
             <button
               onClick={() => setShowNotes(false)}
-              className="text-white/30 hover:text-white/60 transition-colors p-1"
+              className="text-cream/60 hover:text-cream/70 transition-colors p-1"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
@@ -447,7 +447,7 @@ export default function SessionPageClient({ session }: { session: SessionData | 
             </button>
           </div>
           <div className="flex-1 overflow-y-auto px-6 py-6">
-            <p className="leading-relaxed text-base italic" style={{ color: "rgba(255,255,255,0.55)" }}>
+            <p className="leading-relaxed text-base italic" style={{ color: "rgba(246,241,230,0.65)" }}>
               &ldquo;{session.description}&rdquo;
             </p>
           </div>
@@ -472,31 +472,31 @@ export default function SessionPageClient({ session }: { session: SessionData | 
           borderTop: "0.5px solid rgba(255,255,255,0.06)",
         }}
       >
-        <Link href="/library" className="flex flex-col items-center gap-1 p-3 transition-colors" style={{ color: "rgba(255,255,255,0.4)" }}>
+        <Link href="/library" className="flex flex-col items-center gap-1 p-3 transition-colors" style={{ color: "rgba(246,241,230,0.65)" }}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
           </svg>
           <span className="text-[9px] font-black uppercase tracking-widest" style={{ fontFamily: "var(--font-plus-jakarta)" }}>Audios</span>
         </Link>
-        <Link href="/coming-soon" className="flex flex-col items-center gap-1 p-3 transition-colors" style={{ color: "rgba(255,255,255,0.4)" }}>
+        <Link href="/coming-soon" className="flex flex-col items-center gap-1 p-3 transition-colors" style={{ color: "rgba(246,241,230,0.65)" }}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
             <path d="M21 6h-7.59l3.29-3.29L16 2l-4 4-4-4-.71.71L10.59 6H3c-1.1 0-2 .89-2 2v12c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.11-.9-2-2-2zm0 14H3V8h18v12zM9 10v8l7-4z"/>
           </svg>
           <span className="text-[9px] font-black uppercase tracking-widest" style={{ fontFamily: "var(--font-plus-jakarta)" }}>Live</span>
         </Link>
-        <Link href="/coming-soon" className="flex flex-col items-center gap-1 p-3 transition-colors" style={{ color: "rgba(255,255,255,0.4)" }}>
+        <Link href="/coming-soon" className="flex flex-col items-center gap-1 p-3 transition-colors" style={{ color: "rgba(246,241,230,0.65)" }}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
             <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
           </svg>
           <span className="text-[9px] font-black uppercase tracking-widest" style={{ fontFamily: "var(--font-plus-jakarta)" }}>Groups</span>
         </Link>
-        <Link href="/coming-soon" className="flex flex-col items-center gap-1 p-3 transition-colors" style={{ color: "rgba(255,255,255,0.4)" }}>
+        <Link href="/coming-soon" className="flex flex-col items-center gap-1 p-3 transition-colors" style={{ color: "rgba(246,241,230,0.65)" }}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
             <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
           </svg>
           <span className="text-[9px] font-black uppercase tracking-widest" style={{ fontFamily: "var(--font-plus-jakarta)" }}>Feed</span>
         </Link>
-        <Link href="/profile/favorites" className="flex flex-col items-center gap-1 p-3 transition-colors" style={{ color: "rgba(255,255,255,0.4)" }}>
+        <Link href="/profile/favorites" className="flex flex-col items-center gap-1 p-3 transition-colors" style={{ color: "rgba(246,241,230,0.65)" }}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
           </svg>
@@ -521,21 +521,21 @@ export default function SessionPageClient({ session }: { session: SessionData | 
           <button
             onClick={() => setSignupPromptDismissed(true)}
             className="absolute top-3 right-3 p-1 transition-colors"
-            style={{ color: "rgba(255,255,255,0.3)" }}
+            style={{ color: "rgba(246,241,230,0.6)" }}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
               <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
             </svg>
           </button>
           <p className="text-white font-bold mb-1" style={{ fontFamily: "var(--font-plus-jakarta)", fontWeight: 800 }}>Liked that?</p>
-          <p className="text-sm mb-4" style={{ color: "rgba(255,255,255,0.5)" }}>
+          <p className="text-sm mb-4" style={{ color: "rgba(246,241,230,0.6)" }}>
             Create a free account to save your progress and unlock more sessions.
           </p>
           <div className="flex gap-3">
             <Link href={`/signup?next=/session/${session.id}`} className="px-5 py-2 rounded-full text-sm font-bold text-white" style={{ backgroundColor: "#FF418E" }}>
               Sign up free
             </Link>
-            <Link href="/pricing" className="px-5 py-2 rounded-full text-sm" style={{ background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.6)" }}>
+            <Link href="/pricing" className="px-5 py-2 rounded-full text-sm" style={{ background: "rgba(255,255,255,0.08)", color: "rgba(246,241,230,0.7)" }}>
               See plans
             </Link>
           </div>

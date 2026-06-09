@@ -68,10 +68,10 @@ export default function SignupPage() {
             </svg>
           </div>
           <h2 className="text-xl font-bold text-white uppercase mb-2" style={{ fontFamily: "var(--font-lexend)" }}>Check your email</h2>
-          <p className="text-sm leading-relaxed mb-6" style={{ color: "rgba(255,255,255,0.4)" }}>
-            We sent a confirmation link to <strong style={{ color: "rgba(255,255,255,0.7)" }}>{email}</strong>.
+          <p className="text-sm leading-relaxed mb-6" style={{ color: "rgba(246,241,230,0.65)" }}>
+            We sent a confirmation link to <strong style={{ color: "rgba(246,241,230,0.8)" }}>{email}</strong>.
           </p>
-          <Link href="/login" className="text-sm transition-colors" style={{ color: "rgba(255,255,255,0.35)" }}>
+          <Link href="/login" className="text-sm transition-colors" style={{ color: "rgba(246,241,230,0.65)" }}>
             Back to log in
           </Link>
         </div>
@@ -100,8 +100,8 @@ export default function SignupPage() {
               WebkitTextFillColor: "transparent",
             }}
           >
-            We&apos;ve been waiting for you.<br />
-            It&apos;s time we rise together.
+            We have been waiting for you.<br />
+            It is time we regulate together.
           </h1>
         </div>
 
@@ -183,13 +183,13 @@ export default function SignupPage() {
           {/* Footer links */}
           <p className="text-center text-xs leading-relaxed" style={{ color: "rgba(255,255,255,0.2)" }}>
             By signing up you agree to our{" "}
-            <Link href="/terms" className="hover:text-white/50 transition-colors" style={{ color: "rgba(255,255,255,0.35)" }}>Terms</Link>
+            <Link href="/terms" className="hover:text-cream/60 transition-colors" style={{ color: "rgba(246,241,230,0.65)" }}>Terms</Link>
             {" "}&amp;{" "}
-            <Link href="/privacy" className="hover:text-white/50 transition-colors" style={{ color: "rgba(255,255,255,0.35)" }}>Privacy Policy</Link>.
+            <Link href="/privacy" className="hover:text-cream/60 transition-colors" style={{ color: "rgba(246,241,230,0.65)" }}>Privacy Policy</Link>.
           </p>
-          <p className="text-center text-sm" style={{ color: "rgba(255,255,255,0.3)" }}>
+          <p className="text-center text-sm" style={{ color: "rgba(246,241,230,0.6)" }}>
             Already have an account?{" "}
-            <Link href="/login" className="font-bold transition-colors hover:text-white" style={{ color: "rgba(255,255,255,0.6)" }}>
+            <Link href="/login" className="font-bold transition-colors hover:text-white" style={{ color: "rgba(246,241,230,0.7)" }}>
               Log in
             </Link>
           </p>

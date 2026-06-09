@@ -157,7 +157,7 @@ export default function ChallengeDetailPage() {
         <Navbar />
         <div className="flex-1 flex items-center justify-center px-4">
           <div className="text-center">
-            <p className="text-white/40 text-sm mb-4">{error || "Challenge not found."}</p>
+            <p className="text-cream/65 text-sm mb-4">{error || "Challenge not found."}</p>
             <Link href="/challenges" className="text-sm text-[#ff41b3]">← All challenges</Link>
           </div>
         </div>
@@ -176,7 +176,7 @@ export default function ChallengeDetailPage() {
       <main className="flex-1 max-w-2xl mx-auto w-full px-4 py-8">
 
         {/* Back */}
-        <Link href="/challenges" className="inline-flex items-center gap-1.5 text-sm text-white/35 hover:text-white/60 transition-colors mb-6">
+        <Link href="/challenges" className="inline-flex items-center gap-1.5 text-sm text-cream/65 hover:text-cream/70 transition-colors mb-6">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
             <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
           </svg>
@@ -207,22 +207,22 @@ export default function ChallengeDetailPage() {
                   </span>
                 )}
               </div>
-              <p className="text-xs text-white/30">
+              <p className="text-xs text-cream/60">
                 {TYPE_LABELS[challenge.challenge_type]} · {challenge.duration_days} days · {participants.length} participants
               </p>
             </div>
           </div>
 
           {challenge.description && (
-            <p className="text-sm text-white/50 leading-relaxed mb-5">{challenge.description}</p>
+            <p className="text-sm text-cream/60 leading-relaxed mb-5">{challenge.description}</p>
           )}
 
           {/* My progress */}
           {myParticipation ? (
             <div className="mb-5">
               <div className="flex items-center justify-between mb-2">
-                <p className="text-xs text-white/50">{progressLabel(challenge, myParticipation.progress_value)}</p>
-                <p className="text-xs text-white/40">{remaining}d remaining</p>
+                <p className="text-xs text-cream/60">{progressLabel(challenge, myParticipation.progress_value)}</p>
+                <p className="text-xs text-cream/65">{remaining}d remaining</p>
               </div>
               <div className="h-2 w-full rounded-full mb-1" style={{ backgroundColor: "rgba(255,255,255,0.07)" }}>
                 <div
@@ -239,7 +239,7 @@ export default function ChallengeDetailPage() {
               className="rounded-lg p-3 mb-5 text-center"
               style={{ backgroundColor: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.07)" }}
             >
-              <p className="text-xs text-white/30">You haven&apos;t joined this challenge yet</p>
+              <p className="text-xs text-cream/60">You haven&apos;t joined this challenge yet</p>
             </div>
           )}
 
@@ -267,7 +267,7 @@ export default function ChallengeDetailPage() {
                   <button
                     onClick={handleAbandon}
                     disabled={abandoning}
-                    className="px-4 py-2.5 rounded-lg text-sm text-white/30 hover:text-red-400 transition-colors"
+                    className="px-4 py-2.5 rounded-lg text-sm text-cream/60 hover:text-red-400 transition-colors"
                     style={{ border: "0.5px solid rgba(255,255,255,0.1)" }}
                   >
                     Abandon
@@ -281,7 +281,7 @@ export default function ChallengeDetailPage() {
         {/* Leaderboard */}
         {participants.length > 0 && (
           <div>
-            <p className="text-xs text-white/40 mb-3 uppercase tracking-wide">
+            <p className="text-xs text-cream/65 mb-3 uppercase tracking-wide">
               {participants.length > 1 ? "Leaderboard" : "Participants"}
             </p>
             <div
@@ -319,7 +319,7 @@ export default function ChallengeDetailPage() {
                     {/* Name + progress bar */}
                     <div className="flex-1 min-w-0">
                       <p className="text-sm text-white truncate" style={{ fontWeight: isMe ? 500 : 400 }}>
-                        {p.display_name}{isMe && <span className="text-white/30 text-xs ml-1">(you)</span>}
+                        {p.display_name}{isMe && <span className="text-cream/60 text-xs ml-1">(you)</span>}
                         {p.completed && <span className="text-green-400 text-xs ml-1">✓</span>}
                       </p>
                       <div className="h-1 w-full rounded-full mt-1" style={{ backgroundColor: "rgba(255,255,255,0.07)" }}>
@@ -331,7 +331,7 @@ export default function ChallengeDetailPage() {
                     </div>
 
                     {/* Progress value */}
-                    <p className="text-xs text-white/40 shrink-0">{p.progress_value}/{challenge.target_value}</p>
+                    <p className="text-xs text-cream/65 shrink-0">{p.progress_value}/{challenge.target_value}</p>
                   </div>
                 );
               })}

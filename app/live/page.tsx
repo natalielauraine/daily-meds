@@ -85,7 +85,7 @@ export default function LiveComingSoonPage() {
         className="text-base sm:text-lg max-w-lg mb-10 leading-relaxed"
         style={{
           fontFamily: "var(--font-manrope)",
-          color: "rgba(255,255,255,0.5)",
+          color: "rgba(246,241,230,0.6)",
         }}
       >
         Live sessions with Natalie are coming soon. In the meantime, explore

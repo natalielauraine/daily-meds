@@ -170,7 +170,7 @@ export default function SessionCard({ session }: { session: Session }) {
                   href={`/session/${session.id}`}
                   onClick={(e) => e.stopPropagation()}
                   className="w-full flex items-center gap-2.5 px-3 py-2 text-xs transition-colors hover:bg-white/[0.05]"
-                  style={{ color: "rgba(255,255,255,0.65)", fontFamily: "var(--font-space-grotesk)" }}
+                  style={{ color: "rgba(246,241,230,0.75)", fontFamily: "var(--font-space-grotesk)" }}
                 >
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M8 5v14l11-7z" />
@@ -207,7 +207,7 @@ export default function SessionCard({ session }: { session: Session }) {
               style={{
                 fontFamily: "var(--font-plus-jakarta)",
                 fontWeight: 700,
-                color: hovered ? "#E2E2E2" : "rgba(226,226,226,0.85)",
+                color: hovered ? "#f6f1e6" : "rgba(226,226,226,0.85)",
                 display: "-webkit-box",
                 WebkitLineClamp: 2,
                 WebkitBoxOrient: "vertical",
@@ -222,7 +222,7 @@ export default function SessionCard({ session }: { session: Session }) {
               className="text-[10px] uppercase tracking-wider"
               style={{
                 fontFamily: "var(--font-space-grotesk)",
-                color: "rgba(255,255,255,0.3)",
+                color: "rgba(246,241,230,0.6)",
               }}
             >
               {session.type}

@@ -73,7 +73,7 @@ export default function OfflinePage() {
 
       <p
         style={{
-          color: "rgba(255,255,255,0.45)",
+          color: "rgba(246,241,230,0.7)",
           fontSize: "15px",
           lineHeight: 1.6,
           maxWidth: "280px",

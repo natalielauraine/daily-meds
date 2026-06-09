@@ -135,7 +135,7 @@ export default function BrandCrewDetailPage() {
         <Navbar />
         <div className="flex-1 flex items-center justify-center px-4">
           <div className="text-center">
-            <p className="text-white/40 text-sm mb-4">{error || "Crew not found."}</p>
+            <p className="text-cream/65 text-sm mb-4">{error || "Crew not found."}</p>
             <Link href="/brand-crews" className="text-sm text-[#ff41b3] hover:opacity-80">← All brand crews</Link>
           </div>
         </div>
@@ -152,7 +152,7 @@ export default function BrandCrewDetailPage() {
       <main className="flex-1 max-w-2xl mx-auto w-full px-4 py-8">
 
         {/* Back */}
-        <Link href="/brand-crews" className="inline-flex items-center gap-1.5 text-sm text-white/35 hover:text-white/60 transition-colors mb-6">
+        <Link href="/brand-crews" className="inline-flex items-center gap-1.5 text-sm text-cream/65 hover:text-cream/70 transition-colors mb-6">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
             <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
           </svg>
@@ -189,14 +189,14 @@ export default function BrandCrewDetailPage() {
                 </div>
               </div>
               {crew.brand_type && (
-                <p className="text-xs text-white/30 uppercase tracking-wide mb-1">{crew.brand_type}</p>
+                <p className="text-xs text-cream/60 uppercase tracking-wide mb-1">{crew.brand_type}</p>
               )}
-              <p className="text-xs text-white/35">{memberCount.toLocaleString()} member{memberCount !== 1 ? "s" : ""}</p>
+              <p className="text-xs text-cream/65">{memberCount.toLocaleString()} member{memberCount !== 1 ? "s" : ""}</p>
             </div>
           </div>
 
           {crew.description && (
-            <p className="text-sm text-white/55 leading-relaxed mb-5">{crew.description}</p>
+            <p className="text-sm text-cream/65 leading-relaxed mb-5">{crew.description}</p>
           )}
 
           {/* Social links */}
@@ -204,7 +204,7 @@ export default function BrandCrewDetailPage() {
             <div className="flex flex-wrap gap-2 mb-5">
               {crew.website_url && (
                 <a href={crew.website_url} target="_blank" rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-white/50 hover:text-white transition-colors"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-cream/60 hover:text-white transition-colors"
                   style={{ border: "0.5px solid rgba(255,255,255,0.1)" }}>
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
                   Website
@@ -212,14 +212,14 @@ export default function BrandCrewDetailPage() {
               )}
               {socialLinks.instagram && (
                 <a href={socialLinks.instagram} target="_blank" rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-white/50 hover:text-white transition-colors"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-cream/60 hover:text-white transition-colors"
                   style={{ border: "0.5px solid rgba(255,255,255,0.1)" }}>
                   Instagram
                 </a>
               )}
               {socialLinks.tiktok && (
                 <a href={socialLinks.tiktok} target="_blank" rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-white/50 hover:text-white transition-colors"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-cream/60 hover:text-white transition-colors"
                   style={{ border: "0.5px solid rgba(255,255,255,0.1)" }}>
                   TikTok
                 </a>
@@ -239,7 +239,7 @@ export default function BrandCrewDetailPage() {
                 </div>
                 <button
                   onClick={copyInviteLink}
-                  className="px-4 py-2.5 rounded-lg text-xs text-white/50 hover:text-white transition-colors"
+                  className="px-4 py-2.5 rounded-lg text-xs text-cream/60 hover:text-white transition-colors"
                   style={{ border: "0.5px solid rgba(255,255,255,0.12)" }}
                 >
                   {inviteCopied ? "Copied!" : "Share"}
@@ -247,7 +247,7 @@ export default function BrandCrewDetailPage() {
                 <button
                   onClick={handleLeave}
                   disabled={leaving}
-                  className="px-4 py-2.5 rounded-lg text-xs text-white/30 hover:text-red-400 transition-colors"
+                  className="px-4 py-2.5 rounded-lg text-xs text-cream/60 hover:text-red-400 transition-colors"
                   style={{ border: "0.5px solid rgba(255,255,255,0.08)" }}
                 >
                   Leave
@@ -265,7 +265,7 @@ export default function BrandCrewDetailPage() {
                 </button>
                 <button
                   onClick={copyInviteLink}
-                  className="px-4 py-2.5 rounded-lg text-xs text-white/50 hover:text-white transition-colors"
+                  className="px-4 py-2.5 rounded-lg text-xs text-cream/60 hover:text-white transition-colors"
                   style={{ border: "0.5px solid rgba(255,255,255,0.12)" }}
                 >
                   {inviteCopied ? "Copied!" : "Share"}
@@ -278,7 +278,7 @@ export default function BrandCrewDetailPage() {
         {/* Recent members */}
         {members.length > 0 && (
           <div className="mb-6">
-            <p className="text-xs text-white/40 mb-3 uppercase tracking-wide">
+            <p className="text-xs text-cream/65 mb-3 uppercase tracking-wide">
               Recent members
             </p>
             <div
@@ -298,7 +298,7 @@ export default function BrandCrewDetailPage() {
                         m.display_name[0]?.toUpperCase() ?? "?"
                       )}
                     </div>
-                    <span className="text-[10px] text-white/30 max-w-[40px] truncate text-center">
+                    <span className="text-[10px] text-cream/60 max-w-[40px] truncate text-center">
                       {m.display_name}
                     </span>
                   </div>
@@ -306,7 +306,7 @@ export default function BrandCrewDetailPage() {
                 {memberCount > 12 && (
                   <div className="flex flex-col items-center gap-1">
                     <div
-                      className="w-9 h-9 rounded-full flex items-center justify-center text-xs text-white/40"
+                      className="w-9 h-9 rounded-full flex items-center justify-center text-xs text-cream/65"
                       style={{ border: "0.5px solid rgba(255,255,255,0.1)" }}
                     >
                       +{memberCount - 12}
@@ -326,7 +326,7 @@ export default function BrandCrewDetailPage() {
         >
           <div>
             <p className="text-sm text-white" style={{ fontWeight: 500 }}>Meditate together</p>
-            <p className="text-xs text-white/35 mt-0.5">Join or schedule a Group Med</p>
+            <p className="text-xs text-cream/65 mt-0.5">Join or schedule a Group Med</p>
           </div>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="white" opacity={0.3}>
             <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>

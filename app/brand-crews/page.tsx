@@ -115,7 +115,7 @@ export default function BrandCrewsPage() {
             </svg>
           </div>
           <h1 className="text-2xl text-white mb-2" style={{ fontWeight: 500 }}>Brand Crews</h1>
-          <p className="text-sm text-white/40 max-w-md mx-auto">
+          <p className="text-sm text-cream/65 max-w-md mx-auto">
             Meditate with the communities you love. Join a crew from a festival, brand or organisation you're part of.
           </p>
         </div>
@@ -127,7 +127,7 @@ export default function BrandCrewsPage() {
           </div>
         ) : crews.length === 0 ? (
           <div className="text-center py-16">
-            <p className="text-white/30 text-sm">No brand crews yet — check back soon.</p>
+            <p className="text-cream/60 text-sm">No brand crews yet — check back soon.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-12">
@@ -161,14 +161,14 @@ export default function BrandCrewsPage() {
                 {/* Name + description */}
                 <h2 className="text-white text-base mb-1" style={{ fontWeight: 500 }}>{crew.name}</h2>
                 {crew.brand_type && (
-                  <p className="text-[11px] text-white/30 mb-2 uppercase tracking-wide">{crew.brand_type}</p>
+                  <p className="text-[11px] text-cream/60 mb-2 uppercase tracking-wide">{crew.brand_type}</p>
                 )}
-                <p className="text-xs text-white/45 leading-relaxed mb-4 flex-1">
+                <p className="text-xs text-cream/70 leading-relaxed mb-4 flex-1">
                   {crew.description ?? "A brand crew on Daily Meds."}
                 </p>
 
                 {/* Member count */}
-                <p className="text-xs text-white/30 mb-4">
+                <p className="text-xs text-cream/60 mb-4">
                   {crew.memberCount.toLocaleString()} member{crew.memberCount !== 1 ? "s" : ""}
                 </p>
 
@@ -176,7 +176,7 @@ export default function BrandCrewsPage() {
                 <div className="flex gap-2">
                   <Link
                     href={`/brand-crews/${crew.id}`}
-                    className="flex-1 py-2 rounded-lg text-xs text-white/60 text-center transition-colors hover:text-white"
+                    className="flex-1 py-2 rounded-lg text-xs text-cream/70 text-center transition-colors hover:text-white"
                     style={{ border: "0.5px solid rgba(255,255,255,0.12)" }}
                   >
                     View crew
@@ -210,7 +210,7 @@ export default function BrandCrewsPage() {
           style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.08)" }}
         >
           <p className="text-sm text-white mb-1" style={{ fontWeight: 500 }}>Are you a brand or festival?</p>
-          <p className="text-xs text-white/40 mb-4">Create a branded crew for your audience and meditate together.</p>
+          <p className="text-xs text-cream/65 mb-4">Create a branded crew for your audience and meditate together.</p>
           <Link
             href="/partnerships"
             className="inline-block px-6 py-2.5 rounded-lg text-sm text-white transition-opacity hover:opacity-80"

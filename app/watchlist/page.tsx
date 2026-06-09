@@ -85,7 +85,7 @@ export default function SavedPage() {
         {/* Back button */}
         <Link
           href="/"
-          className="inline-flex items-center gap-1.5 text-sm text-white/40 hover:text-white/70 transition-colors mb-8"
+          className="inline-flex items-center gap-1.5 text-sm text-cream/65 hover:text-cream/80 transition-colors mb-8"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
             <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
@@ -96,7 +96,7 @@ export default function SavedPage() {
         {/* Page header */}
         <div className="mb-8">
           <h1 className="text-2xl text-white mb-1 uppercase" style={{ fontFamily: "var(--font-plus-jakarta)", fontWeight: 800, letterSpacing: "-0.01em" }}>Saved</h1>
-          <p className="text-sm text-white/40">
+          <p className="text-sm text-cream/65">
             {loading ? "Loading…" : `${sessions.length} session${sessions.length !== 1 ? "s" : ""} saved`}
           </p>
         </div>
@@ -123,8 +123,8 @@ export default function SavedPage() {
             <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="1.5" className="mb-3">
               <path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"/>
             </svg>
-            <p className="text-sm text-white/30 mb-1">Nothing saved yet</p>
-            <p className="text-xs text-white/20">Tap the bookmark on any session to save it here</p>
+            <p className="text-sm text-cream/60 mb-1">Nothing saved yet</p>
+            <p className="text-xs text-cream/60">Tap the bookmark on any session to save it here</p>
           </div>
         )}
 
@@ -152,8 +152,8 @@ export default function SavedPage() {
                 {/* Session info */}
                 <Link href={`/session/${session.session_id}`} className="flex-1 min-w-0 hover:opacity-70 transition-opacity">
                   <p className="text-sm text-white truncate" style={{ fontWeight: 500 }}>{session.title}</p>
-                  <p className="text-xs text-white/35 mt-0.5">{session.type} · {session.duration}</p>
-                  <p className="text-xs text-white/25 mt-0.5">{session.mood_category}</p>
+                  <p className="text-xs text-cream/65 mt-0.5">{session.type} · {session.duration}</p>
+                  <p className="text-xs text-cream/60 mt-0.5">{session.mood_category}</p>
                 </Link>
 
                 {/* Free badge + remove button */}
@@ -168,7 +168,7 @@ export default function SavedPage() {
                   )}
                   <button
                     onClick={() => handleUnsave(session.watchlist_id)}
-                    className="text-white/25 hover:text-white/60 transition-colors"
+                    className="text-cream/60 hover:text-cream/70 transition-colors"
                     aria-label="Remove from saved"
                   >
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">

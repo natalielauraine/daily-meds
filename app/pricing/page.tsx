@@ -1,7 +1,7 @@
 "use client";
 
 // Pricing page — six subscription tiers: Free, Monthly Listener (£9.99/mo), Annual Listener (£99.99/yr),
-// The Seeker (£19.99/mo), The Dedicated (£199/yr), The Master (£299.99 lifetime).
+// The Seeker (£19.99/mo), The Dedicated (£199/yr), The Founder (£299.99 lifetime).
 // Layout: cinematic hero → comparison table → £1 trial banner → 3-col plan grid → tagline band → FAQ.
 // Matches the Stitch "Subscription Plans" design with the neon brand palette.
 
@@ -25,7 +25,9 @@ const PRICE_IDS: Record<string, string> = {
 
 // ── PLAN DATA ─────────────────────────────────────────────────────────────────
 
-const PLANS = [
+// Row 1: Free | Monthly Audio | Monthly Live
+// Row 2: Annual Audio | Annual Live | Founder
+const PLANS_ROW1 = [
   {
     id: "free",
     name: "The Observer",
@@ -37,6 +39,7 @@ const PLANS = [
     features: [
       "10 free sessions",
       "Mood category browsing",
+      "Stats and progress tracking",
       "Breathing timer (coming soon)",
       "Community access (coming soon)",
     ],
@@ -59,28 +62,8 @@ const PLANS = [
       "Everything in Free",
       "Full audio library",
       "New drops every week",
+      "Stats and progress tracking",
       "Breathing timer (coming soon)",
-    ],
-    locked: [
-      "Live sessions with Natalie (coming soon)",
-      "Offline downloads (coming soon)",
-      "Group meditation rooms (coming soon)",
-    ],
-  },
-  {
-    id: "audioAnnual",
-    name: "The Annual Listener",
-    tagline: "Audio library — save with annual",
-    price: "£99.99",
-    priceNote: "per year · audio only",
-    cta: "Start Listening",
-    featured: true,
-    features: [
-      "Everything in Free",
-      "Full audio library",
-      "New drops every week",
-      "Breathing timer (coming soon)",
-      "Save vs monthly",
     ],
     locked: [
       "Live sessions with Natalie (coming soon)",
@@ -98,11 +81,37 @@ const PLANS = [
     featured: false,
     features: [
       "Everything in The Listener",
+      "Stats and progress tracking",
       "Live sessions with Natalie (coming soon)",
       "Group meditation rooms (coming soon)",
     ],
     locked: [
       "Offline downloads (coming soon)",
+    ],
+  },
+];
+
+const PLANS_ROW2 = [
+  {
+    id: "audioAnnual",
+    name: "The Annual Listener",
+    tagline: "Audio library — save with annual",
+    price: "£99.99",
+    priceNote: "per year · audio only",
+    cta: "Start Listening",
+    featured: true,
+    features: [
+      "Everything in Free",
+      "Full audio library",
+      "New drops every week",
+      "Stats and progress tracking",
+      "Breathing timer (coming soon)",
+      "Save 17% vs monthly",
+    ],
+    locked: [
+      "Live sessions with Natalie (coming soon)",
+      "Offline downloads (coming soon)",
+      "Group meditation rooms (coming soon)",
     ],
   },
   {
@@ -115,9 +124,10 @@ const PLANS = [
     featured: false,
     features: [
       "Everything in The Listener",
+      "Stats and progress tracking",
       "Live sessions with Natalie (coming soon)",
       "Group meditation rooms (coming soon)",
-      "Save vs monthly",
+      "Save 17% vs monthly",
     ],
     locked: [
       "Offline downloads (coming soon)",
@@ -125,7 +135,7 @@ const PLANS = [
   },
   {
     id: "lifetime",
-    name: "The Master",
+    name: "The Founder",
     tagline: "Pay once, own it forever — only 350 spots available",
     price: "£299.99",
     priceNote: "one-time · lifetime access",
@@ -134,6 +144,7 @@ const PLANS = [
     features: [
       "Full library, forever",
       "All future series included",
+      "Stats and progress tracking",
       "Live sessions with Natalie (coming soon)",
       "Offline downloads (coming soon)",
       "Group meditation rooms (coming soon)",
@@ -144,6 +155,8 @@ const PLANS = [
   },
 ];
 
+const PLANS = [...PLANS_ROW1, ...PLANS_ROW2];
+
 // ── FAQ DATA ──────────────────────────────────────────────────────────────────
 
 const FAQS = [
@@ -153,31 +166,31 @@ const FAQS = [
   },
   {
     q: "What's included in the free plan?",
-    a: "10 handpicked sessions, mood category browsing, and community features (coming soon). No credit card required.",
+    a: "10 handpicked sessions, mood category browsing, stats and progress tracking, and community features (coming soon). No credit card required.",
   },
   {
-    q: "What are the different plans?",
-    a: "Free gives you 10 sessions at no cost. The Monthly Listener is £9.99/month — full audio library. The Annual Listener is £99.99/year — same audio access, save vs monthly. The Seeker is £19.99/month — audio plus live sessions with Natalie (coming soon). The Dedicated is £199/year — everything in The Seeker, billed annually. The Master is £299.99 one-time for lifetime access to everything, including all future content.",
+    q: "What are Live sessions?",
+    a: "Live sessions are real-time guided experiences hosted by Natalie \u2014 including Audio Hugs (group listening), Alchemy Rewire (guided transformation), and Expert Series (guest teachers). Live sessions are coming soon and will be available to subscribers on eligible plans. We\u2019ll notify you as soon as they launch.",
   },
   {
-    q: "Is the founder membership really one payment?",
-    a: "Yes. £299.99 once, no monthly fees, no renewals, no surprises. Every future session and series is included.",
+    q: "Is the Founder membership really one payment?",
+    a: "Yes. \u00A3299.99 once, no monthly fees, no renewals, no surprises. Every future session and series is included. By choosing the Founder plan and paying upfront for live access, you are directly supporting the growth of The Daily Meds. In return, 4% of your total contribution goes to our chosen charity.",
   },
   {
     q: "Can I download sessions to listen offline?",
-    a: "Offline downloads are coming soon and will be available on the Lifetime plan. For now, all subscribers can stream anywhere with internet.",
+    a: "Offline listening will be available when the Daily Meds app launches. We will notify all members when this goes live.",
   },
   {
-    q: "What are group meditation rooms?",
-    a: "Group meditation rooms are coming soon. They will let you meditate live with friends, with a shared timer, ambient audio, and optional emoji reactions.",
+    q: "What are group meditations?",
+    a: "As a Daily Meds member, you may be invited to join community group meditations hosted by our affiliate partners, audience owners and major collaborators. These sessions are designed to help regulate our wider community and build meaningful connection.",
+  },
+  {
+    q: "What is the Expert Series?",
+    a: "Our Expert Series features guest teachers covering somatic awareness and advanced brain training techniques, delivered in partnership with our in-house neuroscience collaborators at MuLabs.",
   },
   {
     q: "Is my payment secure?",
     a: "Yes, all payments are handled by Stripe. We never store your card details.",
-  },
-  {
-    q: "What are Live sessions?",
-    a: "Live sessions are real-time guided experiences hosted by Natalie — including Audio Hugs (group listening), Alchemy Rewire (guided transformation), and Expert Series (guest teachers). Live sessions are coming soon and will be available to subscribers on eligible plans. We'll notify you as soon as they launch.",
   },
 ];
 
@@ -231,7 +244,7 @@ function FaqItem({ q, a }: { q: string; a: string }) {
       >
         <span
           className="text-sm pr-4"
-          style={{ fontFamily: "var(--font-plus-jakarta)", fontWeight: 700, color: "#E2E2E2" }}
+          style={{ fontFamily: "var(--font-plus-jakarta)", fontWeight: 700, color: "#f6f1e6" }}
         >
           {q}
         </span>
@@ -246,7 +259,7 @@ function FaqItem({ q, a }: { q: string; a: string }) {
       {open && (
         <p
           className="px-5 pb-4 text-sm leading-relaxed"
-          style={{ fontFamily: "var(--font-inter)", color: "rgba(255,255,255,0.45)" }}
+          style={{ fontFamily: "var(--font-inter)", color: "rgba(246,241,230,0.7)" }}
         >
           {a}
         </p>
@@ -257,7 +270,7 @@ function FaqItem({ q, a }: { q: string; a: string }) {
 
 // ── PAGE ──────────────────────────────────────────────────────────────────────
 
-const PLAN_ORDER = ["free", "audio", "audioAnnual", "monthly", "annual", "lifetime"];
+const PLAN_ORDER = ["free", "audio", "monthly", "audioAnnual", "annual", "lifetime"];
 
 export default function PricingPage() {
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
@@ -348,7 +361,7 @@ export default function PricingPage() {
             {/* Eyebrow label */}
             <p
               className="text-xs uppercase tracking-widest mb-4"
-              style={{ fontFamily: "var(--font-space-grotesk)", fontWeight: 500, color: "rgba(255,255,255,0.35)" }}
+              style={{ fontFamily: "var(--font-space-grotesk)", fontWeight: 500, color: "rgba(246,241,230,0.65)" }}
             >
               Pricing
             </p>
@@ -362,7 +375,7 @@ export default function PricingPage() {
                 fontSize: "clamp(2.2rem, 6vw, 4rem)",
                 letterSpacing: "-0.02em",
                 lineHeight: 1.1,
-                color: "#E2E2E2",
+                color: "#f6f1e6",
               }}
             >
               Choose your{" "}
@@ -381,7 +394,7 @@ export default function PricingPage() {
             {/* Subheading */}
             <p
               className="text-base sm:text-lg mb-10 max-w-xl mx-auto"
-              style={{ fontFamily: "var(--font-inter)", color: "rgba(255,255,255,0.4)", lineHeight: 1.7 }}
+              style={{ fontFamily: "var(--font-inter)", color: "rgba(246,241,230,0.65)", lineHeight: 1.7 }}
             >
               If you pressed play, something&apos;s on your mind. Every plan includes access to Natalie&apos;s audio library. Cancel any time.
             </p>
@@ -392,8 +405,9 @@ export default function PricingPage() {
         {/* ── PRICING GRID ── */}
         <section className="px-4 sm:px-6 lg:px-8 pb-20">
           <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5 items-start lg:mt-4">
-              {PLANS.map((plan) => {
+            {[PLANS_ROW1, PLANS_ROW2].map((row, rowIdx) => (
+            <div key={rowIdx} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5 items-stretch lg:mt-4 mb-8">
+              {row.map((plan) => {
                 const isFeatured = plan.featured;
                 const isCurrentPlan = currentPlanId === plan.id ||
                   (currentPlanId === "audio" && plan.id === "audio") ||
@@ -438,18 +452,6 @@ export default function PricingPage() {
                     )}
 
                     <div className="p-6 flex flex-col flex-1">
-                      {/* Plan icon */}
-                      <div
-                        className="w-10 h-10 rounded-full flex items-center justify-center mb-4"
-                        style={{
-                          background: isFeatured
-                            ? "linear-gradient(135deg, #ff41b3, #ec723d)"
-                            : "rgba(255,255,255,0.07)",
-                        }}
-                      >
-                        <LotusIcon size={18} opacity={isFeatured ? 0.95 : 0.5} />
-                      </div>
-
                       {/* Plan name */}
                       <h2
                         className="uppercase mb-1"
@@ -458,7 +460,7 @@ export default function PricingPage() {
                           fontWeight: 800,
                           fontSize: "14px",
                           letterSpacing: "0.02em",
-                          color: isFeatured ? "#ff41b3" : "#E2E2E2",
+                          color: isFeatured ? "#ff41b3" : "#f6f1e6",
                         }}
                       >
                         {plan.name}
@@ -466,8 +468,8 @@ export default function PricingPage() {
 
                       {/* Tagline */}
                       <p
-                        className="text-xs mb-5"
-                        style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.35)" }}
+                        className="text-sm mb-5"
+                        style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(246,241,230,0.65)" }}
                       >
                         {plan.tagline}
                       </p>
@@ -480,7 +482,7 @@ export default function PricingPage() {
                               fontFamily: "var(--font-plus-jakarta)",
                               fontWeight: 800,
                               fontSize: displayPrice === "Free" ? "2rem" : "2.1rem",
-                              color: "#E2E2E2",
+                              color: "#f6f1e6",
                               lineHeight: 1,
                             }}
                           >
@@ -488,8 +490,8 @@ export default function PricingPage() {
                           </span>
                           {displayPrice !== "Free" && displayNote && (
                             <span
-                              className="text-xs mb-0.5 leading-tight"
-                              style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.3)" }}
+                              className="text-sm mb-0.5 leading-tight"
+                              style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(246,241,230,0.6)" }}
                             >
                               {displayNote}
                             </span>
@@ -506,7 +508,7 @@ export default function PricingPage() {
                             fontFamily: "var(--font-space-grotesk)",
                             fontWeight: 700,
                             background: "rgba(255,255,255,0.08)",
-                            color: "rgba(255,255,255,0.65)",
+                            color: "rgba(246,241,230,0.75)",
                             border: "1px solid rgba(255,255,255,0.1)",
                           }}
                         >
@@ -554,7 +556,7 @@ export default function PricingPage() {
                             <Tick />
                             <span
                               className="text-xs leading-snug"
-                              style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.65)" }}
+                              style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(246,241,230,0.75)" }}
                             >
                               {f}
                             </span>
@@ -578,11 +580,12 @@ export default function PricingPage() {
                 );
               })}
             </div>
+            ))}
 
             {/* Trust signals row */}
             <div
-              className="flex flex-wrap justify-center gap-6 mt-10 text-xs"
-              style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.25)" }}
+              className="flex flex-wrap justify-center gap-6 mt-10 text-sm"
+              style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(246,241,230,0.6)" }}
             >
               <span>Secure payment via Stripe</span>
               <span>·</span>
@@ -595,18 +598,27 @@ export default function PricingPage() {
           </div>
         </section>
 
-        {/* ── AFFILIATE NOTE ── */}
+        {/* ── AFFILIATE CARD ── */}
         <section className="px-4 sm:px-6 lg:px-8 pb-10">
-          <div className="max-w-3xl mx-auto text-center">
+          <div
+            className="max-w-3xl mx-auto rounded-2xl p-8 sm:p-10 text-center"
+            style={{ backgroundColor: "#1F1F1F", border: "1px solid rgba(255,255,255,0.07)" }}
+          >
+            <h3
+              className="text-lg sm:text-xl text-white mb-3 uppercase"
+              style={{ fontFamily: "var(--font-plus-jakarta)", fontWeight: 800 }}
+            >
+              Earn while you share
+            </h3>
             <p
-              className="text-sm leading-relaxed"
-              style={{ fontFamily: "var(--font-inter)", color: "rgba(255,255,255,0.4)" }}
+              className="text-sm leading-relaxed mb-4"
+              style={{ fontFamily: "var(--font-inter)", color: "rgba(246,241,230,0.7)" }}
             >
               Every member automatically becomes an affiliate and earns 10% on every person they refer. Artists and creators with larger audiences can{" "}
               <Link
                 href="/affiliate"
                 className="underline underline-offset-4 transition-colors hover:text-white"
-                style={{ color: "rgba(255,255,255,0.6)" }}
+                style={{ color: "#ff41b3" }}
               >
                 apply for our Artist Partner Programme
               </Link>{" "}
@@ -633,7 +645,7 @@ export default function PricingPage() {
                 fontWeight: 800,
                 fontSize: "clamp(1.4rem, 4vw, 2rem)",
                 letterSpacing: "-0.01em",
-                color: "#E2E2E2",
+                color: "#f6f1e6",
               }}
             >
               Every breath is a{" "}
@@ -650,7 +662,7 @@ export default function PricingPage() {
             </p>
             <p
               className="text-sm mb-8"
-              style={{ fontFamily: "var(--font-inter)", color: "rgba(255,255,255,0.4)", lineHeight: 1.7 }}
+              style={{ fontFamily: "var(--font-inter)", color: "rgba(246,241,230,0.65)", lineHeight: 1.7 }}
             >
               Natalie created The Daily Meds for the moments no one talks about — the comedowns, the 3am spirals, the days when everything is just a bit too much. Start for free today.
             </p>
@@ -678,7 +690,7 @@ export default function PricingPage() {
           <div className="max-w-5xl mx-auto">
             <p
               className="text-xs uppercase tracking-widest mb-2 text-center"
-              style={{ fontFamily: "var(--font-space-grotesk)", fontWeight: 500, color: "rgba(255,255,255,0.3)" }}
+              style={{ fontFamily: "var(--font-space-grotesk)", fontWeight: 500, color: "rgba(246,241,230,0.6)" }}
             >
               How we compare
             </p>
@@ -689,7 +701,7 @@ export default function PricingPage() {
                 fontWeight: 800,
                 fontSize: "clamp(1.2rem, 3vw, 1.75rem)",
                 letterSpacing: "-0.01em",
-                color: "#E2E2E2",
+                color: "#f6f1e6",
               }}
             >
               Why Daily Meds is different
@@ -712,7 +724,7 @@ export default function PricingPage() {
           <div className="max-w-2xl mx-auto">
             <p
               className="text-xs uppercase tracking-widest mb-2 text-center"
-              style={{ fontFamily: "var(--font-space-grotesk)", fontWeight: 500, color: "rgba(255,255,255,0.3)" }}
+              style={{ fontFamily: "var(--font-space-grotesk)", fontWeight: 500, color: "rgba(246,241,230,0.6)" }}
             >
               Questions
             </p>
@@ -723,7 +735,7 @@ export default function PricingPage() {
                 fontWeight: 800,
                 fontSize: "clamp(1.2rem, 3vw, 1.75rem)",
                 letterSpacing: "-0.01em",
-                color: "#E2E2E2",
+                color: "#f6f1e6",
               }}
             >
               Frequently asked

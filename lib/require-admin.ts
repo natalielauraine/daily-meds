@@ -33,7 +33,8 @@ export async function requireAdmin(): Promise<NextResponse | null> {
   const { data: { user } } = await supabase.auth.getUser();
 
   // Fail if not logged in, or logged in as a non-admin user
-  if (!user || user.email !== adminEmail) {
+  const adminEmails = adminEmail.split(",").map((e) => e.trim().toLowerCase());
+  if (!user || !adminEmails.includes(user.email?.toLowerCase() ?? "")) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

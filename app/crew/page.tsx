@@ -220,7 +220,7 @@ export default function CrewPage() {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-xl text-white" style={{ fontWeight: 500 }}>My Crew</h1>
-            <p className="text-xs text-white/40 mt-0.5">Your private meditation groups</p>
+            <p className="text-xs text-cream/65 mt-0.5">Your private meditation groups</p>
           </div>
           <button
             onClick={() => setShowCreate(true)}
@@ -266,8 +266,8 @@ export default function CrewPage() {
                 <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
               </svg>
             </div>
-            <p className="text-white/30 text-sm mb-1">No crews yet</p>
-            <p className="text-white/20 text-xs">Create one or enter an invite code above</p>
+            <p className="text-cream/60 text-sm mb-1">No crews yet</p>
+            <p className="text-cream/60 text-xs">Create one or enter an invite code above</p>
           </div>
         ) : (
           <div className="flex flex-col gap-3">
@@ -281,7 +281,7 @@ export default function CrewPage() {
                 <div className="flex items-start justify-between mb-3">
                   <div>
                     <h2 className="text-white text-base" style={{ fontWeight: 500 }}>{crew.name}</h2>
-                    <p className="text-xs text-white/30 mt-0.5">
+                    <p className="text-xs text-cream/60 mt-0.5">
                       {crew.memberCount} member{crew.memberCount !== 1 ? "s" : ""}
                     </p>
                   </div>
@@ -295,7 +295,7 @@ export default function CrewPage() {
                     {crew.name[0]?.toUpperCase()}
                   </div>
                 </div>
-                <p className="text-xs text-white/35">{crew.latestActivity}</p>
+                <p className="text-xs text-cream/65">{crew.latestActivity}</p>
               </Link>
             ))}
           </div>
@@ -316,9 +316,9 @@ export default function CrewPage() {
             style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.12)" }}
           >
             <h2 className="text-white text-base mb-1" style={{ fontWeight: 500 }}>Create a Crew</h2>
-            <p className="text-xs text-white/35 mb-5">An 8-character invite code is generated automatically for you to share.</p>
+            <p className="text-xs text-cream/65 mb-5">An 8-character invite code is generated automatically for you to share.</p>
 
-            <label className="block text-xs text-white/40 mb-1.5">Crew name</label>
+            <label className="block text-xs text-cream/65 mb-1.5">Crew name</label>
             <input
               type="text"
               value={crewName}
@@ -336,7 +336,7 @@ export default function CrewPage() {
             <div className="flex gap-2">
               <button
                 onClick={() => { setShowCreate(false); setCrewName(""); setCreateError(""); }}
-                className="flex-1 py-2.5 rounded-lg text-sm text-white/50 transition-colors hover:text-white"
+                className="flex-1 py-2.5 rounded-lg text-sm text-cream/60 transition-colors hover:text-white"
                 style={{ border: "0.5px solid rgba(255,255,255,0.1)" }}
               >
                 Cancel

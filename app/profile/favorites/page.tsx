@@ -73,7 +73,7 @@ export default function FavoritesPage() {
               <Link
                 href="/profile"
                 className="text-xs uppercase tracking-widest mb-2 inline-flex items-center gap-1.5 transition-colors hover:text-white"
-                style={{ color: "rgba(255,255,255,0.35)", fontFamily: "var(--font-space-grotesk)", fontWeight: 700 }}
+                style={{ color: "rgba(246,241,230,0.65)", fontFamily: "var(--font-space-grotesk)", fontWeight: 700 }}
               >
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
@@ -82,11 +82,11 @@ export default function FavoritesPage() {
               </Link>
               <h1
                 className="text-3xl md:text-4xl uppercase tracking-tight"
-                style={{ fontFamily: "var(--font-plus-jakarta)", fontWeight: 800, color: "#e2e2e2" }}
+                style={{ fontFamily: "var(--font-plus-jakarta)", fontWeight: 800, color: "#f6f1e6" }}
               >
                 Favorite Rituals
               </h1>
-              <p className="text-sm mt-1" style={{ color: "rgba(255,255,255,0.35)" }}>
+              <p className="text-sm mt-1" style={{ color: "rgba(246,241,230,0.65)" }}>
                 {favorites.length} {favorites.length === 1 ? "session" : "sessions"} saved
               </p>
             </div>

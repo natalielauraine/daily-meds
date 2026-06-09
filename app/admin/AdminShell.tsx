@@ -112,7 +112,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
           </div>
           <div>
             <p className="text-white text-xs leading-none" style={{ fontWeight: 500 }}>Daily Meds</p>
-            <p className="text-white/30 text-[10px] mt-0.5">Admin</p>
+            <p className="text-cream/60 text-[10px] mt-0.5">Admin</p>
           </div>
         </Link>
 
@@ -141,7 +141,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
         <div className="mt-auto px-3">
           <Link
             href="/"
-            className="flex items-center gap-2 text-xs text-white/25 hover:text-white/50 transition-colors"
+            className="flex items-center gap-2 text-xs text-cream/60 hover:text-cream/60 transition-colors"
           >
             <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
               <path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/>

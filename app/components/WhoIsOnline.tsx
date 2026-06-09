@@ -53,9 +53,9 @@ export default function WhoIsOnline() {
         style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.08)" }}
       >
         <div className="w-2 h-2 rounded-full bg-green-400 shrink-0" />
-        <p className="text-xs text-white/40">
+        <p className="text-xs text-cream/65">
           No one meditating right now —{" "}
-          <Link href="/library" className="text-white/60 hover:text-white transition-colors">
+          <Link href="/library" className="text-cream/70 hover:text-white transition-colors">
             start a session
           </Link>
         </p>
@@ -72,14 +72,14 @@ export default function WhoIsOnline() {
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse shrink-0" />
-          <p className="text-xs text-white/60">
+          <p className="text-xs text-cream/70">
             <span className="text-white" style={{ fontWeight: 500 }}>
               {onlineUsers.length}
             </span>{" "}
             {onlineUsers.length === 1 ? "person" : "people"} meditating right now
           </p>
         </div>
-        <p className="text-[10px] text-white/25">Tap to send a reaction</p>
+        <p className="text-[10px] text-cream/60">Tap to send a reaction</p>
       </div>
 
       {/* Avatar row — each one opens an emoji picker on tap */}

@@ -148,7 +148,7 @@ function MiniBar({ value, max, color }: { value: number; max: number; color: str
           style={{ width: `${pct}%`, backgroundColor: color, transition: "width 0.6s ease" }}
         />
       </div>
-      <span className="text-xs w-8 text-right" style={{ color: "rgba(255,255,255,0.4)" }}>
+      <span className="text-xs w-8 text-right" style={{ color: "rgba(246,241,230,0.65)" }}>
         {Math.round(pct)}%
       </span>
     </div>
@@ -182,7 +182,7 @@ function TopNav() {
           </span>
         </Link>
         <div className="flex items-center gap-1 text-xs" style={{ color: "rgba(255,255,255,0.25)" }}>
-          <Link href="/admin" className="hover:text-white/60 transition-colors">Admin</Link>
+          <Link href="/admin" className="hover:text-cream/70 transition-colors">Admin</Link>
           <span className="mx-1.5">/</span>
           <span style={{ color: "#ff41b3" }}>Affiliate Overview</span>
         </div>
@@ -191,7 +191,7 @@ function TopNav() {
         <Link
           href="/admin"
           className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs transition-colors hover:bg-white/5"
-          style={{ color: "rgba(255,255,255,0.4)" }}
+          style={{ color: "rgba(246,241,230,0.65)" }}
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
             <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
@@ -567,7 +567,7 @@ export default function AffiliateOverviewPage() {
                 style={{
                   backgroundColor: "rgba(255,255,255,0.06)",
                   border: "1px solid rgba(255,255,255,0.08)",
-                  color: "rgba(255,255,255,0.6)",
+                  color: "rgba(246,241,230,0.7)",
                 }}
               >
                 <option value="earnings">Sort: Earnings</option>
@@ -654,7 +654,7 @@ export default function AffiliateOverviewPage() {
                         </td>
 
                         {/* Clicks */}
-                        <td className="px-5 py-4 text-white/70">{(a.clicks ?? 0).toLocaleString()}</td>
+                        <td className="px-5 py-4 text-cream/80">{(a.clicks ?? 0).toLocaleString()}</td>
 
                         {/* Referrals */}
                         <td className="px-5 py-4">
@@ -728,7 +728,7 @@ export default function AffiliateOverviewPage() {
                     <td className="px-5 py-4 text-xs font-black uppercase tracking-widest" style={{ color: "#ff41b3" }} colSpan={3}>
                       Totals
                     </td>
-                    <td className="px-5 py-4 text-xs font-bold text-white/60">{totalClicks.toLocaleString()}</td>
+                    <td className="px-5 py-4 text-xs font-bold text-cream/70">{totalClicks.toLocaleString()}</td>
                     <td className="px-5 py-4 text-xs font-bold text-white">{totalRefs.toLocaleString()}</td>
                     <td className="px-5 py-4 text-xs font-bold" style={{ color: totalClicks > 0 ? "#adf225" : "rgba(224,250,250,0.3)" }}>
                       {totalClicks > 0 ? `${((totalRefs / totalClicks) * 100).toFixed(1)}%` : "—"}
@@ -751,8 +751,8 @@ export default function AffiliateOverviewPage() {
         >
           <span>© {new Date().getFullYear()} The Daily Meds — Admin Portal</span>
           <div className="flex gap-4">
-            <Link href="/admin" className="hover:text-white/50 transition-colors">Admin Home</Link>
-            <Link href="/affiliate/dashboard" className="hover:text-white/50 transition-colors">Affiliate Dashboard</Link>
+            <Link href="/admin" className="hover:text-cream/60 transition-colors">Admin Home</Link>
+            <Link href="/affiliate/dashboard" className="hover:text-cream/60 transition-colors">Affiliate Dashboard</Link>
           </div>
         </footer>
 

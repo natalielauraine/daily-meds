@@ -18,8 +18,8 @@ const C = {
   surface:        "#191919",
   surfaceHigh:    "#1f1f1f",
   surfaceHighest: "#262626",
-  onSurfaceVar:   "#ababab",
-  onSurface:      "#e5e5e5",
+  onSurfaceVar:   "#d9d1c1",
+  onSurface:      "#f6f1e6",
 };
 
 const HEADLINE: React.CSSProperties = {
@@ -136,7 +136,7 @@ export default function PartnershipsPage() {
               key={item.label}
               href={item.href}
               className="transition-colors duration-300 hover:text-white"
-              style={{ ...HEADLINE, fontSize: "0.8rem", color: "rgba(255,255,255,0.6)" }}
+              style={{ ...HEADLINE, fontSize: "0.8rem", color: "rgba(246,241,230,0.7)" }}
             >
               {item.label}
             </a>
@@ -581,7 +581,7 @@ export default function PartnershipsPage() {
       >
         <div>
           <p className="text-lg font-bold uppercase mb-4" style={{ color: "rgba(255,255,255,0.9)" }}>Daily Meds</p>
-          <p className="text-sm tracking-wide mb-6" style={{ color: "rgba(255,255,255,0.6)" }}>
+          <p className="text-sm tracking-wide mb-6" style={{ color: "rgba(246,241,230,0.7)" }}>
             Meditation for real life. Made with love in Ibiza by Natalie Lauraine.
           </p>
           <p className="text-sm tracking-wide" style={{ color: C.primaryCont }}>
@@ -599,7 +599,7 @@ export default function PartnershipsPage() {
                 key={label}
                 href={href}
                 className="text-sm tracking-wide uppercase transition-colors hover:text-white"
-                style={{ color: "rgba(255,255,255,0.4)" }}
+                style={{ color: "rgba(246,241,230,0.65)" }}
               >
                 {label}
               </Link>

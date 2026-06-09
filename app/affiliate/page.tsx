@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import Logo from "../components/Logo";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
 // ── DESIGN TOKENS ─────────────────────────────────────────────────────────────
 const C = {
@@ -16,8 +16,8 @@ const C = {
   surface:        "#191919",
   surfaceHigh:    "#1f1f1f",
   surfaceHighest: "#262626",
-  onSurfaceVar:   "#ababab",
-  onSurface:      "#e5e5e5",
+  onSurfaceVar:   "#d9d1c1",
+  onSurface:      "#f6f1e6",
 };
 
 const HEADLINE: React.CSSProperties = {
@@ -92,78 +92,10 @@ const STEPS = [
 // ── PAGE ──────────────────────────────────────────────────────────────────────
 
 export default function AffiliatePage() {
-  const [form, setForm]           = useState({ name: "", email: "", socialHandles: "", whyJoin: "" });
-  const [audienceSize, setAudienceSize] = useState("Under 1,000");
-  const [audience, setAudience]   = useState<Record<string, string>>({
-    instagram: "", tiktok: "", youtube: "", podcast: "", email: "", twitter: "",
-  });
-  const [loading, setLoading]     = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-  const [error, setError]         = useState("");
-
-  function updateField(field: string, value: string) {
-    setForm((prev) => ({ ...prev, [field]: value }));
-  }
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!form.name || !form.email) { setError("Please fill in your name and email."); return; }
-    setError("");
-    setLoading(true);
-    const audienceSummary = AUDIENCE_PLATFORMS
-      .filter((p) => audience[p.key])
-      .map((p) => `${p.label}: ${audience[p.key]}`)
-      .join(" | ");
-    try {
-      const res = await fetch("/api/affiliate/apply", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, platform: "multiple", audienceSize: audienceSummary || audienceSize }),
-      });
-      const data = await res.json();
-      if (!res.ok) { setError(data.error ?? "Something went wrong."); return; }
-      setSubmitted(true);
-    } catch {
-      setError("Network error — please try again.");
-    } finally {
-      setLoading(false);
-    }
-  }
-
   return (
-    <div style={{ backgroundColor: "#000000", color: C.onSurface, fontFamily: "var(--font-manrope)", minHeight: "100vh" }}>
+    <div style={{ backgroundColor: "#131313", color: C.onSurface, fontFamily: "var(--font-manrope)", minHeight: "100vh" }}>
 
-      {/* ── NAV ─────────────────────────────────────────────────────────────── */}
-      <nav
-        className="fixed top-0 w-full z-50 flex justify-between items-center px-8 py-4"
-        style={{ background: "rgba(0,0,0,0.8)", backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)" }}
-      >
-        <Logo href="/" size="md" />
-        <div className="hidden md:flex items-center gap-10">
-          {[
-            { label: "Benefits",   href: "#benefits"    },
-            { label: "Commission", href: "#commission"  },
-            { label: "Terms",      href: "/terms"       },
-            { label: "Support",    href: "mailto:hello@thedailymeds.com" },
-          ].map((item) => (
-            <a
-              key={item.label}
-              href={item.href}
-              className="transition-colors duration-300 hover:text-white"
-              style={{ ...HEADLINE, fontSize: "0.8rem", color: "rgba(255,255,255,0.6)" }}
-            >
-              {item.label}
-            </a>
-          ))}
-        </div>
-        <a
-          href="#apply"
-          className="px-6 py-2 transition-transform active:scale-90 hover:brightness-110"
-          style={{ ...HEADLINE, fontSize: "0.8rem", backgroundColor: C.primaryCont, color: "#1e000a" }}
-        >
-          Apply Now
-        </a>
-      </nav>
+      <Navbar />
 
       {/* ── HERO ────────────────────────────────────────────────────────────── */}
       <section
@@ -385,205 +317,80 @@ export default function AffiliatePage() {
         </div>
       </section>
 
-      {/* ── APPLICATION FORM ────────────────────────────────────────────────── */}
-      <section id="apply" className="py-32 relative overflow-hidden" style={{ backgroundColor: "#000000" }}>
+      {/* ── COMING SOON — APPLICATION ────────────────────────────────────── */}
+      <section id="apply" className="py-32 relative overflow-hidden" style={{ backgroundColor: "#0a0a0a" }}>
         <div
           className="absolute right-0 top-0 w-1/2 h-full pointer-events-none -z-10"
           style={{ background: `rgba(255,65,142,0.05)`, filter: "blur(150px)" }}
         />
         <div className="container mx-auto px-6">
           <div
-            className="max-w-3xl mx-auto p-12 rounded-2xl"
+            className="max-w-3xl mx-auto p-12 rounded-2xl text-center"
             style={{ backgroundColor: C.surfaceLow, border: "1px solid rgba(255,255,255,0.05)" }}
           >
+            <div
+              className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6"
+              style={{ background: "linear-gradient(135deg, #ff41b3, #ec723d)" }}
+            >
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="white">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+              </svg>
+            </div>
+            <h2 className="text-3xl md:text-5xl mb-4 text-white" style={HEADLINE}>Applications Opening Soon</h2>
+            <p className="mb-6 max-w-lg mx-auto leading-relaxed" style={{ color: C.onSurfaceVar }}>
+              The Artist Partner Programme is launching soon. Every Daily Meds member automatically earns 10% on referrals. Artist partners will earn 20% — reserved for creators, artists, and community leaders with established audiences.
+            </p>
+            <p className="text-sm" style={{ color: "rgba(171,171,171,0.5)" }}>
+              Want to be notified when applications open?{" "}
+              <Link href="/login" className="transition-colors hover:text-white" style={{ color: C.primaryCont }}>
+                Create your free account
+              </Link>{" "}
+              and we&apos;ll let you know.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/*
+      ========================================================================
+      APPLICATION FORM — COMMENTED OUT FOR PHASE 1
+      Restore this section when ready to accept artist partner applications.
+      Also restore the useState imports and form state at the top of the component.
+      ========================================================================
+
+      <section id="apply" className="py-32 relative overflow-hidden" style={{ backgroundColor: "#000000" }}>
+        <div className="absolute right-0 top-0 w-1/2 h-full pointer-events-none -z-10" style={{ background: `rgba(255,65,142,0.05)`, filter: "blur(150px)" }} />
+        <div className="container mx-auto px-6">
+          <div className="max-w-3xl mx-auto p-12 rounded-2xl" style={{ backgroundColor: C.surfaceLow, border: "1px solid rgba(255,255,255,0.05)" }}>
             {submitted ? (
               <div className="text-center py-12">
-                <div
-                  className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6"
-                  style={{ background: `linear-gradient(135deg, ${C.secondary}, #f4e71d)` }}
-                >
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="white">
-                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-                  </svg>
-                </div>
                 <h3 className="mb-3 text-white text-3xl" style={HEADLINE}>Application Received</h3>
                 <p className="text-sm mb-8 max-w-sm mx-auto leading-relaxed" style={{ color: C.onSurfaceVar }}>
-                  We review every artist application personally. You&apos;ll hear back within 48 hours. In the meantime, you&apos;re already earning 10% as a standard affiliate — check your dashboard below.
+                  We review every artist application personally. You'll hear back within 48 hours.
                 </p>
-                <Link
-                  href="/affiliate/dashboard"
-                  className="inline-block px-8 py-3 text-sm transition-all hover:brightness-110"
-                  style={{ ...HEADLINE, backgroundColor: C.primaryCont, color: "#1e000a" }}
-                >
+                <Link href="/affiliate/dashboard" className="inline-block px-8 py-3 text-sm" style={{ ...HEADLINE, backgroundColor: C.primaryCont, color: "#1e000a" }}>
                   View My Dashboard
                 </Link>
               </div>
             ) : (
               <>
-                <div className="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest mb-4" style={{ background: "linear-gradient(90deg, #ff418e, #ef7f4e)", color: "#fff" }}>
-                  Artist Partner Programme
-                </div>
                 <h2 className="text-3xl md:text-5xl mb-4 text-white" style={HEADLINE}>Apply for 20% Commission</h2>
-                <p className="mb-12" style={{ color: C.onSurfaceVar }}>
-                  Tell us about your audience. We review every application personally and respond within 48 hours.
-                </p>
-
-                {error && (
-                  <div
-                    className="px-4 py-3 rounded-xl mb-6 text-sm"
-                    style={{ background: "rgba(244,63,94,0.08)", border: "0.5px solid rgba(244,63,94,0.25)", color: "#fca5a5" }}
-                  >
-                    {error}
-                  </div>
-                )}
-
+                <p className="mb-12" style={{ color: C.onSurfaceVar }}>Tell us about your audience.</p>
+                {error && <div className="px-4 py-3 rounded-xl mb-6 text-sm" style={{ background: "rgba(244,63,94,0.08)", color: "#fca5a5" }}>{error}</div>}
                 <form onSubmit={handleSubmit} className="space-y-8">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    {[
-                      { label: "Full Name",      field: "name",  type: "text"  },
-                      { label: "Email Address",  field: "email", type: "email" },
-                    ].map(({ label, field, type }) => (
-                      <div key={field}>
-                        <label
-                          className="block text-sm uppercase tracking-widest mb-2"
-                          style={{ color: C.onSurfaceVar, fontFamily: "var(--font-manrope)" }}
-                        >
-                          {label}
-                        </label>
-                        <input
-                          type={type}
-                          value={form[field as keyof typeof form]}
-                          onChange={(e) => updateField(field, e.target.value)}
-                          className="w-full p-4 rounded-xl text-white outline-none focus:ring-2"
-                          style={{
-                            backgroundColor: C.surfaceHighest,
-                            border: "none",
-                            // @ts-ignore
-                            "--tw-ring-color": C.primaryCont,
-                          }}
-                        />
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div>
-                      <label
-                        className="block text-sm uppercase tracking-widest mb-2"
-                        style={{ color: C.onSurfaceVar, fontFamily: "var(--font-manrope)" }}
-                      >
-                        Social Handles
-                      </label>
-                      <input
-                        type="text"
-                        value={form.socialHandles}
-                        onChange={(e) => updateField("socialHandles", e.target.value)}
-                        placeholder="Instagram, TikTok, YouTube..."
-                        className="w-full p-4 rounded-xl text-white outline-none focus:ring-2"
-                        style={{ backgroundColor: C.surfaceHighest, border: "none" }}
-                      />
-                    </div>
-                    <div>
-                      <label
-                        className="block text-sm uppercase tracking-widest mb-2"
-                        style={{ color: C.onSurfaceVar, fontFamily: "var(--font-manrope)" }}
-                      >
-                        Audience Size
-                      </label>
-                      <select
-                        value={audienceSize}
-                        onChange={(e) => setAudienceSize(e.target.value)}
-                        className="w-full p-4 rounded-xl text-white outline-none appearance-none focus:ring-2"
-                        style={{ backgroundColor: C.surfaceHighest, border: "none", colorScheme: "dark" }}
-                      >
-                        {["Under 1,000", "1,000 - 10,000", "10,000 - 50,000", "50,000 - 100,000", "100,000+"].map((o) => (
-                          <option key={o} style={{ backgroundColor: C.surfaceHigh }}>{o}</option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-
-                  <div>
-                    <label
-                      className="block text-sm uppercase tracking-widest mb-3"
-                      style={{ color: C.onSurfaceVar, fontFamily: "var(--font-manrope)" }}
-                    >
-                      Your audience — fill in any that apply
-                    </label>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      {AUDIENCE_PLATFORMS.map((p) => (
-                        <div key={p.key}>
-                          <label className="block text-xs mb-1.5" style={{ color: "rgba(171,171,171,0.6)" }}>{p.label}</label>
-                          <input
-                            type="text"
-                            value={audience[p.key]}
-                            onChange={(e) => setAudience((prev) => ({ ...prev, [p.key]: e.target.value }))}
-                            placeholder={p.placeholder}
-                            className="w-full px-4 py-3 rounded-xl text-sm text-white outline-none"
-                            style={{ backgroundColor: C.surfaceHighest, border: "none" }}
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="pt-8">
-                    <button
-                      type="submit"
-                      disabled={loading}
-                      className="w-full py-6 text-xl transition-all hover:brightness-110 active:scale-[0.98] disabled:opacity-50"
-                      style={{ ...HEADLINE, backgroundColor: C.primaryCont, color: "#1e000a" }}
-                    >
-                      {loading ? "Submitting…" : "Submit Application"}
-                    </button>
-                  </div>
-
-                  <p className="text-xs text-center" style={{ color: "rgba(171,171,171,0.5)" }}>
-                    Already applied?{" "}
-                    <Link href="/affiliate/dashboard" className="transition-colors hover:text-white" style={{ color: C.onSurfaceVar }}>
-                      View your dashboard →
-                    </Link>
-                  </p>
+                  ... (form fields were here — see git history for full form)
+                  <button type="submit" disabled={loading} className="w-full py-6 text-xl" style={{ ...HEADLINE, backgroundColor: C.primaryCont, color: "#1e000a" }}>
+                    {loading ? "Submitting…" : "Submit Application"}
+                  </button>
                 </form>
               </>
             )}
           </div>
         </div>
       </section>
+      */}
 
-      {/* ── FOOTER ──────────────────────────────────────────────────────────── */}
-      <footer
-        className="px-12 py-20 grid grid-cols-1 md:grid-cols-2 gap-12"
-        style={{ backgroundColor: C.surfaceDim, borderTop: "1px solid rgba(255,255,255,0.05)" }}
-      >
-        <div>
-          <p className="text-lg font-bold uppercase mb-4" style={{ color: "rgba(255,255,255,0.9)" }}>Daily Meds</p>
-          <p className="text-sm tracking-wide mb-6" style={{ color: "rgba(255,255,255,0.6)" }}>
-            Meditation for real life. Created with love by Natalie Lauraine.
-          </p>
-          <p className="text-sm tracking-wide" style={{ color: C.primaryCont }}>
-            © {new Date().getFullYear()} The Daily Meds. All rights reserved.
-          </p>
-        </div>
-        <div className="flex flex-col md:items-end gap-4">
-          <div className="flex flex-wrap gap-x-8 gap-y-4 justify-start md:justify-end">
-            {[
-              { label: "Privacy Policy",   href: "/privacy"                         },
-              { label: "Affiliate Terms",  href: "/terms"                           },
-              { label: "Contact Us",       href: "mailto:hello@thedailymeds.com"    },
-            ].map(({ label, href }) => (
-              <Link
-                key={label}
-                href={href}
-                className="text-sm tracking-wide uppercase transition-colors hover:text-white"
-                style={{ color: "rgba(255,255,255,0.4)" }}
-              >
-                {label}
-              </Link>
-            ))}
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

@@ -113,7 +113,7 @@ export async function GET(req: NextRequest) {
                   Daily Meds
                 </span>
                 <span style={{
-                  color: "rgba(255,255,255,0.4)",
+                  color: "rgba(246,241,230,0.65)",
                   fontSize: 12,
                   letterSpacing: "0.1em",
                   textTransform: "uppercase",
@@ -157,7 +157,7 @@ export async function GET(req: NextRequest) {
             {description && (
               <div style={{
                 fontSize: 22,
-                color: "rgba(255,255,255,0.55)",
+                color: "rgba(246,241,230,0.65)",
                 lineHeight: 1.5,
                 maxWidth: 700,
                 fontWeight: 400,

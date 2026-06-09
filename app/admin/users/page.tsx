@@ -84,7 +84,7 @@ export default function AdminUsersPage() {
         {/* Header */}
         <div className="mb-6">
           <h1 className="text-2xl text-white mb-1" style={{ fontWeight: 500 }}>Users</h1>
-          <p className="text-sm text-white/40">{total} registered accounts · page {page} of {pages}</p>
+          <p className="text-sm text-cream/65">{total} registered accounts · page {page} of {pages}</p>
         </div>
 
         {/* Search + filter bar */}
@@ -99,7 +99,7 @@ export default function AdminUsersPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search by name or email…"
-              className="w-full pl-9 pr-3 py-2.5 rounded-lg text-sm text-white outline-none placeholder:text-white/20"
+              className="w-full pl-9 pr-3 py-2.5 rounded-lg text-sm text-white outline-none placeholder:text-cream/60"
               style={{ backgroundColor: "rgba(255,255,255,0.06)", border: "0.5px solid rgba(255,255,255,0.12)" }}
             />
           </div>
@@ -130,7 +130,7 @@ export default function AdminUsersPage() {
 
           {/* Table header */}
           <div
-            className="grid grid-cols-[1fr_auto_auto] sm:grid-cols-[1fr_140px_100px_100px] px-4 py-3 text-xs text-white/30"
+            className="grid grid-cols-[1fr_auto_auto] sm:grid-cols-[1fr_140px_100px_100px] px-4 py-3 text-xs text-cream/60"
             style={{ backgroundColor: "#1F1F1F", borderBottom: "0.5px solid rgba(255,255,255,0.06)", fontWeight: 500, letterSpacing: "0.04em", textTransform: "uppercase" }}
           >
             <span>User</span>
@@ -148,7 +148,7 @@ export default function AdminUsersPage() {
             </div>
           ) : filtered.length === 0 ? (
             <div className="py-12 text-center" style={{ backgroundColor: "#1F1F1F" }}>
-              <p className="text-sm text-white/25">{search ? "No users match your search" : "No users yet"}</p>
+              <p className="text-sm text-cream/60">{search ? "No users match your search" : "No users yet"}</p>
             </div>
           ) : (
             <div className="flex flex-col" style={{ backgroundColor: "#111122" }}>
@@ -165,11 +165,11 @@ export default function AdminUsersPage() {
                       <p className="text-sm text-white/80 truncate" style={{ fontWeight: 500 }}>
                         {user.name || "—"}
                       </p>
-                      <p className="text-xs text-white/35 truncate">{user.email}</p>
+                      <p className="text-xs text-cream/65 truncate">{user.email}</p>
                     </div>
 
                     {/* Joined date */}
-                    <span className="hidden sm:block text-xs text-white/35">
+                    <span className="hidden sm:block text-xs text-cream/65">
                       {formatDate(user.created_at)}
                     </span>
 
@@ -196,11 +196,11 @@ export default function AdminUsersPage() {
                     {/* Stripe link (desktop only) */}
                     <div className="hidden sm:flex justify-center">
                       {user.stripe_customer_id ? (
-                        <span className="text-xs text-white/20 truncate" title={user.stripe_customer_id}>
+                        <span className="text-xs text-cream/60 truncate" title={user.stripe_customer_id}>
                           {user.stripe_customer_id.slice(0, 12)}…
                         </span>
                       ) : (
-                        <span className="text-xs text-white/15">—</span>
+                        <span className="text-xs text-cream/60">—</span>
                       )}
                     </div>
 
@@ -214,7 +214,7 @@ export default function AdminUsersPage() {
         {/* Pagination */}
         {pages > 1 && (
           <div className="flex items-center justify-between mt-6">
-            <p className="text-xs text-white/25">
+            <p className="text-xs text-cream/60">
               Showing {(page - 1) * limit + 1}–{Math.min(page * limit, total)} of {total} users
             </p>
             <div className="flex items-center gap-2">
@@ -222,7 +222,7 @@ export default function AdminUsersPage() {
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
                 className="px-3 py-1.5 rounded-lg text-xs transition-colors disabled:opacity-30"
-                style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.6)", border: "0.5px solid rgba(255,255,255,0.1)" }}
+                style={{ background: "rgba(255,255,255,0.06)", color: "rgba(246,241,230,0.7)", border: "0.5px solid rgba(255,255,255,0.1)" }}
               >
                 ← Prev
               </button>
@@ -244,7 +244,7 @@ export default function AdminUsersPage() {
                 onClick={() => setPage((p) => Math.min(pages, p + 1))}
                 disabled={page === pages}
                 className="px-3 py-1.5 rounded-lg text-xs transition-colors disabled:opacity-30"
-                style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.6)", border: "0.5px solid rgba(255,255,255,0.1)" }}
+                style={{ background: "rgba(255,255,255,0.06)", color: "rgba(246,241,230,0.7)", border: "0.5px solid rgba(255,255,255,0.1)" }}
               >
                 Next →
               </button>

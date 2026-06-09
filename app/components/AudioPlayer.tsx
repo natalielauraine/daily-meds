@@ -222,8 +222,8 @@ export default function AudioPlayer({ session, gradient }: AudioPlayerProps) {
         </div>
         {/* Time markers */}
         <div className="flex justify-between">
-          <span className="text-xs text-white/40">{formatTime(displayTime)}</span>
-          <span className="text-xs text-white/25">{formatTime(displayDuration)}</span>
+          <span className="text-xs text-cream/65">{formatTime(displayTime)}</span>
+          <span className="text-xs text-cream/60">{formatTime(displayDuration)}</span>
         </div>
       </div>
 
@@ -233,7 +233,7 @@ export default function AudioPlayer({ session, gradient }: AudioPlayerProps) {
         {/* Skip back 15s */}
         <button
           onClick={skipBack}
-          className="flex flex-col items-center gap-1 text-white/50 hover:text-white transition-colors p-2"
+          className="flex flex-col items-center gap-1 text-cream/60 hover:text-white transition-colors p-2"
           aria-label="Skip back 15 seconds"
         >
           <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor">
@@ -269,7 +269,7 @@ export default function AudioPlayer({ session, gradient }: AudioPlayerProps) {
         {/* Skip forward 15s */}
         <button
           onClick={skipForward}
-          className="flex flex-col items-center gap-1 text-white/50 hover:text-white transition-colors p-2"
+          className="flex flex-col items-center gap-1 text-cream/60 hover:text-white transition-colors p-2"
           aria-label="Skip forward 15 seconds"
         >
           <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor">
@@ -286,7 +286,7 @@ export default function AudioPlayer({ session, gradient }: AudioPlayerProps) {
         <div className="flex items-center gap-2 flex-1 min-w-0">
           <button
             onClick={() => setIsMuted(!isMuted)}
-            className="text-white/50 hover:text-white transition-colors shrink-0"
+            className="text-cream/60 hover:text-white transition-colors shrink-0"
             aria-label={isMuted ? "Unmute" : "Mute"}
           >
             {isMuted || volume === 0 ? (

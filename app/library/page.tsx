@@ -204,7 +204,7 @@ export default function LibraryPage() {
             Library
           </h1>
           {loading && (
-            <p className="text-sm text-white/40" style={{ fontFamily: "var(--font-space-grotesk)" }}>
+            <p className="text-sm text-cream/65" style={{ fontFamily: "var(--font-space-grotesk)" }}>
               Loading…
             </p>
           )}
@@ -223,7 +223,7 @@ export default function LibraryPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search sessions…"
-            className="w-full pl-10 pr-4 py-3 rounded-[10px] text-sm text-white outline-none placeholder:text-white/25"
+            className="w-full pl-10 pr-4 py-3 rounded-[10px] text-sm text-white outline-none placeholder:text-cream/60"
             style={{
               backgroundColor: "#1F1F1F",
               border: "0.5px solid rgba(255,255,255,0.1)",
@@ -233,7 +233,7 @@ export default function LibraryPage() {
           {search && (
             <button
               onClick={() => setSearch("")}
-              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors"
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-cream/60 hover:text-cream/70 transition-colors"
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
@@ -245,11 +245,11 @@ export default function LibraryPage() {
         {/* ── FILTERS ── */}
         <div className="flex flex-col gap-3 mb-8">
 
-          {/* Free content toggle + Mood pills — horizontally scrollable on mobile */}
-          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none" style={{ scrollbarWidth: "none" }}>
+          {/* Free content toggle — own line */}
+          <div className="flex gap-2 items-center mb-1">
             <button
               onClick={() => setFreeOnly(!freeOnly)}
-              className="shrink-0 px-4 py-2 rounded-full text-xs uppercase tracking-widest transition-all duration-200"
+              className="px-4 py-2 rounded-full text-xs uppercase tracking-widest transition-all duration-200"
               style={{
                 fontFamily: "var(--font-space-grotesk)",
                 fontWeight: 700,
@@ -260,6 +260,15 @@ export default function LibraryPage() {
             >
               Free Content
             </button>
+            {freeOnly && (
+              <span className="text-xs text-cream/60" style={{ fontFamily: "var(--font-space-grotesk)" }}>
+                Showing free sessions only
+              </span>
+            )}
+          </div>
+
+          {/* Mood pills — wrapping grid with left border to group visually */}
+          <div className="flex flex-wrap gap-2 ml-2 pl-3" style={{ borderLeft: "2px solid rgba(255,65,179,0.2)" }}>
             {MOOD_CATEGORIES.map((mood) => (
               <FilterPill
                 key={mood}
@@ -270,9 +279,8 @@ export default function LibraryPage() {
             ))}
           </div>
 
-          {/* Duration + Type filters in a row */}
-          <div className="flex gap-4 items-center flex-wrap">
-            {/* Duration */}
+          {/* Duration filter — with matching left border, gap above so borders don't touch */}
+          <div className="flex gap-4 items-center flex-wrap ml-2 pl-3 mt-3" style={{ borderLeft: "2px solid rgba(255,65,179,0.2)" }}>
             <div className="flex gap-2">
               {DURATION_OPTIONS.map((opt) => (
                 <FilterPill
@@ -284,26 +292,13 @@ export default function LibraryPage() {
               ))}
             </div>
 
-            {/* Divider */}
-            <div className="h-4 w-px bg-white/10 hidden sm:block" />
-
-            {/* Type */}
-            <div className="flex gap-2">
-              {TYPE_OPTIONS.map((opt) => (
-                <FilterPill
-                  key={opt.value}
-                  label={opt.label}
-                  active={activeType === opt.value}
-                  onClick={() => setActiveType(opt.value)}
-                />
-              ))}
-            </div>
+            {/* Type filter hidden until Phase 2 (audio only for now) */}
 
             {/* Clear filters button — only shown when filters are active */}
             {activeFilterCount > 0 && (
               <button
                 onClick={clearAllFilters}
-                className="text-xs text-white/35 hover:text-white/60 transition-colors ml-auto"
+                className="text-xs text-cream/65 hover:text-cream/70 transition-colors ml-auto"
               >
                 Clear filters ({activeFilterCount})
               </button>
@@ -314,7 +309,7 @@ export default function LibraryPage() {
         {/* ── SESSION GRID ── */}
         {loading ? (
           // Loading skeleton — 8 placeholder cards in a grid
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5">
             {Array.from({ length: 8 }).map((_, i) => (
               <div key={i} className="flex flex-col gap-2">
                 <div
@@ -334,7 +329,7 @@ export default function LibraryPage() {
             onClick={clearAllFilters}
           />
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5">
             {filtered.map((session) => (
               <LibraryCard key={session.id} session={session} isPaidMember={isPaidMember} />
             ))}
@@ -343,7 +338,7 @@ export default function LibraryPage() {
 
         {/* Result count when filtered */}
         {!loading && filtered.length > 0 && (search || activeFilterCount > 0) && (
-          <p className="text-xs text-white/25 text-center mt-8">
+          <p className="text-xs text-cream/60 text-center mt-8">
             Showing {filtered.length} of {sessions.length} sessions
           </p>
         )}

@@ -10,7 +10,7 @@ export default function WelcomePage() {
   return (
     <div
       className="min-h-screen flex flex-col"
-      style={{ backgroundColor: "#010101", color: "#e5e5e5", fontFamily: "var(--font-manrope)" }}
+      style={{ backgroundColor: "#010101", color: "#f6f1e6", fontFamily: "var(--font-manrope)" }}
     >
       {/* HEADER */}
       <header className="flex justify-between items-center px-8 py-8 w-full">
@@ -18,7 +18,7 @@ export default function WelcomePage() {
         <Link
           href="/profile"
           className="transition-colors hover:text-white"
-          style={{ color: "rgba(255,255,255,0.4)" }}
+          style={{ color: "rgba(246,241,230,0.65)" }}
         >
           <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>

@@ -179,12 +179,12 @@ export default function ProgressClient() {
           >
             Build Tracker
           </h1>
-          <p className="text-sm text-white/40">Tick off each column as you go. Progress saves automatically.</p>
+          <p className="text-sm text-cream/65">Tick off each column as you go. Progress saves automatically.</p>
 
           {/* Overall progress bar */}
           <div className="mt-6 flex items-center gap-6 flex-wrap">
             <div>
-              <p className="text-xs text-white/30 mb-1">Complete</p>
+              <p className="text-xs text-cream/60 mb-1">Complete</p>
               <div className="flex items-center gap-2">
                 <div className="w-40 h-2 rounded-full overflow-hidden" style={{ backgroundColor: "rgba(255,255,255,0.08)" }}>
                   <div
@@ -192,11 +192,11 @@ export default function ProgressClient() {
                     style={{ width: `${(completeCount / totalPages) * 100}%`, background: "linear-gradient(90deg, #adf225, #f4e71d)" }}
                   />
                 </div>
-                <span className="text-xs text-white/40">{completeCount}/{totalPages}</span>
+                <span className="text-xs text-cream/65">{completeCount}/{totalPages}</span>
               </div>
             </div>
             <div>
-              <p className="text-xs text-white/30 mb-1">Live</p>
+              <p className="text-xs text-cream/60 mb-1">Live</p>
               <div className="flex items-center gap-2">
                 <div className="w-40 h-2 rounded-full overflow-hidden" style={{ backgroundColor: "rgba(255,255,255,0.08)" }}>
                   <div
@@ -204,7 +204,7 @@ export default function ProgressClient() {
                     style={{ width: `${(liveCount / totalPages) * 100}%`, background: GRADIENT }}
                   />
                 </div>
-                <span className="text-xs text-white/40">{liveCount}/{totalPages}</span>
+                <span className="text-xs text-cream/65">{liveCount}/{totalPages}</span>
               </div>
             </div>
           </div>
@@ -237,7 +237,7 @@ export default function ProgressClient() {
                       {section.title}
                     </h2>
                   </div>
-                  <span className="text-xs text-white/60">{sectionComplete}/{section.pages.length} complete</span>
+                  <span className="text-xs text-cream/70">{sectionComplete}/{section.pages.length} complete</span>
                 </div>
 
                 {/* Table */}
@@ -247,7 +247,7 @@ export default function ProgressClient() {
                 >
                   {/* Table header */}
                   <div
-                    className="grid items-center px-4 py-2.5 text-[10px] uppercase tracking-widest text-white/70"
+                    className="grid items-center px-4 py-2.5 text-[10px] uppercase tracking-widest text-cream/80"
                     style={{
                       gridTemplateColumns: "1fr 140px 90px 90px 90px 90px",
                       borderBottom: "0.5px solid rgba(255,255,255,0.06)",
@@ -284,7 +284,7 @@ export default function ProgressClient() {
                           )}
                           <span
                             className="text-sm truncate"
-                            style={{ color: "#E2E2E2", fontWeight: 500 }}
+                            style={{ color: "#f6f1e6", fontWeight: 500 }}
                           >
                             {page.name}
                           </span>
@@ -347,12 +347,12 @@ export default function ProgressClient() {
             ].map((item) => (
               <div key={item.label} className="rounded-[12px] p-4 text-center" style={{ backgroundColor: "#1a1a1a" }}>
                 <p className="text-3xl font-black mb-1" style={{ color: item.colour, fontFamily: "var(--font-plus-jakarta)" }}>{item.value}</p>
-                <p className="text-xs text-white/50 uppercase tracking-widest">{item.label}</p>
+                <p className="text-xs text-cream/60 uppercase tracking-widest">{item.label}</p>
               </div>
             ))}
           </div>
 
-          <p className="text-sm text-white/60 mb-6 leading-relaxed">
+          <p className="text-sm text-cream/70 mb-6 leading-relaxed">
             ~45 pages exist in the code. The new cinematic design is live on: homepage, free, live, timer, about, session player, testimonials, terms, privacy, pricing, login, signup, crew detail, live room. Core functionality (auth, payments, Supabase, realtime, audio player) is working.
             <br /><br />
             <span className="text-white font-medium">You&apos;re roughly 45% of the way to a full launch.</span> The hardest technical work is done. What&apos;s left is design polish on member pages and real content.
@@ -360,7 +360,7 @@ export default function ProgressClient() {
 
           {/* Outstanding items */}
           <div className="mb-8">
-            <p className="text-xs uppercase tracking-widest text-white/40 mb-3">Still needed before launch</p>
+            <p className="text-xs uppercase tracking-widest text-cream/65 mb-3">Still needed before launch</p>
             <div className="flex flex-col gap-2">
               {[
                 "Library, Profile, Stats — core member pages need the cinematic treatment",
@@ -373,7 +373,7 @@ export default function ProgressClient() {
               ].map((item, i) => (
                 <div key={i} className="flex items-start gap-3">
                   <span className="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0" style={{ backgroundColor: "#ec723d" }} />
-                  <p className="text-sm text-white/70">{item}</p>
+                  <p className="text-sm text-cream/80">{item}</p>
                 </div>
               ))}
             </div>
@@ -399,7 +399,7 @@ export default function ProgressClient() {
                   {plan.items.map((item, i) => (
                     <div key={i} className="flex items-center gap-2">
                       <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: plan.colour }} />
-                      <p className="text-sm text-white/70">{item}</p>
+                      <p className="text-sm text-cream/80">{item}</p>
                     </div>
                   ))}
                 </div>
@@ -407,12 +407,12 @@ export default function ProgressClient() {
             ))}
           </div>
 
-          <p className="text-sm text-white/50 mt-6 text-center">By Monday evening you could have a live, working product. 🚀</p>
+          <p className="text-sm text-cream/60 mt-6 text-center">By Monday evening you could have a live, working product. 🚀</p>
         </div>
 
         {/* Footer note */}
-        <p className="text-xs text-white/20 text-center mt-8">
-          Checkboxes save automatically to this browser. Visit <span className="text-white/40">localhost:3000/progress</span> anytime to check in.
+        <p className="text-xs text-cream/60 text-center mt-8">
+          Checkboxes save automatically to this browser. Visit <span className="text-cream/65">localhost:3000/progress</span> anytime to check in.
         </p>
 
       </div>

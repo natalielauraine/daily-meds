@@ -258,7 +258,7 @@ export default function StatsPage() {
               <GlassCard className="p-6 flex flex-col justify-between">
                 <p
                   className="text-[10px] uppercase tracking-[0.2em] font-bold mb-4"
-                  style={{ color: "rgba(255,255,255,0.35)", fontFamily: "var(--font-lexend)" }}
+                  style={{ color: "rgba(246,241,230,0.65)", fontFamily: "var(--font-lexend)" }}
                 >
                   Sessions
                 </p>
@@ -280,7 +280,7 @@ export default function StatsPage() {
               <GlassCard className="p-6 flex flex-col justify-between">
                 <p
                   className="text-[10px] uppercase tracking-[0.2em] font-bold mb-4"
-                  style={{ color: "rgba(255,255,255,0.35)", fontFamily: "var(--font-lexend)" }}
+                  style={{ color: "rgba(246,241,230,0.65)", fontFamily: "var(--font-lexend)" }}
                 >
                   Streak
                 </p>
@@ -303,7 +303,7 @@ export default function StatsPage() {
             <GlassCard className="p-6">
               <p
                 className="text-[10px] uppercase tracking-[0.2em] font-bold mb-6"
-                style={{ color: "rgba(255,255,255,0.35)", fontFamily: "var(--font-lexend)" }}
+                style={{ color: "rgba(246,241,230,0.65)", fontFamily: "var(--font-lexend)" }}
               >
                 Last 14 days
               </p>
@@ -324,7 +324,7 @@ export default function StatsPage() {
                         <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: color }} />
                         <span
                           className="text-[10px] tracking-wide"
-                          style={{ color: "rgba(255,255,255,0.4)", fontFamily: "var(--font-lexend)" }}
+                          style={{ color: "rgba(246,241,230,0.65)", fontFamily: "var(--font-lexend)" }}
                         >
                           {mood}
                         </span>

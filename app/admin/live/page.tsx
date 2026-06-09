@@ -149,7 +149,7 @@ export default function AdminLivePage() {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-xl text-white mb-1" style={{ fontWeight: 500 }}>Live Sessions</h1>
-            <p className="text-sm text-white/40">Schedule and manage your live sessions</p>
+            <p className="text-sm text-cream/65">Schedule and manage your live sessions</p>
           </div>
           <button
             onClick={() => setShowForm(true)}
@@ -273,7 +273,7 @@ export default function AdminLivePage() {
               </button>
               <button
                 onClick={() => { setShowForm(false); setError(""); }}
-                className="px-4 py-2.5 rounded-lg text-sm text-white/40 hover:text-white/70 transition-colors"
+                className="px-4 py-2.5 rounded-lg text-sm text-cream/65 hover:text-cream/80 transition-colors"
               >
                 Cancel
               </button>
@@ -284,7 +284,7 @@ export default function AdminLivePage() {
         {/* ── CURRENTLY LIVE ────────────────────────────────────── */}
         {liveSessions.length > 0 && (
           <div className="mb-8">
-            <h2 className="text-xs text-white/40 mb-3" style={{ fontWeight: 500, letterSpacing: "0.05em", textTransform: "uppercase" }}>
+            <h2 className="text-xs text-cream/65 mb-3" style={{ fontWeight: 500, letterSpacing: "0.05em", textTransform: "uppercase" }}>
               Live now
             </h2>
             <div className="flex flex-col gap-3">
@@ -307,7 +307,7 @@ export default function AdminLivePage() {
 
         {/* ── UPCOMING ──────────────────────────────────────────── */}
         <div>
-          <h2 className="text-xs text-white/40 mb-3" style={{ fontWeight: 500, letterSpacing: "0.05em", textTransform: "uppercase" }}>
+          <h2 className="text-xs text-cream/65 mb-3" style={{ fontWeight: 500, letterSpacing: "0.05em", textTransform: "uppercase" }}>
             Scheduled
           </h2>
 
@@ -393,9 +393,9 @@ function AdminSessionCard({ session, isLive, goingLive, notifying, onGoLive, onE
               </span>
             )}
           </div>
-          <p className="text-xs text-white/35 mb-1">{session.type === "video" ? "Video" : "Audio"} · {session.duration}</p>
+          <p className="text-xs text-cream/65 mb-1">{session.type === "video" ? "Video" : "Audio"} · {session.duration}</p>
           {!isLive && (
-            <p className="text-xs text-white/25">{formatSessionDate(session.scheduledAt)}</p>
+            <p className="text-xs text-cream/60">{formatSessionDate(session.scheduledAt)}</p>
           )}
           {isLive && session.dailyRoomUrl && (
             <Link
@@ -441,7 +441,7 @@ function AdminSessionCard({ session, isLive, goingLive, notifying, onGoLive, onE
           )}
           <button
             onClick={onDelete}
-            className="text-white/20 hover:text-red-400 transition-colors p-1.5"
+            className="text-cream/60 hover:text-red-400 transition-colors p-1.5"
             aria-label="Delete session"
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">

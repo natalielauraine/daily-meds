@@ -125,7 +125,7 @@ export default function PlaylistsPage() {
       <main className="flex-1 w-full max-w-2xl mx-auto px-4 sm:px-6 py-10 pb-24">
 
         {/* Back button */}
-        <Link href="/profile" className="inline-flex items-center gap-1.5 text-sm text-white/40 hover:text-white/70 transition-colors mb-8">
+        <Link href="/profile" className="inline-flex items-center gap-1.5 text-sm text-cream/65 hover:text-cream/80 transition-colors mb-8">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
             <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
           </svg>
@@ -137,7 +137,7 @@ export default function PlaylistsPage() {
           <div>
             <h1 className="text-2xl text-white mb-1" style={{ fontWeight: 500 }}>Playlists</h1>
             {!loading && (
-              <p className="text-sm text-white/40">{playlists.length} playlist{playlists.length !== 1 ? "s" : ""}</p>
+              <p className="text-sm text-cream/65">{playlists.length} playlist{playlists.length !== 1 ? "s" : ""}</p>
             )}
           </div>
           <button
@@ -172,7 +172,7 @@ export default function PlaylistsPage() {
               onChange={(e) => setNewName(e.target.value)}
               onKeyDown={(e) => { if (e.key === "Enter") handleCreate(); if (e.key === "Escape") setCreating(false); }}
               placeholder="Playlist name"
-              className="flex-1 bg-transparent text-sm text-white outline-none placeholder:text-white/25"
+              className="flex-1 bg-transparent text-sm text-white outline-none placeholder:text-cream/60"
             />
             <button
               onClick={handleCreate}
@@ -183,7 +183,7 @@ export default function PlaylistsPage() {
             </button>
             <button
               onClick={() => { setCreating(false); setNewName(""); }}
-              className="text-white/40 hover:text-white/70 transition-colors text-sm px-2"
+              className="text-cream/65 hover:text-cream/80 transition-colors text-sm px-2"
             >
               Cancel
             </button>
@@ -199,8 +199,8 @@ export default function PlaylistsPage() {
             <svg width="36" height="36" viewBox="0 0 24 24" fill="rgba(255,255,255,0.15)" className="mb-3">
               <path d="M3 6h18v2H3zm0 5h12v2H3zm0 5h18v2H3z"/>
             </svg>
-            <p className="text-sm text-white/30 mb-1">No playlists yet</p>
-            <p className="text-xs text-white/20">Hit New to create your first one</p>
+            <p className="text-sm text-cream/60 mb-1">No playlists yet</p>
+            <p className="text-xs text-cream/60">Hit New to create your first one</p>
           </div>
         )}
 
@@ -254,14 +254,14 @@ export default function PlaylistsPage() {
                           {playlist.name}
                         </button>
                       )}
-                      <p className="text-xs text-white/35">{playlist.sessionIds.length} session{playlist.sessionIds.length !== 1 ? "s" : ""}</p>
+                      <p className="text-xs text-cream/65">{playlist.sessionIds.length} session{playlist.sessionIds.length !== 1 ? "s" : ""}</p>
                     </div>
 
                     {/* Expand + Delete */}
                     <div className="flex items-center gap-1 shrink-0">
                       <button
                         onClick={() => setExpandedId(isOpen ? null : playlist.id)}
-                        className="text-white/30 hover:text-white/70 transition-colors p-1.5"
+                        className="text-cream/60 hover:text-cream/80 transition-colors p-1.5"
                         aria-label={isOpen ? "Collapse" : "Expand"}
                       >
                         <svg
@@ -273,7 +273,7 @@ export default function PlaylistsPage() {
                       </button>
                       <button
                         onClick={() => handleDelete(playlist.id)}
-                        className="text-white/20 hover:text-red-400 transition-colors p-1.5"
+                        className="text-cream/60 hover:text-red-400 transition-colors p-1.5"
                         aria-label="Delete playlist"
                       >
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
@@ -287,7 +287,7 @@ export default function PlaylistsPage() {
                   {isOpen && (
                     <div style={{ borderTop: "0.5px solid rgba(255,255,255,0.06)" }}>
                       {playlist.sessionIds.length === 0 ? (
-                        <p className="text-xs text-white/25 text-center py-5">
+                        <p className="text-xs text-cream/60 text-center py-5">
                           No sessions yet — tap the ⋮ menu on any session card to add one
                         </p>
                       ) : (
@@ -326,13 +326,13 @@ export default function PlaylistsPage() {
                                 onClick={(e) => e.stopPropagation()}
                               >
                                 <p className="text-sm text-white/80 truncate" style={{ fontWeight: 500 }}>{s.title}</p>
-                                <p className="text-xs text-white/30">{s.type} · {s.duration}</p>
+                                <p className="text-xs text-cream/60">{s.type} · {s.duration}</p>
                               </Link>
 
                               {/* Remove from playlist */}
                               <button
                                 onClick={() => handleRemoveSession(playlist.id, sessionId)}
-                                className="text-white/20 hover:text-white/60 transition-colors p-1 shrink-0"
+                                className="text-cream/60 hover:text-cream/70 transition-colors p-1 shrink-0"
                                 aria-label="Remove from playlist"
                               >
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">

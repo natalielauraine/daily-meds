@@ -102,7 +102,7 @@ export default function ResetPasswordPage() {
                 </svg>
               </div>
               <h2 className="text-white font-bold text-xl">Password updated</h2>
-              <p style={{ color: "#ababab", fontSize: 14, lineHeight: 1.6 }}>
+              <p style={{ color: "#d9d1c1", fontSize: 14, lineHeight: 1.6 }}>
                 You&apos;re all set. Taking you to the app in a moment…
               </p>
             </div>
@@ -121,7 +121,7 @@ export default function ResetPasswordPage() {
                     </svg>
                   </div>
                   <h2 className="text-white font-bold text-xl">Link expired</h2>
-                  <p style={{ color: "#ababab", fontSize: 14, lineHeight: 1.6 }}>{error}</p>
+                  <p style={{ color: "#d9d1c1", fontSize: 14, lineHeight: 1.6 }}>{error}</p>
                   <Link
                     href="/forgot-password"
                     className="inline-block mt-2 px-6 py-2.5 rounded-lg text-sm font-semibold text-white transition-opacity hover:opacity-80"
@@ -131,7 +131,7 @@ export default function ResetPasswordPage() {
                   </Link>
                 </>
               ) : (
-                <p style={{ color: "#ababab", fontSize: 14 }}>Verifying your link…</p>
+                <p style={{ color: "#d9d1c1", fontSize: 14 }}>Verifying your link…</p>
               )}
             </div>
 
@@ -140,7 +140,7 @@ export default function ResetPasswordPage() {
             <>
               <div className="mb-6">
                 <h1 className="text-white font-bold text-xl mb-1">Set a new password</h1>
-                <p style={{ color: "#ababab", fontSize: 14 }}>
+                <p style={{ color: "#d9d1c1", fontSize: 14 }}>
                   Choose something strong — at least 8 characters.
                 </p>
               </div>
@@ -148,7 +148,7 @@ export default function ResetPasswordPage() {
               <form onSubmit={handleSubmit} className="flex flex-col gap-4">
 
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs" style={{ color: "rgba(255,255,255,0.5)" }}>
+                  <label className="text-xs" style={{ color: "rgba(246,241,230,0.6)" }}>
                     New password
                   </label>
                   <input
@@ -167,7 +167,7 @@ export default function ResetPasswordPage() {
                 </div>
 
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs" style={{ color: "rgba(255,255,255,0.5)" }}>
+                  <label className="text-xs" style={{ color: "rgba(246,241,230,0.6)" }}>
                     Confirm password
                   </label>
                   <input
@@ -223,7 +223,7 @@ export default function ResetPasswordPage() {
               <Link
                 href="/login"
                 className="text-xs transition-colors"
-                style={{ color: "rgba(255,255,255,0.3)" }}
+                style={{ color: "rgba(246,241,230,0.6)" }}
                 onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.6)")}
                 onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.3)")}
               >

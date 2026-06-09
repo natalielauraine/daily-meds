@@ -55,7 +55,7 @@ export default function AdminDashboard() {
         {/* Page heading */}
         <div className="mb-8">
           <h1 className="text-2xl text-white mb-1" style={{ fontWeight: 500 }}>Dashboard</h1>
-          <p className="text-sm text-white/40">Overview of Daily Meds</p>
+          <p className="text-sm text-cream/65">Overview of Daily Meds</p>
         </div>
 
         {/* ── STAT CARDS ───────────────────────────────────────── */}
@@ -103,8 +103,8 @@ export default function AdminDashboard() {
                   return (
                     <div key={label}>
                       <div className="flex justify-between items-center mb-1">
-                        <span className="text-xs text-white/50">{label}</span>
-                        <span className="text-xs text-white/70">{count}</span>
+                        <span className="text-xs text-cream/60">{label}</span>
+                        <span className="text-xs text-cream/80">{count}</span>
                       </div>
                       <div className="h-1.5 rounded-full" style={{ backgroundColor: "rgba(255,255,255,0.06)" }}>
                         <div className="h-1.5 rounded-full transition-all" style={{ width: `${pct}%`, backgroundColor: colour }} />
@@ -123,7 +123,7 @@ export default function AdminDashboard() {
           >
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-sm text-white" style={{ fontWeight: 500 }}>Recent Signups</h2>
-              <Link href="/admin/users" className="text-xs text-white/30 hover:text-white/60 transition-colors">
+              <Link href="/admin/users" className="text-xs text-cream/60 hover:text-cream/70 transition-colors">
                 See all →
               </Link>
             </div>
@@ -136,8 +136,8 @@ export default function AdminDashboard() {
                 {stats.recentUsers.map((u) => (
                   <div key={u.email} className="flex items-center justify-between">
                     <div className="min-w-0">
-                      <p className="text-xs text-white/70 truncate">{u.name || u.email}</p>
-                      <p className="text-[10px] text-white/30 truncate">{u.email}</p>
+                      <p className="text-xs text-cream/80 truncate">{u.name || u.email}</p>
+                      <p className="text-[10px] text-cream/60 truncate">{u.email}</p>
                     </div>
                     <span
                       className="text-[10px] px-2 py-0.5 rounded-full shrink-0 ml-2"
@@ -149,7 +149,7 @@ export default function AdminDashboard() {
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-white/25">No users yet</p>
+              <p className="text-sm text-cream/60">No users yet</p>
             )}
           </div>
 
@@ -157,7 +157,7 @@ export default function AdminDashboard() {
 
         {/* ── QUICK LINKS ────────────────────────────────────────── */}
         <div className="mt-6">
-          <h2 className="text-sm text-white/40 mb-3" style={{ fontWeight: 500, letterSpacing: "0.04em", textTransform: "uppercase" }}>Quick actions</h2>
+          <h2 className="text-sm text-cream/65 mb-3" style={{ fontWeight: 500, letterSpacing: "0.04em", textTransform: "uppercase" }}>Quick actions</h2>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {[
               { label: "Add session",     href: "/admin/content",  colour: "#ff41b3" },
@@ -185,22 +185,22 @@ export default function AdminDashboard() {
           >
             <div className="flex items-center justify-between mb-3">
               <h2 className="text-sm text-white" style={{ fontWeight: 500 }}>Content Library</h2>
-              <Link href="/admin/content" className="text-xs text-white/30 hover:text-white/60 transition-colors">
+              <Link href="/admin/content" className="text-xs text-cream/60 hover:text-cream/70 transition-colors">
                 Manage →
               </Link>
             </div>
             <div className="flex items-center gap-6">
               <div>
                 <p className="text-2xl text-white" style={{ fontWeight: 500 }}>{stats?.totalSessions ?? "—"}</p>
-                <p className="text-xs text-white/40">Total sessions</p>
+                <p className="text-xs text-cream/65">Total sessions</p>
               </div>
               <div>
                 <p className="text-2xl text-white" style={{ fontWeight: 500 }}>{stats?.freeSessions ?? "—"}</p>
-                <p className="text-xs text-white/40">Free sessions</p>
+                <p className="text-xs text-cream/65">Free sessions</p>
               </div>
               <div>
                 <p className="text-2xl text-white" style={{ fontWeight: 500 }}>{stats?.premiumSessions ?? "—"}</p>
-                <p className="text-xs text-white/40">Premium</p>
+                <p className="text-xs text-cream/65">Premium</p>
               </div>
             </div>
           </div>
@@ -222,7 +222,7 @@ function StatCard({ label, value, accent }: { label: string; value: string | num
         border: accent ? `0.5px solid ${accent}25` : "0.5px solid rgba(255,255,255,0.08)",
       }}
     >
-      <p className="text-xs text-white/40 mb-2">{label}</p>
+      <p className="text-xs text-cream/65 mb-2">{label}</p>
       <p
         className="text-2xl"
         style={{ fontWeight: 500, color: accent ?? "white" }}

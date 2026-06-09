@@ -311,7 +311,7 @@ export default function CrewDetailPage() {
   if (error || !crew) {
     return (
       <div className="flex min-h-screen items-center justify-center px-4 flex-col gap-4" style={{ backgroundColor: "#0d0d0d" }}>
-        <p className="text-white/40 text-sm">{error || "Crew not found."}</p>
+        <p className="text-cream/65 text-sm">{error || "Crew not found."}</p>
         <Link href="/crew" className="text-sm text-[#ff41b3] hover:opacity-80">← Back to crews</Link>
       </div>
     );
@@ -492,12 +492,12 @@ export default function CrewDetailPage() {
                       </div>
                     ))}
                   </div>
-                  <span className="text-xs text-white/50">{members.length} members</span>
+                  <span className="text-xs text-cream/60">{members.length} members</span>
                 </div>
 
                 <div className="flex items-center gap-1.5">
                   <span className="text-base">🔥</span>
-                  <span className="text-xs text-white/50">{totalSessions} sessions this week</span>
+                  <span className="text-xs text-cream/60">{totalSessions} sessions this week</span>
                 </div>
 
                 {/* Invite button */}
@@ -521,7 +521,7 @@ export default function CrewDetailPage() {
               className="mx-5 lg:mx-8 -mt-2 mb-6 rounded-[14px] p-5"
               style={{ backgroundColor: "#1a1a1a", border: "0.5px solid rgba(255,65,179,0.2)" }}
             >
-              <p className="text-xs text-white/40 mb-3">Share this code or link with your friends</p>
+              <p className="text-xs text-cream/65 mb-3">Share this code or link with your friends</p>
               <p className="text-3xl text-white tracking-[0.3em] font-mono mb-4" style={{ fontWeight: 500 }}>
                 {crew.invite_code}
               </p>
@@ -569,7 +569,7 @@ export default function CrewDetailPage() {
                     <h3 className="text-white font-bold text-base" style={{ fontFamily: "var(--font-plus-jakarta)" }}>
                       Group Breathing Session
                     </h3>
-                    <p className="text-xs text-white/40 mt-0.5">Box breathing · 10 min · {members.length} members</p>
+                    <p className="text-xs text-cream/65 mt-0.5">Box breathing · 10 min · {members.length} members</p>
                   </div>
                 </div>
 
@@ -601,7 +601,7 @@ export default function CrewDetailPage() {
                   <div className="absolute right-5 top-1/2 -translate-y-1/2 flex flex-col gap-1">
                     {members.slice(0, 5).map((m, i) => (
                       <div key={m.id} className="flex items-center gap-1.5">
-                        <span className="text-[9px] text-white/30 w-12 text-right truncate">{m.display_name}</span>
+                        <span className="text-[9px] text-cream/60 w-12 text-right truncate">{m.display_name}</span>
                         <div className="w-16 h-1 rounded-full overflow-hidden" style={{ backgroundColor: "rgba(255,255,255,0.08)" }}>
                           <div
                             className="h-full rounded-full"
@@ -637,7 +637,7 @@ export default function CrewDetailPage() {
                 style={{ backgroundColor: "#141414", border: "0.5px solid rgba(255,255,255,0.06)" }}
               >
                 <h3
-                  className="text-xs uppercase tracking-widest text-white/40 mb-4"
+                  className="text-xs uppercase tracking-widest text-cream/65 mb-4"
                   style={{ fontWeight: 500 }}
                 >
                   Next Encounters
@@ -658,7 +658,7 @@ export default function CrewDetailPage() {
 
                   <div className="flex-1 min-w-0">
                     <p className="text-sm text-white font-medium truncate">Morning Reset Together</p>
-                    <p className="text-xs text-white/35 mt-0.5">7:00 AM · 20 min · Group breathing</p>
+                    <p className="text-xs text-cream/65 mt-0.5">7:00 AM · 20 min · Group breathing</p>
                   </div>
 
                   {/* Member avatars */}
@@ -675,7 +675,7 @@ export default function CrewDetailPage() {
                   </div>
                 </div>
 
-                <p className="text-xs text-white/20 text-center mt-4">No other encounters scheduled</p>
+                <p className="text-xs text-cream/60 text-center mt-4">No other encounters scheduled</p>
               </div>
 
               {/* Crew Choice (top sessions this week) */}
@@ -683,7 +683,7 @@ export default function CrewDetailPage() {
                 className="rounded-[16px] p-5"
                 style={{ backgroundColor: "#141414", border: "0.5px solid rgba(255,255,255,0.06)" }}
               >
-                <h3 className="text-xs uppercase tracking-widest text-white/40 mb-4" style={{ fontWeight: 500 }}>
+                <h3 className="text-xs uppercase tracking-widest text-cream/65 mb-4" style={{ fontWeight: 500 }}>
                   Crew Choice
                 </h3>
                 <div className="flex flex-col gap-3">
@@ -707,7 +707,7 @@ export default function CrewDetailPage() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm text-white font-medium truncate">{track.title}</p>
-                        <p className="text-xs text-white/35">{track.desc}</p>
+                        <p className="text-xs text-cream/65">{track.desc}</p>
                       </div>
                       <span
                         className="text-[10px] px-2 py-0.5 rounded-full shrink-0"
@@ -732,7 +732,7 @@ export default function CrewDetailPage() {
               >
                 {/* Feed header */}
                 <div className="flex items-center justify-between px-5 pt-5 pb-4" style={{ borderBottom: "0.5px solid rgba(255,255,255,0.06)" }}>
-                  <h3 className="text-xs uppercase tracking-widest text-white/40" style={{ fontWeight: 500 }}>
+                  <h3 className="text-xs uppercase tracking-widest text-cream/65" style={{ fontWeight: 500 }}>
                     Crew Collective
                   </h3>
                   <span className="flex items-center gap-1 text-[10px] text-[#adf225]">
@@ -744,7 +744,7 @@ export default function CrewDetailPage() {
                 {/* Messages */}
                 <div className="flex-1 overflow-y-auto px-5 py-4 flex flex-col gap-3">
                   {activity.length === 0 ? (
-                    <p className="text-xs text-white/20 text-center py-8">No activity yet — complete a session to see it here</p>
+                    <p className="text-xs text-cream/60 text-center py-8">No activity yet — complete a session to see it here</p>
                   ) : (
                     activity.map((event, idx) => {
                       const reactions = activityReactions[event.id] ?? [];
@@ -763,10 +763,10 @@ export default function CrewDetailPage() {
                             <div className="flex-1 min-w-0">
                               <div className="flex items-baseline gap-2 mb-0.5">
                                 <span className="text-xs font-bold" style={{ color: nameColour }}>{displayName}</span>
-                                <span className="text-[10px] text-white/20">{timeAgo(event.created_at)}</span>
+                                <span className="text-[10px] text-cream/60">{timeAgo(event.created_at)}</span>
                               </div>
                               <div
-                                className="inline-block px-3 py-2 rounded-[10px] text-xs text-white/70 leading-relaxed"
+                                className="inline-block px-3 py-2 rounded-[10px] text-xs text-cream/80 leading-relaxed"
                                 style={{ backgroundColor: "rgba(255,255,255,0.04)", maxWidth: "100%" }}
                               >
                                 {formatActivity(event)}
@@ -788,7 +788,7 @@ export default function CrewDetailPage() {
                                   }}
                                 >
                                   <span>{r.emoji}</span>
-                                  <span className="text-white/50">{r.count}</span>
+                                  <span className="text-cream/60">{r.count}</span>
                                 </button>
                               ))}
                             </div>
@@ -824,7 +824,7 @@ export default function CrewDetailPage() {
                 style={{ backgroundColor: "#141414", border: "0.5px solid rgba(255,255,255,0.06)" }}
               >
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-xs uppercase tracking-widest text-white/40" style={{ fontWeight: 500 }}>
+                  <h3 className="text-xs uppercase tracking-widest text-cream/65" style={{ fontWeight: 500 }}>
                     Brand Challenges
                   </h3>
                   <span
@@ -849,7 +849,7 @@ export default function CrewDetailPage() {
                     </div>
                     <div>
                       <p className="text-sm text-white font-medium">7-Day Crew Streak</p>
-                      <p className="text-xs text-white/35">Meditate together daily</p>
+                      <p className="text-xs text-cream/65">Meditate together daily</p>
                     </div>
                   </div>
                   {/* Progress bar */}
@@ -857,8 +857,8 @@ export default function CrewDetailPage() {
                     <div className="h-full rounded-full" style={{ width: "43%", background: GRADIENT }} />
                   </div>
                   <div className="flex justify-between mt-1.5">
-                    <span className="text-[10px] text-white/25">3 of 7 days</span>
-                    <span className="text-[10px] text-white/25">4 days left</span>
+                    <span className="text-[10px] text-cream/60">3 of 7 days</span>
+                    <span className="text-[10px] text-cream/60">4 days left</span>
                   </div>
                 </div>
 
@@ -870,7 +870,7 @@ export default function CrewDetailPage() {
                   <span className="text-lg">🏆</span>
                   <div>
                     <p className="text-xs text-[#adf225] font-medium">Zen Master milestone</p>
-                    <p className="text-[10px] text-white/30 mt-0.5">Complete 10 crew sessions to unlock</p>
+                    <p className="text-[10px] text-cream/60 mt-0.5">Complete 10 crew sessions to unlock</p>
                   </div>
                 </div>
               </div>
@@ -880,7 +880,7 @@ export default function CrewDetailPage() {
                 className="rounded-[16px] p-5"
                 style={{ backgroundColor: "#141414", border: "0.5px solid rgba(255,255,255,0.06)" }}
               >
-                <h3 className="text-xs uppercase tracking-widest text-white/40 mb-4" style={{ fontWeight: 500 }}>
+                <h3 className="text-xs uppercase tracking-widest text-cream/65 mb-4" style={{ fontWeight: 500 }}>
                   Members
                 </h3>
                 <div className="flex flex-col gap-2">
@@ -897,17 +897,17 @@ export default function CrewDetailPage() {
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs text-white/70 truncate">
+                        <p className="text-xs text-cream/80 truncate">
                           {member.display_name}
-                          {member.user_id === user?.id && <span className="text-white/25 ml-1">(you)</span>}
+                          {member.user_id === user?.id && <span className="text-cream/60 ml-1">(you)</span>}
                           {member.role === "admin" && (
                             <span className="ml-1.5 text-[9px] px-1.5 py-0.5 rounded" style={{ backgroundColor: "rgba(255,65,179,0.15)", color: "#ff41b3" }}>admin</span>
                           )}
                         </p>
                       </div>
                       <div className="text-right shrink-0">
-                        <span className="text-xs text-white/50">{weeklyStats[member.user_id] ?? 0}</span>
-                        <span className="text-[9px] text-white/20 ml-1">wk</span>
+                        <span className="text-xs text-cream/60">{weeklyStats[member.user_id] ?? 0}</span>
+                        <span className="text-[9px] text-cream/60 ml-1">wk</span>
                       </div>
                     </div>
                   ))}
@@ -960,11 +960,11 @@ export default function CrewDetailPage() {
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <span className="text-xl">{reactorPopover.emoji}</span>
-                <span className="text-sm text-white/60">
+                <span className="text-sm text-cream/70">
                   {reactorLoading ? "Loading…" : `${reactorNames.length} reaction${reactorNames.length !== 1 ? "s" : ""}`}
                 </span>
               </div>
-              <button onClick={() => setReactorPopover(null)} className="text-white/30 hover:text-white/60">
+              <button onClick={() => setReactorPopover(null)} className="text-cream/60 hover:text-cream/70">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
                 </svg>
@@ -987,14 +987,14 @@ export default function CrewDetailPage() {
                     >
                       {name[0]?.toUpperCase()}
                     </div>
-                    <span className="text-sm text-white/70">{name}</span>
+                    <span className="text-sm text-cream/80">{name}</span>
                   </div>
                 ))}
               </div>
             )}
 
             {!reactorLoading && reactorNames.length === 0 && (
-              <p className="text-xs text-white/30 text-center py-3">No reactions yet</p>
+              <p className="text-xs text-cream/60 text-center py-3">No reactions yet</p>
             )}
           </div>
         </div>

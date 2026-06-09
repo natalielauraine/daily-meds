@@ -76,7 +76,7 @@ export default function Home() {
       .select('*')
       .eq('status', 'published')
       .eq('is_coming_soon', false)
-      .limit(4)
+      .limit(5)
       .order('created_at', { ascending: false })
       .then(({ data }) => { if (data) setTrendingSessions(data); });
 
@@ -120,13 +120,13 @@ export default function Home() {
           <Logo href="/" size="md" />
 
           {/* Desktop nav */}
-          <nav className="hidden md:flex items-center gap-7">
+          <nav className="hidden md:flex items-center gap-5">
             {NAV_LINKS.map((item) => (
               <Link
                 key={item.label}
                 href={item.href}
-                className="text-xs uppercase tracking-widest font-bold transition-colors hover:text-[#aaee20]"
-                style={{ color: "rgba(255,255,255,0.5)", fontFamily: "var(--font-lexend)" }}
+                className="text-xs uppercase tracking-widest transition-colors duration-200 flex items-center hover:text-[#f6f1e6]"
+                style={{ color: "rgba(246,241,230,0.65)", fontFamily: "var(--font-space-grotesk)", fontWeight: 600, minHeight: 30, minWidth: 0 }}
               >
                 {item.label}
               </Link>
@@ -136,8 +136,8 @@ export default function Home() {
           <div className="flex items-center gap-3">
             <Link
               href="/login"
-              className="hidden md:inline-flex items-center justify-center px-4 py-2 rounded-full text-xs font-bold uppercase transition-transform hover:scale-105 whitespace-nowrap"
-              style={{ background: "linear-gradient(90deg, #ff41b3 0%, #ec723d 100%)", color: "#ffffff", fontFamily: "var(--font-lexend)" }}
+              className="hidden md:inline-flex items-center justify-center px-4 py-1 rounded-full text-[10px] uppercase tracking-widest transition-all hover:opacity-90 whitespace-nowrap"
+              style={{ fontFamily: "var(--font-space-grotesk)", fontWeight: 600, minHeight: 30, minWidth: 0, background: "#ff41b3", color: "#ffffff", boxShadow: "0 0 16px rgba(255,65,179,0.35)" }}
             >
               Get Started
             </Link>
@@ -166,7 +166,7 @@ export default function Home() {
                 href={item.href}
                 onClick={() => setMobileOpen(false)}
                 className="text-sm uppercase tracking-widest font-bold py-2 transition-colors hover:text-[#aaee20]"
-                style={{ color: "rgba(255,255,255,0.5)", fontFamily: "var(--font-lexend)" }}
+                style={{ color: "rgba(246,241,230,0.6)", fontFamily: "var(--font-lexend)" }}
               >
                 {item.label}
               </Link>
@@ -224,11 +224,11 @@ export default function Home() {
             <div className="text-center sm:text-left">
               <h2
                 className="uppercase mb-1"
-                style={{ fontFamily: "var(--font-lexend)", fontWeight: 900, fontSize: "clamp(1.2rem, 3vw, 1.6rem)", color: "#E2E2E2" }}
+                style={{ fontFamily: "var(--font-lexend)", fontWeight: 900, fontSize: "clamp(1.2rem, 3vw, 1.6rem)", color: "#f6f1e6" }}
               >
                 Try the full experience
               </h2>
-              <p className="text-sm" style={{ color: "rgba(255,255,255,0.4)", lineHeight: 1.6 }}>
+              <p className="text-sm" style={{ color: "rgba(246,241,230,0.65)", lineHeight: 1.6 }}>
                 A new way of sitting with your emotions. No spiritual fluff.
               </p>
             </div>
@@ -264,7 +264,7 @@ export default function Home() {
                 See All
               </Link>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
               {trendingSessions.map((session: any) => (
                 <LibraryCard key={session.id} session={session as LibrarySession} isPaidMember={false} />
               ))}
@@ -289,7 +289,7 @@ export default function Home() {
                 <span className="text-[10px] font-extrabold uppercase tracking-[0.2em]" style={{ color: "#ff41b3", fontFamily: "var(--font-lexend)" }}>New Drops Weekly</span>
               </div>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
               {comingSoonSessions.map((session: any) => (
                 <LibraryCard key={session.id} session={session as LibrarySession} isPaidMember={false} />
               ))}
@@ -301,10 +301,10 @@ export default function Home() {
       {/* ── FACE REALITY ───────────────────────────────────────────────── */}
       <section className="py-12" style={{ backgroundColor: "#010101" }}>
         <div className="px-6 md:px-12 max-w-3xl">
-          <p className="text-base leading-relaxed" style={{ color: "rgba(255,255,255,0.55)" }}>
+          <p className="text-base leading-relaxed" style={{ color: "rgba(246,241,230,0.65)" }}>
             {FACE_REALITY.map((item, i) => (
               <span key={item.title}>
-                <Link href="/library" className="hover:text-white transition-colors" style={{ color: "rgba(255,255,255,0.55)" }}>
+                <Link href="/library" className="hover:text-white transition-colors" style={{ color: "rgba(246,241,230,0.65)" }}>
                   {item.title}
                 </Link>
                 {i < FACE_REALITY.length - 1 && <span style={{ color: "rgba(255,255,255,0.2)" }}> · </span>}
@@ -339,7 +339,7 @@ export default function Home() {
                 >
                   {item.title}
                 </h3>
-                <p className="text-sm leading-relaxed" style={{ color: "#adaaaa" }}>
+                <p className="text-sm leading-relaxed" style={{ color: "#d9d1c1" }}>
                   {item.body}
                 </p>
               </div>
@@ -372,7 +372,7 @@ export default function Home() {
           </span>
           <h2
             className="uppercase"
-            style={{ fontFamily: "var(--font-lexend)", fontWeight: 900, fontSize: "clamp(1.8rem, 5vw, 3rem)", color: "#E2E2E2", lineHeight: 1.1 }}
+            style={{ fontFamily: "var(--font-lexend)", fontWeight: 900, fontSize: "clamp(1.8rem, 5vw, 3rem)", color: "#f6f1e6", lineHeight: 1.1 }}
           >
             Your toolkit for
             <br />
@@ -397,7 +397,7 @@ export default function Home() {
             <Link
               href="/free"
               className="text-sm transition-colors hover:text-white"
-              style={{ color: "rgba(255,255,255,0.35)", fontFamily: "var(--font-lexend)" }}
+              style={{ color: "rgba(246,241,230,0.65)", fontFamily: "var(--font-lexend)" }}
             >
               Or try free sessions →
             </Link>

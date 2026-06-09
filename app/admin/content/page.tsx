@@ -597,7 +597,7 @@ export default function AdminContentPage() {
         <div className="flex items-start justify-between mb-6">
           <div>
             <h1 className="text-2xl text-white mb-1" style={{ fontWeight: 500 }}>Sessions</h1>
-            <p className="text-sm text-white/40">Add and manage your meditation library</p>
+            <p className="text-sm text-cream/65">Add and manage your meditation library</p>
           </div>
           <button
             onClick={openNew}
@@ -682,14 +682,14 @@ export default function AdminContentPage() {
                     className={fieldClass}
                     style={{ ...fieldStyle, width: "80px", opacity: 0.5, cursor: "default" }}
                   />
-                  <span className="text-sm text-white/40">min</span>
-                  <span className="text-[10px] text-white/20">auto-detected from audio</span>
+                  <span className="text-sm text-cream/65">min</span>
+                  <span className="text-[10px] text-cream/60">auto-detected from audio</span>
                 </div>
               </FormField>
 
               {/* ── AUDIO UPLOAD (always visible) ── */}
               <div className="sm:col-span-2">
-                <p className="text-xs text-white/40 mb-2">Audio file <span className="text-white/20">(mp3, m4a or wav)</span></p>
+                <p className="text-xs text-cream/65 mb-2">Audio file <span className="text-cream/60">(mp3, m4a or wav)</span></p>
 
                 {uploadedFile ? (
                   // Uploaded file row
@@ -738,7 +738,7 @@ export default function AdminContentPage() {
                     )}
                     <div className="flex-1 min-w-0">
                       <p className="text-xs text-white truncate" style={{ fontWeight: 500 }}>{uploadedFile.name}</p>
-                      <p className="text-[10px] text-white/35">{[uploadedFile.duration, uploadedFile.size ? formatBytes(uploadedFile.size) : null, "Uploaded \u2713"].filter(Boolean).join(" \u00b7 ")}</p>
+                      <p className="text-[10px] text-cream/65">{[uploadedFile.duration, uploadedFile.size ? formatBytes(uploadedFile.size) : null, "Uploaded \u2713"].filter(Boolean).join(" \u00b7 ")}</p>
                     </div>
                     <button
                       onClick={() => {
@@ -747,7 +747,7 @@ export default function AdminContentPage() {
                         setUploadedFile(null);
                         setForm((prev) => ({ ...prev, audio_url: "" }));
                       }}
-                      className="text-white/25 hover:text-white/60 transition-colors"
+                      className="text-cream/60 hover:text-cream/70 transition-colors"
                       aria-label="Remove file"
                     >
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
@@ -762,14 +762,14 @@ export default function AdminContentPage() {
                     className="p-4 rounded-lg"
                     style={{ backgroundColor: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)" }}
                   >
-                    <p className="text-xs text-white/40 mb-2">Uploading...</p>
+                    <p className="text-xs text-cream/65 mb-2">Uploading...</p>
                     <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: "rgba(255,255,255,0.1)" }}>
                       <div
                         className="h-full rounded-full transition-all duration-300"
                         style={{ width: `${audioProgress}%`, backgroundColor: "#ff41b3" }}
                       />
                     </div>
-                    <p className="text-[10px] text-white/25 mt-1">{audioProgress}%</p>
+                    <p className="text-[10px] text-cream/60 mt-1">{audioProgress}%</p>
                   </div>
 
                 ) : (
@@ -793,7 +793,7 @@ export default function AdminContentPage() {
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="rgba(255,255,255,0.25)">
                       <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
                     </svg>
-                    <p className="text-xs text-white/35">
+                    <p className="text-xs text-cream/65">
                       Drop an mp3, m4a or wav here, or{" "}
                       <span style={{ color: "#ff41b3" }}>browse files</span>
                     </p>
@@ -810,7 +810,7 @@ export default function AdminContentPage() {
 
               {/* ── THUMBNAIL IMAGE (always visible) ── */}
               <div className="sm:col-span-2">
-                <p className="text-xs text-white/40 mb-2">Thumbnail image <span className="text-white/20">(jpg, png or webp)</span></p>
+                <p className="text-xs text-cream/65 mb-2">Thumbnail image <span className="text-cream/60">(jpg, png or webp)</span></p>
 
                 {form.thumbnail ? (
                   <div
@@ -827,13 +827,13 @@ export default function AdminContentPage() {
                       <p className="text-xs text-white truncate" style={{ fontWeight: 500 }}>
                         {decodeURIComponent(form.thumbnail.split("/").pop() || "image")}
                       </p>
-                      <p className="text-[10px] text-white/35">
+                      <p className="text-[10px] text-cream/65">
                         {[thumbnailDimensions, "Uploaded \u2713"].filter(Boolean).join(" \u00b7 ")}
                       </p>
                     </div>
                     <button
                       onClick={() => { setForm((prev) => ({ ...prev, thumbnail: "" })); setThumbnailDimensions(""); }}
-                      className="text-white/25 hover:text-white/60 transition-colors"
+                      className="text-cream/60 hover:text-cream/70 transition-colors"
                       aria-label="Remove thumbnail"
                     >
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
@@ -847,14 +847,14 @@ export default function AdminContentPage() {
                     className="p-4 rounded-lg"
                     style={{ backgroundColor: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)" }}
                   >
-                    <p className="text-xs text-white/40 mb-2">Uploading...</p>
+                    <p className="text-xs text-cream/65 mb-2">Uploading...</p>
                     <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: "rgba(255,255,255,0.1)" }}>
                       <div
                         className="h-full rounded-full transition-all duration-300"
                         style={{ width: `${thumbnailProgress}%`, backgroundColor: "#ff41b3" }}
                       />
                     </div>
-                    <p className="text-[10px] text-white/25 mt-1">{thumbnailProgress}%</p>
+                    <p className="text-[10px] text-cream/60 mt-1">{thumbnailProgress}%</p>
                   </div>
 
                 ) : (
@@ -877,7 +877,7 @@ export default function AdminContentPage() {
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="rgba(255,255,255,0.25)">
                       <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
                     </svg>
-                    <p className="text-xs text-white/35">
+                    <p className="text-xs text-cream/65">
                       Drop a jpg, png or webp here, or{" "}
                       <span style={{ color: "#ff41b3" }}>browse files</span>
                     </p>
@@ -894,7 +894,7 @@ export default function AdminContentPage() {
 
               {/* ── VIDEO FILE UPLOAD (always visible) ── */}
               <div className="sm:col-span-2">
-                <p className="text-xs text-white/40 mb-2">Video file <span className="text-white/20">(mp4, webm or mov)</span></p>
+                <p className="text-xs text-cream/65 mb-2">Video file <span className="text-cream/60">(mp4, webm or mov)</span></p>
 
                 {form.video_url ? (
                   <div
@@ -911,11 +911,11 @@ export default function AdminContentPage() {
                       <p className="text-xs text-white truncate" style={{ fontWeight: 500 }}>
                         {decodeURIComponent(form.video_url.split("/").pop() || "video")}
                       </p>
-                      <p className="text-[10px] text-white/35">Uploaded &#10003;</p>
+                      <p className="text-[10px] text-cream/65">Uploaded &#10003;</p>
                     </div>
                     <button
                       onClick={() => setForm((prev) => ({ ...prev, video_url: "" }))}
-                      className="text-white/25 hover:text-white/60 transition-colors"
+                      className="text-cream/60 hover:text-cream/70 transition-colors"
                       aria-label="Remove video"
                     >
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
@@ -929,14 +929,14 @@ export default function AdminContentPage() {
                     className="p-4 rounded-lg"
                     style={{ backgroundColor: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)" }}
                   >
-                    <p className="text-xs text-white/40 mb-2">Uploading...</p>
+                    <p className="text-xs text-cream/65 mb-2">Uploading...</p>
                     <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: "rgba(255,255,255,0.1)" }}>
                       <div
                         className="h-full rounded-full transition-all duration-300"
                         style={{ width: `${videoProgress}%`, backgroundColor: "#ff41b3" }}
                       />
                     </div>
-                    <p className="text-[10px] text-white/25 mt-1">{videoProgress}%</p>
+                    <p className="text-[10px] text-cream/60 mt-1">{videoProgress}%</p>
                   </div>
 
                 ) : (
@@ -959,7 +959,7 @@ export default function AdminContentPage() {
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="rgba(255,255,255,0.25)">
                       <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
                     </svg>
-                    <p className="text-xs text-white/35">
+                    <p className="text-xs text-cream/65">
                       Drop an mp4, webm or mov here, or{" "}
                       <span style={{ color: "#ff41b3" }}>browse files</span>
                     </p>
@@ -994,7 +994,7 @@ export default function AdminContentPage() {
                       style={{ left: form.is_free ? "calc(100% - 22px)" : "2px" }}
                     />
                   </button>
-                  <span className="text-sm text-white/55">Free session</span>
+                  <span className="text-sm text-cream/65">Free session</span>
                 </div>
 
                 <div className="flex items-center gap-3">
@@ -1010,11 +1010,11 @@ export default function AdminContentPage() {
                       style={{ left: form.is_coming_soon ? "calc(100% - 22px)" : "2px" }}
                     />
                   </button>
-                  <span className="text-sm text-white/55">Coming Soon</span>
+                  <span className="text-sm text-cream/65">Coming Soon</span>
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <span className="text-xs text-white/35">Status</span>
+                  <span className="text-xs text-cream/65">Status</span>
                   <button
                     onClick={() => setForm({ ...form, status: form.status === "draft" ? "published" : "draft" })}
                     className="px-3 py-1 rounded-full text-xs transition-colors"
@@ -1048,7 +1048,7 @@ export default function AdminContentPage() {
               </button>
               <button
                 onClick={() => { setShowForm(false); setEditingId(null); setError(""); }}
-                className="px-4 py-2.5 rounded-lg text-sm text-white/40 hover:text-white/70 transition-colors"
+                className="px-4 py-2.5 rounded-lg text-sm text-cream/65 hover:text-cream/80 transition-colors"
               >
                 Cancel
               </button>
@@ -1062,7 +1062,7 @@ export default function AdminContentPage() {
           style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.08)" }}
         >
           <h2 className="text-white text-base mb-1" style={{ fontWeight: 500 }}>Bulk Upload</h2>
-          <p className="text-xs text-white/35 mb-4">
+          <p className="text-xs text-cream/65 mb-4">
             Drop up to 20 mp3 or m4a files at once — titles and durations are auto-detected from each file
           </p>
 
@@ -1085,11 +1085,11 @@ export default function AdminContentPage() {
             <svg width="24" height="24" viewBox="0 0 24 24" fill="rgba(255,255,255,0.2)">
               <path d="M20 6h-2.18c.07-.44.18-.86.18-1 0-2.21-1.79-4-4-4s-4 1.79-4 4c0 .14.11.56.18 1H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-6-3c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm-1 11v3h-2v-3H8l4-4 4 4h-3z"/>
             </svg>
-            <p className="text-sm text-white/30">
+            <p className="text-sm text-cream/60">
               Drop multiple files here, or{" "}
               <span style={{ color: "#ff41b3" }}>browse</span>
             </p>
-            <p className="text-xs text-white/20">mp3 · m4a · wav · up to 20 files at once</p>
+            <p className="text-xs text-cream/60">mp3 · m4a · wav · up to 20 files at once</p>
             <input
               ref={bulkInputRef}
               type="file"
@@ -1130,7 +1130,7 @@ export default function AdminContentPage() {
                         onChange={(e) => setBulkFiles((prev) => prev.map((f) =>
                           f.id === item.id ? { ...f, mood_category: e.target.value } : f
                         ))}
-                        className="text-[11px] bg-transparent text-white/45 outline-none"
+                        className="text-[11px] bg-transparent text-cream/70 outline-none"
                         disabled={item.status !== "queued"}
                       >
                         {MOOD_CATEGORIES.map((m) => (
@@ -1139,7 +1139,7 @@ export default function AdminContentPage() {
                       </select>
 
                       {/* Auto-detected duration */}
-                      <span className="text-[11px] text-white/30 shrink-0">{item.duration}</span>
+                      <span className="text-[11px] text-cream/60 shrink-0">{item.duration}</span>
 
                       {/* Free / Paid toggle */}
                       <button
@@ -1161,7 +1161,7 @@ export default function AdminContentPage() {
                       {item.status === "queued" && (
                         <button
                           onClick={() => setBulkFiles((prev) => prev.filter((f) => f.id !== item.id))}
-                          className="text-white/20 hover:text-white/50 transition-colors"
+                          className="text-cream/60 hover:text-cream/60 transition-colors"
                         >
                           <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
@@ -1201,7 +1201,7 @@ export default function AdminContentPage() {
               {/* Overall progress bar */}
               {bulkUploading && (
                 <div className="mb-4">
-                  <div className="flex justify-between text-[11px] text-white/30 mb-1">
+                  <div className="flex justify-between text-[11px] text-cream/60 mb-1">
                     <span>Overall progress</span>
                     <span>{bulkOverallProgress}%</span>
                   </div>
@@ -1228,7 +1228,7 @@ export default function AdminContentPage() {
                 <button
                   onClick={() => { setBulkFiles([]); setBulkOverallProgress(0); }}
                   disabled={bulkUploading}
-                  className="px-4 py-2.5 rounded-lg text-sm text-white/40 hover:text-white/70 transition-colors disabled:opacity-40"
+                  className="px-4 py-2.5 rounded-lg text-sm text-cream/65 hover:text-cream/80 transition-colors disabled:opacity-40"
                 >
                   Clear
                 </button>
@@ -1241,7 +1241,7 @@ export default function AdminContentPage() {
 
         {/* Search bar */}
         <div className="relative mb-3">
-          <svg className="absolute left-3 top-1/2 -translate-y-1/2 text-white/25" width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+          <svg className="absolute left-3 top-1/2 -translate-y-1/2 text-cream/60" width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
             <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
           </svg>
           <input
@@ -1249,13 +1249,13 @@ export default function AdminContentPage() {
             placeholder="Search sessions…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-8 py-2 rounded-lg text-sm text-white placeholder:text-white/25 outline-none"
+            className="w-full pl-9 pr-8 py-2 rounded-lg text-sm text-white placeholder:text-cream/60 outline-none"
             style={{ backgroundColor: "rgba(255,255,255,0.05)", border: "0.5px solid rgba(255,255,255,0.1)" }}
           />
           {search && (
             <button
               onClick={() => setSearch("")}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-cream/60 hover:text-cream/70"
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
@@ -1345,7 +1345,7 @@ export default function AdminContentPage() {
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-white/35">{session.type} · {session.mood_category} · {session.duration}</p>
+                  <p className="text-xs text-cream/65">{session.type} · {session.mood_category} · {session.duration}</p>
                 </div>
 
                 {/* Actions */}
@@ -1356,7 +1356,7 @@ export default function AdminContentPage() {
                     href={`/session/${session.id}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-2 text-white/25 hover:text-pink-400 transition-colors"
+                    className="p-2 text-cream/60 hover:text-pink-400 transition-colors"
                     aria-label="View session"
                     title="View as customer (new tab)"
                   >
@@ -1369,7 +1369,7 @@ export default function AdminContentPage() {
                   {(session.status || "draft") === "draft" && (
                     <button
                       onClick={() => handlePublish(session.id)}
-                      className="p-2 text-white/25 hover:text-green-400 transition-colors"
+                      className="p-2 text-cream/60 hover:text-green-400 transition-colors"
                       aria-label="Publish"
                       title="Publish this session"
                     >
@@ -1383,7 +1383,7 @@ export default function AdminContentPage() {
                   <button
                     onClick={() => handleNotify(session)}
                     disabled={notifyingId === session.id}
-                    className="p-2 text-white/25 hover:text-pink-400 transition-colors disabled:opacity-40"
+                    className="p-2 text-cream/60 hover:text-pink-400 transition-colors disabled:opacity-40"
                     aria-label="Notify members"
                     title="Email all users about this session"
                   >
@@ -1401,7 +1401,7 @@ export default function AdminContentPage() {
                   {/* Edit */}
                   <button
                     onClick={() => openEdit(session)}
-                    className="p-2 text-white/25 hover:text-white/70 transition-colors"
+                    className="p-2 text-cream/60 hover:text-cream/80 transition-colors"
                     aria-label="Edit"
                   >
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
@@ -1412,7 +1412,7 @@ export default function AdminContentPage() {
                   {/* Delete */}
                   <button
                     onClick={() => setConfirmDeleteId(session.id)}
-                    className="p-2 text-white/25 hover:text-pink-400 transition-colors"
+                    className="p-2 text-cream/60 hover:text-pink-400 transition-colors"
                     aria-label="Delete"
                   >
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">

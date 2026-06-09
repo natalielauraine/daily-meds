@@ -250,7 +250,7 @@ export default function RoomsPage() {
         <div className="flex items-center justify-between mb-2">
           <div>
             <h1 className="text-2xl text-white" style={{ fontWeight: 500 }}>Group Meds</h1>
-            <p className="text-sm text-white/40 mt-1">Meditate with others at the same time</p>
+            <p className="text-sm text-cream/65 mt-1">Meditate with others at the same time</p>
           </div>
           <button
             onClick={() => setShowModal(true)}
@@ -264,7 +264,7 @@ export default function RoomsPage() {
           </button>
         </div>
 
-        <p className="text-xs text-white/25 mb-8">
+        <p className="text-xs text-cream/60 mb-8">
           Schedule a session, invite friends, and all start the same meditation at the exact same time.
         </p>
 
@@ -277,7 +277,7 @@ export default function RoomsPage() {
         {/* My Group Meds — sessions I've joined or created */}
         {mySessions.length > 0 && (
           <section className="mb-10">
-            <h2 className="text-xs text-white/40 uppercase tracking-widest mb-4" style={{ fontWeight: 500 }}>My Group Meds</h2>
+            <h2 className="text-xs text-cream/65 uppercase tracking-widest mb-4" style={{ fontWeight: 500 }}>My Group Meds</h2>
             <div className="flex flex-col gap-4">
               {mySessions.map((s) => (
                 <SessionCard
@@ -294,7 +294,7 @@ export default function RoomsPage() {
         {/* Open public sessions the user hasn't joined yet */}
         {publicSessions.length > 0 && (
           <section className="mb-10">
-            <h2 className="text-xs text-white/40 uppercase tracking-widest mb-4" style={{ fontWeight: 500 }}>Open Sessions</h2>
+            <h2 className="text-xs text-cream/65 uppercase tracking-widest mb-4" style={{ fontWeight: 500 }}>Open Sessions</h2>
             <div className="flex flex-col gap-4">
               {publicSessions.map((s) => (
                 <SessionCard
@@ -322,8 +322,8 @@ export default function RoomsPage() {
                 <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
               </svg>
             </div>
-            <p className="text-sm text-white/30 mb-1">No group sessions yet</p>
-            <p className="text-xs text-white/20 mb-6">Create one and invite friends to join</p>
+            <p className="text-sm text-cream/60 mb-1">No group sessions yet</p>
+            <p className="text-xs text-cream/60 mb-6">Create one and invite friends to join</p>
             <button
               onClick={() => setShowModal(true)}
               className="px-5 py-2 rounded-full text-sm text-white hover:opacity-80 transition-opacity"
@@ -401,7 +401,7 @@ function SessionCard({
           {/* Info */}
           <div className="flex-1 min-w-0">
             <p className="text-white text-base truncate" style={{ fontWeight: 500 }}>{session.title}</p>
-            <p className="text-xs text-white/35 mt-0.5">
+            <p className="text-xs text-cream/65 mt-0.5">
               Hosted by {session.host_name} · {session.session_title ?? `${session.duration_minutes} min timer`}
             </p>
             <p
@@ -414,7 +414,7 @@ function SessionCard({
 
           {!session.is_public && (
             <span
-              className="shrink-0 text-[10px] px-2 py-0.5 rounded-full text-white/40"
+              className="shrink-0 text-[10px] px-2 py-0.5 rounded-full text-cream/65"
               style={{ border: "0.5px solid rgba(255,255,255,0.15)" }}
             >
               Private
@@ -475,7 +475,7 @@ function CreateModal({
           style={{ borderBottom: "0.5px solid rgba(255,255,255,0.08)" }}
         >
           <h2 className="text-white text-base" style={{ fontWeight: 500 }}>Create a Group Med</h2>
-          <button onClick={onClose} className="text-white/30 hover:text-white/60 transition-colors">
+          <button onClick={onClose} className="text-cream/60 hover:text-cream/70 transition-colors">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
               <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
             </svg>
@@ -486,20 +486,20 @@ function CreateModal({
 
           {/* Title */}
           <div>
-            <label className="block text-xs text-white/40 mb-1.5">Session title</label>
+            <label className="block text-xs text-cream/65 mb-1.5">Session title</label>
             <input
               type="text"
               value={form.title}
               onChange={(e) => setForm({ ...form, title: e.target.value })}
               placeholder="e.g. Sunday Reset with the girls"
-              className="w-full px-3 py-2.5 rounded-lg text-sm outline-none placeholder:text-white/20"
+              className="w-full px-3 py-2.5 rounded-lg text-sm outline-none placeholder:text-cream/60"
               style={inputStyle}
             />
           </div>
 
           {/* Meditation track picker */}
           <div>
-            <label className="block text-xs text-white/40 mb-1.5">Meditation track (optional)</label>
+            <label className="block text-xs text-cream/65 mb-1.5">Meditation track (optional)</label>
             <select
               value={form.sessionId}
               onChange={(e) => setForm({ ...form, sessionId: e.target.value })}
@@ -519,7 +519,7 @@ function CreateModal({
                 </option>
               ))}
             </select>
-            <p className="text-[11px] text-white/25 mt-1">
+            <p className="text-[11px] text-cream/60 mt-1">
               All participants will play the same track when the session starts.
             </p>
           </div>
@@ -527,7 +527,7 @@ function CreateModal({
           {/* Duration — only when no track is selected */}
           {!form.sessionId && (
             <div>
-              <label className="block text-xs text-white/40 mb-2">Timer duration</label>
+              <label className="block text-xs text-cream/65 mb-2">Timer duration</label>
               <div className="flex gap-2 flex-wrap">
                 {TIMER_DURATIONS.map((d) => (
                   <button
@@ -551,7 +551,7 @@ function CreateModal({
           {/* Date and time */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs text-white/40 mb-1.5">Date</label>
+              <label className="block text-xs text-cream/65 mb-1.5">Date</label>
               <input
                 type="date"
                 value={form.date}
@@ -561,7 +561,7 @@ function CreateModal({
               />
             </div>
             <div>
-              <label className="block text-xs text-white/40 mb-1.5">Time</label>
+              <label className="block text-xs text-cream/65 mb-1.5">Time</label>
               <input
                 type="time"
                 value={form.time}
@@ -578,7 +578,7 @@ function CreateModal({
 
           {/* Max participants */}
           <div>
-            <label className="block text-xs text-white/40 mb-1.5">Max participants</label>
+            <label className="block text-xs text-cream/65 mb-1.5">Max participants</label>
             <input
               type="number"
               min={2}
@@ -593,8 +593,8 @@ function CreateModal({
           {/* Public / Private toggle */}
           <div className="flex items-center justify-between py-1">
             <div>
-              <p className="text-sm text-white/70">Public session</p>
-              <p className="text-xs text-white/30">Anyone can discover and join this session</p>
+              <p className="text-sm text-cream/80">Public session</p>
+              <p className="text-xs text-cream/60">Anyone can discover and join this session</p>
             </div>
             <button
               onClick={() => setForm({ ...form, isPublic: !form.isPublic })}
@@ -610,7 +610,7 @@ function CreateModal({
 
           {/* Colour picker */}
           <div>
-            <label className="block text-xs text-white/40 mb-2">Colour</label>
+            <label className="block text-xs text-cream/65 mb-2">Colour</label>
             <div className="flex gap-2">
               {GRADIENTS.map((g) => (
                 <button
@@ -641,7 +641,7 @@ function CreateModal({
             </button>
             <button
               onClick={onClose}
-              className="px-4 py-3 rounded-[10px] text-sm text-white/40 hover:text-white/70 transition-colors"
+              className="px-4 py-3 rounded-[10px] text-sm text-cream/65 hover:text-cream/80 transition-colors"
             >
               Cancel
             </button>

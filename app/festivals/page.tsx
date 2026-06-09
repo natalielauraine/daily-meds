@@ -132,7 +132,7 @@ const VIDEOS = [
 function SectionLabel({ children }: { children: string }) {
   return (
     <p
-      className="text-xs text-white/30 mb-3 uppercase tracking-widest"
+      className="text-xs text-cream/60 mb-3 uppercase tracking-widest"
       style={{ fontWeight: 500 }}
     >
       {children}
@@ -170,11 +170,11 @@ function TeamCard({ member }: { member: typeof TEAM[number] }) {
         </h3>
         <p
           className="text-xs uppercase tracking-widest mb-3"
-          style={{ color: "rgba(255,255,255,0.35)", fontFamily: "var(--font-lexend)" }}
+          style={{ color: "rgba(246,241,230,0.65)", fontFamily: "var(--font-lexend)" }}
         >
           {member.role}
         </p>
-        <p className="text-sm text-white/50 leading-relaxed">{member.bio}</p>
+        <p className="text-sm text-cream/60 leading-relaxed">{member.bio}</p>
       </div>
     </div>
   );
@@ -218,7 +218,7 @@ function VideoPlaceholder({ video }: { video: typeof VIDEOS[number] }) {
                 <path d="M8 5v14l11-7z"/>
               </svg>
             </div>
-            <p className="text-xs text-white/25 uppercase tracking-widest">Video coming soon</p>
+            <p className="text-xs text-cream/60 uppercase tracking-widest">Video coming soon</p>
           </div>
         )}
       </div>
@@ -229,7 +229,7 @@ function VideoPlaceholder({ video }: { video: typeof VIDEOS[number] }) {
         >
           {video.label}
         </p>
-        <p className="text-xs text-white/40 mt-1">{video.description}</p>
+        <p className="text-xs text-cream/65 mt-1">{video.description}</p>
       </div>
     </div>
   );
@@ -277,7 +277,7 @@ export default function FestivalsPage() {
               className="inline-block text-xs uppercase tracking-widest px-4 py-1.5 rounded-full mb-6"
               style={{
                 border: "1px solid rgba(255,255,255,0.15)",
-                color: "rgba(255,255,255,0.5)",
+                color: "rgba(246,241,230,0.6)",
                 fontFamily: "var(--font-lexend)",
               }}
             >
@@ -304,7 +304,7 @@ export default function FestivalsPage() {
 
             <p
               className="text-lg md:text-xl max-w-xl leading-relaxed mb-10"
-              style={{ color: "rgba(255,255,255,0.6)" }}
+              style={{ color: "rgba(246,241,230,0.7)" }}
             >
               The Daily Meds brings guided audio experiences to festival spaces — real, raw, human sessions for the moments between the music.
             </p>
@@ -336,7 +336,7 @@ export default function FestivalsPage() {
             >
               What we bring to your festival
             </h2>
-            <div className="flex flex-col gap-5 text-white/55 leading-relaxed text-base">
+            <div className="flex flex-col gap-5 text-cream/65 leading-relaxed text-base">
               <p>
                 The Daily Meds is an audio meditation platform built for real life — the messy, human, sometimes overwhelming parts of it. We create guided sessions for specific feelings: hungover, anxious, heartbroken, overstimulated, raw.
               </p>
@@ -366,7 +366,7 @@ export default function FestivalsPage() {
                   >
                     {stat.value}
                   </p>
-                  <p className="text-xs text-white/35 uppercase tracking-widest">{stat.label}</p>
+                  <p className="text-xs text-cream/65 uppercase tracking-widest">{stat.label}</p>
                 </div>
               ))}
             </div>
@@ -444,7 +444,7 @@ export default function FestivalsPage() {
                   >
                     {req.title}
                   </h3>
-                  <p className="text-sm text-white/45 leading-relaxed">{req.detail}</p>
+                  <p className="text-sm text-cream/70 leading-relaxed">{req.detail}</p>
                 </div>
               ))}
             </div>
@@ -464,7 +464,7 @@ export default function FestivalsPage() {
             >
               Let&apos;s bring this to your event.
             </h2>
-            <p className="text-white/45 leading-relaxed">
+            <p className="text-cream/70 leading-relaxed">
               We&apos;re booking festivals and events now. Reach out to start a conversation.
             </p>
             <Link

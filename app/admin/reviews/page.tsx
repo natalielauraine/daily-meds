@@ -55,7 +55,7 @@ function formatDate(iso: string) {
 export default function AdminReviewsPage() {
   const [reviews, setReviews]   = useState<Review[]>([]);
   const [loading, setLoading]   = useState(true);
-  const [filter, setFilter]     = useState<"all" | "pending" | "approved" | "rejected">("pending");
+  const [filter, setFilter]     = useState<"all" | "pending" | "approved" | "rejected">("all");
   const [updating, setUpdating] = useState<string | null>(null); // id currently being updated
 
   useEffect(() => {
@@ -67,16 +67,23 @@ export default function AdminReviewsPage() {
 
   async function updateStatus(id: string, status: "approved" | "rejected") {
     setUpdating(id);
-    const res = await fetch("/api/admin/reviews", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, status }),
-    });
-    if (res.ok) {
-      // Optimistically update local state so the UI reflects the change immediately
-      setReviews((prev) =>
-        prev.map((r) => (r.id === id ? { ...r, status } : r))
-      );
+    try {
+      const res = await fetch("/api/admin/reviews", {
+        method: "PATCH",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, status }),
+      });
+      if (res.ok) {
+        setReviews((prev) =>
+          prev.map((r) => (r.id === id ? { ...r, status } : r))
+        );
+      } else {
+        const err = await res.json().catch(() => ({}));
+        console.error("[admin/reviews] PATCH failed:", res.status, err);
+      }
+    } catch (e) {
+      console.error("[admin/reviews] PATCH error:", e);
     }
     setUpdating(null);
   }
@@ -97,7 +104,7 @@ export default function AdminReviewsPage() {
         {/* Header */}
         <div className="mb-6">
           <h1 className="text-2xl text-white mb-1" style={{ fontWeight: 500 }}>Reviews</h1>
-          <p className="text-sm text-white/40">
+          <p className="text-sm text-cream/65">
             Approve reviews to show them on the testimonials page. Reject to hide them.
           </p>
         </div>
@@ -125,7 +132,7 @@ export default function AdminReviewsPage() {
 
           {/* Table header */}
           <div
-            className="grid grid-cols-[1fr_auto] px-4 py-3 text-[10px] text-white/30 uppercase tracking-widest"
+            className="grid grid-cols-[1fr_auto] px-4 py-3 text-[10px] text-cream/60 uppercase tracking-widest"
             style={{ backgroundColor: "#1F1F1F", borderBottom: "0.5px solid rgba(255,255,255,0.06)", fontWeight: 500 }}
           >
             <span>Review</span>
@@ -144,7 +151,7 @@ export default function AdminReviewsPage() {
             </div>
           ) : filtered.length === 0 ? (
             <div className="py-14 text-center" style={{ backgroundColor: "#1A1A1A" }}>
-              <p className="text-sm text-white/25">No {filter === "all" ? "" : filter} reviews</p>
+              <p className="text-sm text-cream/60">No {filter === "all" ? "" : filter} reviews</p>
             </div>
           ) : (
             <div className="flex flex-col" style={{ backgroundColor: "#1A1A1A" }}>
@@ -169,17 +176,17 @@ export default function AdminReviewsPage() {
                       <Stars n={review.rating} />
                       <StatusBadge status={review.status} />
                       {review.session_tag && (
-                        <span className="text-[10px] text-white/35 truncate">
+                        <span className="text-[10px] text-cream/65 truncate">
                           {review.session_tag}
                         </span>
                       )}
-                      <span className="text-[10px] text-white/25 ml-auto">
+                      <span className="text-[10px] text-cream/60 ml-auto">
                         {formatDate(review.created_at)}
                       </span>
                     </div>
 
                     {/* Review text */}
-                    <p className="text-sm leading-relaxed text-white/60">
+                    <p className="text-sm leading-relaxed text-cream/70">
                       &ldquo;{review.review_text}&rdquo;
                     </p>
                   </div>
@@ -221,7 +228,7 @@ export default function AdminReviewsPage() {
 
         {/* Footer count */}
         {!loading && filtered.length > 0 && (
-          <p className="text-xs text-white/20 text-right mt-3">
+          <p className="text-xs text-cream/60 text-right mt-3">
             {filtered.length} review{filtered.length !== 1 ? "s" : ""}
           </p>
         )}

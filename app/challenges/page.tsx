@@ -189,7 +189,7 @@ export default function ChallengesPage() {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-xl text-white" style={{ fontWeight: 500 }}>Challenges</h1>
-            <p className="text-xs text-white/40 mt-0.5">Build your meditation habit, one challenge at a time</p>
+            <p className="text-xs text-cream/65 mt-0.5">Build your meditation habit, one challenge at a time</p>
           </div>
           <button
             onClick={() => setShowCreate(true)}
@@ -203,7 +203,7 @@ export default function ChallengesPage() {
         {/* Active challenges */}
         {active.length > 0 && (
           <section className="mb-10">
-            <p className="text-xs text-white/40 mb-4 uppercase tracking-wide">Active Challenges</p>
+            <p className="text-xs text-cream/65 mb-4 uppercase tracking-wide">Active Challenges</p>
             <div className="flex flex-col gap-3">
               {active.map((c) => (
                 <ChallengeCard key={c.id} challenge={c} onJoin={handleJoin} showProgress />
@@ -216,7 +216,7 @@ export default function ChallengesPage() {
         {official.length > 0 && (
           <section className="mb-10">
             <div className="flex items-center gap-2 mb-4">
-              <p className="text-xs text-white/40 uppercase tracking-wide">Official Challenges</p>
+              <p className="text-xs text-cream/65 uppercase tracking-wide">Official Challenges</p>
               <span
                 className="text-[10px] px-2 py-0.5 rounded-full"
                 style={{ backgroundColor: "rgba(255,65,179,0.2)", color: "#ff41b3" }}
@@ -235,7 +235,7 @@ export default function ChallengesPage() {
         {/* Community challenges */}
         {community.length > 0 && (
           <section className="mb-8">
-            <p className="text-xs text-white/40 mb-4 uppercase tracking-wide">Community Challenges</p>
+            <p className="text-xs text-cream/65 mb-4 uppercase tracking-wide">Community Challenges</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {community.map((c) => (
                 <ChallengeCard key={c.id} challenge={c} onJoin={handleJoin} />
@@ -248,8 +248,8 @@ export default function ChallengesPage() {
         {active.length === 0 && official.length === 0 && community.length === 0 && (
           <div className="text-center py-16">
             <p className="text-2xl mb-3">🎯</p>
-            <p className="text-white/30 text-sm mb-1">No challenges yet</p>
-            <p className="text-white/20 text-xs">Create one or check back soon for official challenges</p>
+            <p className="text-cream/60 text-sm mb-1">No challenges yet</p>
+            <p className="text-cream/60 text-xs">Create one or check back soon for official challenges</p>
           </div>
         )}
 
@@ -273,7 +273,7 @@ export default function ChallengesPage() {
             <div className="flex flex-col gap-4">
 
               <div>
-                <label className="block text-xs text-white/40 mb-1.5">Challenge title *</label>
+                <label className="block text-xs text-cream/65 mb-1.5">Challenge title *</label>
                 <input
                   type="text"
                   value={form.title}
@@ -286,7 +286,7 @@ export default function ChallengesPage() {
               </div>
 
               <div>
-                <label className="block text-xs text-white/40 mb-1.5">Description</label>
+                <label className="block text-xs text-cream/65 mb-1.5">Description</label>
                 <textarea
                   value={form.description}
                   onChange={(e) => updateForm("description", e.target.value)}
@@ -299,7 +299,7 @@ export default function ChallengesPage() {
               </div>
 
               <div>
-                <label className="block text-xs text-white/40 mb-1.5">Challenge type</label>
+                <label className="block text-xs text-cream/65 mb-1.5">Challenge type</label>
                 <div className="grid grid-cols-2 gap-2">
                   {(["sessions", "days", "minutes", "mood"] as const).map((type) => (
                     <button
@@ -322,7 +322,7 @@ export default function ChallengesPage() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs text-white/40 mb-1.5">Target</label>
+                  <label className="block text-xs text-cream/65 mb-1.5">Target</label>
                   <input
                     type="number"
                     value={form.target_value}
@@ -334,7 +334,7 @@ export default function ChallengesPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-white/40 mb-1.5">Duration (days)</label>
+                  <label className="block text-xs text-cream/65 mb-1.5">Duration (days)</label>
                   <input
                     type="number"
                     value={form.duration_days}
@@ -350,8 +350,8 @@ export default function ChallengesPage() {
               {/* Public / Private */}
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-white/70">Public challenge</p>
-                  <p className="text-xs text-white/30">Others can discover and join this</p>
+                  <p className="text-sm text-cream/80">Public challenge</p>
+                  <p className="text-xs text-cream/60">Others can discover and join this</p>
                 </div>
                 <button
                   type="button"
@@ -371,7 +371,7 @@ export default function ChallengesPage() {
               <div className="flex gap-2 pt-1">
                 <button
                   onClick={() => setShowCreate(false)}
-                  className="flex-1 py-2.5 rounded-lg text-sm text-white/50 transition-colors hover:text-white"
+                  className="flex-1 py-2.5 rounded-lg text-sm text-cream/60 transition-colors hover:text-white"
                   style={{ border: "0.5px solid rgba(255,255,255,0.1)" }}
                 >
                   Cancel
@@ -443,7 +443,7 @@ function ChallengeCard({
               </span>
             )}
           </div>
-          <p className="text-xs text-white/35 line-clamp-2">{challenge.description}</p>
+          <p className="text-xs text-cream/65 line-clamp-2">{challenge.description}</p>
         </div>
       </div>
 
@@ -451,8 +451,8 @@ function ChallengeCard({
       {showProgress && participation && (
         <div className="mb-3">
           <div className="flex items-center justify-between mb-1.5">
-            <p className="text-xs text-white/40">{progressLabel(challenge, participation.progress_value)}</p>
-            <p className="text-xs text-white/30">{progress}%</p>
+            <p className="text-xs text-cream/65">{progressLabel(challenge, participation.progress_value)}</p>
+            <p className="text-xs text-cream/60">{progress}%</p>
           </div>
           <div className="h-1.5 w-full rounded-full" style={{ backgroundColor: "rgba(255,255,255,0.07)" }}>
             <div
@@ -466,13 +466,13 @@ function ChallengeCard({
       {/* Footer */}
       <div className="flex items-center justify-between mt-3">
         <div className="flex items-center gap-3">
-          <p className="text-xs text-white/30">
+          <p className="text-xs text-cream/60">
             {challenge.participantCount} joined
           </p>
           {showProgress && participation ? (
-            <p className="text-xs text-white/25">{remaining}d left</p>
+            <p className="text-xs text-cream/60">{remaining}d left</p>
           ) : (
-            <p className="text-xs text-white/25">{challenge.duration_days} days</p>
+            <p className="text-xs text-cream/60">{challenge.duration_days} days</p>
           )}
         </div>
 

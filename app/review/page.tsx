@@ -40,7 +40,7 @@ function StarPicker({ value, onChange }: { value: number; onChange: (n: number) 
         </button>
       ))}
       {value > 0 && (
-        <span className="text-sm text-white/50 ml-1">
+        <span className="text-sm text-cream/60 ml-1">
           {["", "Poor", "Fair", "Good", "Great", "Excellent"][value]}
         </span>
       )}
@@ -148,7 +148,7 @@ export default function ReviewPage() {
               </svg>
             </div>
             <h2 className="text-xl text-white mb-2" style={{ fontWeight: 500 }}>Thanks for your review!</h2>
-            <p className="text-sm text-white/45 leading-relaxed mb-8">
+            <p className="text-sm text-cream/70 leading-relaxed mb-8">
               Your review has been submitted and is waiting for approval. Once Natalie approves it, it'll appear on the testimonials page.
             </p>
             <div className="flex flex-col gap-3">
@@ -159,7 +159,7 @@ export default function ReviewPage() {
               >
                 See all reviews
               </Link>
-              <Link href="/" className="text-sm text-white/40 hover:text-white/70 transition-colors">
+              <Link href="/" className="text-sm text-cream/65 hover:text-cream/80 transition-colors">
                 Back to home
               </Link>
             </div>
@@ -178,7 +178,7 @@ export default function ReviewPage() {
       <main className="flex-1 w-full max-w-xl mx-auto px-4 sm:px-6 py-10 pb-24">
 
         {/* Back link */}
-        <Link href="/testimonials" className="inline-flex items-center gap-1.5 text-sm text-white/40 hover:text-white/70 transition-colors mb-8">
+        <Link href="/testimonials" className="inline-flex items-center gap-1.5 text-sm text-cream/65 hover:text-cream/80 transition-colors mb-8">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
             <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
           </svg>
@@ -188,8 +188,8 @@ export default function ReviewPage() {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-2xl text-white mb-2" style={{ fontWeight: 500 }}>Leave a review</h1>
-          <p className="text-sm text-white/45 leading-relaxed">
-            Your review helps other people find Daily Meds when they need it most. Be honest — good or bad.
+          <p className="text-sm text-cream/70 leading-relaxed">
+            We would love to know what you think, how you are feeling and how we can improve. We are open to creating custom audios tailored to your exact situation. Every week we review your suggestions to see what we can help you regulate with next.
           </p>
         </div>
 
@@ -197,7 +197,7 @@ export default function ReviewPage() {
 
           {/* ── YOUR NAME ── */}
           <div>
-            <label className="block text-xs text-white/50 mb-2" style={{ fontWeight: 500 }}>
+            <label className="block text-xs text-cream/60 mb-2" style={{ fontWeight: 500 }}>
               YOUR NAME
             </label>
             <input
@@ -205,23 +205,23 @@ export default function ReviewPage() {
               value={reviewerName}
               onChange={(e) => setReviewerName(e.target.value)}
               placeholder="How should we credit you?"
-              className="w-full rounded-[10px] px-4 py-3 text-sm text-white outline-none placeholder:text-white/25"
+              className="w-full rounded-[10px] px-4 py-3 text-sm text-white outline-none placeholder:text-cream/60"
               style={{
                 backgroundColor: "#1F1F1F",
                 border: "0.5px solid rgba(255,255,255,0.1)",
               }}
             />
-            <p className="text-xs text-white/25 mt-1.5">Only your first name will appear publicly</p>
+            <p className="text-xs text-cream/60 mt-1.5">Only your first name will appear publicly</p>
           </div>
 
           {/* ── STAR RATING ── */}
           <div>
-            <label className="block text-xs text-white/50 mb-3" style={{ fontWeight: 500 }}>
+            <label className="block text-xs text-cream/60 mb-3" style={{ fontWeight: 500 }}>
               RATING <span className="text-red-400">*</span>
             </label>
             <StarPicker value={rating} onChange={setRating} />
             {rating > 0 && (
-              <p className="text-xs text-white/30 mt-2">
+              <p className="text-xs text-cream/60 mt-2">
                 {RATING_LABELS[rating]} — {rating} out of 5 stars
               </p>
             )}
@@ -229,7 +229,7 @@ export default function ReviewPage() {
 
           {/* ── REVIEW TEXT ── */}
           <div>
-            <label className="block text-xs text-white/50 mb-2" style={{ fontWeight: 500 }}>
+            <label className="block text-xs text-cream/60 mb-2" style={{ fontWeight: 500 }}>
               YOUR REVIEW <span className="text-red-400">*</span>
             </label>
             <textarea
@@ -237,20 +237,20 @@ export default function ReviewPage() {
               onChange={(e) => setReviewText(e.target.value)}
               placeholder="Tell us about your experience. What were you going through? Did it help?"
               rows={5}
-              className="w-full rounded-[10px] px-4 py-3 text-sm text-white outline-none placeholder:text-white/25 resize-none leading-relaxed"
+              className="w-full rounded-[10px] px-4 py-3 text-sm text-white outline-none placeholder:text-cream/60 resize-none leading-relaxed"
               style={{
                 backgroundColor: "#1F1F1F",
                 border: "0.5px solid rgba(255,255,255,0.1)",
               }}
             />
-            <p className="text-xs text-white/25 mt-1.5">
+            <p className="text-xs text-cream/60 mt-1.5">
               {reviewText.length} characters · minimum 20
             </p>
           </div>
 
           {/* ── SESSION TAG ── */}
           <div>
-            <label className="block text-xs text-white/50 mb-2" style={{ fontWeight: 500 }}>
+            <label className="block text-xs text-cream/60 mb-2" style={{ fontWeight: 500 }}>
               WHAT ARE YOU REVIEWING?
             </label>
             <select
@@ -273,7 +273,7 @@ export default function ReviewPage() {
                 <option value="Sleep Audio">Sleep Audio</option>
               </optgroup>
             </select>
-            <p className="text-xs text-white/25 mt-1.5">
+            <p className="text-xs text-cream/60 mt-1.5">
               Optional — helps others find relevant sessions
             </p>
           </div>
@@ -298,7 +298,7 @@ export default function ReviewPage() {
             {submitting ? "Submitting…" : "Submit review"}
           </button>
 
-          <p className="text-xs text-white/25 text-center leading-relaxed">
+          <p className="text-xs text-cream/60 text-center leading-relaxed">
             Reviews are checked before going live. No spam, no fake reviews — just real experiences.
           </p>
 

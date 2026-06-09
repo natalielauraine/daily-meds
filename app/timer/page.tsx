@@ -119,7 +119,7 @@ export default function TimerPage() {
           </span>
           <h2
             className="text-lg font-light tracking-wide italic"
-            style={{ color: "rgba(255,255,255,0.6)", fontFamily: "var(--font-lexend)" }}
+            style={{ color: "rgba(246,241,230,0.7)", fontFamily: "var(--font-lexend)" }}
           >
             Your ritual, recorded.
           </h2>
@@ -221,7 +221,7 @@ export default function TimerPage() {
                 <h3 className="text-xl font-black uppercase mb-2" style={{ fontFamily: "var(--font-lexend)" }}>
                   Create a free account to use the timer
                 </h3>
-                <p className="text-sm mb-6" style={{ color: "rgba(255,255,255,0.5)" }}>
+                <p className="text-sm mb-6" style={{ color: "rgba(246,241,230,0.6)" }}>
                   The breathing timer is free for everyone — just sign up with your email to get started.
                 </p>
                 <div className="flex flex-col gap-3">
@@ -235,7 +235,7 @@ export default function TimerPage() {
                   <Link
                     href="/login"
                     className="w-full py-4 rounded-2xl text-base font-bold uppercase tracking-wide transition-all hover:bg-white/5 text-center"
-                    style={{ border: "1px solid rgba(255,255,255,0.15)", color: "rgba(255,255,255,0.6)", fontFamily: "var(--font-lexend)" }}
+                    style={{ border: "1px solid rgba(255,255,255,0.15)", color: "rgba(246,241,230,0.7)", fontFamily: "var(--font-lexend)" }}
                   >
                     Log In
                   </Link>
@@ -302,7 +302,7 @@ export default function TimerPage() {
               <h3 className="text-2xl font-black uppercase mb-3" style={{ fontFamily: "var(--font-lexend)" }}>
                 Want the full experience?
               </h3>
-              <p className="text-sm mb-8 leading-relaxed" style={{ color: "rgba(255,255,255,0.5)" }}>
+              <p className="text-sm mb-8 leading-relaxed" style={{ color: "rgba(246,241,230,0.6)" }}>
                 Get access to 200+ meditations and the full audio library. Just £9.99/month.
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -316,7 +316,7 @@ export default function TimerPage() {
                 <Link
                   href="/pricing"
                   className="px-10 py-4 rounded-full font-bold uppercase tracking-wide text-sm transition-all hover:bg-white/5 text-center"
-                  style={{ border: "1px solid rgba(255,255,255,0.15)", color: "rgba(255,255,255,0.6)", fontFamily: "var(--font-lexend)" }}
+                  style={{ border: "1px solid rgba(255,255,255,0.15)", color: "rgba(246,241,230,0.7)", fontFamily: "var(--font-lexend)" }}
                 >
                   See Pricing
                 </Link>

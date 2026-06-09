@@ -115,13 +115,13 @@ export default function LoginPage() {
             className="text-xl text-white"
             style={{ fontFamily: "var(--font-plus-jakarta)", fontWeight: 800 }}
           >
-            Welcome back
+            Ah, there you are. Welcome back.
           </h1>
           <p
-            className="text-sm mt-1"
-            style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.4)" }}
+            className="text-base mt-1"
+            style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(246,241,230,0.8)" }}
           >
-            Log in to your account
+            Log into your account below.
           </p>
         </div>
 
@@ -138,7 +138,7 @@ export default function LoginPage() {
           <button
             onClick={handleGoogleLogin}
             disabled={googleLoading || loading}
-            className="w-full flex items-center justify-center gap-3 py-2.5 rounded-md text-sm text-white/80 hover:text-white transition-colors mb-5"
+            className="w-full flex items-center justify-center gap-3 py-2.5 rounded-md text-sm text-[#f5f0e8] hover:text-white transition-colors mb-5"
             style={{
               border: "0.5px solid rgba(255,255,255,0.2)",
               backgroundColor: "transparent",
@@ -158,7 +158,7 @@ export default function LoginPage() {
           {/* Divider */}
           <div className="flex items-center gap-3 mb-5">
             <div className="flex-1 h-px" style={{ backgroundColor: "rgba(255,255,255,0.08)" }} />
-            <span className="text-xs text-white/30">or</span>
+            <span className="text-sm text-cream/60">or</span>
             <div className="flex-1 h-px" style={{ backgroundColor: "rgba(255,255,255,0.08)" }} />
           </div>
 
@@ -167,7 +167,7 @@ export default function LoginPage() {
 
             {/* Email field */}
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs text-white/50">Email</label>
+              <label className="text-sm" style={{ color: "#f5f0e8" }}>Email</label>
               <input
                 type="email"
                 value={email}
@@ -185,10 +185,11 @@ export default function LoginPage() {
             {/* Password field */}
             <div className="flex flex-col gap-1.5">
               <div className="flex items-center justify-between">
-                <label className="text-xs text-white/50">Password</label>
+                <label className="text-sm" style={{ color: "#f5f0e8" }}>Password</label>
                 <Link
                   href="/forgot-password"
-                  className="text-xs text-white/40 hover:text-white/70 transition-colors"
+                  className="text-sm hover:text-white transition-colors"
+                  style={{ color: "rgba(246,241,230,0.7)" }}
                 >
                   Forgot password?
                 </Link>
@@ -225,9 +226,9 @@ export default function LoginPage() {
         </div>
 
         {/* Sign up link */}
-        <p className="text-center text-sm text-white/40 mt-6">
+        <p className="text-center text-base mt-6" style={{ color: "rgba(246,241,230,0.7)" }}>
           Don&apos;t have an account?{" "}
-          <Link href="/signup" className="text-white/70 hover:text-white transition-colors">
+          <Link href="/signup" className="hover:text-white transition-colors" style={{ color: "#f5f0e8" }}>
             Sign up free
           </Link>
         </p>

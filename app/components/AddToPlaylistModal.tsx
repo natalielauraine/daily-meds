@@ -83,7 +83,7 @@ export default function AddToPlaylistModal({ sessionId, onClose }: Props) {
         {/* Header */}
         <div className="flex items-center justify-between mb-5">
           <h2 className="text-white text-base" style={{ fontWeight: 500 }}>Add to playlist</h2>
-          <button onClick={onClose} className="text-white/40 hover:text-white/70 transition-colors">
+          <button onClick={onClose} className="text-cream/65 hover:text-cream/80 transition-colors">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
               <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
             </svg>
@@ -100,7 +100,7 @@ export default function AddToPlaylistModal({ sessionId, onClose }: Props) {
             {/* Existing playlists */}
             <div className="flex flex-col gap-2 mb-4 max-h-64 overflow-y-auto">
               {playlists.length === 0 && !creating && (
-                <p className="text-sm text-white/30 text-center py-4">No playlists yet. Create one below.</p>
+                <p className="text-sm text-cream/60 text-center py-4">No playlists yet. Create one below.</p>
               )}
               {playlists.map((p) => {
                 const included = p.sessionIds.includes(sessionId);
@@ -128,7 +128,7 @@ export default function AddToPlaylistModal({ sessionId, onClose }: Props) {
                       )}
                     </div>
                     <span className="text-sm text-white/80 flex-1">{p.name}</span>
-                    <span className="text-xs text-white/25">{p.sessionIds.length} sessions</span>
+                    <span className="text-xs text-cream/60">{p.sessionIds.length} sessions</span>
                   </button>
                 );
               })}
@@ -159,7 +159,7 @@ export default function AddToPlaylistModal({ sessionId, onClose }: Props) {
                 </button>
                 <button
                   onClick={() => setCreating(false)}
-                  className="px-3 py-2 rounded-lg text-sm text-white/50 hover:text-white transition-colors"
+                  className="px-3 py-2 rounded-lg text-sm text-cream/60 hover:text-white transition-colors"
                 >
                   Cancel
                 </button>
@@ -167,7 +167,7 @@ export default function AddToPlaylistModal({ sessionId, onClose }: Props) {
             ) : (
               <button
                 onClick={() => setCreating(true)}
-                className="flex items-center gap-2 w-full px-4 py-3 rounded-[10px] text-sm text-white/50 hover:text-white transition-colors"
+                className="flex items-center gap-2 w-full px-4 py-3 rounded-[10px] text-sm text-cream/60 hover:text-white transition-colors"
                 style={{ border: "0.5px dashed rgba(255,255,255,0.15)" }}
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">

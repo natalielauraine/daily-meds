@@ -83,7 +83,7 @@ export default function FriendsActivityFeed({ limit = 4 }: Props) {
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-sm text-white/50" style={{ fontWeight: 500, letterSpacing: "0.04em", textTransform: "uppercase", fontSize: "11px" }}>
+        <h2 className="text-sm text-cream/60" style={{ fontWeight: 500, letterSpacing: "0.04em", textTransform: "uppercase", fontSize: "11px" }}>
           Friends
         </h2>
       </div>
@@ -106,12 +106,12 @@ export default function FriendsActivityFeed({ limit = 4 }: Props) {
 
             {/* Activity text */}
             <div className="flex-1 min-w-0">
-              <p className="text-xs text-white/60 leading-snug">
+              <p className="text-xs text-cream/70 leading-snug">
                 <span style={{ fontWeight: 500, color: "rgba(255,255,255,0.8)" }}>{item.friendName}</span>
                 {" "}{item.action}{" "}
-                <span style={{ color: "rgba(255,255,255,0.7)" }}>{item.sessionTitle}</span>
+                <span style={{ color: "rgba(246,241,230,0.8)" }}>{item.sessionTitle}</span>
               </p>
-              <p className="text-[11px] text-white/25 mt-0.5">{timeAgo(item.minutesAgo)}</p>
+              <p className="text-[11px] text-cream/60 mt-0.5">{timeAgo(item.minutesAgo)}</p>
             </div>
 
             {/* Session gradient dot */}

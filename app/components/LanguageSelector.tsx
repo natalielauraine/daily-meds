@@ -34,7 +34,7 @@ export default function LanguageSelector() {
         onClick={() => setOpen((o) => !o)}
         className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-[8px] text-xs transition-colors hover:bg-white/[0.06]"
         style={{
-          color: "rgba(255,255,255,0.55)",
+          color: "rgba(246,241,230,0.65)",
           border: "0.5px solid rgba(255,255,255,0.1)",
         }}
         aria-label="Change language"

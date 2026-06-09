@@ -23,6 +23,9 @@ export default function Logo({ href = "/", size = "md" }: LogoProps) {
       className={`font-black uppercase tracking-tight whitespace-nowrap ${textSize}`}
       style={{
         fontFamily: "var(--font-nyata), var(--font-lexend), sans-serif",
+        minHeight: 30,
+        display: "inline-flex",
+        alignItems: "center",
         background: "linear-gradient(90deg, #ff41b3 0%, #ec723d 100%)",
         WebkitBackgroundClip: "text",
         WebkitTextFillColor: "transparent",

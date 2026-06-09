@@ -1,244 +1,303 @@
 "use client";
 
-import { useState } from "react";
+// /testimonials — public page showing approved user reviews.
+// Fetches all reviews with status "approved" from Supabase.
+// Hero section shows the overall average rating and total review count.
+// Reviews are shown in a responsive grid with star ratings, avatars and session tags.
+
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import { createClient } from "../../lib/supabase-browser";
+
+type Review = {
+  id: string;
+  rating: number;
+  review_text: string;
+  session_tag: string | null;   // e.g. "Hungover & Overwhelmed" or null for general
+  created_at: string;
+  reviewer_name: string;        // stored at submission time from user profile
+  reviewer_initials: string;    // first letter of name, pre-computed for avatar
+};
+
+// Render a row of star icons — filled yellow, half-dim, or empty
+function Stars({ rating, size = 16 }: { rating: number; size?: number }) {
+  return (
+    <div className="flex items-center gap-0.5">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <svg
+          key={star}
+          width={size}
+          height={size}
+          viewBox="0 0 24 24"
+          fill={star <= rating ? "#FACC15" : "rgba(255,255,255,0.15)"}
+        >
+          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+        </svg>
+      ))}
+    </div>
+  );
+}
+
+// Pick a gradient for the avatar based on the first letter of the name
+const AVATAR_GRADIENTS = [
+  "linear-gradient(135deg, #6B21E8, #8B3CF7)",
+  "linear-gradient(135deg, #F43F5E, #F97316)",
+  "linear-gradient(135deg, #10B981, #22C55E)",
+  "linear-gradient(135deg, #EC4899, #D946EF)",
+  "linear-gradient(135deg, #F97316, #FACC15)",
+  "linear-gradient(135deg, #8B3CF7, #6366F1)",
+];
+
+function avatarGradient(initial: string): string {
+  const idx = (initial.toUpperCase().charCodeAt(0) - 65) % AVATAR_GRADIENTS.length;
+  return AVATAR_GRADIENTS[Math.max(0, idx)];
+}
+
+// Format a date like "March 2025"
+function formatMonth(iso: string): string {
+  try {
+    return new Date(iso).toLocaleDateString("en-GB", { month: "long", year: "numeric" });
+  } catch {
+    return "";
+  }
+}
+
+function shuffle<T>(arr: T[]): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
 
 export default function TestimonialsPage() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [testimonial, setTestimonial] = useState("");
-  const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
-  const [errorMsg, setErrorMsg] = useState("");
+  const [allReviews, setAllReviews] = useState<Review[]>([]);
+  const [displayed, setDisplayed] = useState<Review[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setStatus("submitting");
-    setErrorMsg("");
+  useEffect(() => {
+    async function fetchReviews() {
+      const supabase = createClient();
+      const { data } = await supabase
+        .from("reviews")
+        .select("id, rating, review_text, session_tag, created_at, reviewer_name, reviewer_initials")
+        .eq("status", "approved")
+        .order("created_at", { ascending: false });
 
-    try {
-      const res = await fetch("/api/testimonials", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, testimonial }),
-      });
-
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || "Something went wrong. Please try again.");
-      }
-
-      setStatus("success");
-      setName("");
-      setEmail("");
-      setTestimonial("");
-    } catch (err: unknown) {
-      setStatus("error");
-      setErrorMsg(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+      const all = (data as Review[]) ?? [];
+      setAllReviews(all);
+      setDisplayed(shuffle(all).slice(0, 12));
+      setLoading(false);
     }
+    fetchReviews();
+  }, []);
+
+  function reshuffleReviews() {
+    setDisplayed(shuffle(allReviews).slice(0, 12));
   }
 
-  return (
-    <div style={{ backgroundColor: "#131313", color: "#ffffff", fontFamily: "var(--font-manrope)", minHeight: "100vh", overflowX: "hidden" }}>
+  const totalReviews = allReviews.length;
+  const averageRating = totalReviews > 0
+    ? Math.round((allReviews.reduce((sum, r) => sum + r.rating, 0) / totalReviews) * 10) / 10
+    : 0;
 
+  const ratingCounts = [5, 4, 3, 2, 1].map((star) => ({
+    star,
+    count: allReviews.filter((r) => r.rating === star).length,
+    percent: totalReviews > 0 ? (allReviews.filter((r) => r.rating === star).length / totalReviews) * 100 : 0,
+  }));
+
+  return (
+    <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#131313" }}>
       <Navbar />
 
-      {/* HERO */}
-      <section className="py-24 px-6 text-center" style={{ background: "linear-gradient(160deg, #131313 0%, #0e0e0e 100%)" }}>
-        <div className="max-w-3xl mx-auto flex flex-col items-center gap-6">
-          <span
-            className="text-xs uppercase tracking-widest px-4 py-1.5 rounded-full border"
-            style={{ borderColor: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.35)", fontFamily: "var(--font-lexend)" }}
-          >
-            Early Days
-          </span>
-          <h1
-            className="uppercase leading-none tracking-tight"
-            style={{
-              fontFamily: "var(--font-epilogue)",
-              fontWeight: 900,
-              fontSize: "clamp(2.5rem, 7vw, 4.5rem)",
-            }}
-          >
-            We&apos;d Love Your Feedback
-          </h1>
-          <p className="text-lg leading-relaxed max-w-xl" style={{ color: "rgba(255,255,255,0.5)" }}>
-            We&apos;re early and building something special. If you&apos;ve tried Daily Meds,
-            we&apos;d love to hear about your experience.
+      <main className="flex-1">
+
+        {/* ── HERO ──────────────────────────────────────────────────────────── */}
+        <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-12 text-center">
+          <p className="text-xs text-cream/65 uppercase tracking-widest mb-4" style={{ fontWeight: 500 }}>
+            What members say
           </p>
-        </div>
-      </section>
+          <h1 className="text-3xl sm:text-4xl text-white mb-3" style={{ fontWeight: 500 }}>
+            Real people. Real results.
+          </h1>
+          <p className="text-base text-cream/60 max-w-md mx-auto mb-4">
+            No wellness fluff. Just honest feedback from people who actually used Daily Meds when they needed it most.
+          </p>
+          <p className="text-sm text-cream/65 max-w-2xl mx-auto mb-10 leading-relaxed">
+            Our founder Natalie Lauraine has received over 9,000 five-star reviews on Insight Timer since 2019. She created The Daily Meds to expand her reach and bring reality-based wellness to a wider audience. We would love to hear your feedback here. Tell us what you love or how we can serve you better.
+          </p>
 
-      {/* FORM */}
-      <section className="py-12 px-6">
-        <div className="max-w-lg mx-auto">
-          {status === "success" ? (
+          {/* Overall rating + bar chart */}
+          {!loading && totalReviews > 0 && (
             <div
-              className="rounded-2xl p-10 text-center flex flex-col items-center gap-4"
-              style={{ backgroundColor: "#191919", border: "1px solid rgba(255,255,255,0.06)" }}
+              className="inline-flex flex-col sm:flex-row items-center gap-8 px-8 py-6 rounded-[14px]"
+              style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.08)" }}
             >
-              <div
-                className="w-14 h-14 rounded-full flex items-center justify-center text-2xl"
-                style={{ background: "linear-gradient(135deg, #ff41b3, #ec723d)" }}
-              >
-                &#10003;
+              {/* Big number */}
+              <div className="text-center">
+                <p className="text-5xl text-white mb-1" style={{ fontWeight: 500 }}>{averageRating}</p>
+                <Stars rating={Math.round(averageRating)} size={20} />
+                <p className="text-xs text-cream/65 mt-2">{totalReviews} review{totalReviews !== 1 ? "s" : ""}</p>
               </div>
-              <h2
-                className="text-2xl"
-                style={{ fontFamily: "var(--font-epilogue)", fontWeight: 800 }}
-              >
-                Thank you!
-              </h2>
-              <p style={{ color: "rgba(255,255,255,0.5)", lineHeight: 1.7 }}>
-                Your testimonial means the world to us. We&apos;ll review it shortly.
-              </p>
-              <button
-                onClick={() => setStatus("idle")}
-                className="mt-4 text-sm underline underline-offset-4 transition-colors hover:text-white"
-                style={{ color: "rgba(255,255,255,0.35)" }}
-              >
-                Submit another
-              </button>
+
+              {/* Rating breakdown bars */}
+              <div className="flex flex-col gap-2 min-w-[180px]">
+                {ratingCounts.map(({ star, count, percent }) => (
+                  <div key={star} className="flex items-center gap-2">
+                    <span className="text-xs text-cream/65 w-4 text-right">{star}</span>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="#FACC15">
+                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                    <div className="flex-1 h-1.5 rounded-full" style={{ backgroundColor: "rgba(255,255,255,0.08)" }}>
+                      <div
+                        className="h-full rounded-full"
+                        style={{ width: `${percent}%`, backgroundColor: "#FACC15" }}
+                      />
+                    </div>
+                    <span className="text-xs text-cream/60 w-4">{count}</span>
+                  </div>
+                ))}
+              </div>
             </div>
-          ) : (
-            <form
-              onSubmit={handleSubmit}
-              className="rounded-2xl p-8 sm:p-10 flex flex-col gap-6"
-              style={{ backgroundColor: "#191919", border: "1px solid rgba(255,255,255,0.06)" }}
+          )}
+
+          {/* Leave a review CTA */}
+          <div className="mt-8">
+            <Link
+              href="/review"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm text-white transition-opacity hover:opacity-80"
+              style={{ backgroundColor: "#8B5CF6", fontWeight: 500 }}
             >
-              <div className="flex flex-col gap-2">
-                <label
-                  htmlFor="name"
-                  className="text-sm font-medium"
-                  style={{ color: "rgba(255,255,255,0.6)", fontFamily: "var(--font-manrope)" }}
-                >
-                  Name
-                </label>
-                <input
-                  id="name"
-                  type="text"
-                  required
-                  maxLength={200}
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Your name"
-                  className="rounded-xl px-4 py-3 text-sm outline-none transition-colors focus:ring-1"
-                  style={{
-                    backgroundColor: "#131313",
-                    border: "1px solid rgba(255,255,255,0.08)",
-                    color: "#fff",
-                    fontFamily: "var(--font-manrope)",
-                  }}
-                />
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+              </svg>
+              Leave a review
+            </Link>
+          </div>
+        </section>
+
+        {/* ── REVIEWS GRID ───────────────────────────────────────────────── */}
+        <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+
+          {/* Loading spinner */}
+          {loading && (
+            <div className="flex justify-center py-16">
+              <div className="w-6 h-6 rounded-full border-2 border-white/20 border-t-purple-400 animate-spin" />
+            </div>
+          )}
+
+          {/* Empty state — shown before any reviews are approved */}
+          {!loading && allReviews.length === 0 && (
+            <div className="flex flex-col items-center py-20 text-center">
+              <div
+                className="w-16 h-16 rounded-full flex items-center justify-center mb-5"
+                style={{ background: "rgba(139,92,246,0.1)", border: "0.5px solid rgba(139,92,246,0.2)" }}
+              >
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="rgba(139,92,246,0.7)">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
               </div>
+              <p className="text-cream/65 text-sm mb-1">No reviews yet</p>
+              <p className="text-cream/60 text-xs mb-6">Be the first to share your experience</p>
+              <Link
+                href="/review"
+                className="text-sm text-white px-5 py-2 rounded-full transition-opacity hover:opacity-80"
+                style={{ backgroundColor: "#8B5CF6", fontWeight: 500 }}
+              >
+                Write a review
+              </Link>
+            </div>
+          )}
 
-              <div className="flex flex-col gap-2">
-                <label
-                  htmlFor="email"
-                  className="text-sm font-medium"
-                  style={{ color: "rgba(255,255,255,0.6)", fontFamily: "var(--font-manrope)" }}
+          {/* Review cards — 12 randomly selected, masonry layout */}
+          {!loading && displayed.length > 0 && (
+            <div className="columns-1 sm:columns-2 lg:columns-3 gap-4">
+              {displayed.map((review) => (
+                <div
+                  key={review.id}
+                  className="break-inside-avoid mb-4 rounded-[12px] p-5"
+                  style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.08)" }}
                 >
-                  Email
-                </label>
-                <input
-                  id="email"
-                  type="email"
-                  required
-                  maxLength={320}
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@example.com"
-                  className="rounded-xl px-4 py-3 text-sm outline-none transition-colors focus:ring-1"
-                  style={{
-                    backgroundColor: "#131313",
-                    border: "1px solid rgba(255,255,255,0.08)",
-                    color: "#fff",
-                    fontFamily: "var(--font-manrope)",
-                  }}
-                />
-              </div>
+                  {/* Stars */}
+                  <div className="mb-3">
+                    <Stars rating={review.rating} />
+                  </div>
 
-              <div className="flex flex-col gap-2">
-                <label
-                  htmlFor="testimonial"
-                  className="text-sm font-medium"
-                  style={{ color: "rgba(255,255,255,0.6)", fontFamily: "var(--font-manrope)" }}
-                >
-                  Your experience
-                </label>
-                <textarea
-                  id="testimonial"
-                  required
-                  maxLength={2000}
-                  rows={6}
-                  value={testimonial}
-                  onChange={(e) => setTestimonial(e.target.value)}
-                  placeholder="Tell us about your experience with Daily Meds..."
-                  className="rounded-xl px-4 py-3 text-sm outline-none transition-colors focus:ring-1 resize-y"
-                  style={{
-                    backgroundColor: "#131313",
-                    border: "1px solid rgba(255,255,255,0.08)",
-                    color: "#fff",
-                    fontFamily: "var(--font-manrope)",
-                    minHeight: "140px",
-                  }}
-                />
-              </div>
+                  {/* Review text */}
+                  <p className="text-sm text-cream/85 leading-relaxed mb-4">
+                    &ldquo;{review.review_text}&rdquo;
+                  </p>
 
-              {status === "error" && (
-                <p className="text-sm" style={{ color: "#ec723d" }}>
-                  {errorMsg}
-                </p>
-              )}
+                  {/* Session tag — shown if the review is about a specific session */}
+                  {review.session_tag && (
+                    <div className="mb-4">
+                      <span
+                        className="text-[10px] px-2.5 py-1 rounded-full text-cream/70"
+                        style={{ backgroundColor: "rgba(139,92,246,0.12)", border: "0.5px solid rgba(139,92,246,0.2)" }}
+                      >
+                        {review.session_tag}
+                      </span>
+                    </div>
+                  )}
 
+                  {/* Reviewer info */}
+                  <div className="flex items-center gap-3 pt-3" style={{ borderTop: "0.5px solid rgba(255,255,255,0.06)" }}>
+                    {/* Avatar circle with initial */}
+                    <div
+                      className="w-8 h-8 rounded-full flex items-center justify-center text-xs text-white shrink-0"
+                      style={{ background: avatarGradient(review.reviewer_initials || "A"), fontWeight: 500 }}
+                    >
+                      {review.reviewer_initials || "?"}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-xs text-cream/80 truncate" style={{ fontWeight: 500 }}>
+                        {review.reviewer_name}
+                      </p>
+                      <p className="text-[10px] text-cream/60">{formatMonth(review.created_at)}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Shuffle button — only when there are more than 12 reviews */}
+          {!loading && allReviews.length > 12 && (
+            <div className="flex justify-center mt-10">
               <button
-                type="submit"
-                disabled={status === "submitting"}
-                className="rounded-full py-3.5 text-sm font-bold uppercase tracking-wide transition-all hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={reshuffleReviews}
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm transition-all hover:scale-105"
                 style={{
-                  background: "linear-gradient(135deg, #ff41b3, #ec723d)",
-                  color: "#fff",
-                  fontFamily: "var(--font-lexend)",
+                  backgroundColor: "rgba(255,255,255,0.06)",
+                  border: "1px solid rgba(255,255,255,0.1)",
+                  color: "rgba(255,255,255,0.6)",
+                  fontFamily: "var(--font-space-grotesk)",
+                  fontWeight: 600,
                 }}
               >
-                {status === "submitting" ? "Sending..." : "Share Your Experience"}
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/>
+                </svg>
+                Show different reviews
               </button>
-            </form>
+            </div>
           )}
-        </div>
-      </section>
 
-      {/* CTA */}
-      <section
-        className="py-24 px-6 text-center"
-        style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}
-      >
-        <div className="max-w-xl mx-auto flex flex-col items-center gap-6">
-          <h2
-            className="uppercase leading-none tracking-tight"
-            style={{ fontFamily: "var(--font-epilogue)", fontWeight: 900, fontSize: "clamp(2rem, 5vw, 3.5rem)" }}
-          >
-            Haven&apos;t tried it yet?
-          </h2>
-          <p className="text-lg" style={{ color: "rgba(255,255,255,0.5)" }}>
-            Start with what&apos;s free. No card needed.
-          </p>
-          <Link
-            href="/early-access"
-            className="px-10 py-4 rounded-full text-base font-bold uppercase tracking-wide transition-all hover:scale-105"
-            style={{ backgroundColor: "#ff41b3", color: "#fff", fontFamily: "var(--font-lexend)" }}
-          >
-            Join Waitlist
-          </Link>
-          <Link href="/free" className="text-sm underline underline-offset-4 transition-colors hover:text-white" style={{ color: "rgba(255,255,255,0.3)", fontFamily: "var(--font-lexend)" }}>
-            Browse free meditations first
-          </Link>
-        </div>
-      </section>
+          {/* Count */}
+          {!loading && allReviews.length > 0 && (
+            <p className="text-xs text-center mt-6" style={{ color: "rgba(255,255,255,0.25)" }}>
+              Showing {displayed.length} of {allReviews.length} reviews
+            </p>
+          )}
+        </section>
+
+      </main>
 
       <Footer />
-
     </div>
   );
 }

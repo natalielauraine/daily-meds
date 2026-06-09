@@ -15,8 +15,8 @@ const C = {
   surface: "#191919",
   surfaceHigh: "#1f1f1f",
   surfaceHighest: "#262626",
-  onSurfaceVar: "#ababab",
-  onSurface: "#e5e5e5",
+  onSurfaceVar: "#d9d1c1",
+  onSurface: "#f6f1e6",
 };
 
 const HEADLINE: React.CSSProperties = {

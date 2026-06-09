@@ -65,11 +65,11 @@ function SuccessContent() {
           You&apos;re in 🎉
         </h1>
 
-        <p className="text-sm text-white/40 leading-relaxed mb-2">
+        <p className="text-sm text-cream/65 leading-relaxed mb-2">
           {details.message}
         </p>
 
-        <p className="text-xs text-white/25 mb-10">
+        <p className="text-xs text-cream/60 mb-10">
           You&apos;ll get a confirmation email from Stripe shortly.
         </p>
 
@@ -84,7 +84,7 @@ function SuccessContent() {
           <Link
             href="/"
             className="w-full py-3 rounded-[10px] text-sm text-center transition-colors hover:bg-white/[0.05]"
-            style={{ color: "rgba(255,255,255,0.4)", border: "0.5px solid rgba(255,255,255,0.1)" }}
+            style={{ color: "rgba(246,241,230,0.65)", border: "0.5px solid rgba(255,255,255,0.1)" }}
           >
             Back to home
           </Link>

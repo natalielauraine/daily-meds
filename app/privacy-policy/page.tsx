@@ -306,7 +306,7 @@ export default function PrivacyPolicyPage() {
         <div className="max-w-3xl mx-auto">
           <span
             className="text-xs uppercase tracking-widest px-4 py-1.5 rounded-full border inline-block mb-6"
-            style={{ borderColor: "rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.4)", fontFamily: "var(--font-lexend)" }}
+            style={{ borderColor: "rgba(255,255,255,0.1)", color: "rgba(246,241,230,0.65)", fontFamily: "var(--font-lexend)" }}
           >
             Legal
           </span>
@@ -316,10 +316,10 @@ export default function PrivacyPolicyPage() {
           >
             Privacy Policy
           </h1>
-          <p className="text-sm mb-2" style={{ color: "rgba(255,255,255,0.35)" }}>
+          <p className="text-sm mb-2" style={{ color: "rgba(246,241,230,0.65)" }}>
             Last Updated: June 5, 2026
           </p>
-          <p className="text-sm" style={{ color: "rgba(255,255,255,0.35)" }}>
+          <p className="text-sm" style={{ color: "rgba(246,241,230,0.65)" }}>
             Daily Meds
           </p>
         </div>
@@ -335,7 +335,7 @@ export default function PrivacyPolicyPage() {
         >
           <h2
             className="text-xs uppercase tracking-widest mb-4"
-            style={{ color: "rgba(255,255,255,0.35)", fontFamily: "var(--font-lexend)" }}
+            style={{ color: "rgba(246,241,230,0.65)", fontFamily: "var(--font-lexend)" }}
           >
             Contents
           </h2>
@@ -345,7 +345,7 @@ export default function PrivacyPolicyPage() {
                 key={s.id}
                 href={`#${s.id}`}
                 className="text-sm flex items-center gap-2 transition-colors hover:text-white group"
-                style={{ color: "rgba(255,255,255,0.45)" }}
+                style={{ color: "rgba(246,241,230,0.7)" }}
               >
                 <span
                   className="text-xs font-bold w-6 shrink-0 group-hover:text-[#aaee20] transition-colors"
@@ -391,7 +391,7 @@ export default function PrivacyPolicyPage() {
                     {section.title}
                   </h2>
                 </div>
-                <div className="prose-section pl-10" style={{ color: "rgba(255,255,255,0.65)", lineHeight: "1.8" }}>
+                <div className="prose-section pl-10" style={{ color: "rgba(246,241,230,0.75)", lineHeight: "1.8" }}>
                   {section.content}
                 </div>
               </div>

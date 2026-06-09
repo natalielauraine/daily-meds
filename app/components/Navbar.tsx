@@ -17,13 +17,13 @@ export default function Navbar() {
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
+  const [authChecked, setAuthChecked] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-  // Controls whether the navbar has scrolled and should show the solid bg
   const [scrolled, setScrolled] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => setUser(data.user));
+    supabase.auth.getUser().then(({ data }) => { setUser(data.user); setAuthChecked(true); });
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
     });
@@ -67,7 +67,7 @@ export default function Navbar() {
           <Logo href="/" size="sm" />
 
           {/* ── Desktop nav links — absolutely centered ── */}
-          <div className="hidden md:flex items-center gap-5 absolute left-1/2 -translate-x-1/2 h-full" style={{ paddingTop: 12 }}>
+          <div className="hidden md:flex items-center gap-5 absolute left-1/2 -translate-x-1/2 h-full">
             {[
               { href: "/", label: "Home" },
               { href: "/free", label: "Free" },
@@ -80,13 +80,15 @@ export default function Navbar() {
                 key={label}
                 href={requiresAuth && !user ? "#" : href}
                 onClick={requiresAuth && !user ? (e) => { e.preventDefault(); setShowLoginPrompt(true); } : undefined}
-                className="text-xs uppercase tracking-widest transition-colors duration-200"
+                className="text-xs uppercase tracking-widest transition-colors duration-200 flex items-center"
                 style={{
                   fontFamily: "var(--font-space-grotesk)",
-                  fontWeight: 500,
-                  color: "rgba(255,255,255,0.55)",
+                  fontWeight: 600,
+                  color: "rgba(246,241,230,0.65)",
+                  minHeight: 30,
+                  minWidth: 0,
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = "#E2E2E2")}
+                onMouseEnter={(e) => (e.currentTarget.style.color = "#f6f1e6")}
                 onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.55)")}
               >
                 {label}
@@ -94,8 +96,8 @@ export default function Navbar() {
             ))}
           </div>
 
-          {/* ── Desktop auth area ── */}
-          <div className="hidden md:flex items-center gap-3">
+          {/* ── Desktop auth area — hidden until auth check completes to prevent flash ── */}
+          <div className="hidden md:flex items-center gap-3" style={{ visibility: authChecked ? "visible" : "hidden" }}>
             {user ? (
               <div className="relative">
                 <button
@@ -116,7 +118,7 @@ export default function Navbar() {
                   </div>
                   <svg
                     width="12" height="12" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" strokeWidth="2" className="text-white/40"
+                    stroke="currentColor" strokeWidth="2" className="text-cream/65"
                     style={{ transform: userMenuOpen ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" }}
                   >
                     <path d="M6 9l6 6 6-6" />
@@ -136,7 +138,7 @@ export default function Navbar() {
                   >
                     <div className="px-4 py-2 mb-1" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
                       <p className="text-xs text-white truncate" style={{ fontWeight: 500 }}>{displayName}</p>
-                      <p className="text-xs truncate" style={{ color: "rgba(255,255,255,0.35)" }}>{user.email}</p>
+                      <p className="text-xs truncate" style={{ color: "rgba(246,241,230,0.65)" }}>{user.email}</p>
                     </div>
                     {[
                       { href: "/library", label: "Library" },
@@ -146,7 +148,7 @@ export default function Navbar() {
                         key={href}
                         href={href}
                         className="flex items-center px-4 py-2 text-sm transition-colors hover:bg-white/[0.04]"
-                        style={{ color: "rgba(255,255,255,0.6)" }}
+                        style={{ color: "rgba(246,241,230,0.7)" }}
                         onClick={() => setUserMenuOpen(false)}
                       >
                         {label}
@@ -156,7 +158,7 @@ export default function Navbar() {
                       <button
                         onClick={handleLogout}
                         className="w-full text-left px-4 py-2 text-sm transition-colors hover:bg-white/[0.04]"
-                        style={{ color: "rgba(255,255,255,0.4)" }}
+                        style={{ color: "rgba(246,241,230,0.65)" }}
                       >
                         Log out
                       </button>
@@ -168,26 +170,30 @@ export default function Navbar() {
               <>
                 <Link
                   href="/login"
-                  className="text-xs uppercase tracking-widest transition-colors duration-200"
+                  className="text-xs uppercase tracking-widest transition-colors duration-200 flex items-center"
                   style={{
                     fontFamily: "var(--font-space-grotesk)",
-                    fontWeight: 500,
-                    color: "rgba(255,255,255,0.55)",
+                    fontWeight: 600,
+                    color: "rgba(246,241,230,0.65)",
+                    minHeight: 30,
+                    minWidth: 0,
                   }}
                 >
                   Log in
                 </Link>
                 <Link
-                  href="/early-access"
-                  className="text-xs uppercase tracking-widest text-white px-5 py-2 rounded-full transition-all duration-200 hover:opacity-90"
+                  href="/signup"
+                  className="text-[10px] uppercase tracking-widest text-white px-4 py-1 rounded-full transition-all duration-200 hover:opacity-90 flex items-center"
                   style={{
                     fontFamily: "var(--font-space-grotesk)",
-                    fontWeight: 700,
+                    fontWeight: 600,
+                    minHeight: 30,
+                    minWidth: 0,
                     background: "#ff41b3",
                     boxShadow: "0 0 16px rgba(255,65,179,0.35)",
                   }}
                 >
-                  Join Waitlist
+                  Sign Up
                 </Link>
               </>
             )}
@@ -196,7 +202,7 @@ export default function Navbar() {
           {/* ── Mobile hamburger ── */}
           <button
             className="md:hidden p-3 transition-colors"
-            style={{ color: "rgba(255,255,255,0.6)" }}
+            style={{ color: "rgba(246,241,230,0.7)" }}
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle menu"
           >
@@ -238,7 +244,7 @@ export default function Navbar() {
                 else setMobileMenuOpen(false);
               }}
               className="text-sm uppercase tracking-widest transition-colors"
-              style={{ fontFamily: "var(--font-space-grotesk)", fontWeight: 500, color: "rgba(255,255,255,0.6)" }}
+              style={{ fontFamily: "var(--font-space-grotesk)", fontWeight: 500, color: "rgba(246,241,230,0.7)" }}
             >
               {label}
             </Link>
@@ -254,21 +260,21 @@ export default function Navbar() {
                   >
                     {avatarInitial}
                   </div>
-                  <span className="text-sm truncate" style={{ color: "rgba(255,255,255,0.6)" }}>{displayName}</span>
+                  <span className="text-sm truncate" style={{ color: "rgba(246,241,230,0.7)" }}>{displayName}</span>
                 </div>
-                <Link href="/profile" className="text-sm" style={{ color: "rgba(255,255,255,0.5)" }} onClick={() => setMobileMenuOpen(false)}>Profile</Link>
-                <button onClick={handleLogout} className="text-left text-sm" style={{ color: "rgba(255,255,255,0.35)" }}>Log out</button>
+                <Link href="/profile" className="text-sm" style={{ color: "rgba(246,241,230,0.6)" }} onClick={() => setMobileMenuOpen(false)}>Profile</Link>
+                <button onClick={handleLogout} className="text-left text-sm" style={{ color: "rgba(246,241,230,0.65)" }}>Log out</button>
               </>
             ) : (
               <>
-                <Link href="/login" className="text-sm" style={{ color: "rgba(255,255,255,0.6)" }} onClick={() => setMobileMenuOpen(false)}>Log in</Link>
+                <Link href="/login" className="text-sm" style={{ color: "rgba(246,241,230,0.7)" }} onClick={() => setMobileMenuOpen(false)}>Log in</Link>
                 <Link
-                  href="/early-access"
+                  href="/signup"
                   className="text-sm text-white text-center py-2.5 rounded-full"
                   style={{ background: "#ff41b3", fontFamily: "var(--font-space-grotesk)", fontWeight: 700 }}
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  Join Waitlist
+                  Sign Up
                 </Link>
               </>
             )}
@@ -290,7 +296,7 @@ export default function Navbar() {
             <button
               onClick={() => setShowLoginPrompt(false)}
               className="absolute top-4 right-4"
-              style={{ color: "rgba(255,255,255,0.4)" }}
+              style={{ color: "rgba(246,241,230,0.65)" }}
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M18 6L6 18M6 6l12 12" />
@@ -310,7 +316,7 @@ export default function Navbar() {
             >
               Breathe with us
             </h3>
-            <p className="text-sm mb-6" style={{ color: "rgba(255,255,255,0.45)" }}>
+            <p className="text-sm mb-6" style={{ color: "rgba(246,241,230,0.7)" }}>
               Log in or create a free account to access the breathing timer.
             </p>
             <div className="flex flex-col gap-3">
@@ -325,7 +331,7 @@ export default function Navbar() {
               <Link
                 href="/signup"
                 className="w-full py-3 rounded-full text-sm text-center transition-all hover:bg-white/[0.06]"
-                style={{ border: "1px solid rgba(255,255,255,0.15)", color: "rgba(255,255,255,0.6)", fontFamily: "var(--font-space-grotesk)", fontWeight: 700 }}
+                style={{ border: "1px solid rgba(255,255,255,0.15)", color: "rgba(246,241,230,0.7)", fontFamily: "var(--font-space-grotesk)", fontWeight: 700 }}
                 onClick={() => setShowLoginPrompt(false)}
               >
                 Create free account

@@ -85,7 +85,7 @@ export default function ContinueWatchingRow() {
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <h2
         className="text-sm uppercase tracking-widest mb-4"
-        style={{ fontFamily: "var(--font-space-grotesk)", fontWeight: 700, color: "rgba(255,255,255,0.35)" }}
+        style={{ fontFamily: "var(--font-space-grotesk)", fontWeight: 700, color: "rgba(246,241,230,0.65)" }}
       >
         Continue Watching
       </h2>
@@ -139,7 +139,7 @@ export default function ContinueWatchingRow() {
               <p className="text-xs text-white leading-snug line-clamp-2 mb-1" style={{ fontWeight: 500 }}>
                 {title}
               </p>
-              <p className="text-[10px] text-white/40">
+              <p className="text-[10px] text-cream/65">
                 {media_type === "video" ? "Video" : "Audio"} · {duration}
               </p>
             </div>

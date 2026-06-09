@@ -75,7 +75,7 @@ export default function HeroSection() {
           style={{
             fontFamily: "var(--font-space-grotesk)",
             fontWeight: 500,
-            color: "rgba(255,255,255,0.4)",
+            color: "rgba(246,241,230,0.65)",
           }}
         >
           Featured Session
@@ -89,7 +89,7 @@ export default function HeroSection() {
             fontWeight: 800,
             fontSize: "clamp(2.8rem, 8vw, 7rem)",
             letterSpacing: "-0.02em",
-            color: "#E2E2E2",
+            color: "#f6f1e6",
             textShadow: "0 0 60px rgba(255,65,179,0.2)",
           }}
         >
@@ -114,7 +114,7 @@ export default function HeroSection() {
             style={{
               fontFamily: "var(--font-space-grotesk)",
               fontWeight: 400,
-              color: "rgba(255,255,255,0.4)",
+              color: "rgba(246,241,230,0.65)",
             }}
           >
             {FEATURED_SESSION.type}
@@ -167,7 +167,7 @@ export default function HeroSection() {
                 style={{
                   fontFamily: "var(--font-space-grotesk)",
                   fontSize: "11px",
-                  color: "rgba(255,255,255,0.4)",
+                  color: "rgba(246,241,230,0.65)",
                 }}
               >
                 {FEATURED_SESSION.currentTime}
@@ -176,7 +176,7 @@ export default function HeroSection() {
                 style={{
                   fontFamily: "var(--font-space-grotesk)",
                   fontSize: "11px",
-                  color: "rgba(255,255,255,0.4)",
+                  color: "rgba(246,241,230,0.65)",
                 }}
               >
                 {FEATURED_SESSION.duration}
@@ -190,7 +190,7 @@ export default function HeroSection() {
           className="text-base mb-8 max-w-md"
           style={{
             fontFamily: "var(--font-inter)",
-            color: "rgba(255,255,255,0.5)",
+            color: "rgba(246,241,230,0.6)",
             lineHeight: 1.6,
           }}
         >
@@ -228,7 +228,7 @@ export default function HeroSection() {
               fontSize: "12px",
               letterSpacing: "0.08em",
               textTransform: "uppercase",
-              color: "rgba(255,255,255,0.6)",
+              color: "rgba(246,241,230,0.7)",
               background: "rgba(255,255,255,0.06)",
               border: "1px solid rgba(255,255,255,0.1)",
             }}

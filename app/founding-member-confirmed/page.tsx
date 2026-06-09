@@ -53,7 +53,7 @@ export default function FoundingMemberConfirmedPage() {
             </h1>
             <p
               className="text-lg"
-              style={{ color: "rgba(255,255,255,0.55)", fontFamily: "var(--font-manrope)", lineHeight: 1.6 }}
+              style={{ color: "rgba(246,241,230,0.65)", fontFamily: "var(--font-manrope)", lineHeight: 1.6 }}
             >
               Welcome to the founding circle. You&apos;ve locked in lifetime access at the founding
               rate — no renewals, no price increases, no catching up later.
@@ -87,7 +87,7 @@ export default function FoundingMemberConfirmedPage() {
                     <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
                   </svg>
                 </span>
-                <span className="text-sm" style={{ color: "rgba(255,255,255,0.7)", fontFamily: "var(--font-manrope)" }}>
+                <span className="text-sm" style={{ color: "rgba(246,241,230,0.8)", fontFamily: "var(--font-manrope)" }}>
                   {item}
                 </span>
               </div>
@@ -113,7 +113,7 @@ export default function FoundingMemberConfirmedPage() {
               style={{
                 backgroundColor: "rgba(255,255,255,0.05)",
                 border: "0.5px solid rgba(255,255,255,0.1)",
-                color: "rgba(255,255,255,0.6)",
+                color: "rgba(246,241,230,0.7)",
                 fontFamily: "var(--font-lexend)",
               }}
             >

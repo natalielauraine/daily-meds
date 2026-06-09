@@ -250,18 +250,18 @@ export default function ShopPage() {
 
         {/* ── HERO ──────────────────────────────────────────────────────────── */}
         <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-10 text-center">
-          <p className="text-xs text-white/40 uppercase tracking-widest mb-4" style={{ fontWeight: 500 }}>
+          <p className="text-xs text-cream/65 uppercase tracking-widest mb-4" style={{ fontWeight: 500 }}>
             The Daily Meds Store
           </p>
           <h1 className="text-3xl sm:text-4xl text-white mb-3" style={{ fontWeight: 500 }}>
             Wear the reset.
           </h1>
-          <p className="text-base text-white/50 max-w-md mx-auto leading-relaxed">
+          <p className="text-base text-cream/60 max-w-md mx-auto leading-relaxed">
             Branded merchandise from Daily Meds. Practical things for impractical moments.
           </p>
 
           {/* Trust badges */}
-          <div className="flex items-center justify-center gap-6 mt-8 text-xs text-white/25 flex-wrap">
+          <div className="flex items-center justify-center gap-6 mt-8 text-xs text-cream/60 flex-wrap">
             <div className="flex items-center gap-1.5">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
@@ -307,7 +307,7 @@ export default function ShopPage() {
                 </svg>
               </div>
               <p className="text-white text-sm mb-2" style={{ fontWeight: 500 }}>Shop coming soon</p>
-              <p className="text-white/35 text-xs leading-relaxed">
+              <p className="text-cream/65 text-xs leading-relaxed">
                 Merchandise is on its way. Check back soon for branded Daily Meds products.
               </p>
             </div>
@@ -316,8 +316,8 @@ export default function ShopPage() {
           {/* Error — shown if the Shopify SDK fails to load */}
           {status === "error" && (
             <div className="flex flex-col items-center py-20 text-center">
-              <p className="text-white/40 text-sm mb-1">Couldn&apos;t load the shop right now.</p>
-              <p className="text-white/25 text-xs">Try refreshing the page.</p>
+              <p className="text-cream/65 text-sm mb-1">Couldn&apos;t load the shop right now.</p>
+              <p className="text-cream/60 text-xs">Try refreshing the page.</p>
             </div>
           )}
 
@@ -331,10 +331,10 @@ export default function ShopPage() {
         <section className="border-t border-white/[0.06]">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex flex-col sm:flex-row items-center justify-between gap-6">
             <div>
-              <p className="text-sm text-white/70 mb-1" style={{ fontWeight: 500 }}>
+              <p className="text-sm text-cream/80 mb-1" style={{ fontWeight: 500 }}>
                 Looking for meditation sessions?
               </p>
-              <p className="text-xs text-white/35 leading-relaxed">
+              <p className="text-xs text-cream/65 leading-relaxed">
                 Subscriptions and audio sessions are separate from the shop — find them on the pricing page.
               </p>
             </div>

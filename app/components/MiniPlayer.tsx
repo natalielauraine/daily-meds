@@ -97,7 +97,7 @@ export default function MiniPlayer() {
           <p className="text-sm text-white truncate" style={{ fontWeight: 500 }}>
             {currentSession.title}
           </p>
-          <p className="text-xs text-white/35">
+          <p className="text-xs text-cream/65">
             {formatTime(currentTime)} · {currentSession.duration}
           </p>
         </div>
@@ -109,7 +109,7 @@ export default function MiniPlayer() {
         {/* Skip back 15s — hidden on very small screens */}
         <button
           onClick={() => seek(Math.max(0, currentTime - 15))}
-          className="hidden sm:block text-white/50 hover:text-white transition-colors p-1"
+          className="hidden sm:block text-cream/60 hover:text-white transition-colors p-1"
           aria-label="Skip back 15 seconds"
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
@@ -138,7 +138,7 @@ export default function MiniPlayer() {
         {/* Skip forward 15s — hidden on very small screens */}
         <button
           onClick={() => seek(Math.min(duration, currentTime + 15))}
-          className="hidden sm:block text-white/50 hover:text-white transition-colors p-1"
+          className="hidden sm:block text-cream/60 hover:text-white transition-colors p-1"
           aria-label="Skip forward 15 seconds"
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
@@ -150,7 +150,7 @@ export default function MiniPlayer() {
         <div className="relative">
           <button
             onClick={() => setShowVolume((v) => !v)}
-            className="text-white/50 hover:text-white transition-colors p-1"
+            className="text-cream/60 hover:text-white transition-colors p-1"
             aria-label="Volume"
           >
             {isMuted || volume === 0 ? (
@@ -181,7 +181,7 @@ export default function MiniPlayer() {
         {/* Close button */}
         <button
           onClick={closePlayer}
-          className="text-white/30 hover:text-white/70 transition-colors p-2.5 ml-1"
+          className="text-cream/60 hover:text-cream/80 transition-colors p-2.5 ml-1"
           aria-label="Close player"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">

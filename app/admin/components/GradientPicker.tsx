@@ -22,7 +22,7 @@ type GradientPickerProps = {
 export default function GradientPicker({ value, onChange }: GradientPickerProps) {
   return (
     <div>
-      <label className="block text-xs text-white/40 mb-2">Colour</label>
+      <label className="block text-xs text-cream/65 mb-2">Colour</label>
       <div className="flex flex-wrap gap-2">
         {GRADIENTS.map((g) => (
           <button

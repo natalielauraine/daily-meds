@@ -54,7 +54,7 @@ export default function EarlyAccessPage() {
           <div className="flex-1">
             <p
               className="uppercase tracking-widest mb-4 text-sm"
-              style={{ fontFamily: "var(--font-lexend)", fontWeight: 700, color: "rgba(255,255,255,0.5)" }}
+              style={{ fontFamily: "var(--font-lexend)", fontWeight: 700, color: "rgba(246,241,230,0.6)" }}
             >
               Coming Soon
             </p>
@@ -78,7 +78,7 @@ export default function EarlyAccessPage() {
             </p>
             <p
               className="text-base leading-relaxed max-w-md"
-              style={{ color: "rgba(255,255,255,0.65)" }}
+              style={{ color: "rgba(246,241,230,0.75)" }}
             >
               Be the first to experience a new way of sitting with your emotions.{" "}
               <strong style={{ color: "#ffffff" }}>No spiritual fluff.</strong>{" "}
@@ -100,7 +100,7 @@ export default function EarlyAccessPage() {
               </h2>
               <p
                 className="text-xs uppercase tracking-widest mt-1"
-                style={{ color: "rgba(255,255,255,0.4)", fontFamily: "var(--font-lexend)" }}
+                style={{ color: "rgba(246,241,230,0.65)", fontFamily: "var(--font-lexend)" }}
               >
                 Get early access credentials.
               </p>
@@ -114,7 +114,7 @@ export default function EarlyAccessPage() {
                 >
                   You&apos;re on the list.
                 </p>
-                <p className="text-sm mt-2" style={{ color: "rgba(255,255,255,0.45)" }}>
+                <p className="text-sm mt-2" style={{ color: "rgba(246,241,230,0.7)" }}>
                   We&apos;ll be in touch the moment we go live.
                 </p>
               </div>
@@ -123,7 +123,7 @@ export default function EarlyAccessPage() {
                 <div className="flex flex-col gap-1">
                   <label
                     className="text-[10px] uppercase tracking-widest"
-                    style={{ fontFamily: "var(--font-lexend)", color: "rgba(255,255,255,0.4)" }}
+                    style={{ fontFamily: "var(--font-lexend)", color: "rgba(246,241,230,0.65)" }}
                   >
                     Name
                   </label>
@@ -140,7 +140,7 @@ export default function EarlyAccessPage() {
                 <div className="flex flex-col gap-1">
                   <label
                     className="text-[10px] uppercase tracking-widest"
-                    style={{ fontFamily: "var(--font-lexend)", color: "rgba(255,255,255,0.4)" }}
+                    style={{ fontFamily: "var(--font-lexend)", color: "rgba(246,241,230,0.65)" }}
                   >
                     Email Address
                   </label>

@@ -20,8 +20,9 @@ const config: Config = {
         "surface-bright": "#393939",   // floating / glass elements
 
         // ── Text ──────────────────────────────────────────────────────────────
-        "text-primary": "#E2E2E2",
-        "text-muted":   "rgba(255,255,255,0.5)",
+        "text-primary": "#f6f1e6",
+        "text-muted":   "rgba(246,241,230,0.55)",
+        "cream":        "#f6f1e6",
 
         // ── Brand Accent Colours (neon — confirmed from brand folder) ─────────
         "neon-pink":   "#ff41b3",   // primary CTA, highlights, wordmark
@@ -37,7 +38,7 @@ const config: Config = {
         "surface-container-highest": "#262626", 
         "on-tertiary-fixed-variant": "#722700", 
         "secondary-dim": "#42d419", 
-        "on-surface": "#e5e5e5", 
+        "on-surface": "#f6f1e6", 
         "tertiary-fixed-dim": "#ff8c5b", 
         "surface-container-high": "#1f1f1f", 
         "surface-dim": "#0e0e0e", 
@@ -49,7 +50,7 @@ const config: Config = {
         "inverse-primary": "#bb005f", 
         "surface-container": "#191919", 
         "on-primary-fixed": "#550028", 
-        "on-surface-variant": "#ababab", 
+        "on-surface-variant": "#d9d1c1", 
         "error-dim": "#c8475d", 
         "tertiary-fixed": "#ffa17b", 
         "tertiary-container": "#ffa17b", 
@@ -62,7 +63,7 @@ const config: Config = {
         "error-container": "#8a1632", 
         "outline": "#757575", 
         "inverse-surface": "#f9f9f9", 
-        "on-background": "#e5e5e5", 
+        "on-background": "#f6f1e6", 
         "primary-fixed-dim": "#ff92b3", 
         "on-secondary": "#0e4b00", 
         "primary": "#ff6a9e", 

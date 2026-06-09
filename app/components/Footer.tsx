@@ -20,23 +20,17 @@ export default function Footer() {
 
             <p
               className="text-xs leading-relaxed max-w-[200px]"
-              style={{ fontFamily: "var(--font-inter)", color: "rgba(255,255,255,0.35)" }}
+              style={{ fontFamily: "var(--font-inter)", color: "rgba(246,241,230,0.65)" }}
             >
-              Audio for emotional emergencies. Meditation for life&apos;s most awkward moments.
-            </p>
-            <p
-              className="text-xs"
-              style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.25)" }}
-            >
-              By Natalie Lauraine
+              Reality-Based Wellness. Meditations for Life&apos;s Most Awkward Moments. Helping you stay regulated when life gets you down.
             </p>
           </div>
 
           {/* Explore column */}
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-1.5">
             <h4
               className="text-[10px] uppercase tracking-widest mb-1"
-              style={{ fontFamily: "var(--font-space-grotesk)", fontWeight: 700, color: "rgba(255,255,255,0.35)" }}
+              style={{ fontFamily: "var(--font-space-grotesk)", fontWeight: 700, color: "rgba(246,241,230,0.65)" }}
             >
               Explore
             </h4>
@@ -50,7 +44,7 @@ export default function Footer() {
                 key={href}
                 href={href}
                 className="text-sm transition-colors hover:text-white/80"
-                style={{ fontFamily: "var(--font-inter)", color: "rgba(255,255,255,0.5)" }}
+                style={{ fontFamily: "var(--font-inter)", color: "rgba(246,241,230,0.6)", minHeight: 0 }}
               >
                 {label}
               </Link>
@@ -58,10 +52,10 @@ export default function Footer() {
           </div>
 
           {/* Account column */}
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-1.5">
             <h4
               className="text-[10px] uppercase tracking-widest mb-1"
-              style={{ fontFamily: "var(--font-space-grotesk)", fontWeight: 700, color: "rgba(255,255,255,0.35)" }}
+              style={{ fontFamily: "var(--font-space-grotesk)", fontWeight: 700, color: "rgba(246,241,230,0.65)" }}
             >
               Account
             </h4>
@@ -74,7 +68,7 @@ export default function Footer() {
                 key={href}
                 href={href}
                 className="text-sm transition-colors hover:text-white/80"
-                style={{ fontFamily: "var(--font-inter)", color: "rgba(255,255,255,0.5)" }}
+                style={{ fontFamily: "var(--font-inter)", color: "rgba(246,241,230,0.6)", minHeight: 0 }}
               >
                 {label}
               </Link>
@@ -82,10 +76,10 @@ export default function Footer() {
           </div>
 
           {/* About column */}
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-1.5">
             <h4
               className="text-[10px] uppercase tracking-widest mb-1"
-              style={{ fontFamily: "var(--font-space-grotesk)", fontWeight: 700, color: "rgba(255,255,255,0.35)" }}
+              style={{ fontFamily: "var(--font-space-grotesk)", fontWeight: 700, color: "rgba(246,241,230,0.65)" }}
             >
               About
             </h4>
@@ -99,7 +93,7 @@ export default function Footer() {
                 key={href}
                 href={href}
                 className="text-sm transition-colors hover:text-white/80"
-                style={{ fontFamily: "var(--font-inter)", color: "rgba(255,255,255,0.5)" }}
+                style={{ fontFamily: "var(--font-inter)", color: "rgba(246,241,230,0.6)", minHeight: 0 }}
               >
                 {label}
               </Link>
@@ -121,14 +115,14 @@ export default function Footer() {
           <div className="flex items-center gap-5">
             <Link
               href="/privacy"
-              className="text-xs transition-colors hover:text-white/50"
+              className="text-xs transition-colors hover:text-cream/60"
               style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.25)" }}
             >
               Privacy Policy
             </Link>
             <Link
               href="/terms"
-              className="text-xs transition-colors hover:text-white/50"
+              className="text-xs transition-colors hover:text-cream/60"
               style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.25)" }}
             >
               Terms of Use

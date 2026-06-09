@@ -63,7 +63,7 @@ export default function LandingFAQ() {
           </button>
           {open === i && (
             <div className="px-6 pb-6">
-              <p className="text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.5)" }}>{faq.a}</p>
+              <p className="text-sm leading-relaxed" style={{ color: "rgba(246,241,230,0.6)" }}>{faq.a}</p>
             </div>
           )}
         </div>

@@ -76,7 +76,7 @@ function StatCard({
     >
       <p
         className="text-xs uppercase tracking-widest mb-4"
-        style={{ color: "rgba(255,255,255,0.45)", fontFamily: "var(--font-space-grotesk)", fontWeight: 700 }}
+        style={{ color: "rgba(246,241,230,0.7)", fontFamily: "var(--font-space-grotesk)", fontWeight: 700 }}
       >
         {label}
       </p>
@@ -121,7 +121,7 @@ function RitualItem({ session }: { session: BrandSession }) {
         </span>
         <span
           className="text-[10px] uppercase tracking-widest"
-          style={{ color: "rgba(255,255,255,0.35)", fontFamily: "var(--font-space-grotesk)" }}
+          style={{ color: "rgba(246,241,230,0.65)", fontFamily: "var(--font-space-grotesk)" }}
         >
           {time}
         </span>
@@ -132,7 +132,7 @@ function RitualItem({ session }: { session: BrandSession }) {
       >
         {session.title}
       </h4>
-      <p className="text-sm" style={{ color: "rgba(255,255,255,0.4)" }}>
+      <p className="text-sm" style={{ color: "rgba(246,241,230,0.65)" }}>
         {session.sponsor_segment}
       </p>
     </div>
@@ -213,7 +213,7 @@ export default function BrandPortalPage() {
         >
           Portal not found
         </h1>
-        <p className="text-white/40 mb-8">
+        <p className="text-cream/65 mb-8">
           This brand portal doesn't exist yet. Contact Natalie to set up your partnership.
         </p>
         <a
@@ -235,7 +235,7 @@ export default function BrandPortalPage() {
       style={{
         backgroundColor: "#0e0e0e",
         backgroundImage: "linear-gradient(to bottom, rgba(0,0,0,0.85) 0%, rgba(14,14,14,0.97) 40%, #0e0e0e 100%)",
-        color: "#e5e5e5",
+        color: "#f6f1e6",
       }}
     >
       {/* Ambient glow blobs */}
@@ -255,7 +255,7 @@ export default function BrandPortalPage() {
           <Link
             href="/"
             className="flex items-center gap-2 text-sm transition-colors hover:text-white"
-            style={{ color: "rgba(255,255,255,0.5)", fontFamily: "var(--font-space-grotesk)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", fontSize: "11px" }}
+            style={{ color: "rgba(246,241,230,0.6)", fontFamily: "var(--font-space-grotesk)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", fontSize: "11px" }}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
               <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
@@ -294,7 +294,7 @@ export default function BrandPortalPage() {
         <div className="hidden md:flex flex-col items-end">
           <span
             className="text-[10px] uppercase tracking-widest mb-1"
-            style={{ color: "rgba(255,255,255,0.4)", fontFamily: "var(--font-space-grotesk)" }}
+            style={{ color: "rgba(246,241,230,0.65)", fontFamily: "var(--font-space-grotesk)" }}
           >
             Portal Status
           </span>
@@ -339,7 +339,7 @@ export default function BrandPortalPage() {
           </h2>
           <p
             className="text-lg italic max-w-xl mt-5"
-            style={{ color: "rgba(255,255,255,0.4)", fontWeight: 500 }}
+            style={{ color: "rgba(246,241,230,0.65)", fontWeight: 500 }}
           >
             "If they pressed play, your brand was there to ground them."
           </p>
@@ -362,7 +362,7 @@ export default function BrandPortalPage() {
                 </h3>
                 <span
                   className="text-[10px] uppercase tracking-widest"
-                  style={{ color: "rgba(255,255,255,0.35)", fontFamily: "var(--font-space-grotesk)", fontWeight: 700 }}
+                  style={{ color: "rgba(246,241,230,0.65)", fontFamily: "var(--font-space-grotesk)", fontWeight: 700 }}
                 >
                   Last 30 Days
                 </span>
@@ -394,7 +394,7 @@ export default function BrandPortalPage() {
                 </h3>
                 <span
                   className="text-[10px] uppercase tracking-widest"
-                  style={{ color: "rgba(255,255,255,0.35)", fontFamily: "var(--font-space-grotesk)", fontWeight: 700 }}
+                  style={{ color: "rgba(246,241,230,0.65)", fontFamily: "var(--font-space-grotesk)", fontWeight: 700 }}
                 >
                   Live Ledger
                 </span>
@@ -418,7 +418,7 @@ export default function BrandPortalPage() {
                 >
                   <p
                     className="text-xs uppercase tracking-widest mb-4"
-                    style={{ color: "rgba(255,255,255,0.45)", fontFamily: "var(--font-space-grotesk)", fontWeight: 700 }}
+                    style={{ color: "rgba(246,241,230,0.7)", fontFamily: "var(--font-space-grotesk)", fontWeight: 700 }}
                   >
                     Total Earned
                   </p>
@@ -507,7 +507,7 @@ export default function BrandPortalPage() {
             >
               Ready for more?
             </p>
-            <p style={{ color: "rgba(255,255,255,0.4)" }}>
+            <p style={{ color: "rgba(246,241,230,0.65)" }}>
               Expand your partnership reach to the global community.
             </p>
           </div>
@@ -555,7 +555,7 @@ export default function BrandPortalPage() {
           {/* Links */}
           <div
             className="flex gap-10 text-[10px] uppercase tracking-widest font-bold"
-            style={{ color: "rgba(255,255,255,0.3)", fontFamily: "var(--font-space-grotesk)" }}
+            style={{ color: "rgba(246,241,230,0.6)", fontFamily: "var(--font-space-grotesk)" }}
           >
             <a href="#" className="hover:text-[#ff41b3] transition-colors">Privacy Architecture</a>
             <a href="#" className="hover:text-[#ff41b3] transition-colors">Terms of Presence</a>

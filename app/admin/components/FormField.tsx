@@ -13,7 +13,7 @@ type FormFieldProps = {
 export default function FormField({ label, children, className = "" }: FormFieldProps) {
   return (
     <div className={className}>
-      <label className="block text-xs text-white/40 mb-1.5">{label}</label>
+      <label className="block text-xs text-cream/65 mb-1.5">{label}</label>
       {children}
     </div>
   );
@@ -26,4 +26,4 @@ export const fieldStyle = {
 } as const;
 
 export const fieldClass =
-  "w-full px-3 py-2.5 rounded-lg text-sm text-white outline-none placeholder:text-white/20 [&>option]:bg-[#1a1a2e] [&>option]:text-white";
+  "w-full px-3 py-2.5 rounded-lg text-sm text-white outline-none placeholder:text-cream/60 [&>option]:bg-[#1a1a2e] [&>option]:text-white";
