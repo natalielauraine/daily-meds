@@ -150,6 +150,9 @@ export default function AdminContentPage() {
   const [statusFilter, setStatusFilter] = useState<"all" | "draft" | "published" | "coming_soon">("all");
   const [search, setSearch]             = useState("");
   const [moodFilter, setMoodFilter]     = useState("All");
+  const [typeFilter, setTypeFilter]     = useState("All");
+  const [sortBy, setSortBy]             = useState<"latest" | "alpha">("latest");
+  const [showBulkUpload, setShowBulkUpload] = useState(false);
 
   // ── Single-session form ────────────────────────────
   const [showForm, setShowForm]   = useState(false);
@@ -580,9 +583,13 @@ export default function AdminContentPage() {
   const filteredSessions = sessions.filter((s) => {
     if (search && !s.title.toLowerCase().includes(search.toLowerCase())) return false;
     if (moodFilter !== "All" && s.mood_category !== moodFilter) return false;
+    if (typeFilter !== "All" && s.type !== typeFilter) return false;
     if (statusFilter === "coming_soon") return s.is_coming_soon;
     if (statusFilter !== "all" && (s.status || "draft") !== statusFilter) return false;
     return true;
+  }).sort((a, b) => {
+    if (sortBy === "alpha") return a.title.localeCompare(b.title);
+    return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
   });
 
   const draftCount      = sessions.filter((s) => (s.status || "draft") === "draft").length;
@@ -1056,12 +1063,34 @@ export default function AdminContentPage() {
           </div>
         )}
 
-        {/* ── BULK UPLOAD ── */}
+        {/* ── BULK UPLOAD TOGGLE ── */}
+        <button
+          onClick={() => setShowBulkUpload(!showBulkUpload)}
+          className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm transition-colors mb-4"
+          style={{
+            backgroundColor: showBulkUpload ? "rgba(255,65,179,0.12)" : "rgba(255,255,255,0.05)",
+            border: `0.5px solid ${showBulkUpload ? "rgba(255,65,179,0.3)" : "rgba(255,255,255,0.1)"}`,
+            color: showBulkUpload ? "#ff41b3" : "rgba(255,255,255,0.5)",
+            fontWeight: 500,
+          }}
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+          </svg>
+          Bulk Upload
+          <svg
+            width="10" height="10" viewBox="0 0 24 24" fill="currentColor"
+            style={{ transform: showBulkUpload ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" }}
+          >
+            <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6z"/>
+          </svg>
+        </button>
+
+        {showBulkUpload && (
         <div
           className="rounded-[10px] p-5 mb-6"
           style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.08)" }}
         >
-          <h2 className="text-white text-base mb-1" style={{ fontWeight: 500 }}>Bulk Upload</h2>
           <p className="text-xs text-cream/65 mb-4">
             Drop up to 20 mp3 or m4a files at once — titles and durations are auto-detected from each file
           </p>
@@ -1236,6 +1265,7 @@ export default function AdminContentPage() {
             </>
           )}
         </div>
+        )}
 
         {/* ── SESSION LIST ── */}
 
@@ -1264,35 +1294,16 @@ export default function AdminContentPage() {
           )}
         </div>
 
-        {/* Mood filter pills */}
-        <div className="flex items-center gap-1.5 mb-3 flex-wrap">
-          {["All", ...MOOD_CATEGORIES].map((mood) => (
-            <button
-              key={mood}
-              onClick={() => setMoodFilter(mood)}
-              className="px-2.5 py-1 rounded-full text-[11px] transition-colors"
-              style={{
-                backgroundColor: moodFilter === mood ? "rgba(255,65,179,0.15)" : "rgba(255,255,255,0.04)",
-                border: `0.5px solid ${moodFilter === mood ? "rgba(255,65,179,0.4)" : "rgba(255,255,255,0.08)"}`,
-                color: moodFilter === mood ? "#ff41b3" : "rgba(255,255,255,0.3)",
-                fontWeight: moodFilter === mood ? 500 : 400,
-              }}
-            >
-              {mood}
-            </button>
-          ))}
-        </div>
-
         {/* Status filter pills */}
-        <div className="flex items-center gap-2 mb-4 flex-wrap">
+        <div className="flex items-center gap-1.5 mb-3 flex-wrap">
           {(["all", "draft", "published", "coming_soon"] as const).map((f) => (
             <button
               key={f}
               onClick={() => setStatusFilter(f)}
-              className="px-3 py-1.5 rounded-full text-xs transition-colors"
+              className="px-3 py-1.5 rounded-full text-[11px] transition-colors"
               style={{
-                backgroundColor: statusFilter === f ? "rgba(255,65,179,0.15)" : "rgba(255,255,255,0.05)",
-                border: `0.5px solid ${statusFilter === f ? "rgba(255,65,179,0.4)" : "rgba(255,255,255,0.1)"}`,
+                backgroundColor: statusFilter === f ? "rgba(255,65,179,0.15)" : "rgba(255,255,255,0.04)",
+                border: `0.5px solid ${statusFilter === f ? "rgba(255,65,179,0.35)" : "rgba(255,255,255,0.08)"}`,
                 color: statusFilter === f ? "#ff41b3" : "rgba(255,255,255,0.35)",
                 fontWeight: statusFilter === f ? 500 : 400,
               }}
@@ -1305,20 +1316,90 @@ export default function AdminContentPage() {
           ))}
         </div>
 
+        {/* Mood category pills — built from actual session data */}
+        <div className="flex items-center gap-1.5 mb-2 flex-wrap">
+          <span className="text-[10px] text-cream/40 uppercase tracking-wider mr-1">Mood</span>
+          {["All", ...Array.from(new Set(sessions.map((s) => s.mood_category).filter(Boolean))).sort()].map((mood) => (
+            <button
+              key={mood}
+              onClick={() => setMoodFilter(mood)}
+              className="px-2.5 py-1 rounded-full text-[11px] transition-colors"
+              style={{
+                backgroundColor: moodFilter === mood ? "rgba(255,65,179,0.15)" : "rgba(255,255,255,0.03)",
+                border: `0.5px solid ${moodFilter === mood ? "rgba(255,65,179,0.35)" : "rgba(255,255,255,0.06)"}`,
+                color: moodFilter === mood ? "#ff41b3" : "rgba(255,255,255,0.3)",
+                fontWeight: moodFilter === mood ? 500 : 400,
+              }}
+            >
+              {mood}
+            </button>
+          ))}
+        </div>
+
+        {/* Session type pills — built from actual session data */}
+        <div className="flex items-center gap-1.5 mb-4 flex-wrap">
+          <span className="text-[10px] text-cream/40 uppercase tracking-wider mr-1">Type</span>
+          {["All", ...Array.from(new Set(sessions.map((s) => s.type).filter(Boolean))).sort()].map((t) => (
+            <button
+              key={t}
+              onClick={() => setTypeFilter(t)}
+              className="px-2.5 py-1 rounded-full text-[11px] transition-colors"
+              style={{
+                backgroundColor: typeFilter === t ? "rgba(236,114,61,0.15)" : "rgba(255,255,255,0.03)",
+                border: `0.5px solid ${typeFilter === t ? "rgba(236,114,61,0.35)" : "rgba(255,255,255,0.06)"}`,
+                color: typeFilter === t ? "#ec723d" : "rgba(255,255,255,0.3)",
+                fontWeight: typeFilter === t ? 500 : 400,
+              }}
+            >
+              {t}
+            </button>
+          ))}
+        </div>
+
+        {/* Sort + count row — right above the list */}
+        <div className="flex items-center justify-between mb-3">
+          <p className="text-xs text-cream/50">{filteredSessions.length} session{filteredSessions.length !== 1 ? "s" : ""}</p>
+          <div className="flex rounded-lg overflow-hidden shrink-0" style={{ border: "0.5px solid rgba(255,255,255,0.1)" }}>
+            <button
+              onClick={() => setSortBy("latest")}
+              className="px-3 py-1.5 text-[11px] transition-colors"
+              style={{
+                backgroundColor: sortBy === "latest" ? "rgba(255,65,179,0.15)" : "rgba(255,255,255,0.03)",
+                color: sortBy === "latest" ? "#ff41b3" : "rgba(255,255,255,0.4)",
+                fontWeight: sortBy === "latest" ? 500 : 400,
+              }}
+            >
+              Latest
+            </button>
+            <button
+              onClick={() => setSortBy("alpha")}
+              className="px-3 py-1.5 text-[11px] transition-colors"
+              style={{
+                backgroundColor: sortBy === "alpha" ? "rgba(255,65,179,0.15)" : "rgba(255,255,255,0.03)",
+                color: sortBy === "alpha" ? "#ff41b3" : "rgba(255,255,255,0.4)",
+                fontWeight: sortBy === "alpha" ? 500 : 400,
+                borderLeft: "0.5px solid rgba(255,255,255,0.1)",
+              }}
+            >
+              A–Z
+            </button>
+          </div>
+        </div>
+
         {loading ? (
           <LoadingSkeleton height={64} count={4} className="mb-2" />
         ) : filteredSessions.length === 0 ? (
           <EmptyState message="No sessions here yet" action="+ Add session" onClick={openNew} />
         ) : (
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-1">
             {filteredSessions.map((session) => (
               <div
                 key={session.id}
-                className="flex items-center gap-4 p-4 rounded-[10px]"
+                className="flex items-center gap-3 px-3 py-2 rounded-lg"
                 style={{ backgroundColor: "#1F1F1F", border: "0.5px solid rgba(255,255,255,0.08)" }}
               >
                 {/* Thumbnail or gradient dot */}
-                <div className="w-10 h-10 rounded-lg shrink-0 overflow-hidden relative" style={{ background: session.gradient }}>
+                <div className="w-8 h-8 rounded shrink-0 overflow-hidden relative" style={{ background: session.gradient }}>
                   {session.thumbnail && (
                     <img src={session.thumbnail} alt="" className="absolute inset-0 w-full h-full object-cover" />
                   )}
@@ -1345,80 +1426,86 @@ export default function AdminContentPage() {
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-cream/65">{session.type} · {session.mood_category} · {session.duration}</p>
+                  <p className="text-[11px] text-cream/55">
+                    {session.type} · {session.mood_category} · {session.duration}
+                    {session.audio_url ? <span className="text-cream/40"> · <span style={{ color: "#adf225" }}>♫</span></span> : <span> · <span style={{ color: "#ff41b3", opacity: 0.6 }}>♫</span></span>}
+                    {session.video_url ? <span className="text-cream/40"> · <span style={{ color: "#adf225" }}>▶</span></span> : <span> · <span style={{ color: "#ff41b3", opacity: 0.6 }}>▶</span></span>}
+                  </p>
                 </div>
 
-                {/* Actions */}
-                <div className="flex items-center gap-1 shrink-0">
+                {/* Actions: edit, preview, notify, delete, publish */}
+                <div className="flex items-center gap-0.5 shrink-0">
 
-                  {/* View as customer */}
+                  {/* Edit */}
+                  <button
+                    onClick={() => openEdit(session)}
+                    className="p-2.5 text-cream/50 hover:text-cream/80 transition-colors"
+                    aria-label="Edit"
+                    title="Edit session"
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                    </svg>
+                  </button>
+
+                  {/* Preview */}
                   <a
                     href={`/session/${session.id}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-2 text-cream/60 hover:text-pink-400 transition-colors"
-                    aria-label="View session"
-                    title="View as customer (new tab)"
+                    className="p-2.5 text-cream/50 hover:text-pink-400 transition-colors"
+                    aria-label="Preview session"
+                    title="Preview as customer (new tab)"
                   >
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                       <path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/>
                     </svg>
                   </a>
 
-                  {/* Publish — only shown on drafts */}
-                  {(session.status || "draft") === "draft" && (
-                    <button
-                      onClick={() => handlePublish(session.id)}
-                      className="p-2 text-cream/60 hover:text-green-400 transition-colors"
-                      aria-label="Publish"
-                      title="Publish this session"
-                    >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
-                      </svg>
-                    </button>
-                  )}
-
-                  {/* Notify subscribers */}
+                  {/* Notify */}
                   <button
                     onClick={() => handleNotify(session)}
                     disabled={notifyingId === session.id}
-                    className="p-2 text-cream/60 hover:text-pink-400 transition-colors disabled:opacity-40"
+                    className="p-2.5 text-cream/50 hover:text-pink-400 transition-colors disabled:opacity-40"
                     aria-label="Notify members"
                     title="Email all users about this session"
                   >
                     {notifyingId === session.id ? (
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" className="animate-spin opacity-60">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" className="animate-spin opacity-60">
                         <path d="M12 4V2A10 10 0 0 0 2 12h2a8 8 0 0 1 8-8z"/>
                       </svg>
                     ) : (
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
                       </svg>
                     )}
                   </button>
 
-                  {/* Edit */}
-                  <button
-                    onClick={() => openEdit(session)}
-                    className="p-2 text-cream/60 hover:text-cream/80 transition-colors"
-                    aria-label="Edit"
-                  >
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
-                    </svg>
-                  </button>
-
                   {/* Delete */}
                   <button
                     onClick={() => setConfirmDeleteId(session.id)}
-                    className="p-2 text-cream/60 hover:text-pink-400 transition-colors"
+                    className="p-2.5 text-cream/50 hover:text-pink-400 transition-colors"
                     aria-label="Delete"
+                    title="Delete session"
                   >
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                       <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
                     </svg>
                   </button>
+
+                  {/* Publish — only shown on drafts */}
+                  {(session.status || "draft") === "draft" && (
+                    <button
+                      onClick={() => handlePublish(session.id)}
+                      className="p-2.5 text-cream/50 hover:text-green-400 transition-colors"
+                      aria-label="Publish"
+                      title="Publish this session"
+                    >
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                      </svg>
+                    </button>
+                  )}
                 </div>
               </div>
             ))}
