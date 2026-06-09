@@ -103,11 +103,11 @@ export default function LoggedInHome() {
         {/* Feeling Chips Row */}
         <section className="space-y-4">
           <div className="flex flex-wrap gap-3">
-            <Link href="/library?free=true" className="px-8 py-3 rounded-full transition-all duration-300 font-headline font-bold uppercase tracking-wider text-sm text-white" style={{ background: "linear-gradient(135deg, #adf225, #059669)" }}>
+            <Link href="/library?free=true" className="px-8 py-3 rounded-full transition-all duration-300 font-headline font-bold uppercase tracking-wider text-sm" style={{ backgroundColor: "#ff41b3", color: "#000000" }}>
               Free Content
             </Link>
             {["Hungover", "After The Sesh", "On A Comedown", "Feeling Empty", "Can't Sleep", "Anxious", "Heartbroken", "Overwhelmed", "Low Energy", "Morning Reset", "Focus Mode", "Relationships", "Friendships", "Family", "Work"].map(mood => (
-              <Link key={mood} href={`/library?mood=${mood}`} className="px-8 py-3 rounded-full bg-surface-container-high hover:bg-primary-container hover:text-on-primary-container transition-all duration-300 font-headline font-bold uppercase tracking-wider text-sm">
+              <Link key={mood} href={`/library?mood=${mood}`} className="px-8 py-3 rounded-full transition-all duration-300 font-headline font-bold uppercase tracking-wider text-sm hover:opacity-80" style={{ backgroundColor: "#ff41b3", color: "#000000" }}>
                 {mood}
               </Link>
             ))}
