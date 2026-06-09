@@ -11,7 +11,7 @@ export async function GET() {
 
   const { data, error } = await supabase
     .from("early_access_signups")
-    .select("id, name, email, source, referrer, ip_country, resend_synced, invited_at, converted_at, created_at")
+    .select("*")
     .order("created_at", { ascending: false });
 
   if (error) {
