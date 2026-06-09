@@ -1,7 +1,7 @@
 // /api/email/early-access-signup
 //
 // Public POST endpoint that the /early-access waitlist form submits to.
-// Body: { name?: string, email: string, source?: string }
+// Body: { name?: string, email: string, source?: string, referrer?: string }
 //
 // On success:
 //   1. Upserts a row into public.early_access_signups (Supabase) — idempotent on email
@@ -36,12 +36,14 @@ export async function POST(req: NextRequest) {
   let name = "";
   let email = "";
   let source = "";
+  let referrer = "";
 
   try {
     const body = await req.json();
     name = (body.name || "").toString().trim().slice(0, 200);
     email = (body.email || "").toString().trim().toLowerCase().slice(0, 320);
     source = (body.source || "").toString().trim().slice(0, 80);
+    referrer = (body.referrer || "").toString().trim().slice(0, 200);
   } catch {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
@@ -68,6 +70,7 @@ export async function POST(req: NextRequest) {
         email,
         name: name || null,
         source: source || null,
+        referrer: referrer || null,
         user_agent: userAgent,
         ip_country: ipCountry,
       },
@@ -108,6 +111,7 @@ export async function POST(req: NextRequest) {
     const safeName = escapeHtml(name || "—");
     const safeEmail = escapeHtml(email);
     const safeSource = escapeHtml(source || "—");
+    const safeReferrer = escapeHtml(referrer || "—");
 
     await resend.emails.send({
       from: `${FROM_NAME} <${FROM_EMAIL}>`,
@@ -129,6 +133,10 @@ export async function POST(req: NextRequest) {
             <tr>
               <td style="padding:8px 0;color:rgba(255,255,255,0.4);font-size:12px;text-transform:uppercase;letter-spacing:1px;">Source</td>
               <td style="padding:8px 0;color:#ffffff;font-size:14px;">${safeSource}</td>
+            </tr>
+            <tr>
+              <td style="padding:8px 0;color:rgba(255,255,255,0.4);font-size:12px;text-transform:uppercase;letter-spacing:1px;">Referrer</td>
+              <td style="padding:8px 0;color:#ffffff;font-size:14px;">${safeReferrer}</td>
             </tr>
           </table>
         </div>

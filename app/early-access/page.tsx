@@ -4,9 +4,11 @@ import { useState } from "react";
 import Logo from "../components/Logo";
 
 export default function EarlyAccessPage() {
-  const [name, setName]       = useState("");
-  const [email, setEmail]     = useState("");
-  const [status, setStatus]   = useState<"idle" | "loading" | "done" | "error">("idle");
+  const [name, setName]         = useState("");
+  const [email, setEmail]       = useState("");
+  const [source, setSource]     = useState("Friend / Word of Mouth");
+  const [referrer, setReferrer] = useState("");
+  const [status, setStatus]     = useState<"idle" | "loading" | "done" | "error">("idle");
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -15,7 +17,7 @@ export default function EarlyAccessPage() {
       const res = await fetch("/api/email/early-access-signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email }),
+        body: JSON.stringify({ name, email, source, referrer }),
       });
       if (res.ok) {
         setStatus("done");
@@ -153,6 +155,57 @@ export default function EarlyAccessPage() {
                     className="bg-transparent border-b text-sm py-3 outline-none placeholder-[rgba(255,255,255,0.2)] text-white transition-colors focus:border-white"
                     style={{ borderColor: "rgba(255,255,255,0.15)", fontFamily: "var(--font-manrope)", minHeight: "44px" }}
                   />
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <label
+                    className="text-[10px] uppercase tracking-widest"
+                    style={{ fontFamily: "var(--font-lexend)", color: "rgba(255,255,255,0.4)" }}
+                  >
+                    Where did you hear about us?
+                  </label>
+                  <select
+                    value={source}
+                    onChange={(e) => setSource(e.target.value)}
+                    className="bg-transparent border-b text-sm py-3 outline-none transition-colors focus:border-white appearance-none"
+                    style={{
+                      borderColor: "rgba(255,255,255,0.15)",
+                      fontFamily: "var(--font-manrope)",
+                      minHeight: "44px",
+                      color: "#ffffff",
+                    }}
+                  >
+                    <option value="Friend / Word of Mouth" style={{ backgroundColor: "#141414", color: "#ffffff" }}>Friend / Word of Mouth</option>
+                    <option value="Instagram" style={{ backgroundColor: "#141414", color: "#ffffff" }}>Instagram</option>
+                    <option value="TikTok" style={{ backgroundColor: "#141414", color: "#ffffff" }}>TikTok</option>
+                    <option value="Twitter / X" style={{ backgroundColor: "#141414", color: "#ffffff" }}>Twitter / X</option>
+                    <option value="Facebook" style={{ backgroundColor: "#141414", color: "#ffffff" }}>Facebook</option>
+                    <option value="YouTube" style={{ backgroundColor: "#141414", color: "#ffffff" }}>YouTube</option>
+                    <option value="Google Search" style={{ backgroundColor: "#141414", color: "#ffffff" }}>Google Search</option>
+                    <option value="Podcast" style={{ backgroundColor: "#141414", color: "#ffffff" }}>Podcast</option>
+                    <option value="Other" style={{ backgroundColor: "#141414", color: "#ffffff" }}>Other</option>
+                  </select>
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <label
+                    className="text-[10px] uppercase tracking-widest"
+                    style={{ fontFamily: "var(--font-lexend)", color: "rgba(255,255,255,0.4)" }}
+                  >
+                    Who told you about The Daily Meds? *
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Their name"
+                    value={referrer}
+                    onChange={(e) => setReferrer(e.target.value)}
+                    required
+                    className="bg-transparent border-b text-sm py-3 outline-none placeholder-[rgba(255,255,255,0.2)] text-white transition-colors focus:border-white"
+                    style={{ borderColor: "rgba(255,255,255,0.15)", fontFamily: "var(--font-manrope)", minHeight: "44px" }}
+                  />
+                  <p className="text-xs mt-1" style={{ color: "rgba(255,255,255,0.35)", fontFamily: "var(--font-manrope)" }}>
+                    We would like to give credit where credit is due.
+                  </p>
                 </div>
 
                 {status === "error" && (
