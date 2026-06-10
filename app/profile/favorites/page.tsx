@@ -25,7 +25,7 @@ export default function FavoritesPage() {
       const [{ data: downloads }, { data: profile }] = await Promise.all([
         supabase
           .from("downloads")
-          .select("session_id, sessions(id, title, description, duration, type, mood_category, media_type, is_free, is_coming_soon, gradient, thumbnail)")
+          .select("session_id, sessions(id, title, description, duration, type, mood_category, mood_categories, media_type, is_free, is_coming_soon, gradient, thumbnail)")
           .eq("user_id", user.id)
           .order("downloaded_at", { ascending: false }),
         supabase

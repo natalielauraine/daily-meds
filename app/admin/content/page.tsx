@@ -14,33 +14,9 @@ import LoadingSkeleton from "../../components/ui/LoadingSkeleton";
 import ConfirmModal from "../../components/ui/ConfirmModal";
 import GradientPicker, { GRADIENTS } from "../components/GradientPicker";
 import FormField, { fieldStyle, fieldClass } from "../components/FormField";
-
-const MOOD_CATEGORIES = [
-  "Hungover", "After The Sesh", "On A Comedown", "Feeling Empty",
-  "Can't Sleep", "Anxious", "Heartbroken", "Overwhelmed",
-  "Low Energy", "Morning Reset", "Focus Mode",
-  "Relationships", "Friendships", "Family", "Work",
-];
+import { MOOD_CATEGORIES, MOOD_GRADIENTS } from "../../../lib/design-tokens";
 
 const SESSION_TYPES = ["Guided Meditation", "Breathwork", "Sleep Audio", "Focus Session", "Movement"];
-
-const MOOD_GRADIENTS: Record<string, string> = {
-  "Hungover":       "linear-gradient(135deg, #ff41b3, #ec723d)",
-  "After The Sesh": "linear-gradient(135deg, #ff41b3, #f4e71d)",
-  "On A Comedown":  "linear-gradient(135deg, #adf225, #f4e71d)",
-  "Feeling Empty":  "linear-gradient(135deg, #ff41b3, #ec723d)",
-  "Can't Sleep":    "linear-gradient(135deg, #ff41b3, #adf225)",
-  "Anxious":        "linear-gradient(135deg, #ec723d, #f4e71d)",
-  "Heartbroken":    "linear-gradient(135deg, #ff41b3, #ec723d)",
-  "Overwhelmed":    "linear-gradient(135deg, #ec723d, #f4e71d)",
-  "Low Energy":     "linear-gradient(135deg, #adf225, #f4e71d)",
-  "Morning Reset":  "linear-gradient(135deg, #ff41b3, #f4e71d)",
-  "Focus Mode":     "linear-gradient(135deg, #adf225, #ec723d)",
-  "Relationships":  "linear-gradient(135deg, #ff41b3, #f4e71d)",
-  "Friendships":    "linear-gradient(135deg, #adf225, #ff41b3)",
-  "Family":         "linear-gradient(135deg, #ec723d, #ff41b3)",
-  "Work":           "linear-gradient(135deg, #f4e71d, #ec723d)",
-};
 
 type Session = {
   id: string;
@@ -49,6 +25,7 @@ type Session = {
   duration: string;
   type: string;
   mood_category: string;
+  mood_categories: string[];
   media_type: "audio" | "video" | "image";
   audio_url: string;
   vimeo_id: string;
@@ -80,7 +57,8 @@ const EMPTY_FORM = {
   description: "",
   duration: "10 min",
   type: "Guided Meditation",
-  mood_category: "Anxious",
+  mood_category: "Everyday Moods",
+  mood_categories: ["Everyday Moods"] as string[],
   media_type: "audio" as "audio" | "video" | "image",
   audio_url: "",
   vimeo_id: "",
@@ -231,6 +209,8 @@ export default function AdminContentPage() {
       duration:      session.duration,
       type:          session.type,
       mood_category: session.mood_category,
+      mood_categories: session.mood_categories?.length ? session.mood_categories :
+                       session.mood_category ? [session.mood_category] : [],
       media_type:    session.media_type,
       audio_url:     session.audio_url || "",
       vimeo_id:      session.vimeo_id || "",
@@ -480,6 +460,7 @@ export default function AdminContentPage() {
         duration:      parseInt(item.duration) || 10,
         type:          "Guided Meditation",
         mood_category: item.mood_category,
+        mood_categories: [item.mood_category],
         media_type:    "audio",
         audio_url:     publicUrl,
         is_free:       item.is_free,
@@ -517,7 +498,8 @@ export default function AdminContentPage() {
       description:   form.description.trim(),
       duration:      Math.round(parseFloat(form.duration) * 10) / 10 || 10,
       type:          form.type,
-      mood_category: form.mood_category,
+      mood_category: form.mood_categories[0] || form.mood_category,
+      mood_categories: form.mood_categories,
       media_type:    form.video_url.trim() ? "video" : (form.vimeo_id.trim() || form.youtube_url.trim()) ? "video" : form.audio_url.trim() ? "audio" : "audio",
       audio_url:     form.audio_url.trim() || null,
       vimeo_id:      null,
@@ -587,7 +569,7 @@ export default function AdminContentPage() {
 
   const filteredSessions = sessions.filter((s) => {
     if (search && !s.title.toLowerCase().includes(search.toLowerCase())) return false;
-    if (moodFilter !== "All" && s.mood_category !== moodFilter) return false;
+    if (moodFilter !== "All" && !(s.mood_categories?.includes(moodFilter) ?? s.mood_category === moodFilter)) return false;
     if (typeFilter !== "All" && s.type !== typeFilter) return false;
     if (statusFilter === "coming_soon") return s.is_coming_soon;
     if (statusFilter !== "all" && (s.status || "draft") !== statusFilter) return false;
@@ -662,14 +644,35 @@ export default function AdminContentPage() {
                 />
               </FormField>
 
-              <FormField label="Mood category">
-                <select
-                  value={form.mood_category}
-                  onChange={(e) => setForm({ ...form, mood_category: e.target.value })}
-                  className={fieldClass} style={fieldStyle}
-                >
-                  {MOOD_CATEGORIES.map((m) => <option key={m} value={m}>{m}</option>)}
-                </select>
+              <FormField label="Mood categories" className="sm:col-span-2">
+                <div className="flex flex-wrap gap-1.5">
+                  {MOOD_CATEGORIES.map((m) => {
+                    const selected = form.mood_categories.includes(m);
+                    return (
+                      <button
+                        key={m}
+                        type="button"
+                        onClick={() => {
+                          setForm(prev => ({
+                            ...prev,
+                            mood_categories: selected
+                              ? prev.mood_categories.filter((c: string) => c !== m)
+                              : [...prev.mood_categories, m],
+                          }));
+                        }}
+                        className="px-2.5 py-1 rounded-full text-[11px] transition-all"
+                        style={{
+                          backgroundColor: selected ? "rgba(255,65,179,0.2)" : "rgba(255,255,255,0.04)",
+                          border: `1px solid ${selected ? "#ff41b3" : "rgba(255,255,255,0.08)"}`,
+                          color: selected ? "#ff41b3" : "rgba(255,255,255,0.4)",
+                          fontWeight: selected ? 600 : 400,
+                        }}
+                      >
+                        {m}
+                      </button>
+                    );
+                  })}
+                </div>
               </FormField>
 
               <FormField label="Session type">
@@ -1324,7 +1327,7 @@ export default function AdminContentPage() {
         {/* Mood category pills — built from actual session data */}
         <div className="flex items-center gap-1.5 mb-2 flex-wrap">
           <span className="text-[10px] text-cream/40 uppercase tracking-wider mr-1">Mood</span>
-          {["All", ...Array.from(new Set(sessions.map((s) => s.mood_category).filter(Boolean))).sort()].map((mood) => (
+          {["All", ...Array.from(new Set(sessions.flatMap((s) => s.mood_categories?.length ? s.mood_categories : [s.mood_category]).filter(Boolean))).sort()].map((mood) => (
             <button
               key={mood}
               onClick={() => setMoodFilter(mood)}
@@ -1432,7 +1435,7 @@ export default function AdminContentPage() {
                     )}
                   </div>
                   <p className="text-[11px] text-cream/55">
-                    {session.type} · {session.mood_category} · {session.duration}
+                    {session.type} · {session.mood_categories?.length ? session.mood_categories.join(", ") : session.mood_category} · {session.duration}
                     {session.audio_url ? <span className="text-cream/40"> · <span style={{ color: "#adf225" }}>♫</span></span> : <span> · <span style={{ color: "#ff41b3", opacity: 0.6 }}>♫</span></span>}
                     {session.video_url ? <span className="text-cream/40"> · <span style={{ color: "#adf225" }}>▶</span></span> : <span> · <span style={{ color: "#ff41b3", opacity: 0.6 }}>▶</span></span>}
                   </p>

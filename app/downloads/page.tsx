@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "../../lib/supabase-browser";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import { MOOD_GRADIENTS } from "@/lib/design-tokens";
 
 // Shape of a downloaded session row after flattening the join
 type DownloadedSession = {
@@ -21,24 +22,10 @@ type DownloadedSession = {
   type: string;
   duration: string;
   mood_category: string;
+  mood_categories: string[];
   gradient: string;
   is_free: boolean;
   media_type: string;
-};
-
-// Gradient map for mood categories
-const MOOD_GRADIENTS: Record<string, string> = {
-  Hungover:         "linear-gradient(135deg, #ff41b3, #ec723d)",
-  "After The Sesh": "linear-gradient(135deg, #ff41b3, #f4e71d)",
-  "On A Comedown":  "linear-gradient(135deg, #adf225, #f4e71d)",
-  "Feeling Empty":  "linear-gradient(135deg, #ff41b3, #ec723d)",
-  "Can't Sleep":    "linear-gradient(135deg, #ff41b3, #adf225)",
-  Anxious:          "linear-gradient(135deg, #ec723d, #f4e71d)",
-  Heartbroken:      "linear-gradient(135deg, #ff41b3, #ec723d)",
-  Overwhelmed:      "linear-gradient(135deg, #ec723d, #f4e71d)",
-  "Low Energy":     "linear-gradient(135deg, #adf225, #f4e71d)",
-  "Morning Reset":  "linear-gradient(135deg, #ff41b3, #f4e71d)",
-  "Focus Mode":     "linear-gradient(135deg, #adf225, #ec723d)",
 };
 
 // Format a date string into a readable label like "Today", "Yesterday", or "12 Mar 2026"
@@ -75,7 +62,7 @@ export default function DownloadsPage() {
       // Join downloads with sessions to get full session details
       const { data } = await supabase
         .from("downloads")
-        .select("id, session_id, downloaded_at, sessions(title, type, duration, mood_category, gradient, is_free, media_type)")
+        .select("id, session_id, downloaded_at, sessions(title, type, duration, mood_category, mood_categories, gradient, is_free, media_type)")
         .eq("user_id", user.id)
         .order("downloaded_at", { ascending: false });
 
@@ -85,7 +72,7 @@ export default function DownloadsPage() {
           .map((row) => {
             const s = row.sessions as unknown as {
               title: string; type: string; duration: string; mood_category: string;
-              gradient: string; is_free: boolean; media_type: string;
+              mood_categories: string[]; gradient: string; is_free: boolean; media_type: string;
             };
             return {
               download_id: row.id,
@@ -95,6 +82,7 @@ export default function DownloadsPage() {
               type:        s.type,
               duration:    s.duration,
               mood_category: s.mood_category,
+              mood_categories: s.mood_categories,
               gradient:    s.gradient,
               is_free:     s.is_free,
               media_type:  s.media_type,

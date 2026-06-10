@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
+import { MOOD_GRADIENTS } from "@/lib/design-tokens";
 
 // The shape of a single session — used across all content rows
 export type Session = {
@@ -11,26 +12,11 @@ export type Session = {
   duration: string;           // e.g. "18 min"
   type: string;               // e.g. "Guided Meditation", "Breathwork", "Sleep"
   moodCategory: string;       // e.g. "Hungover", "Anxious"
+  moodCategories?: string[];  // multi-category tagging
   gradient: string;           // CSS gradient string for the thumbnail background
   glowColor: string;          // Single colour for the glow effect
   isFree: boolean;            // Whether this session is free or premium
   thumbnail?: string;         // Optional thumbnail image URL
-};
-
-// Neon brand gradients — maps mood category names to their gradient
-// Uses the confirmed brand colours: pink #ff41b3, green #adf225, yellow #f4e71d, orange #ec723d
-const MOOD_GRADIENTS: Record<string, string> = {
-  Hungover:          "linear-gradient(135deg, #ff41b3, #ec723d)",
-  "After The Sesh":  "linear-gradient(135deg, #ff41b3, #f4e71d)",
-  "On A Comedown":   "linear-gradient(135deg, #adf225, #f4e71d)",
-  "Feeling Empty":   "linear-gradient(135deg, #ff41b3, #ec723d)",
-  "Can't Sleep":     "linear-gradient(135deg, #ff41b3, #adf225)",
-  Anxious:           "linear-gradient(135deg, #ec723d, #f4e71d)",
-  Heartbroken:       "linear-gradient(135deg, #ff41b3, #ec723d)",
-  Overwhelmed:       "linear-gradient(135deg, #ec723d, #f4e71d)",
-  "Low Energy":      "linear-gradient(135deg, #adf225, #f4e71d)",
-  "Morning Reset":   "linear-gradient(135deg, #ff41b3, #f4e71d)",
-  "Focus Mode":      "linear-gradient(135deg, #adf225, #ec723d)",
 };
 
 // A single session card — shown in horizontal scrolling content rows.
@@ -190,14 +176,14 @@ export default function SessionCard({ session }: { session: Session }) {
               <span
                 className="text-[9px] px-2 py-0.5 rounded-full text-white"
                 style={{
-                  background: MOOD_GRADIENTS[session.moodCategory] ?? "linear-gradient(135deg, #ff41b3, #ec723d)",
+                  background: MOOD_GRADIENTS[session.moodCategories?.[0] ?? session.moodCategory] ?? "linear-gradient(135deg, #ff41b3, #ec723d)",
                   fontFamily: "var(--font-space-grotesk)",
                   fontWeight: 700,
                   letterSpacing: "0.04em",
                   textTransform: "uppercase",
                 }}
               >
-                {session.moodCategory}
+                {session.moodCategories?.[0] ?? session.moodCategory}
               </span>
             </div>
 

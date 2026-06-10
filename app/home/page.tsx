@@ -8,6 +8,7 @@ import type { User } from "@supabase/supabase-js";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { LibraryCard, type LibrarySession } from "../components/LibraryCard";
+import { MOOD_CATEGORIES } from "@/lib/design-tokens";
 
 // ── DATA ─────────────────────────────────────────────────────────────────────
 
@@ -107,7 +108,7 @@ export default function LoggedInHome() {
             <Link href="/library?free=true" className="px-8 py-3 rounded-full transition-all duration-300 font-headline font-bold uppercase tracking-wider text-sm" style={{ backgroundColor: "#ff41b3", color: "#000000" }}>
               Free Content
             </Link>
-            {["Hungover", "After The Sesh", "On A Comedown", "Feeling Empty", "Can't Sleep", "Anxious", "Heartbroken", "Overwhelmed", "Low Energy", "Morning Reset", "Focus Mode", "Relationships", "Friendships", "Family", "Work"].map(mood => (
+            {MOOD_CATEGORIES.map(mood => (
               <Link key={mood} href={`/library?mood=${mood}`} className="px-8 py-3 rounded-full transition-all duration-300 font-headline font-bold uppercase tracking-wider text-sm hover:opacity-80" style={{ backgroundColor: "#ff41b3", color: "#000000" }}>
                 {mood}
               </Link>

@@ -11,28 +11,12 @@ import Footer from "../components/Footer";
 import LoadingSkeleton from "../components/ui/LoadingSkeleton";
 import EmptyState from "../components/ui/EmptyState";
 import { createClient } from "../../lib/supabase-browser";
-import { LibraryCard, LibrarySession, MOOD_GRADIENTS } from "../components/LibraryCard";
+import { LibraryCard, LibrarySession } from "../components/LibraryCard";
+import { MOOD_CATEGORIES, MOOD_GRADIENTS } from "@/lib/design-tokens";
 
 // ── CONSTANTS ─────────────────────────────────────────────────────────────────
 
-const MOOD_CATEGORIES = [
-  "All",
-  "Hungover",
-  "After The Sesh",
-  "On A Comedown",
-  "Feeling Empty",
-  "Can't Sleep",
-  "Anxious",
-  "Heartbroken",
-  "Overwhelmed",
-  "Low Energy",
-  "Morning Reset",
-  "Focus Mode",
-  "Relationships",
-  "Friendships",
-  "Family",
-  "Work",
-];
+const MOOD_FILTER_OPTIONS = ["All", ...MOOD_CATEGORIES];
 
 const DURATION_OPTIONS = [
   { label: "All", value: "all" },
@@ -47,7 +31,7 @@ const TYPE_OPTIONS = [
   { label: "Video", value: "video" },
 ];
 
-// MOOD_GRADIENTS and LibrarySession are imported from app/components/LibraryCard
+// MOOD_GRADIENTS, MOOD_CATEGORIES imported from design-tokens; LibrarySession from LibraryCard
 
 // ── HELPERS ───────────────────────────────────────────────────────────────────
 
@@ -117,7 +101,7 @@ export default function LibraryPage() {
     const params = new URLSearchParams(window.location.search);
     const qMood = params.get("mood");
     if (qMood) {
-      const match = MOOD_CATEGORIES.find(m => m.toLowerCase() === qMood.toLowerCase());
+      const match = MOOD_FILTER_OPTIONS.find(m => m.toLowerCase() === qMood.toLowerCase());
       if (match) setActiveMood(match);
       else setActiveMood(qMood);
     }
@@ -133,7 +117,7 @@ export default function LibraryPage() {
       const [{ data: sessionsData, error }, { data: { user } }] = await Promise.all([
         supabase
           .from("sessions")
-          .select("id, title, description, duration, type, mood_category, media_type, is_free, is_coming_soon, gradient, thumbnail")
+          .select("id, title, description, duration, type, mood_category, mood_categories, media_type, is_free, is_coming_soon, gradient, thumbnail")
           .order("created_at", { ascending: false }),
         supabase.auth.getUser(),
       ]);
@@ -160,7 +144,7 @@ export default function LibraryPage() {
   // Apply all active filters to the session list
   const filtered = sessions.filter((s) => {
     if (search && !s.title.toLowerCase().includes(search.toLowerCase())) return false;
-    if (activeMood !== "All" && s.mood_category !== activeMood) return false;
+    if (activeMood !== "All" && !(s.mood_categories?.includes(activeMood) ?? s.mood_category === activeMood)) return false;
     if (!matchesDuration(s, activeDuration)) return false;
     if (activeType !== "all" && s.media_type !== activeType) return false;
     if (freeOnly && !s.is_free) return false;
@@ -269,7 +253,7 @@ export default function LibraryPage() {
 
           {/* Mood pills — wrapping grid with left border to group visually */}
           <div className="flex flex-wrap gap-2 ml-2 pl-3" style={{ borderLeft: "2px solid rgba(255,65,179,0.2)" }}>
-            {MOOD_CATEGORIES.map((mood) => (
+            {MOOD_FILTER_OPTIONS.map((mood) => (
               <FilterPill
                 key={mood}
                 label={mood}

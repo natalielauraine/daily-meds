@@ -38,20 +38,8 @@ const GLASS: React.CSSProperties = {
   border: "1px solid rgba(255,255,255,0.05)",
 };
 
-// ── MOOD GRADIENTS ────────────────────────────────────────────────────────────
-const MOOD_GRADIENTS: Record<string, string> = {
-  "Hungover":       "linear-gradient(135deg, #ff41b3, #ec723d)",
-  "After The Sesh": "linear-gradient(135deg, #ff41b3, #f4e71d)",
-  "On A Comedown":  "linear-gradient(135deg, #adf225, #f4e71d)",
-  "Feeling Empty":  "linear-gradient(135deg, #ff41b3, #ec723d)",
-  "Can't Sleep":    "linear-gradient(135deg, #ff41b3, #adf225)",
-  "Anxious":        "linear-gradient(135deg, #ec723d, #f4e71d)",
-  "Heartbroken":    "linear-gradient(135deg, #ff41b3, #ec723d)",
-  "Overwhelmed":    "linear-gradient(135deg, #ec723d, #f4e71d)",
-  "Low Energy":     "linear-gradient(135deg, #adf225, #f4e71d)",
-  "Morning Reset":  "linear-gradient(135deg, #ff41b3, #f4e71d)",
-  "Focus Mode":     "linear-gradient(135deg, #adf225, #ec723d)",
-};
+// ── MOOD GRADIENTS (from design tokens) ──────────────────────────────────────
+import { MOOD_GRADIENTS, MOOD_CATEGORIES } from "@/lib/design-tokens";
 
 const PURPLE = "linear-gradient(135deg, #ff41b3 0%, #ec723d 50%, #adf225 100%)";
 const POST_EMOJIS = ["🔥", "💜", "🙏", "⭐", "💪", "🧘"];
@@ -353,7 +341,7 @@ export default function CommunityPage() {
                         style={{ color: C.onSurfaceVar, colorScheme: "dark" }}
                       >
                         <option value="">Mood...</option>
-                        {["Hungover","After The Sesh","On A Comedown","Feeling Empty","Can't Sleep","Anxious","Heartbroken","Overwhelmed","Low Energy","Morning Reset","Focus Mode"].map(m => (
+                        {MOOD_CATEGORIES.map(m => (
                           <option key={m} value={m} style={{ backgroundColor: C.surfaceHigh }}>{m}</option>
                         ))}
                       </select>

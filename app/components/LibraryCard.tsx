@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { MOOD_GRADIENTS } from "@/lib/design-tokens";
 
 export type LibrarySession = {
   id: string;
@@ -10,6 +11,7 @@ export type LibrarySession = {
   duration: string;
   type: string;
   mood_category: string;
+  mood_categories: string[];
   media_type: "audio" | "video";
   is_free: boolean;
   is_coming_soon?: boolean;
@@ -17,25 +19,12 @@ export type LibrarySession = {
   thumbnail?: string;
 };
 
-export const MOOD_GRADIENTS: Record<string, string> = {
-  Hungover:          "linear-gradient(135deg, #ff41b3, #ec723d)",
-  "After The Sesh":  "linear-gradient(135deg, #ff41b3, #f4e71d)",
-  "On A Comedown":   "linear-gradient(135deg, #adf225, #f4e71d)",
-  "Feeling Empty":   "linear-gradient(135deg, #ff41b3, #ec723d)",
-  "Can't Sleep":     "linear-gradient(135deg, #ff41b3, #adf225)",
-  Anxious:           "linear-gradient(135deg, #ec723d, #f4e71d)",
-  Heartbroken:       "linear-gradient(135deg, #ff41b3, #ec723d)",
-  Overwhelmed:       "linear-gradient(135deg, #ec723d, #f4e71d)",
-  "Low Energy":      "linear-gradient(135deg, #adf225, #f4e71d)",
-  "Morning Reset":   "linear-gradient(135deg, #ff41b3, #f4e71d)",
-  "Focus Mode":      "linear-gradient(135deg, #adf225, #ec723d)",
-};
-
 export function LibraryCard({ session, isPaidMember }: { session: LibrarySession; isPaidMember: boolean }) {
   const [hovered, setHovered] = useState(false);
   const comingSoon = session.is_coming_soon;
 
-  const moodGradient = MOOD_GRADIENTS[session.mood_category] ?? "linear-gradient(135deg, #ff41b3, #ec723d)";
+  const primaryMood = session.mood_categories?.[0] ?? session.mood_category;
+  const moodGradient = MOOD_GRADIENTS[primaryMood] ?? "linear-gradient(135deg, #ff41b3, #ec723d)";
 
   const thumbnailContent = (
     <>
@@ -168,17 +157,24 @@ export function LibraryCard({ session, isPaidMember }: { session: LibrarySession
         {/* ── CARD INFO ── */}
         {comingSoon ? (
           <div className="flex flex-col gap-1">
-            <span
-              className="text-[9px] px-2 py-0.5 rounded-full self-start text-white uppercase"
-              style={{
-                background: moodGradient,
-                fontFamily: "var(--font-space-grotesk)",
-                fontWeight: 700,
-                letterSpacing: "0.04em",
-              }}
-            >
-              {session.mood_category}
-            </span>
+            <div className="flex items-center gap-1 self-start">
+              <span
+                className="text-[9px] px-2 py-0.5 rounded-full text-white uppercase"
+                style={{
+                  background: moodGradient,
+                  fontFamily: "var(--font-space-grotesk)",
+                  fontWeight: 700,
+                  letterSpacing: "0.04em",
+                }}
+              >
+                {primaryMood}
+              </span>
+              {(session.mood_categories?.length ?? 0) > 1 && (
+                <span className="text-[9px] px-1.5 py-0.5 rounded-full text-cream/50" style={{ background: "rgba(255,255,255,0.06)" }}>
+                  +{session.mood_categories!.length - 1}
+                </span>
+              )}
+            </div>
             <h3
               className="text-sm leading-snug"
               style={{
@@ -196,17 +192,24 @@ export function LibraryCard({ session, isPaidMember }: { session: LibrarySession
           </div>
         ) : (
           <Link href={`/session/${session.id}`} className="flex flex-col gap-1">
-            <span
-              className="text-[9px] px-2 py-0.5 rounded-full self-start text-white uppercase"
-              style={{
-                background: moodGradient,
-                fontFamily: "var(--font-space-grotesk)",
-                fontWeight: 700,
-                letterSpacing: "0.04em",
-              }}
-            >
-              {session.mood_category}
-            </span>
+            <div className="flex items-center gap-1 self-start">
+              <span
+                className="text-[9px] px-2 py-0.5 rounded-full text-white uppercase"
+                style={{
+                  background: moodGradient,
+                  fontFamily: "var(--font-space-grotesk)",
+                  fontWeight: 700,
+                  letterSpacing: "0.04em",
+                }}
+              >
+                {primaryMood}
+              </span>
+              {(session.mood_categories?.length ?? 0) > 1 && (
+                <span className="text-[9px] px-1.5 py-0.5 rounded-full text-cream/50" style={{ background: "rgba(255,255,255,0.06)" }}>
+                  +{session.mood_categories!.length - 1}
+                </span>
+              )}
+            </div>
             <h3
               className="text-sm leading-snug transition-colors group-hover:text-white"
               style={{

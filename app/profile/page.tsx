@@ -10,24 +10,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { createClient } from "../../lib/supabase-browser";
 import type { User } from "@supabase/supabase-js";
+import { MOOD_GRADIENTS } from "@/lib/design-tokens";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-
-// ── MOOD GRADIENT MAP ─────────────────────────────────────────────────────────
-
-const MOOD_GRADIENTS: Record<string, string> = {
-  Hungover:         "linear-gradient(135deg, #ff41b3, #ec723d)",
-  "After The Sesh": "linear-gradient(135deg, #ff41b3, #f4e71d)",
-  "On A Comedown":  "linear-gradient(135deg, #adf225, #f4e71d)",
-  "Feeling Empty":  "linear-gradient(135deg, #ff41b3, #ec723d)",
-  "Can't Sleep":    "linear-gradient(135deg, #ff41b3, #adf225)",
-  Anxious:          "linear-gradient(135deg, #ec723d, #f4e71d)",
-  Heartbroken:      "linear-gradient(135deg, #ff41b3, #ec723d)",
-  Overwhelmed:      "linear-gradient(135deg, #ec723d, #f4e71d)",
-  "Low Energy":     "linear-gradient(135deg, #adf225, #f4e71d)",
-  "Morning Reset":  "linear-gradient(135deg, #ff41b3, #f4e71d)",
-  "Focus Mode":     "linear-gradient(135deg, #adf225, #ec723d)",
-};
 
 /** Extract the first hex color from a gradient string for solid fills */
 function extractFirstColor(gradient: string): string {
@@ -131,7 +116,7 @@ function FourteenDayChart({ data }: { data: DayData[] }) {
 // ── BUILD 14-DAY DATA ────────────────────────────────────────────────────────
 
 function buildFourteenDayData(
-  rows: { completed: boolean; updated_at: string; mood_category: string }[]
+  rows: { completed: boolean; updated_at: string; mood_category: string; mood_categories: string[] | null }[]
 ): DayData[] {
   const todayStr = new Date().toISOString().split("T")[0];
   const days: DayData[] = [];
@@ -151,13 +136,15 @@ function buildFourteenDayData(
     const dayEntry = days.find((d) => d.dateStr === rowDate);
     if (!dayEntry) continue;
 
-    const mood = row.mood_category || "Unknown";
-    const existing = dayEntry.segments.find((s) => s.mood === mood);
-    if (existing) {
-      existing.count++;
-    } else {
-      const gradient = MOOD_GRADIENTS[mood] || "linear-gradient(135deg, #ff41b3, #ec723d)";
-      dayEntry.segments.push({ mood, count: 1, color: extractFirstColor(gradient) });
+    const moods = row.mood_categories?.length ? row.mood_categories : [row.mood_category || "Unknown"];
+    for (const mood of moods) {
+      const existing = dayEntry.segments.find((s) => s.mood === mood);
+      if (existing) {
+        existing.count++;
+      } else {
+        const gradient = MOOD_GRADIENTS[mood] || "linear-gradient(135deg, #ff41b3, #ec723d)";
+        dayEntry.segments.push({ mood, count: 1, color: extractFirstColor(gradient) });
+      }
     }
     dayEntry.total++;
   }
@@ -365,13 +352,14 @@ export default function ProfilePage() {
         const sessionIds = Array.from(new Set(progress.map((p: { session_id: string }) => p.session_id).filter(Boolean)));
         const { data: sessions } = await supabase
           .from("sessions")
-          .select("id, mood_category")
+          .select("id, mood_category, mood_categories")
           .in("id", sessionIds);
-        const moodMap = new Map((sessions || []).map((s: { id: string; mood_category: string }) => [s.id, s.mood_category]));
+        const moodMap = new Map((sessions || []).map((s: { id: string; mood_category: string; mood_categories: string[] | null }) => [s.id, s]));
 
-        const rows: { completed: boolean; updated_at: string; mood_category: string }[] = [];
+        const rows: { completed: boolean; updated_at: string; mood_category: string; mood_categories: string[] | null }[] = [];
         for (const p of progress as { completed: boolean; updated_at: string; session_id: string }[]) {
-          rows.push({ completed: p.completed, updated_at: p.updated_at, mood_category: moodMap.get(p.session_id) || "Unknown" });
+          const sess = moodMap.get(p.session_id);
+          rows.push({ completed: p.completed, updated_at: p.updated_at, mood_category: sess?.mood_category || "Unknown", mood_categories: sess?.mood_categories || null });
         }
 
         const completedRows = rows.filter((r) => r.completed);

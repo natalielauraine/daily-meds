@@ -13,26 +13,12 @@ import { createClient } from "@supabase/supabase-js";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { MOCK_SESSIONS, SessionData } from "../../../lib/sessions-data";
+import { MOOD_GRADIENTS } from "@/lib/design-tokens";
 import SessionPageClient from "./SessionPageClient";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://thedailymeds.com";
 
-// Derive gradient and glow colour from the mood category
-// (these aren't stored in the DB — they come from the brand design system)
-const MOOD_GRADIENTS: Record<string, string> = {
-  Hungover:         "linear-gradient(135deg, #ff41b3, #ec723d)",
-  "After The Sesh": "linear-gradient(135deg, #ff41b3, #f4e71d)",
-  "On A Comedown":  "linear-gradient(135deg, #adf225, #f4e71d)",
-  "Feeling Empty":  "linear-gradient(135deg, #ff41b3, #ec723d)",
-  "Can't Sleep":    "linear-gradient(135deg, #ff41b3, #adf225)",
-  Anxious:          "linear-gradient(135deg, #ec723d, #f4e71d)",
-  Heartbroken:      "linear-gradient(135deg, #ff41b3, #ec723d)",
-  Overwhelmed:      "linear-gradient(135deg, #ec723d, #f4e71d)",
-  "Low Energy":     "linear-gradient(135deg, #adf225, #f4e71d)",
-  "Morning Reset":  "linear-gradient(135deg, #ff41b3, #f4e71d)",
-  "Focus Mode":     "linear-gradient(135deg, #adf225, #ec723d)",
-};
-
+// Derive glow colour from the mood gradient's first hex
 const MOOD_GLOW: Record<string, string> = {
   Hungover:         "#ff41b3",
   "After The Sesh": "#ff41b3",
@@ -58,13 +44,13 @@ async function fetchSessionFromSupabase(id: string): Promise<SessionData | null>
     const supabase = createClient(url, key);
     const { data } = await supabase
       .from("sessions")
-      .select("id, short_id, title, description, duration, mood_category, media_type, vimeo_id, video_url, audio_url, is_free, thumbnail")
+      .select("id, short_id, title, description, duration, mood_category, mood_categories, media_type, vimeo_id, video_url, audio_url, is_free, thumbnail")
       .eq("id", id)
       .single();
 
     if (!data) return null;
 
-    const moodCategory = data.mood_category || "";
+    const primaryMood = data.mood_categories?.[0] ?? data.mood_category ?? "";
     return {
       id: data.id,
       shortId: data.short_id || "",
@@ -72,9 +58,9 @@ async function fetchSessionFromSupabase(id: string): Promise<SessionData | null>
       description: data.description || "",
       duration: data.duration || "",
       type: data.media_type === "video" ? "Video" : "Audio",
-      moodCategory,
-      gradient: MOOD_GRADIENTS[moodCategory] || "linear-gradient(135deg, #ff41b3, #ec723d)",
-      glowColor: MOOD_GLOW[moodCategory] || "#ff41b3",
+      moodCategory: primaryMood,
+      gradient: MOOD_GRADIENTS[primaryMood] || "linear-gradient(135deg, #ff41b3, #ec723d)",
+      glowColor: MOOD_GLOW[primaryMood] || "#ff41b3",
       isFree: data.is_free ?? false,
       mediaType: data.media_type || "audio",
       audioUrl: data.audio_url || "",

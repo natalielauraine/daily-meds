@@ -18,6 +18,7 @@ type WatchlistSession = {
   type: string;
   duration: string;
   mood_category: string;
+  mood_categories: string[];
   gradient: string;
   is_free: boolean;
 };
@@ -37,7 +38,7 @@ export default function SavedPage() {
       // Join watchlist with sessions to get full session details in one query
       const { data } = await supabase
         .from("watchlist")
-        .select("id, session_id, sessions(title, type, duration, mood_category, gradient, is_free)")
+        .select("id, session_id, sessions(title, type, duration, mood_category, mood_categories, gradient, is_free)")
         .eq("user_id", user.id)
         .order("created_at", { ascending: false });
 
@@ -48,7 +49,8 @@ export default function SavedPage() {
           .map((row) => {
             const s = row.sessions as unknown as {
               title: string; type: string; duration: string;
-              mood_category: string; gradient: string; is_free: boolean;
+              mood_category: string; mood_categories: string[];
+              gradient: string; is_free: boolean;
             };
             return {
               watchlist_id: row.id,
@@ -57,6 +59,7 @@ export default function SavedPage() {
               type: s.type,
               duration: s.duration,
               mood_category: s.mood_category,
+              mood_categories: s.mood_categories,
               gradient: s.gradient,
               is_free: s.is_free,
             };

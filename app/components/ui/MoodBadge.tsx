@@ -1,19 +1,7 @@
 // Gradient pill badge for mood categories.
 // Each mood maps to the neon brand gradient palette.
 
-const MOOD_GRADIENTS: Record<string, string> = {
-  "Hungover":        "linear-gradient(135deg, #ff41b3, #ec723d)",
-  "After The Sesh":  "linear-gradient(135deg, #ff41b3, #f4e71d)",
-  "On A Comedown":   "linear-gradient(135deg, #adf225, #f4e71d)",
-  "Feeling Empty":   "linear-gradient(135deg, #ff41b3, #ec723d)",
-  "Can't Sleep":     "linear-gradient(135deg, #ff41b3, #adf225)",
-  "Anxious":         "linear-gradient(135deg, #ec723d, #f4e71d)",
-  "Heartbroken":     "linear-gradient(135deg, #ff41b3, #ec723d)",
-  "Overwhelmed":     "linear-gradient(135deg, #ec723d, #f4e71d)",
-  "Low Energy":      "linear-gradient(135deg, #adf225, #f4e71d)",
-  "Morning Reset":   "linear-gradient(135deg, #ff41b3, #f4e71d)",
-  "Focus Mode":      "linear-gradient(135deg, #adf225, #ec723d)",
-};
+import { MOOD_GRADIENTS } from "@/lib/design-tokens";
 
 const DEFAULT_GRADIENT = "linear-gradient(135deg, #ff41b3, #ec723d)";
 

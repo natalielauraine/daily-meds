@@ -6,87 +6,52 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { MOOD_CATEGORIES, MOOD_GRADIENTS } from "@/lib/design-tokens";
 
-// Each mood uses the neon brand palette: pink #ff41b3, green #adf225, yellow #f4e71d, orange #ec723d
-const MOOD_CATEGORIES = [
-  {
-    label: "Hungover",
-    description: "Gentle recovery sessions",
-    gradient: "linear-gradient(135deg, #ff41b3 0%, #ec723d 100%)",
-    glowColor: "#ff41b3",
-    href: "/library?mood=Hungover",
-  },
-  {
-    label: "After The Sesh",
-    description: "Come back to yourself",
-    gradient: "linear-gradient(135deg, #ff41b3 0%, #f4e71d 100%)",
-    glowColor: "#ff41b3",
-    href: "/library?mood=After+The+Sesh",
-  },
-  {
-    label: "On A Comedown",
-    description: "Grounding and steady",
-    gradient: "linear-gradient(135deg, #adf225 0%, #f4e71d 100%)",
-    glowColor: "#adf225",
-    href: "/library?mood=On+A+Comedown",
-  },
-  {
-    label: "Feeling Empty",
-    description: "Fill the quiet inside",
-    gradient: "linear-gradient(135deg, #ff41b3 0%, #ec723d 100%)",
-    glowColor: "#ec723d",
-    href: "/library?mood=Feeling+Empty",
-  },
-  {
-    label: "Can't Sleep",
-    description: "Drift off with ease",
-    gradient: "linear-gradient(135deg, #ff41b3 0%, #adf225 100%)",
-    glowColor: "#adf225",
-    href: "/library?mood=Can't+Sleep",
-  },
-  {
-    label: "Anxious",
-    description: "Slow your system down",
-    gradient: "linear-gradient(135deg, #ec723d 0%, #f4e71d 100%)",
-    glowColor: "#ec723d",
-    href: "/library?mood=Anxious",
-  },
-  {
-    label: "Heartbroken",
-    description: "Feel it. Then release it.",
-    gradient: "linear-gradient(135deg, #ff41b3 0%, #ec723d 50%, #f4e71d 100%)",
-    glowColor: "#ff41b3",
-    href: "/library?mood=Heartbroken",
-  },
-  {
-    label: "Overwhelmed",
-    description: "One breath at a time",
-    gradient: "linear-gradient(135deg, #ec723d 0%, #f4e71d 100%)",
-    glowColor: "#ec723d",
-    href: "/library?mood=Overwhelmed",
-  },
-  {
-    label: "Low Energy",
-    description: "Gentle lift, no pressure",
-    gradient: "linear-gradient(135deg, #adf225 0%, #f4e71d 100%)",
-    glowColor: "#adf225",
-    href: "/library?mood=Low+Energy",
-  },
-  {
-    label: "Morning Reset",
-    description: "Start the day right",
-    gradient: "linear-gradient(135deg, #ff41b3 0%, #ec723d 60%, #f4e71d 100%)",
-    glowColor: "#ff41b3",
-    href: "/library?mood=Morning+Reset",
-  },
-  {
-    label: "Focus Mode",
-    description: "Quiet the noise. Go deep.",
-    gradient: "linear-gradient(135deg, #adf225 0%, #ec723d 100%)",
-    glowColor: "#adf225",
-    href: "/library?mood=Focus+Mode",
-  },
-];
+/** Extract the first hex color from a gradient string for glow effects */
+function extractFirstColor(gradient: string): string {
+  const match = gradient.match(/#[0-9a-fA-F]{6}/);
+  return match ? match[0] : "#ff41b3";
+}
+
+const MOOD_DESCRIPTIONS: Record<string, string> = {
+  "Everyday Moods": "For the regular ups and downs",
+  "Sleep": "Wind down and drift off",
+  "Heavy Emotions": "When it hits hard",
+  "Own Your Shadow": "Face what you've been avoiding",
+  "Daily Practice": "Build your daily ritual",
+  "Self Love & Celebration": "Celebrate who you are",
+  "Crisis Emergencies": "When you need help now",
+  "Relationships": "Navigate love and connection",
+  "Situationships": "The complicated ones",
+  "Communication & Boundaries": "Say what you need to say",
+  "Vulnerable Stuff": "Permission to feel",
+  "Sexual Scenarios": "Intimacy and desire",
+  "Career & Work": "Workplace pressure and ambition",
+  "Life Moments": "Big transitions and milestones",
+  "Grief & Loss": "Holding space for what's gone",
+  "Forgiveness": "Letting go of what weighs you down",
+  "Addiction": "Breaking patterns with compassion",
+  "Party Recovery": "The morning after",
+  "Plant Medicine": "Integration and reflection",
+  "On The Road": "Meditate wherever you are",
+  "Founder Stress": "For the ones building something",
+  "Spirituality": "Connect to something bigger",
+  "Seasonal": "Seasonal shifts and transitions",
+  "Morning Meds": "Start the day right",
+  "Evening Meds": "Close the day gently",
+};
+
+const MOOD_CARDS = MOOD_CATEGORIES.map((label) => {
+  const gradient = MOOD_GRADIENTS[label] || "linear-gradient(135deg, #ff41b3, #ec723d)";
+  return {
+    label,
+    description: MOOD_DESCRIPTIONS[label] || label,
+    gradient,
+    glowColor: extractFirstColor(gradient),
+    href: `/library?mood=${encodeURIComponent(label)}`,
+  };
+});
 
 // Small lotus icon used inside each card
 function LotusIcon({ size = 24 }: { size?: number }) {
@@ -153,7 +118,7 @@ export default function MoodCategorySection() {
 
         {/* ── 4-column mood grid (2-col on mobile, 3-col on tablet) ── */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
-          {MOOD_CATEGORIES.map((mood) => {
+          {MOOD_CARDS.map((mood) => {
             const isActive = activeMood === mood.label;
             return (
               <button

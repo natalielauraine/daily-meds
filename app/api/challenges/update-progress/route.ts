@@ -24,7 +24,8 @@ export async function POST(req: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorised" }, { status: 401 });
 
-  const { sessionMinutes = 0, moodCategory = "" } = await req.json();
+  const body = await req.json();
+  const { sessionMinutes = 0, moodCategory = "", moodCategories = [] } = body;
 
   // Get user's active (not completed) challenge participations
   const { data: participations } = await supabase
@@ -99,15 +100,17 @@ export async function POST(req: NextRequest) {
 
       const moodSessionIds = Array.from(new Set((moodProgress ?? []).map((r: { session_id: string }) => r.session_id).filter(Boolean)));
       const { data: moodSessions } = moodSessionIds.length > 0
-        ? await supabase.from("sessions").select("mood_category").in("id", moodSessionIds)
+        ? await supabase.from("sessions").select("mood_category, mood_categories").in("id", moodSessionIds)
         : { data: [] };
 
       const moods = new Set<string>();
-      (moodSessions ?? []).forEach((row: { mood_category?: string }) => {
-        if (row.mood_category) moods.add(row.mood_category);
+      (moodSessions ?? []).forEach((row: { mood_category?: string; mood_categories?: string[] | null }) => {
+        const cats = row.mood_categories?.length ? row.mood_categories : row.mood_category ? [row.mood_category] : [];
+        cats.forEach((c: string) => moods.add(c));
       });
-      // Also include the current session's mood category
-      if (moodCategory) moods.add(moodCategory);
+      // Also include the current session's mood categories
+      if (moodCategories.length) moodCategories.forEach((c: string) => moods.add(c));
+      else if (moodCategory) moods.add(moodCategory);
 
       newProgress = moods.size;
     }
