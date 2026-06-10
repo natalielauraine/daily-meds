@@ -84,6 +84,7 @@ export default function Home() {
       .select('*')
       .eq('status', 'published')
       .eq('is_coming_soon', true)
+      .limit(5)
       .order('created_at', { ascending: false })
       .then(({ data }) => { if (data) setComingSoonSessions(data); });
   }, [router]);

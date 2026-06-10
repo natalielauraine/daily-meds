@@ -322,12 +322,22 @@ export default function LibraryPage() {
               </div>
             ))}
           </div>
-        ) : filtered.length === 0 && (search || activeFilterCount > 0) ? (
-          <EmptyState
-            message="No sessions match your filters"
-            action="Clear all filters"
-            onClick={clearAllFilters}
-          />
+        ) : filtered.length === 0 ? (
+          <div
+            className="flex flex-col items-center justify-center py-16 rounded-[10px] text-center"
+            style={{ border: "0.5px dashed rgba(255,255,255,0.08)" }}
+          >
+            <p className="text-lg text-white mb-1" style={{ fontWeight: 600 }}>Coming Soon</p>
+            <p className="text-sm text-cream/50 mb-4">More meditations coming soon. We drop three a week.</p>
+            {(search || activeFilterCount > 0) && (
+              <button
+                onClick={clearAllFilters}
+                className="text-xs text-cream/65 hover:text-cream/80 transition-colors"
+              >
+                Clear all filters
+              </button>
+            )}
+          </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5">
             {filtered.map((session) => (

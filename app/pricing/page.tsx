@@ -37,10 +37,10 @@ const PLANS_ROW1 = [
     cta: "Start for free",
     featured: false,
     features: [
-      "10 free sessions",
+      "5 free sessions and counting",
       "Mood category browsing",
       "Stats and progress tracking",
-      "Breathing timer (coming soon)",
+      "Breathing timer",
       "Community access (coming soon)",
     ],
     locked: [
@@ -52,7 +52,7 @@ const PLANS_ROW1 = [
   },
   {
     id: "audio",
-    name: "The Monthly Listener",
+    name: "The Listener",
     tagline: "Full audio library, anytime",
     price: "£9.99",
     priceNote: "per month · audio only",
@@ -63,7 +63,8 @@ const PLANS_ROW1 = [
       "Full audio library",
       "New drops every week",
       "Stats and progress tracking",
-      "Breathing timer (coming soon)",
+      "Breathing timer",
+      "Community access (coming soon)",
     ],
     locked: [
       "Live sessions with Natalie (coming soon)",
@@ -74,7 +75,7 @@ const PLANS_ROW1 = [
   {
     id: "monthly",
     name: "The Seeker",
-    tagline: "Audio plus live sessions",
+    tagline: "Audio plus our live stream sessions on a weekly basis",
     price: "£19.99",
     priceNote: "per month",
     cta: "Subscribe",
@@ -82,8 +83,10 @@ const PLANS_ROW1 = [
     features: [
       "Everything in The Listener",
       "Stats and progress tracking",
-      "Live sessions with Natalie (coming soon)",
+      "Live Audio Hugs\u2122 sessions with Natalie (coming soon)",
+      "Live Alchemy Rewire\u2122 sessions (coming soon)",
       "Group meditation rooms (coming soon)",
+      "First access to livestream podcasts",
     ],
     locked: [
       "Offline downloads (coming soon)",
@@ -95,7 +98,7 @@ const PLANS_ROW2 = [
   {
     id: "audioAnnual",
     name: "The Annual Listener",
-    tagline: "Audio library — save with annual",
+    tagline: "Audio library — save 17% vs monthly",
     price: "£99.99",
     priceNote: "per year · audio only",
     cta: "Start Listening",
@@ -105,7 +108,7 @@ const PLANS_ROW2 = [
       "Full audio library",
       "New drops every week",
       "Stats and progress tracking",
-      "Breathing timer (coming soon)",
+      "Breathing timer",
       "Save 17% vs monthly",
     ],
     locked: [
@@ -116,8 +119,8 @@ const PLANS_ROW2 = [
   },
   {
     id: "annual",
-    name: "The Dedicated",
-    tagline: "Best value — save over 15%",
+    name: "The Annual Seeker",
+    tagline: "Best value — save 17% vs monthly",
     price: "£199",
     priceNote: "per year",
     cta: "Go annual",
@@ -125,8 +128,10 @@ const PLANS_ROW2 = [
     features: [
       "Everything in The Listener",
       "Stats and progress tracking",
-      "Live sessions with Natalie (coming soon)",
+      "Live Audio Hugs\u2122 sessions with Natalie (coming soon)",
+      "Live Alchemy Rewire\u2122 sessions (coming soon)",
       "Group meditation rooms (coming soon)",
+      "First access to livestream podcasts",
       "Save 17% vs monthly",
     ],
     locked: [
@@ -142,12 +147,16 @@ const PLANS_ROW2 = [
     cta: "Claim founder membership",
     featured: false,
     features: [
+      "Everything in The Annual Seeker",
       "Full library, forever",
       "All future series included",
       "Stats and progress tracking",
-      "Live sessions with Natalie (coming soon)",
-      "Offline downloads (coming soon)",
+      "Live Audio Hugs\u2122 sessions with Natalie (coming soon)",
+      "Live Alchemy Rewire\u2122 sessions (coming soon)",
       "Group meditation rooms (coming soon)",
+      "First access to livestream podcasts",
+      "Offline downloads (coming soon)",
+      "Breathing timer",
       "Discounts on live events",
       "Personal welcome message",
     ],
@@ -166,27 +175,27 @@ const FAQS = [
   },
   {
     q: "What's included in the free plan?",
-    a: "10 handpicked sessions, mood category browsing, stats and progress tracking, and community features (coming soon). No credit card required.",
+    a: "Five hand-picked sessions and counting, mood category browsing, stats and progress tracking, and community features (coming soon). No credit card required.",
   },
   {
     q: "What are Live sessions?",
-    a: "Live sessions are real-time guided experiences hosted by Natalie \u2014 including Audio Hugs (group listening), Alchemy Rewire (guided transformation), and Expert Series (guest teachers). Live sessions are coming soon and will be available to subscribers on eligible plans. We\u2019ll notify you as soon as they launch.",
+    a: "Live sessions are real-time guided experiences by Natalie and her chosen network of friends \u2014 this includes Audio Hugs\u2122 live streams, Alchemy Rewire\u2122 breath/mind navigation guided sessions, and expert somatic experience sessions. Live sessions are coming soon and will be available to subscribers on eligible plans. We\u2019ll notify you as soon as they launch.",
   },
   {
     q: "Is the Founder membership really one payment?",
-    a: "Yes. \u00A3299.99 once, no monthly fees, no renewals, no surprises. Every future session and series is included. By choosing the Founder plan and paying upfront for live access, you are directly supporting the growth of The Daily Meds. In return, 4% of your total contribution goes to our chosen charity.",
+    a: "Yes. \u00A3299.99 once, no monthly fees, no renewals, no surprises. Every future session and series is included. By choosing the Founder plan and paying upfront for live access, you are directly supporting the growth of The Daily Meds. In return, 4% of your total contribution goes to <a href=\"https://www.bridgesformusic.org\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"underline text-pink-400 hover:text-pink-300\">Bridges for Music</a>.",
   },
   {
     q: "Can I download sessions to listen offline?",
-    a: "Offline listening will be available when the Daily Meds app launches. We will notify all members when this goes live.",
+    a: "Offline listening will be available when The Daily Meds app launches in both the App Store and Google Play Store. We\u2019ll notify all members when this goes live.",
   },
   {
     q: "What are group meditations?",
-    a: "As a Daily Meds member, you may be invited to join community group meditations hosted by our affiliate partners, audience owners and major collaborators. These sessions are designed to help regulate our wider community and build meaningful connection.",
+    a: "Group meditations are where you can join online with your family and friends to experience either our pre-recorded audio library or go live with our partners and major collaborators. These sessions are designed to help regulate our wider community and build meaningful connection through brands, festivals, and major communities. This feature will be ready soon.",
   },
   {
     q: "What is the Expert Series?",
-    a: "Our Expert Series features guest teachers covering somatic awareness and advanced brain training techniques, delivered in partnership with our in-house neuroscience collaborators at MuLabs.",
+    a: "The Expert Series is a series of features provided by our guest teachers, covering all areas of somatic awareness and advanced nervous system regulation techniques, alongside brain training techniques delivered through our in-house neuroscience collaboration with Moo Labs.",
   },
   {
     q: "Is my payment secure?",
@@ -260,9 +269,8 @@ function FaqItem({ q, a }: { q: string; a: string }) {
         <p
           className="px-5 pb-4 text-sm leading-relaxed"
           style={{ fontFamily: "var(--font-inter)", color: "rgba(246,241,230,0.7)" }}
-        >
-          {a}
-        </p>
+        dangerouslySetInnerHTML={{ __html: a }}
+        />
       )}
     </div>
   );

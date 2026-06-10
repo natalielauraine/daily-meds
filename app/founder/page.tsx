@@ -6,7 +6,7 @@ import Footer from "../components/Footer";
 
 export const metadata: Metadata = {
   title: "Natalie Lauraine — Founder of The Daily Meds",
-  description: "Meditation artist, inspirational speaker, and creator of Audio Hugs. The story behind The Daily Meds.",
+  description: "Meditation artist, inspirational speaker, and creator of Audio Hugs\u2122. The story behind The Daily Meds.",
 };
 
 function SectionLabel({ children }: { children: string }) {
@@ -52,7 +52,7 @@ export default function FounderPage() {
           </h1>
 
           <p className="text-base sm:text-lg text-cream/70 max-w-xl leading-relaxed">
-            Meditation Artist and Inspirational Speaker with over 15 years of experience spanning the nightlife, radio, music and wellness industries. Founder of The Daily Meds and creator of Audio Hugs — a binaural spatial audio format designed for emotional regulation in real life.
+            Meditation Artist and Inspirational Speaker with over 15 years of experience spanning the nightlife, radio, music and wellness industries. Founder of The Daily Meds and creator of Audio Hugs&#8482; — a binaural spatial audio format designed for emotional regulation in real life.
           </p>
         </section>
 

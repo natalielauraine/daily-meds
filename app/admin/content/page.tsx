@@ -19,6 +19,7 @@ const MOOD_CATEGORIES = [
   "Hungover", "After The Sesh", "On A Comedown", "Feeling Empty",
   "Can't Sleep", "Anxious", "Heartbroken", "Overwhelmed",
   "Low Energy", "Morning Reset", "Focus Mode",
+  "Relationships", "Friendships", "Family", "Work",
 ];
 
 const SESSION_TYPES = ["Guided Meditation", "Breathwork", "Sleep Audio", "Focus Session", "Movement"];
@@ -35,6 +36,10 @@ const MOOD_GRADIENTS: Record<string, string> = {
   "Low Energy":     "linear-gradient(135deg, #adf225, #f4e71d)",
   "Morning Reset":  "linear-gradient(135deg, #ff41b3, #f4e71d)",
   "Focus Mode":     "linear-gradient(135deg, #adf225, #ec723d)",
+  "Relationships":  "linear-gradient(135deg, #ff41b3, #f4e71d)",
+  "Friendships":    "linear-gradient(135deg, #adf225, #ff41b3)",
+  "Family":         "linear-gradient(135deg, #ec723d, #ff41b3)",
+  "Work":           "linear-gradient(135deg, #f4e71d, #ec723d)",
 };
 
 type Session = {

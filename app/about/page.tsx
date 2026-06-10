@@ -98,7 +98,7 @@ export default function AboutPage() {
                   Natalie Lauraine
                 </h2>
                 <p className="text-cream/60 leading-relaxed text-sm sm:text-base mb-6">
-                  Meditation Artist and Inspirational Speaker with over 15 years of experience spanning nightlife, radio, music and wellness. Creator of Audio Hugs — a binaural spatial audio format designed for emotional regulation in real life.
+                  Meditation Artist and Inspirational Speaker with over 15 years of experience spanning nightlife, radio, music and wellness. Creator of Audio Hugs&#8482; — a binaural spatial audio format designed for emotional regulation in real life.
                 </p>
                 <span
                   className="text-xs uppercase tracking-widest inline-flex items-center gap-2 transition-colors group-hover:text-white"
@@ -215,10 +215,10 @@ export default function AboutPage() {
               We have over 222 titles in process across 18 emotional categories, all recorded in binaural spatial audio at Metrica Studios in Ibiza.
             </p>
             <p>
-              <strong className="text-cream/80">Audio Hug Journeys</strong> are Natalie&apos;s signature format — immersive sound journeys built around precise emotional moments and deep-felt presence.
+              <strong className="text-cream/80">Audio Hugs&#8482; Journeys</strong> are Natalie&apos;s signature format — immersive sound journeys built around precise emotional moments and deep-felt presence.
             </p>
             <p>
-              <strong className="text-cream/80">Alchemy Rewire Breathwork</strong> sessions teach nervous system regulation techniques drawn from breathwork, somatic practice and Alchemy Rewire methodology. These are not generic relaxation sessions. They are short breathwork journeys built for where you actually are.
+              <strong className="text-cream/80">Alchemy Rewire&#8482; Breathwork</strong> sessions teach nervous system regulation techniques drawn from breathwork, somatic practice and Alchemy Rewire&#8482; methodology. These are not generic relaxation sessions. They are short breathwork journeys built for where you actually are.
             </p>
           </div>
         </section>

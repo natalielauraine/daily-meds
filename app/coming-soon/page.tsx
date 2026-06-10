@@ -63,9 +63,9 @@ export default function ComingSoonPage() {
               color: "rgba(255,255,255,0.75)",
             }}
           >
-            Something special is on its way. Natalie will soon be going live with streaming Audio Hug
+            Something special is on its way. Natalie will soon be going live with streaming Audio Hugs&#8482;
             meditations, joined by her collaborators for somatic practices and nervous system regulation
-            breathwork, delivered by Alchemy Rewire practitioners. Live podcasts are also coming.
+            breathwork, delivered by Alchemy Rewire&#8482; practitioners. Live podcasts are also coming.
           </p>
 
           <Link

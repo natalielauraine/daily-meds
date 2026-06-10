@@ -25,7 +25,7 @@ const FAQS = [
   },
   {
     q: "Can I download sessions to listen offline?",
-    a: "Offline downloads are coming soon and will be available on the Lifetime plan. For now, all subscribers can stream anywhere with internet.",
+    a: "Offline listening will be available when The Daily Meds app launches in both the App Store and Google Play Store. We\u2019ll notify all members when this goes live.",
   },
 ];
 

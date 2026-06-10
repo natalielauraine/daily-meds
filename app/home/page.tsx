@@ -58,7 +58,7 @@ export default function LoggedInHome() {
       .select('*')
       .eq('status', 'published')
       .eq('is_coming_soon', false)
-      .limit(6)
+      .limit(5)
       .order('created_at', { ascending: false })
       .then(({ data }) => {
         if (data) setSessions(data);
@@ -68,6 +68,7 @@ export default function LoggedInHome() {
       .select('*')
       .eq('status', 'published')
       .eq('is_coming_soon', true)
+      .limit(5)
       .order('created_at', { ascending: false })
       .then(({ data }) => {
         if (data) setComingSoon(data);
